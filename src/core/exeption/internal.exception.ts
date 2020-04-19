@@ -1,7 +1,7 @@
-import { ApplicationException } from "./application.exception";
+import { ApplicationException } from './application.exception';
 
 export class InternalException extends ApplicationException {
     constructor(message: string) {
-        super(message, 'Erro interno', 500);
+        super(message, 'Internal Error', 500);
     }
 }

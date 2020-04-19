@@ -1,7 +1,7 @@
-import { ApplicationException } from "./application.exception";
+import { ApplicationException } from './application.exception';
 
 export class NotFoundException extends ApplicationException {
     constructor(message: string) {
-        super(message, 'Não encontrado', 404);
+        super(message, 'Not Found', 404);
     }
 }

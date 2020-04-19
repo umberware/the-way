@@ -1,9 +1,10 @@
 import { ApplicationException } from '../../exeption/application.exception';
-import { LogLevel } from './log.level.enum';
+import { LogLevel } from './log-level.enum';
 
 export class LogService {
     
     level: LogLevel;
+    
     constructor() {
         this.level = LogLevel.FULL;
     }
@@ -11,7 +12,7 @@ export class LogService {
     public error(error: Error): void {
         if (error instanceof ApplicationException) {
             console.error(
-                '[Error] ' + error.getCode() + ' ' + error.getDetail()
+                '[Error] ' + error.getCode() + ' ' + error.getDetail() + ' '
                 + error.getDescription()
             );
         } else {

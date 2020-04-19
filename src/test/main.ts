@@ -1,14 +1,18 @@
-import { Application, Inject } from '../core/decorator';
-import { ClassInjectable2 } from './class-injectable-2';
-import { ClassConfiguration } from './class-configuration';
+import { CustomSecurityService } from './service/custom-security.service';
 import { HttpService } from '../core/service/http/http.service';
+import { Application, Inject } from '../core/decorator';
+import { RestModule } from './rest/rest.module';
+import { RestClientService } from './rest-client/rest-client.service';
 
-@Application()
+@Application(
+    CustomSecurityService,
+    HttpService
+)
 export class Main {
-    // @Inject() httpService: HttpService;
-    @Inject() classConfiguration: ClassConfiguration;
-    @Inject() juca: ClassInjectable2;
+    @Inject() restModule: RestModule;
+    @Inject() restClient: RestClientService;
 
     constructor() {
+        this.restClient.signIn();
     }
 }

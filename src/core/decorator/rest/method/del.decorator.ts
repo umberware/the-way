@@ -1,9 +1,9 @@
 import { CORE } from '../../../core';
-import { HttpService } from '../../../service/http/http.service';
 import { ApplicationException } from '../../../exeption/application.exception';
 import { HttpType } from '../../../service/http/http-type.enum';
+import { HttpService } from '../../../service/http/http.service';
 
-export function Put(path: string, authenticated?: boolean, allowedProfiles?: Array<any>) {
+export function Del(path: string, authenticated?: boolean, allowedProfiles?: Array<any>) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         CORE.getInstance().ready$.subscribe((ready: boolean) => {
             if (ready) {
@@ -14,7 +14,7 @@ export function Put(path: string, authenticated?: boolean, allowedProfiles?: Arr
                         'you should pass HttpService or and extended class of HttpService on Application decorator',
                         'HttpService not found', 'RU-001');
                 } else {
-                    httpService.registerPath(HttpType.PUT, path, authenticated, allowedProfiles, target, propertyKey, descriptor);
+                    httpService.registerPath(HttpType.DEL, path, authenticated, allowedProfiles, target, propertyKey, descriptor);
                 }
             }
         })

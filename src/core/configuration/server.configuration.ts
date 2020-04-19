@@ -10,7 +10,7 @@ import { LogService } from '../service/log/log.service';
 import { AbstractConfiguration } from './abstract.configuration';
 import { Inject } from '../decorator/inject.decorator';
 
-export class ServerConfiguration extends AbstractConfiguration{
+export class ServerConfiguration extends AbstractConfiguration {
   @Inject() logService: LogService;
   
   public context: any;
@@ -21,7 +21,7 @@ export class ServerConfiguration extends AbstractConfiguration{
     this.initializeExpress();
   }
   public initializeExpress(): void {
-    this.port = 8080;
+    this.port = 8081;
     this.context = express();
     this.context
       .use(cors({origins: true}))

@@ -1,11 +1,15 @@
 import 'reflect-metadata';
 import { BehaviorSubject } from 'rxjs';
 
-import { ServiceMetaKey, ConfigurationMetaKey } from './decorator';
+import { ServiceMetaKey } from './decorator/service.decorator';
+import { ConfigurationMetaKey } from './decorator/configuration.decorator';
 import { AbstractConfiguration } from './configuration/abstract.configuration';
-import { HttpService } from './service/http/http.service';
+import { CryptoService } from './service/crypto.service';
+
+export let CORE_CALLED = 0;
 
 export class CORE {
+    public static enabledDecoratorLog = true;
     private static instance: CORE;
     private application: Object;
     private INSTANCES = new Map<string, Object>();
@@ -13,16 +17,31 @@ export class CORE {
 
     constructor() {
         CORE.instance = this;
+        CORE_CALLED += 1;
+        this.buildCoreInjectables();
     }
     
-    public buildApplication(constructor: Function): void {
-        this.application = this.buildObject(constructor.prototype);
-        console.log(this.INSTANCES)
-
-        if (!this.INSTANCES[HttpService.name]) {
-            this.INSTANCES[HttpService.name] = new HttpService();
+    public buildApplication(constructor: Function, customInstances: Array<Function>): void {
+        if (customInstances && customInstances.length > 0) {
+            this.buildCustomInstances(customInstances)
         }
+
+        this.application = this.buildObject(constructor.prototype);
         this.ready$.next(true);
+    }
+    private buildCoreInjectables(): void {
+        this.buildInjectable(CryptoService);
+    }
+    private buildCustomInstances(customInstances: Array<Function>): void {
+        for (const customInstance of customInstances) {
+            this.buildInjectable(customInstance);
+        }
+    }
+    private buildInjectable(constructor: Function): Object {
+        const instance = this.buildObject(constructor.prototype);
+        const decorators = Reflect.getMetadataKeys(constructor);
+        this.handleInstance(constructor, instance, decorators);
+        return instance;
     }
     public buildObject(prototype: any): Object {
         return new (Object.create(prototype)).constructor();
@@ -32,34 +51,35 @@ export class CORE {
     }
     public getInjectable(constructor: Function): Object {
         const name = constructor.name;
-        
-        if (this.INSTANCES.has(name)) {
-            return this.INSTANCES.get(name);
+        let instance: Object;
+        if (this.INSTANCES[name]) {
+            instance = this.getInjectableByName(name);
         } else {
-            const instance = this.buildObject(constructor.prototype);
-            const decorators = Reflect.getMetadataKeys(constructor);
-            this.handleInstance(constructor, instance, decorators);
-            return instance;
+            instance = this.buildInjectable(constructor);
         }
+
+        return instance;
+    }
+    public getInjectableByName(name: string): Object {
+        return this.INSTANCES[name];
     }
     public static getInstance(): CORE {
-        if (!this.instance) {
-            new CORE();
+        if (!CORE.instance) {
+            CORE.instance = new CORE();
         }
-        return this.instance;
+        return CORE.instance;
     }
     public getInjectables(): Map<String, Object> {
         return this.INSTANCES;
     }
-    public getHttpService(): any {
-        return null;
-        // return this.INSTANCES[HttpService.name];
-    }
-    private handleInstance(constructor: any, instance: Object, decorators: Array<string>): void{
+    private handleInstance(constructor: any, instance: Object, decorators: Array<string>): void {
         if (decorators.includes(ServiceMetaKey)) {
             const clazz = Reflect.getMetadata(ServiceMetaKey, constructor);
-            this.INSTANCES[clazz.name] = instance;
-            return;
+            if (clazz) {
+                this.INSTANCES[clazz.name] = instance;
+            } else {
+                this.INSTANCES[constructor.name] = instance;
+            }
         } else {
             this.INSTANCES[constructor.name] = instance;
         }

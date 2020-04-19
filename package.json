@@ -2,14 +2,14 @@
   "name": "theway",
   "version": "0.0.1",
   "description": "",
-  "main": "dist/src/main.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "serve": "nodemon --config nodemon.json --watch",
-    "start": "node dist/src/test/main.js"
+    "test": "node dist/test/main.js"
   },
-  "author": "Hanor Sátiro Cintra",
-  "private": true,
+  "private": false,
   "dependencies": {
     "body-parser": "^1.19.0",
     "core-js": "^3.6.5",
@@ -17,6 +17,7 @@
     "express": "^4.17.1",
     "helmet": "^3.22.0",
     "js-yaml": "^3.13.1",
+    "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "rxjs": "^6.5.5",
     "tslib": "^1.11.1"
@@ -28,5 +29,34 @@
     "ts-node": "^8.8.2",
     "tslint": "^6.1.1",
     "typescript": "^3.8.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nihasoft/the-way.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nihasoft/the-way/issues"
+  },
+  "donations": "https://www.paypal.com/donate/?token=Ov4xNE4bAuZWCSF9e0BjGy75laGShREyS7BDFs-oQSwMsGOVEzDZAq9VDVNKmaCewqrBUW&country.x=BR&locale.x=BR",
+  "keywords": [
+    "http decorator",
+    "dependencies",
+    "typescript dependency injection",
+    "dependency injection",
+    "@nihasoft/the-way",
+    "the way",
+    "the-way",
+    "node api",
+    "node rest",
+    "rest",
+    "typescript decoratos",
+    "typescript rest",
+    "rest decorator",
+    "express decorators",
+    "decorator",
+    "decorators",
+    "@nihasoft"
+  ],
+  "author": "Hanor Sátiro Cintra <hanor.cintra@outlook.com>",
+  "license": "MIT"
 }
