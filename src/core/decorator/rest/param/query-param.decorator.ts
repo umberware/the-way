@@ -1,0 +1,6 @@
+export const QueryParamMetadataKey = Symbol('QueryParam');
+
+export function QueryParam(target: Object, propertyKey: string | symbol, parameterIndex: number) {
+    let index: number = Reflect.getOwnMetadata(QueryParamMetadataKey, target, propertyKey) || [];
+    Reflect.defineMetadata(QueryParamMetadataKey, parameterIndex, target, propertyKey);
+}

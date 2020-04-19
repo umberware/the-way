@@ -1,0 +1,59 @@
+# compiled output
+/dist
+/tmp
+/out-tsc
+
+/engine/dist
+/engine/tmp
+/engine/out-tsc
+
+/interface/dist
+/interface/tmp
+/interface/out-tsc
+
+**/visitors-count.json
+
+# dependencies
+**/node_modules
+
+
+# key
+**/key.json
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db
+
+\.firebase/
+
+firebase-debug\.log
+
+*.log
+
+package-lock\.json
