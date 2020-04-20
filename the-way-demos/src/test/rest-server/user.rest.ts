@@ -1,7 +1,6 @@
 import { Observable, of } from 'rxjs';
 
-import { Inject, Post, BodyParam, Get, PathParam, QueryParam, RequestingUser} from '../../core/decorator';
-import { SecurityService } from '../../core/service/security.service';
+import { Inject, Post, BodyParam, Get, PathParam, QueryParam, RequestingUser, SecurityService} from '@nihasoft/the-way/dist'
 
 export class UserRest {
     @Inject() securityService: SecurityService;
@@ -16,8 +15,15 @@ export class UserRest {
     }
     @Get('/api/user/:id/tenants', true, [1])
     public getUserTenants(@PathParam('id') id: string, @QueryParam param: any, @RequestingUser user: any): Observable<Array<any>> {
-        console.log(user)
-        return of([]);
+        return of([{
+            username: 'anakin',
+            profiles: [3],
+            id: 134
+        },{
+            username: 'Darth',
+            profiles: [1],
+            id: 669
+        }]);
     }
 
     @Post('/api/sign/in')

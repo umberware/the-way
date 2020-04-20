@@ -1,0 +1,6 @@
+tsconfig.json
+nodemon.json
+yarn.lock
+yarn-error.lock
+dist/test
+dist/src

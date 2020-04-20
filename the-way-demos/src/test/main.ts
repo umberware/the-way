@@ -1,7 +1,6 @@
 import { CustomSecurityService } from './service/custom-security.service';
-import { HttpService } from '../core/service/http/http.service';
-import { Application, Inject } from '../core/decorator';
-import { RestModule } from './rest/rest.module';
+import { HttpService, Application, Inject } from '@nihasoft/the-way/dist'
+import { RestModule } from './rest-server/rest.module';
 import { RestClientService } from './rest-client/rest-client.service';
 
 @Application(
@@ -14,5 +13,6 @@ export class Main {
 
     constructor() {
         this.restClient.signIn();
+        this.restClient.getUserTenants();
     }
 }

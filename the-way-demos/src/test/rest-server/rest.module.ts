@@ -1,4 +1,4 @@
-import { Inject } from '../../core/decorator';
+import { Inject } from '@nihasoft/the-way/dist'
 import { UserRest } from './user.rest';
 import { HeroRest } from './hero.rest';
 

@@ -1,5 +1,5 @@
 {
-  "name": "theway",
+  "name": "@nihasoft/the-way",
   "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "serve": "nodemon --config nodemon.json --watch",
-    "test": "node dist/test/main.js"
+    "test": "node dist/main.js"
   },
   "private": false,
   "dependencies": {

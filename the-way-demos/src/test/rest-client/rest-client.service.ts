@@ -4,11 +4,11 @@ export class RestClientService {
     public getUserTenants(): void {
         const options = {
             hostname: '127.0.0.1',
-            port: 8080,
+            port: 8081,
             path: '/api/user/1/tenants',
             method: 'GET',
             headers: {
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiNDAzZWM3MGUwOTExYTc0MzUzNTc2OTA5YjNkNDYzMjI6MDQ1M2QwMzcxZjc4MGVlZjY5Yzg3ZTExYzU4NTRkNzAzYjUyZTE4Njk2MzIyMjY3NDNmZDNjODY0NjkyZDFhMyIsImlhdCI6MTU4NzM1NDU4MSwiZXhwIjoxNTg3NjEzNzgxfQ.tlCc0cnDDMCQz6R9Iwv3bK5cfJNS50nwHxQ56VIYQTc'
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiMjFlM2RhNTczM2EyZDFhMjk0Y2UxYzc3MTU0MTdmNzI6MmJhZjBmZTlkMDg1MTY3YjFkZGI1N2E5YTk1NDY4NmFiYTIxZmQ3MjkzY2IyMmY5YTVlMjllMWI5MjEzZGNjZiIsImlhdCI6MTU4NzQyMTM0MywiZXhwIjoxNTg3NjgwNTQzfQ.3MFHYAOml1rqIPJxXnNbHB2O-Y9oQ0fHQoelcLykKY4'
             }
         }
           
@@ -16,7 +16,7 @@ export class RestClientService {
             console.log(`statusCode: ${res.statusCode}`)
             
             res.on('data', d => {
-                console.log('Get Love: ' + d)
+                console.log('Tenants User: ' + d)
             })
         })
         

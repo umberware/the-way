@@ -1,5 +1,4 @@
-import { SecurityService } from '../../core/service/security.service';
-import { Service } from '../../core/decorator/service.decorator';
+import { SecurityService, Service } from '@nihasoft/the-way/dist';
 
 @Service(SecurityService)
 export class CustomSecurityService extends SecurityService {
