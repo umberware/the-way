@@ -21,10 +21,13 @@ export class ServerConfiguration extends AbstractConfiguration {
     this.initializeExpress();
   }
   public initializeExpress(): void {
+    const corsOptions: cors.CorsOptions = {
+      origin: true
+    }
     this.port = 8081;
     this.context = express();
     this.context
-      .use(cors({origins: true}))
+      .use(cors(corsOptions))
       .use(morgan('dev'))
       .use(bodyParser.json())
       .use(helmet())

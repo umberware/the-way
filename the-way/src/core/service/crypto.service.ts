@@ -14,7 +14,7 @@ export class CryptoService {
     }
     public decypher(data: string, algorithmn: string, privateKey: string): string {
         let encrypted = data.split(':');
-        let randomBuffer = Buffer.from(encrypted.shift(), 'hex');
+        let randomBuffer = new Buffer(encrypted.shift() as string, 'hex');
         let encryptedText = Buffer.from(encrypted.join(':'), 'hex');
         let decypher = Crypto.createDecipheriv(algorithmn, Buffer.from(privateKey.substr(0, 32)), randomBuffer);
         let decrypted = decypher.update(encryptedText);

@@ -13,7 +13,7 @@ The **HttpService** Will register the paths and enable the paths for execution. 
 
 **Example:**
 
-    import { Application } from '@nihasoft/the-way/core/decorator';
+    import { Application } from '@nihasoft/the-way'
     ...
     @Application(HttpService)
     export class Main {
@@ -28,7 +28,7 @@ Rembember: when you want to use a class with the decorators **YOU MUST** "Inject
 **Example:**
 
 Your **RestModule**
-    import { Inject } from '@nihasoft/the-way/core/decorator';
+    import { Inject } from '@nihasoft/the-way'
 
     import { UserRest } from './user.rest';
     import { HeroRest } from './hero.rest';
@@ -43,7 +43,7 @@ Your class decorated with **@Application**
 
     ...
     import { HttpService }from '@nihasoft/the-way/core/service/http/http.service';
-    import { Application, Inject } from '@nihasoft/the-way/core/decorator';
+    import { Application, Inject } from '@nihasoft/the-way'
     ...
     import { RestModule } from './rest/rest.module';
     ...
@@ -65,7 +65,7 @@ If you pass inside of **@Application** a class that extends or are HttpService, 
 **Example:**
 
     ...
-    import { Application, Inject } from '@nihasoft/the-way/core/decorator';
+    import { Application, Inject } from '@nihasoft/the-way'
     ...
 
     @Application(HttpService)
@@ -78,7 +78,7 @@ This class will **inject** the instance of the class wanted. If exists a instanc
 
 **Example:**
 
-    import { Inject } from '@nihasoft/the-way/core/decorator';
+    import { Inject } from '@nihasoft/the-way'
 
     import { UserRest } from './user.rest';
     import { HeroRest } from './hero.rest';
@@ -95,7 +95,7 @@ When you want to configure or prepare some thing, this decorator can help you. T
 
 **Example:**
     
-    import { Inject, Configuration } from '@nihasoft/the-way/core/decorator';
+    import { Inject, Configuration } from '@nihasoft/the-way'
 
     @Configuration()
     export class ServerConfiguration extends AbstractConfiguration{
@@ -113,7 +113,7 @@ pass a Class as argument that will be "overrided" when core inject, that means i
 
 **Example:**
 
-    import { Service } from '@nihasoft/the-way/core/decorator';
+    import { Service } from '@nihasoft/the-way'
 
     import { ClassService } from './class.service';
 
@@ -130,7 +130,7 @@ You can inject the **@QueryParam**, **@RequestingUser** and **@PathParam** into 
 
 **Example: @Get with @PathParam**
 
-    import { Get, PathParam} from '@nihasoft/the-way/core/decorator';
+    import { Get, PathParam} from '@nihasoft/the-way'
 
     import { Observable, of } from 'rxjs';
 
@@ -149,7 +149,7 @@ You can inject the **@QueryParam**, **@RequestingUser** and **@PathParam** into 
 
 **Example: @Get with @PathParam, @RequestingUser and @QueryParam. This method the user must be logged in and has the profile "1"**
 
-    import { Get, PathParam, QueryParam, RequestingUser} from '@nihasoft/the-way/core/decorator';
+    import { Get, PathParam, QueryParam, RequestingUser} from '@nihasoft/the-way'
 
     import { Observable, of } from 'rxjs';
 
@@ -168,7 +168,7 @@ You can inject the **@BodyParam**, **@RequestingUser** and **@PathParam** into y
 **Example: @Post with @BodyParam**
 
     import { SecurityService } from '@nihasoft/the-way/core/service/security.service';
-    import { Inject, Post, BodyParam } from '@nihasoft/the-way/core/decorator';
+    import { Inject, Post, BodyParam } from '@nihasoft/the-way'
 
     import { Observable, of } from 'rxjs';
 

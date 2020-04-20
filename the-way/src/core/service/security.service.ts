@@ -18,7 +18,7 @@ export abstract class SecurityService {
     }
     public getDecodedUser(token: string): any {
         const cryptoService = CORE.getInstance().getInjectableByName('CryptoService') as CryptoService;
-        const claims = Jwt.verify(token, this.TOKEN_KEY);
+        const claims: any = Jwt.verify(token, this.TOKEN_KEY);
         return JSON.parse(cryptoService.decypher(claims.data, 'aes-256-cbc', this.USER_PRIVATE_KEY));
     }
     private verifyProfile(user: any, profiles: Array<any>) {
@@ -30,7 +30,7 @@ export abstract class SecurityService {
     
         throw new NotAllowedException('You cannot perform that.');
     }
-    public verifyToken(token: string, profiles: Array<any>): any {
+    public verifyToken(token: string, profiles: Array<any> | undefined): any {
         try {
             if (!token) {
                 throw new NotAllowedException('You have no token.');

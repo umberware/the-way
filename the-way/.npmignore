@@ -1,5 +1,4 @@
 tsconfig.json
 yarn.lock
-yarn-error.lock
-dist/test
-dist/src
+yarn-error.log
+src

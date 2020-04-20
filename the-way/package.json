@@ -1,11 +1,12 @@
 {
   "name": "@nihasoft/the-way",
-  "version": "0.0.1",
-  "description": "",
+  "version": "0.0.5",
+  "description": "Is a way to Inject some dependencies and turn more easily the utilization of Rest concepts",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "publish-version": "yarn build && npm publish"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -15,12 +16,17 @@
     "helmet": "^3.22.0",
     "js-yaml": "^3.13.1",
     "jsonwebtoken": "^8.5.1",
-    "reflect-metadata": "^0.1.13",
     "morgan": "^1.10.0",
+    "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.5",
     "tslib": "^1.11.1"
   },
   "devDependencies": {
+    "@types/body-parser": "^1.19.0",
+    "@types/cors": "^2.8.6",
+    "@types/helmet": "^0.0.45",
+    "@types/jsonwebtoken": "^8.3.9",
+    "@types/morgan": "^1.9.0",
     "@types/node": "^13.13.0",
     "ts-node": "^8.8.2",
     "tslint": "^6.1.1",

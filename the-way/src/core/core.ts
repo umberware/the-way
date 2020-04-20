@@ -12,8 +12,8 @@ export class CORE {
     public static enabledDecoratorLog = true;
     private static instance: CORE;
     private application: Object;
-    private INSTANCES = new Map<string, Object>();
-    public ready$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+    private INSTANCES: any = {};
+    public ready$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
     constructor() {
         CORE.instance = this;

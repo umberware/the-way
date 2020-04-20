@@ -32,7 +32,7 @@ export class HttpService {
         }
     }
     private execute(
-        httpType: HttpType, path: string, authenticated: boolean, allowedProfiles: Array<any>, 
+        httpType: HttpType, path: string, authenticated: boolean | undefined, allowedProfiles: Array<any> | undefined, 
         target: any, propertyKey: any, descriptor: any, req: any, res: any
     ): void {
         try {
@@ -56,7 +56,7 @@ export class HttpService {
     private executeMethod(httpType: HttpType, target: any, propertyKey: any, req: any, user: any): Observable<any> {
         const method = target[propertyKey] as Function;
         const functionArgumentsLength = method.length;
-        const functionArguments = [].fill(undefined, 0, functionArgumentsLength);
+        const functionArguments = new Array<any>().fill(undefined, 0, functionArgumentsLength);
       
         let pathParams: Array<any> = Reflect.getOwnMetadata(PathParamMetadataKey, target, propertyKey);
         let requestUser: any = Reflect.getOwnMetadata(RequestingUserMetaKey, target, propertyKey);
@@ -94,8 +94,8 @@ export class HttpService {
         this.logService.error(ex);
     }
     public registerPath(
-        httpType: HttpType, path: string, authenticated: boolean, 
-        allowedProfiles: Array<any>, target: any, propertyKey: any, descriptor: any
+        httpType: HttpType, path: string, authenticated: boolean | undefined, 
+        allowedProfiles: Array<any> | undefined, target: any, propertyKey: any, descriptor: any
     ): void {
         this.serverConfiguration.context[httpType](path, (req: any, res: any) => {
            this.execute(httpType, path, authenticated, allowedProfiles, target, propertyKey, descriptor, req, res);
