@@ -9,13 +9,20 @@ Is a way to Inject some dependencies and turn more easily the utilization of Res
 
 # HttpService
 When you want a httpserver, this lib will enable your application to use more easily http and https with some decorators to make your life more simple.
-The **HttpService** Will register the paths and enable the paths for execution. To use the httpService you need to put inside of your **@Application**.
+The **HttpService** Will register the paths and enable the paths for execution. To use the httpService you need to put inside of your **@Application**. Also, you should put too a class that extends the class **SecurityService** setting your
+**TOKEN_KEY** and **USER_PRIVATE_KEY**.
 
 **Example:**
 
-    import { Application } from '@nihasoft/the-way'
     ...
-    @Application(HttpService)
+    import { HttpService, Application, Inject } from '@nihasoft/the-way'
+    ...
+    import { CustomSecurityService } from './service/custom-security.service';
+    ...
+    @Application(
+        HttpService, 
+        CustomSecurityService
+    )
     export class Main {
         ...
     }
@@ -28,6 +35,7 @@ Rembember: when you want to use a class with the decorators **YOU MUST** "Inject
 **Example:**
 
 Your **RestModule**
+
     import { Inject } from '@nihasoft/the-way'
 
     import { UserRest } from './user.rest';
@@ -41,14 +49,16 @@ Your **RestModule**
 
 Your class decorated with **@Application**
 
+    import { HttpService, Application, Inject } from '@nihasoft/the-way'
     ...
-    import { HttpService }from '@nihasoft/the-way/core/service/http/http.service';
-    import { Application, Inject } from '@nihasoft/the-way'
+    import { CustomSecurityService } from './service/custom-security.service';
     ...
     import { RestModule } from './rest/rest.module';
     ...
-
-    @Application(HttpService)
+    @Application(
+        HttpService, 
+        CustomSecurityService
+    )
     export class Main {
         ...
         @Inject() restModule: RestModule
@@ -65,10 +75,14 @@ If you pass inside of **@Application** a class that extends or are HttpService, 
 **Example:**
 
     ...
-    import { Application, Inject } from '@nihasoft/the-way'
+    import { HttpService, Application, Inject } from '@nihasoft/the-way'
     ...
-
-    @Application(HttpService)
+    import { CustomSecurityService } from './service/custom-security.service';
+    ...
+    @Application(
+        HttpService, 
+        CustomSecurityService
+    )
     export class Main {
         ...
     }
@@ -167,8 +181,7 @@ You can inject the **@BodyParam**, **@RequestingUser** and **@PathParam** into y
 
 **Example: @Post with @BodyParam**
 
-    import { SecurityService } from '@nihasoft/the-way/core/service/security.service';
-    import { Inject, Post, BodyParam } from '@nihasoft/the-way'
+    import { SecurityService, Inject, Post, BodyParam } from '@nihasoft/the-way'
 
     import { Observable, of } from 'rxjs';
 
@@ -218,8 +231,7 @@ To do that, you only need to extend this class and set your **TOKEN_KEY** and **
 **Example:**
 ### CustomSecurityService
 
-    import { SecurityService } from '../../core/service/security.service';
-    import { Service } from '../../core/decorator';
+    import { SecurityService, Service } from '@nihasoft/the-way'
 
     @Service(SecurityService)
     export class CustomSecurityService extends SecurityService {
@@ -230,13 +242,13 @@ To do that, you only need to extend this class and set your **TOKEN_KEY** and **
 ### Main (@Application)
 **IMPORTANT: In typescript the decorators are evaluated in the import moment. So, to the @Injection() work correctly YOU MUST IMPORT YOUR CLASS BEFORE THE ANOTHERS CLASS THAT CONTAINS DECORATOR, FOR THE INJECTION WORK CORRECTLY OR you can "inject" at runtime with the CORE object, example: `CORE.getInstance().getInjectableByName('SecurityService') as SecurityService`**
     
+    ...
+    import { HttpService, Application, Inject } from '@nihasoft/the-way'
+    ...
     import { CustomSecurityService } from './service/custom-security.service';
     ...
-    import { Application, Inject } from '../core/decorator';
-    import { HttpService } from '../core/service/http/http.service';
     import { RestModule } from './rest/rest.module';
     ...
-
     @Application(
         HttpService, 
         CustomSecurityService

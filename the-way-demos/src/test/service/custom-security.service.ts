@@ -1,4 +1,4 @@
-import { SecurityService, Service } from '@nihasoft/the-way/dist';
+import { SecurityService, Service } from '@nihasoft/the-way'
 
 @Service(SecurityService)
 export class CustomSecurityService extends SecurityService {

@@ -1,4 +1,4 @@
-import { AbstractConfiguration } from '@nihasoft/the-way/dist'
+import { AbstractConfiguration } from '@nihasoft/the-way'
 
 export class ClassConfiguration extends AbstractConfiguration{
 

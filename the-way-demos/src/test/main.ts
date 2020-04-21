@@ -1,5 +1,6 @@
+import { HttpService, Application, Inject } from '@nihasoft/the-way';
+
 import { CustomSecurityService } from './service/custom-security.service';
-import { HttpService, Application, Inject } from '@nihasoft/the-way/dist'
 import { RestModule } from './rest-server/rest.module';
 import { RestClientService } from './rest-client/rest-client.service';
 

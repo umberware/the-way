@@ -1,6 +1,6 @@
 import { Observable, of } from 'rxjs';
 
-import { Inject, Post, BodyParam, Get, PathParam, QueryParam, RequestingUser, SecurityService} from '@nihasoft/the-way/dist'
+import { Inject, Post, BodyParam, Get, PathParam, QueryParam, RequestingUser, SecurityService} from '@nihasoft/the-way'
 
 export class UserRest {
     @Inject() securityService: SecurityService;
