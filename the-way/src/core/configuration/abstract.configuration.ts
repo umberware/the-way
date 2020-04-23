@@ -1,6 +1,5 @@
-import { Configuration } from '../decorator/configuration.decorator';
+import * as http from 'http';
 
-@Configuration()
 export abstract class AbstractConfiguration {
     public configure(): void {};
 }

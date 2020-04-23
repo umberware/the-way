@@ -1,10 +1,10 @@
 import * as http from 'http'
 
 export class RestClientService {
-    public getUserTenants(): void {
+    public getUserTenants(port: number): void {
         const options = {
             hostname: '127.0.0.1',
-            port: 8081,
+            port: port,
             path: '/api/user/1/tenants',
             method: 'GET',
             headers: {
@@ -25,14 +25,14 @@ export class RestClientService {
         })
         req.end()
     }
-    public signIn(): void {
+    public signIn(port: number): void {
         const data = JSON.stringify({
             "username": "Hanor",
             "password": "LaLaLaLaLau"
         });
         const options = {
             hostname: '127.0.0.1',
-            port: 8081,
+            port: port,
             path: '/api/sign/in',
             method: 'POST',
             headers: {

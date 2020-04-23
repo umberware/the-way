@@ -4,7 +4,7 @@ import { CORE, CORE_CALLED } from '../core';
 
 export function Application(...customInstances: Array<Function>) {
   return (constructor: Function) => {
-    CORE.getInstance().buildApplication(constructor, customInstances);
+    CORE.getCoreInstance().buildApplication(constructor, customInstances);
     if (CORE_CALLED > 1) {
       throw new Error('The core are called more than one time.');
     }

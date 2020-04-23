@@ -5,9 +5,9 @@ import { HttpService } from '../../../service/http/http.service';
 
 export function Del(path: string, authenticated?: boolean, allowedProfiles?: Array<any>) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-        CORE.getInstance().ready$.subscribe((ready: boolean) => {
+        CORE.getCoreInstance().ready$.subscribe((ready: boolean) => {
             if (ready) {
-                const httpService = CORE.getInstance().getInjectableByName('HttpService') as HttpService;
+                const httpService = CORE.getCoreInstance().getInstanceByName('HttpService') as HttpService;
                 if (!httpService) {
                     throw new ApplicationException(
                         'If you want to use the HttpService and the rest decorators, ' + 

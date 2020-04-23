@@ -1,7 +1,8 @@
+export { CORE } from './core/core';
 export { Inject } from './core/decorator/inject.decorator';
 export { Application } from './core/decorator/application.decorator';
-export { Service, ServiceMetaKey} from './core/decorator/service.decorator';
 export { Configuration, ConfigurationMetaKey} from './core/decorator/configuration.decorator';
+export { Service, ServiceMetaKey} from './core/decorator/service.decorator';
 export { PathParam, PathParamMetadataKey} from './core/decorator/rest/param/path-param.decorator';
 export { BodyParam, BodyParamMetadataKey} from './core/decorator/rest/param/body-param.decorator';
 export { RequestingUser, RequestingUserMetaKey} from './core/decorator/rest/param/requesting-user.decorator';
@@ -10,7 +11,6 @@ export { Post } from './core/decorator/rest/method/post.decorator';
 export { Get } from './core/decorator/rest/method/get.decorator';
 export { Del } from './core/decorator/rest/method/del.decorator';
 export { Put } from './core/decorator/rest/method/put.decorator';
-export { CORE } from './core/core';
 export { SecurityService } from './core/service/security.service';
 export { CryptoService } from './core/service/crypto.service';
 export { HttpType } from './core/service/http/http-type.enum';
@@ -23,5 +23,5 @@ export { InternalException } from './core/exeption/internal.exception';
 export { NotAllowedException } from './core/exeption/not-allowed.exception';
 export { NotFoundException } from './core/exeption/not-found.exception';
 export { UnauthorizedException } from './core/exeption/unauthorized.exception';
-export { AbstractConfiguration }  from './core/configuration/abstract.configuration'
-export { ServerConfiguration }  from './core/configuration/server.configuration'
+export { AbstractConfiguration }  from './core/configuration/abstract.configuration';
+export { ServerConfiguration } from './core/configuration/server.configuration';

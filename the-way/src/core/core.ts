@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 import { BehaviorSubject } from 'rxjs';
 
-import { ServiceMetaKey } from './decorator/service.decorator';
 import { ConfigurationMetaKey } from './decorator/configuration.decorator';
 import { AbstractConfiguration } from './configuration/abstract.configuration';
 import { CryptoService } from './service/crypto.service';
@@ -12,80 +11,165 @@ export class CORE {
     public static enabledDecoratorLog = true;
     private static instance: CORE;
     private application: Object;
+    private DEPENDENCIES: any = {};
+    private DEPENDENCIES_TREE: any = {};
+    private OVERRIDDEN_DEPENDENCIES: any = {};
+
     private INSTANCES: any = {};
+
     public ready$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
     constructor() {
-        CORE.instance = this;
         CORE_CALLED += 1;
-        this.buildCoreInjectables();
     }
     
-    public buildApplication(constructor: Function, customInstances: Array<Function>): void {
-        if (customInstances && customInstances.length > 0) {
-            this.buildCustomInstances(customInstances)
-        }
-
+    public buildApplication(constructor: Function, coreInstances: Array<Function>): void {
+        this.buildDependenciesTree();
+        this.buildInstances(Object.keys(this.DEPENDENCIES_TREE), this.DEPENDENCIES_TREE, null);
+        this.buildCoreInstances(coreInstances);
         this.application = this.buildObject(constructor.prototype);
         this.ready$.next(true);
     }
-    private buildCoreInjectables(): void {
-        this.buildInjectable(CryptoService);
-    }
-    private buildCustomInstances(customInstances: Array<Function>): void {
-        for (const customInstance of customInstances) {
-            this.buildInjectable(customInstance);
+    private buildCoreInstances(coreInstances: Array<Function>): void {
+        coreInstances.push(CryptoService);
+        for (const coreInstance of coreInstances) {
+            this.getInstance(coreInstance.name, coreInstance);
         }
     }
-    private buildInjectable(constructor: Function): Object {
+    private buildDependencyTree(treeNodesNames: Array<string>, node: any): void {
+        for (const treeNodeName of treeNodesNames) {
+            const childNodes: Array<string> = [];
+            const treeNode: any = this.getDependencyNode(treeNodeName, node);
+
+            for (const dependentName in this.DEPENDENCIES[treeNodeName]) {
+                childNodes.push(dependentName);
+            }
+
+            if (childNodes.length > 0) {
+                this.buildDependencyTree(childNodes, treeNode)
+            }
+        }
+    }
+    private buildDependenciesTree(): void {
+        const treeNodes: Array<string> = [];
+        const keys = Object.keys(this.DEPENDENCIES);
+
+        for (let i = 0; i < keys.length; i++) {
+            const dependentA = this.DEPENDENCIES[keys[i]];
+            let isNode = true;
+            for (let j = 0; j < keys.length; j++) {
+                const dependentB = this.DEPENDENCIES[keys[j]];
+                if (dependentB[keys[i]]) {
+                    isNode = false;
+                }
+            }
+            if (isNode) {
+                treeNodes.push(keys[i]);
+            }
+        }
+
+        this.buildDependencyTree(treeNodes, this.DEPENDENCIES_TREE);
+        console.log(this.DEPENDENCIES_TREE);
+    }
+    private buildInstance(instanceableName: string, constructor: Function): Object {
         const instance = this.buildObject(constructor.prototype);
         const decorators = Reflect.getMetadataKeys(constructor);
-        this.handleInstance(constructor, instance, decorators);
+        this.handleInstance(instanceableName, instance, decorators);
         return instance;
     }
     public buildObject(prototype: any): Object {
         return new (Object.create(prototype)).constructor();
     }
+    private buildInstances(treeNodesNames: Array<string>, node: any, parentName: string | null): void {
+        for (const treeNodeName of treeNodesNames) {
+            const childNodes = Object.keys(node[treeNodeName]);
+
+            if (childNodes.length > 0) {
+                this.buildInstances(childNodes, node[treeNodeName], treeNodeName);
+            }
+
+            if (parentName) {
+                const dependent = (parentName.includes(':')) ? parentName.split(':')[0] : parentName;
+                const dependency = (treeNodeName.includes(':')) ? treeNodeName.split(':')[0] : treeNodeName;
+                const dependencyInformation = this.DEPENDENCIES[dependent][dependency];
+                const instance = this.getInstance(dependency, dependencyInformation.constructor);
+                Reflect.set(dependencyInformation.target, dependencyInformation.key, instance);
+
+                if (CORE.enabledDecoratorLog ) {
+                    let found = 'Not found';
+
+                    if (instance) {
+                        found = instance.constructor.name
+                    }
+
+                    console.log('Injecting:\n   Target: ' + dependencyInformation.target.constructor.name + '\n   Injectable: ' +
+                    dependencyInformation.constructor.name + '\n   Found: ' + found);
+                }
+            }
+        }
+    }
     public getApplicationInstance(): Object {
         return this.application;
     }
-    public getInjectable(constructor: Function): Object {
-        const name = constructor.name;
-        let instance: Object;
-        if (this.INSTANCES[name]) {
-            instance = this.getInjectableByName(name);
+    private getDependencyNode(treeNodeName: string, node: any): any {
+        if (!this.OVERRIDDEN_DEPENDENCIES[treeNodeName]) {
+            return node[treeNodeName] = {};
         } else {
-            instance = this.buildInjectable(constructor);
+            return node[treeNodeName + ':' + this.OVERRIDDEN_DEPENDENCIES[treeNodeName].name] = {};
+        }
+    }
+    private getInstance(instanceableName: string, constructor: Function): Object | null {
+        if (this.OVERRIDDEN_DEPENDENCIES[instanceableName]) {
+            const overridden = this.OVERRIDDEN_DEPENDENCIES[instanceableName];
+            instanceableName = overridden.name;
+            constructor = overridden.constructor;
+        }
+        let instance: Object;
+        if (this.INSTANCES[instanceableName]) {
+            instance = this.getInstanceByName(instanceableName);
+        } else {
+            instance = this.buildInstance(instanceableName, constructor);
         }
 
         return instance;
     }
-    public getInjectableByName(name: string): Object {
+    public getInstanceByName(name: string): Object {
         return this.INSTANCES[name];
     }
-    public static getInstance(): CORE {
+    public static getCoreInstance(): CORE {
         if (!CORE.instance) {
             CORE.instance = new CORE();
         }
         return CORE.instance;
     }
-    public getInjectables(): Map<String, Object> {
+    public getInstances(): Map<String, Object> {
         return this.INSTANCES;
     }
-    private handleInstance(constructor: any, instance: Object, decorators: Array<string>): void {
-        if (decorators.includes(ServiceMetaKey)) {
-            const clazz = Reflect.getMetadata(ServiceMetaKey, constructor);
-            if (clazz) {
-                this.INSTANCES[clazz.name] = instance;
-            } else {
-                this.INSTANCES[constructor.name] = instance;
-            }
-        } else {
-            this.INSTANCES[constructor.name] = instance;
-        }
+    private handleInstance(instanceableName: string, instance: Object, decorators: Array<string>): void {
+        this.INSTANCES[instanceableName] = instance;
 
         if (decorators.includes(ConfigurationMetaKey) && instance instanceof AbstractConfiguration) {
             (instance as AbstractConfiguration).configure();
+        }
+    }
+    public overridenDependency(overridden: string, constructor: Function) : void {
+        this.OVERRIDDEN_DEPENDENCIES[overridden] = {
+            name: constructor.name,
+            constructor: constructor
+        };
+    }
+    public registerDependency(constructor: Function, target: any, key: string): void {
+        const dependentName: string = target.constructor.name;
+        const dependencyName: string = constructor.name;
+
+        if (!this.DEPENDENCIES[dependentName]) {
+            this.DEPENDENCIES[dependentName] = {};
+        }
+
+        this.DEPENDENCIES[dependentName][dependencyName] = {
+            constructor: constructor,
+            target: target,
+            key: key
         }
     }
 }

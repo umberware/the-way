@@ -12,12 +12,12 @@ export abstract class SecurityService {
     protected USER_PRIVATE_KEY = 'Darth123456789987654321147852369963258741794613287391465Vader';
 
     public generateToken(user: any): string {
-        const cryptoService = CORE.getInstance().getInjectableByName('CryptoService') as CryptoService;
+        const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
         const cryptedUser: string = cryptoService.cypher(JSON.stringify(user), 'aes-256-cbc', this.TOKEN_KEY);
         return Jwt.sign({data: cryptedUser}, this.TOKEN_KEY, { expiresIn: '3 days' });
     }
     public getDecodedUser(token: string): any {
-        const cryptoService = CORE.getInstance().getInjectableByName('CryptoService') as CryptoService;
+        const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
         const claims: any = Jwt.verify(token, this.TOKEN_KEY);
         return JSON.parse(cryptoService.decypher(claims.data, 'aes-256-cbc', this.USER_PRIVATE_KEY));
     }

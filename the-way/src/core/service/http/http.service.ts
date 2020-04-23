@@ -1,25 +1,29 @@
 import { Observable } from 'rxjs';
 
-import { Inject } from '../../decorator/inject.decorator';
 import { PathParamMetadataKey } from '../../decorator/rest/param/path-param.decorator';
 import { RequestingUserMetaKey } from '../../decorator/rest/param/requesting-user.decorator';
 import { BodyParamMetadataKey } from '../../decorator/rest/param/body-param.decorator';
 import { QueryParamMetadataKey } from '../../decorator/rest/param/query-param.decorator';
 import { Service } from '../../decorator/service.decorator';
 
-import { SecurityService } from '../security.service';
 import { ServerConfiguration } from '../../configuration/server.configuration';
 import { HttpType } from './http-type.enum';
 import { ApplicationException } from '../../exeption/application.exception';
 import { LogService } from '../log/log.service';
 import { BadRequestException } from '../../exeption/bad-request.exception';
 import { InternalException } from '../../exeption/internal.exception';
-import { CORE } from '../../core';
+import { Inject } from '../../decorator/inject.decorator';
+import { SecurityService } from '../security.service';
 
 @Service()
 export class HttpService {
     @Inject() serverConfiguration: ServerConfiguration;
+    @Inject() securityService: SecurityService;
     @Inject() logService: LogService;
+
+    constructor() {
+        this.serverConfiguration.start();
+    }
 
     private buildPathParams(pathParams: Array<any>, req: any, functionArguments: any): void {
         for (let param of pathParams) {
@@ -36,11 +40,10 @@ export class HttpService {
         target: any, propertyKey: any, descriptor: any, req: any, res: any
     ): void {
         try {
-            const securityService = CORE.getInstance().getInjectableByName('SecurityService') as SecurityService;
             let user: any;
             if (authenticated) {
                 const token = req.headers.authorization;
-                user = securityService.verifyToken(token, allowedProfiles);
+                user = this.securityService.verifyToken(token, allowedProfiles);
             }
             this.executeMethod(httpType, target, propertyKey, req, user).subscribe(
                 (response: any) => {
