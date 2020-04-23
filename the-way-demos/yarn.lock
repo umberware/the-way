@@ -23,10 +23,10 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@nihasoft/the-way@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@nihasoft/the-way/-/the-way-0.0.7.tgz#1614b703986da9198acae4413d864a4cc90d98ad"
-  integrity sha512-meGfpyEV5AC35lh5nMDVP3HejyLqC9ZMOnrG9LTCiO2/AYl7lHd/GMusgJHFx0YMlpUHziuA2qXjpRFdI01a1g==
+"@nihasoft/the-way@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@nihasoft/the-way/-/the-way-0.1.0.tgz#fdaff4f1ddb949faa21d67e6bee3b0d39a94adf1"
+  integrity sha512-+D0zmT4nDFVywMjxdOkxTklizP5FG90lZ4DrKFX/pu68pit5SSlXp/VYJWs3aaN+9jiSLgBZkD1oWCBt+tqwtQ==
   dependencies:
     body-parser "^1.19.0"
     core-js "^3.6.5"
