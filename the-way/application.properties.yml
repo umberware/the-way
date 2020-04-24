@@ -1,0 +1,5 @@
+the-way:
+  server:
+    port: 8081
+    file:
+      enabled: false

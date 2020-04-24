@@ -1,0 +1,5 @@
+the-way:
+  server:
+    port: 7171
+    file:
+      enabled: true

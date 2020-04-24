@@ -1,31 +1,35 @@
 import * as http from 'http'
+import { Observable, from } from 'rxjs';
 
 export class RestClientService {
-    public getUserTenants(port: number): void {
+
+    public getUserTenants(port: number, token: string): Observable<any> {
         const options = {
             hostname: '127.0.0.1',
             port: port,
             path: '/api/user/1/tenants',
             method: 'GET',
             headers: {
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiMjFlM2RhNTczM2EyZDFhMjk0Y2UxYzc3MTU0MTdmNzI6MmJhZjBmZTlkMDg1MTY3YjFkZGI1N2E5YTk1NDY4NmFiYTIxZmQ3MjkzY2IyMmY5YTVlMjllMWI5MjEzZGNjZiIsImlhdCI6MTU4NzQyMTM0MywiZXhwIjoxNTg3NjgwNTQzfQ.3MFHYAOml1rqIPJxXnNbHB2O-Y9oQ0fHQoelcLykKY4'
+                'Authorization': 'Bearer ' + token
             }
         }
           
-        const req = http.request(options, res => {
-            console.log(`statusCode: ${res.statusCode}`)
-            
-            res.on('data', d => {
-                console.log('Tenants User: ' + d)
+        return from(new Promise((resolve, reject) =>  {
+            const req = http.request(options, res => {
+                console.log(`statusCode: ${res.statusCode}`)
+                
+                res.on('data', d => {
+                    resolve(JSON.parse(d.toString()));
+                })
             })
-        })
-        
-        req.on('error', error => {
-            console.error(error)
-        })
-        req.end()
+            
+            req.on('error', error => {
+                reject(error);
+            })
+            req.end();
+        }));
     }
-    public signIn(port: number): void {
+    public signIn(port: number): Observable<any> {
         const data = JSON.stringify({
             "username": "Hanor",
             "password": "LaLaLaLaLau"
@@ -40,19 +44,21 @@ export class RestClientService {
                 'Content-Length': data.length
             }
         }
-          
-        const req = http.request(options, res => {
-            console.log(`statusCode: ${res.statusCode}`)
-            
-            res.on('data', d => {
-                console.log('Login: ' + d)
-            })
-        })
         
-        req.on('error', error => {
-            console.error(error)
-        })
-        req.write(data)
-        req.end()
+        return from(new Promise((resolve, reject) =>  {
+            const req = http.request(options, res => {
+                console.log(`statusCode: ${res.statusCode}`)
+                
+                res.on('data', d => {
+                    resolve(JSON.parse(d.toString()));
+                })
+            })
+            
+            req.on('error', error => {
+                reject(error)
+            })
+            req.write(data)
+            req.end()
+        }));
     }
 }

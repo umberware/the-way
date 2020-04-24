@@ -1,3 +1,4 @@
+import { PropertiesConfiguration } from './core/configuration/properties.configuration';
 export { CORE } from './core/core';
 export { Inject } from './core/decorator/inject.decorator';
 export { Application } from './core/decorator/application.decorator';
@@ -25,3 +26,4 @@ export { NotFoundException } from './core/exeption/not-found.exception';
 export { UnauthorizedException } from './core/exeption/unauthorized.exception';
 export { AbstractConfiguration }  from './core/configuration/abstract.configuration';
 export { ServerConfiguration } from './core/configuration/server.configuration';
+export { PropertiesConfiguration } from './core/configuration/properties.configuration';

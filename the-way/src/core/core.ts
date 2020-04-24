@@ -4,11 +4,13 @@ import { BehaviorSubject } from 'rxjs';
 import { ConfigurationMetaKey } from './decorator/configuration.decorator';
 import { AbstractConfiguration } from './configuration/abstract.configuration';
 import { CryptoService } from './service/crypto.service';
+import { PropertiesConfiguration } from './configuration/properties.configuration';
+import { LogService } from './service/log/log.service';
 
 export let CORE_CALLED = 0;
 
 export class CORE {
-    public static enabledDecoratorLog = true;
+    public static enabledDecoratorLog = false;
     private static instance: CORE;
     private application: Object;
     private DEPENDENCIES: any = {};
@@ -23,16 +25,29 @@ export class CORE {
         CORE_CALLED += 1;
     }
     
-    public buildApplication(constructor: Function, coreInstances: Array<Function>): void {
+    public buildApplication(constructor: Function, customInstances: Array<Function>): void {
+        this.logInfo('Building core instancies tree...')
+        this.buildCoreInstances();
+        this.logInfo('Building dependencies tree...')
         this.buildDependenciesTree();
+        this.logInfo('Building instances...')
         this.buildInstances(Object.keys(this.DEPENDENCIES_TREE), this.DEPENDENCIES_TREE, null);
-        this.buildCoreInstances(coreInstances);
+        this.logInfo('Building custom instances...')
+        this.buildCustomInstances(customInstances);
+        this.logInfo('Building Application...')
         this.application = this.buildObject(constructor.prototype);
+        this.logInfo('The application is fully loaded.');
         this.ready$.next(true);
     }
-    private buildCoreInstances(coreInstances: Array<Function>): void {
-        coreInstances.push(CryptoService);
+    private buildCoreInstances(): void {
+        const coreInstances = [LogService, CryptoService, PropertiesConfiguration];
+
         for (const coreInstance of coreInstances) {
+            this.getInstance(coreInstance.name, coreInstance);
+        }
+    }
+    private buildCustomInstances(customInstances: Array<Function>): void {
+        for (const coreInstance of customInstances) {
             this.getInstance(coreInstance.name, coreInstance);
         }
     }
@@ -69,7 +84,7 @@ export class CORE {
         }
 
         this.buildDependencyTree(treeNodes, this.DEPENDENCIES_TREE);
-        console.log(this.DEPENDENCIES_TREE);
+        this.logInfo(this.DEPENDENCIES_TREE);
     }
     private buildInstance(instanceableName: string, constructor: Function): Object {
         const instance = this.buildObject(constructor.prototype);
@@ -94,17 +109,15 @@ export class CORE {
                 const dependencyInformation = this.DEPENDENCIES[dependent][dependency];
                 const instance = this.getInstance(dependency, dependencyInformation.constructor);
                 Reflect.set(dependencyInformation.target, dependencyInformation.key, instance);
+                
+                let found = 'Not found';
 
-                if (CORE.enabledDecoratorLog ) {
-                    let found = 'Not found';
-
-                    if (instance) {
-                        found = instance.constructor.name
-                    }
-
-                    console.log('Injecting:\n   Target: ' + dependencyInformation.target.constructor.name + '\n   Injectable: ' +
-                    dependencyInformation.constructor.name + '\n   Found: ' + found);
+                if (instance) {
+                    found = instance.constructor.name
                 }
+
+                this.logInfo('Injecting:\n   Target: ' + dependencyInformation.target.constructor.name + '\n   Injectable: ' +
+                dependencyInformation.constructor.name + '\n   Found: ' + found);
             }
         }
     }
@@ -130,7 +143,6 @@ export class CORE {
         } else {
             instance = this.buildInstance(instanceableName, constructor);
         }
-
         return instance;
     }
     public getInstanceByName(name: string): Object {
@@ -147,9 +159,13 @@ export class CORE {
     }
     private handleInstance(instanceableName: string, instance: Object, decorators: Array<string>): void {
         this.INSTANCES[instanceableName] = instance;
-
         if (decorators.includes(ConfigurationMetaKey) && instance instanceof AbstractConfiguration) {
             (instance as AbstractConfiguration).configure();
+        }
+    }
+    private logInfo(message: string): void {
+        if (CORE.enabledDecoratorLog) {
+            console.log('[The Way] ' + message);
         }
     }
     public overridenDependency(overridden: string, constructor: Function) : void {

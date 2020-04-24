@@ -9,17 +9,19 @@ import { LogService } from '../service/log/log.service';
 import { AbstractConfiguration } from './abstract.configuration';
 import { Inject } from '../decorator/inject.decorator';
 import { Configuration } from '../decorator/configuration.decorator';
+import { PropertiesConfiguration } from './properties.configuration';
 
 @Configuration()
 export class ServerConfiguration extends AbstractConfiguration {
   @Inject() logService: LogService;
+  @Inject() propertiesConfiguration: PropertiesConfiguration;
 
   public context: any;
   public server: http.Server;
   public port: number;
   
   public configure(): void {
-    this.port = 8081;
+    this.port = this.propertiesConfiguration.properties['the-way'].server.port;
   }
   private initializeExpress(): void {
     const corsOptions: cors.CorsOptions = {

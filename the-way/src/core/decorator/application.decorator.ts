@@ -8,9 +8,5 @@ export function Application(...customInstances: Array<Function>) {
     if (CORE_CALLED > 1) {
       throw new Error('The core are called more than one time.');
     }
-
-    if (CORE.enabledDecoratorLog) {
-      console.log('Application is fully loaded.')
-    }
   }
 }

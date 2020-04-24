@@ -13,8 +13,8 @@ export function Configuration(over?: any) {
                     over.name);
                 }
             }
-            Reflect.defineMetadata(ConfigurationMetaKey, over, constructor);
             coreInstance.overridenDependency(over.name, constructor)
         }
+        Reflect.defineMetadata(ConfigurationMetaKey, over, constructor);
     }
 }
