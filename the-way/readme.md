@@ -6,7 +6,7 @@
 
 # The Way
 This library will allow your application to @Inject some classes and use more easily the @Rest with some decorators.
-You can customize some behaviours with custom Classes and injecting this classes in the @Application decorator. Please, read the full documentation for more knowledge.
+You can customize some behaviors with custom Classes and injecting this classes in the @Application decorator. Please, read the full documentation for more knowledge.
 The examples in this readme can be viewed in the github in the [the-way-demos directory](https://github.com/nihasoft/the-way/tree/master/the-way-demos)
 
 # Application Decorators
@@ -86,7 +86,7 @@ When you want to **Inject** some class into your class this decorator do it for 
 The code above, will create a **UserRest** and **HeroRest** to be injected in **RestModule** class.
 
 ## @Configuration
-When you want to configure or prepare some thing, this decorator can help you. The classes decorated with this decoration will execute the method "configure" when the class is being instantiated. To use correctly this decorator your configure class **MUST** extends the **AbstractConfiguration**  and implement the method configure, besides that the class must have the @Configuration() decorator. Also, you can pass an argument(a class) to this decorator to be overridden, same behaviour of **@Service** at this point.
+When you want to configure or prepare some thing, this decorator can help you. The classes decorated with this decoration will execute the method "configure" when the class is being instantiated. To use correctly this decorator your configure class **MUST** extends the **AbstractConfiguration**  and implement the method configure, besides that the class must have the @Configuration() decorator. Also, you can pass an argument(a class) to this decorator to be overridden, same behavior of **@Service** at this point.
 
 ### Example:
 
@@ -271,7 +271,7 @@ This service is used to cypher and decypher the user inside the token. It's call
 
 # ServerConfiguration
 By the default, when you put HttpService on @Application, this will inject the httpService and configure the ServerConfiguration.
-This class will create a http server using **Express**. You can customize this behaviour creating your **HttpService** and injecting a class that extends the **ServerConfiguration**. Note: Your custom **HttpService** and your **ServerConfiguration** must be an extends of the respective class.
+This class will create a http server using **Express**. You can customize this behaviour creating your **HttpService** and injecting a class that extends the **ServerConfiguration**. Note: Your custom **HttpService** and your **ServerConfiguration** must extends the respective class.
 
 # How to get a instance at Runtime
 you can inject or get at runtime with the CORE object, example: `CORE.getInstance().getInjectableByName('SecurityService') as SecurityService`
