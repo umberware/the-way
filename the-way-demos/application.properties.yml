@@ -1,5 +1,5 @@
 the-way:
   server:
-    port: 7171
+    port: 7777
     file:
       enabled: true

@@ -23,10 +23,17 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@nihasoft/the-way@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@nihasoft/the-way/-/the-way-0.1.0.tgz#fdaff4f1ddb949faa21d67e6bee3b0d39a94adf1"
-  integrity sha512-+D0zmT4nDFVywMjxdOkxTklizP5FG90lZ4DrKFX/pu68pit5SSlXp/VYJWs3aaN+9jiSLgBZkD1oWCBt+tqwtQ==
+"@babel/runtime@^7.9.2":
+  version "7.9.2"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.9.2.tgz#d90df0583a3a252f09aaa619665367bae518db06"
+  integrity sha512-NE2DtOdufG7R5vnfQUTehdTfNycfUANEtCa9PssN9O/xmTzP4E08UI797ixaei6hBEVL9BI/PsdJS5x7mWoB9Q==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
+"@nihasoft/the-way@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@nihasoft/the-way/-/the-way-0.2.0.tgz#0d8a2363a8df67ed4472322994e20fc14ac30445"
+  integrity sha512-pYlL3VWrzT4YLR3aLTxZzJTLzZkQ5bJGgOwa9yLKPYgdMDHNdQFiJthvGNzHcrtGRGsGROdjYgwNRAlrUCztEA==
   dependencies:
     body-parser "^1.19.0"
     core-js "^3.6.5"
@@ -39,6 +46,7 @@
     reflect-metadata "^0.1.13"
     rxjs "^6.5.5"
     tslib "^1.11.1"
+    yaml "^1.9.2"
 
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
@@ -1287,6 +1295,11 @@ reflect-metadata@^0.1.13:
   resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.13.tgz#67ae3ca57c972a2aa1642b10fe363fe32d49dc08"
   integrity sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==
 
+regenerator-runtime@^0.13.4:
+  version "0.13.5"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.5.tgz#d878a1d094b4306d10b9096484b33ebd55e26697"
+  integrity sha512-ZS5w8CpKFinUzOwW3c83oPeVXoNsrLsaCoLtJvAClH135j/R77RuymhiSErhm2lKcwSCIpmvIWSbDkIfAqKQlA==
+
 registry-auth-token@^4.0.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/registry-auth-token/-/registry-auth-token-4.1.1.tgz#40a33be1e82539460f94328b0f7f0f84c16d9479"
@@ -1649,6 +1662,13 @@ xdg-basedir@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/xdg-basedir/-/xdg-basedir-4.0.0.tgz#4bc8d9984403696225ef83a1573cbbcb4e79db13"
   integrity sha512-PSNhEJDejZYV7h50BohL09Er9VaIefr2LMAf3OEmpCkjOi34eYyQYAXUTjEQtZJTKcF0E2UKTh+osDLsgNim9Q==
+
+yaml@^1.9.2:
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/yaml/-/yaml-1.9.2.tgz#f0cfa865f003ab707663e4f04b3956957ea564ed"
+  integrity sha512-HPT7cGGI0DuRcsO51qC1j9O16Dh1mZ2bnXwsi0jrSpsLz0WxOLSLXfkABVl6bZO629py3CU+OMJtpNHDLB97kg==
+  dependencies:
+    "@babel/runtime" "^7.9.2"
 
 yn@3.1.1:
   version "3.1.1"
