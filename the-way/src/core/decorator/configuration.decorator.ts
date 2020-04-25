@@ -6,7 +6,7 @@ export function Configuration(over?: any) {
     return (constructor: Function) => {
         if (over) {
             const coreInstance = CORE.getCoreInstance();
-            if (CORE.enabledDecoratorLog) {
+            if (CORE.CORE_LOG_ENABLED) {
                 console.log('Configuration: ' + constructor.name)
                 if (over) {
                     console.log('   Overriding Configuration:\n      Target: ' + constructor.name + '\n      Override: ' +

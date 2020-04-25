@@ -5,9 +5,7 @@ export class LogService {
     
     level: LogLevel;
     
-    constructor() {
-        this.level = LogLevel.FULL;
-    }
+    constructor() {}
 
     public error(error: Error): void {
         if (error instanceof ApplicationException) {
@@ -26,5 +24,9 @@ export class LogService {
         if (this.level === LogLevel.FULL) {
             console.info('[DEBUG] ' + message);
         }
+    }
+
+    public setLogLevel(level: LogLevel): void {
+        this.level = level;
     }
 }

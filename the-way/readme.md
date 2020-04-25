@@ -1,5 +1,5 @@
 
-[![Version](https://img.shields.io/badge/Version-0.2.0-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
+[![Version](https://img.shields.io/badge/Version-0.2.1-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
 [![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/bpmn-flows/master/LICENSE)
 [![Build Status](https://travis-ci.org/nihasoft/the-way.svg?branch=master)](https://travis-ci.org/nihasoft/bpmn-flows)
 [![Donate](https://img.shields.io/badge/%24-Donate-blue.svg)](https://www.paypal.com/donate/?token=Ov4xNE4bAuZWCSF9e0BjGy75laGShREyS7BDFs-oQSwMsGOVEzDZAq9VDVNKmaCewqrBUW&country.x=BR&locale.x=BR)
@@ -9,7 +9,7 @@ This library will allow your application to @Inject some classes and use more ea
 You can customize some behaviors with custom Classes and injecting this classes in the @Application decorator. Please, read the full documentation for more knowledge.
 The examples in this readme can be viewed in the github in the [the-way-demos directory](https://github.com/nihasoft/the-way/tree/master/the-way-demos)
 
-Note: We support application properties with YAML format. See the section **#Properties Configuration**.
+Note: We support application properties with YAML format. See the section **Properties Configuration** and **Application Properties**.
 
 # Application Decorators
 Rembember: when you want to use a class with the decorator **YOU MUST** "Inject" that class into the main class decorated with **@Application**. 
@@ -131,7 +131,7 @@ This library uses a property file in YAML format. The properties file load seque
 After this, we load the default properties and we merge this with the properties found in the file, preserving the properties passed. If no file is passed or found, the library will use the default properties.
 You can **@Inject** the **PropertiesConfiguration** into your class to use the properties.
 
-You can see the properties that the application uses at [application.properties.yml](https://github.com/nihasoft/the-way/blob/master/the-way/application.properties.yml).
+You can see the properties that the application uses at the section **# Application Properties** or in the file [application.properties.yml](https://github.com/nihasoft/the-way/blob/master/the-way/application.properties.yml).
 
 Also, you can create your properties file with the name "application.properties.yml" in your project's root directory or an "external" application.properties.yml passing the --properties parameter with path of the file and the file name.
 
@@ -314,3 +314,46 @@ Will decrypt the token getting the user of token, after that, will inject the us
 # How to get a instance at Runtime
 you can inject or get at runtime with the CORE object, example: `CORE.getInstance().getInjectableByName('SecurityService') as SecurityService`
     
+# Application Properties
+
+The current application properties:
+
+    the-way:
+        core:
+            log: true
+        log:
+            level: 0
+        server:
+            port: 8080
+            api-endpoint: '/api'
+            file:
+                enabled: true
+                fallback: true
+                full: false
+                path: '/dist/web-interface'
+                static: 
+                    path: ''
+                    full: false
+                assets: 
+                    path: ''
+                    full: false
+
+Everything inside of the "the-way" is a property of this library and the **DEFAULT** values used in this library. If you want to use the application properties for your application, you should create a another "tag" brother of the "the-way". 
+Also you can "override" the values of the properties above in your **application.properties.yml**.
+When you create a application.properties.yml and you pass this to the library (placing the file in the root of your project ou using argument --properties for an application properties file external) will be merged, will be preserved the properties found in you application properties file.
+
+The **core** property is vinculated to the **CORE** class. Actualy we have only the log sub property. This propery allow the log of the dependency tree, injection and information about the overriden classes.
+
+The **log** is a property vinculated to the **LogService**. Actualy we have only the level property. The level property tells to the LogService what types of log will be logged.
+
+The **server** is a property vincultated to the **ServerConfiguration**. Here we have multiples properties.
+ - port: is the port where the api and files will be served;
+ - api-endpoint: is a property to tell what is the "rest" services base path;
+ - file: is used when you want to serve some files:
+    - enabled: is true when you want to serve files  too;
+    - fallback: is a property to tell if needs to do the fallback to the index.html when the final user is requesting an application route, like Angular routes;
+    - full: is used to determine if the path is absolute or not;
+    - path: is where the files to be served are. You can pass an absolute path but need to set full = true;
+    - static(optional): is used to serve files in a diffent path of the abtual. Here you can pass an absolute path setting full = true and putting the path. Also, you can pass a relative path. Note: The request for a file MUST have the /static in the path.
+    - assets(optional): is used to serve files like images, fonts, json and anothers. Here you can pass an absolute path setting full = true and putting the path. Also, you can pass a relative path.
+    Note: The request for a file MUST have the /assets in the path.

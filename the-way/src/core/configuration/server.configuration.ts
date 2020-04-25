@@ -19,9 +19,11 @@ export class ServerConfiguration extends AbstractConfiguration {
   public context: any;
   public server: http.Server;
   public port: number;
+  protected theWayProperties: any
   
   public configure(): void {
-    this.port = this.propertiesConfiguration.properties['the-way'].server.port;
+    this.theWayProperties = this.propertiesConfiguration.properties['the-way'];
+    this.port = this.theWayProperties.server.port;
   }
   private initializeExpress(): void {
     const corsOptions: cors.CorsOptions = {
@@ -35,8 +37,35 @@ export class ServerConfiguration extends AbstractConfiguration {
       .use(helmet())
       .disable('x-powered-by')
       .use(bodyParser.urlencoded({ extended: false }))
-      
+
+    if (this.theWayProperties.server.file.enabled)   {
+      this.initializeFileServer();
+    }
+    
     this.server = http.createServer(this.context);
+  }
+  public initializeFileServer(): void {
+    const server = this.theWayProperties.server;
+    const fileProperties = server.file;
+    const dirName = process.cwd();
+    let filePath: string = (fileProperties.full) ? fileProperties.path : dirName + fileProperties.path;
+
+    if (fileProperties.assets && fileProperties.assets.path !== '') {
+      const assetsPath = (fileProperties.assets.full) ? fileProperties.assets.path : filePath + fileProperties.assets.path;
+      this.context.use('/assets', express.static(assetsPath));
+    } 
+
+    if (fileProperties.static && fileProperties.static.path !== '') {
+      const staticPath = (fileProperties.static.full) ? fileProperties.static.path : filePath + fileProperties.static.path;
+      this.context.use('/static', express.static(staticPath));
+    }
+    this.context.get('/*', (req: any, res: any, next: Function) => {
+      if (req.path === '/' || (fileProperties.fallback && !req.path.includes(server['api-endpoint']))) {
+        res.sendFile(filePath + '/index.html');
+      } else {
+        next();
+      }
+    });
   }
   public start() {
     this.initializeExpress();

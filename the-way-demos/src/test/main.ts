@@ -16,7 +16,6 @@ export class Main {
     @Inject() restClient: RestClientService; // Only to test if the library is working.
 
     constructor() {
-        console.log(this.propertiesConfiguration.properties);
 
         this.restClient.signIn(8080).subscribe(
         (credentials: any) => {

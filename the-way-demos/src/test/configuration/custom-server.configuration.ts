@@ -5,8 +5,8 @@ export class CustomServerConfiguration extends ServerConfiguration {
     @Inject() propertiesConfiguration: PropertiesConfiguration;
 
     public configure(): void {
-        console.log('The old port is: ' + this.getPropertiesPort());
-        this.port = 8080;
+        this.theWayProperties = this.propertiesConfiguration.properties['the-way'];
+        this.port = this.theWayProperties.server.port;
     }
 
     public getPropertiesPort(): number {

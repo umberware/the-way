@@ -1,23 +1,24 @@
 {
   "name": "@nihasoft/the-way-demos",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && copyfiles -F -u 2 ./src/test/web-interface/** ./dist/",
     "serve": "nodemon --config nodemon.json --watch",
-    "test": "node dist/main.js --properties=../application.properties.yml"
+    "test": "node dist/main.js"
   },
   "private": false,
   "dependencies": {
-    "@nihasoft/the-way": "^0.2.0",
+    "@nihasoft/the-way": "^0.2.1",
     "core-js": "^3.6.5",
     "rxjs": "^6.5.5",
     "tslib": "^1.11.1"
   },
   "devDependencies": {
     "@types/node": "^13.13.0",
+    "copyfiles": "^2.2.0",
     "nodemon": "^2.0.3",
     "ts-node": "^8.8.2",
     "tslint": "^6.1.1",

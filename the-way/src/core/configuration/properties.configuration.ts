@@ -5,6 +5,7 @@ import { AbstractConfiguration } from './abstract.configuration';
 import { Configuration } from '../decorator/configuration.decorator';
 import { LogService } from '../service/log/log.service';
 import { CORE } from '../core';
+import { ApplicationException } from '../exeption/application.exception';
 
 @Configuration()
 export class PropertiesConfiguration extends AbstractConfiguration {
@@ -43,18 +44,22 @@ export class PropertiesConfiguration extends AbstractConfiguration {
         }
     }
     private sumProperties(properties: any, defaultProperties: any, keys: Array<string>): void {
-        for(const defaultPropertyKey in defaultProperties) {
-            let property = properties;
-            if (keys.length > 0) {
-                for (const key of keys) {
-                    property = property[key];
+        try {
+            for(const defaultPropertyKey in defaultProperties) {
+                let property = properties;
+                if (keys.length > 0) {
+                    for (const key of keys) {
+                        property = property[key];
+                    }
+                }
+                if (property[defaultPropertyKey] === undefined) {
+                    property[defaultPropertyKey] = defaultProperties[defaultPropertyKey];
+                } else if (defaultProperties[defaultPropertyKey].constructor == Object) {
+                    this.sumProperties(properties, defaultProperties[defaultPropertyKey], [...keys, defaultPropertyKey]);
                 }
             }
-            if (property[defaultPropertyKey] === undefined) {
-                property[defaultPropertyKey] = defaultProperties[defaultPropertyKey];
-            } else {
-                this.sumProperties(properties, defaultProperties[defaultPropertyKey], [...keys, defaultPropertyKey]);
-            }
+        } catch(ex) {
+            new ApplicationException('Error on processing the properties file', 'Properties File Error', 'RU-03');
         }
     }
 }

@@ -1,5 +1,19 @@
 the-way:
+  core:
+    log: true
+  log:
+    level: 0
   server:
     port: 8081
+    api-endpoint: '/api'
     file:
       enabled: false
+      fallback: false
+      full: false
+      path: ''
+      static: 
+        path: ''
+        full: false
+      assets: 
+        path: ''
+        full: false

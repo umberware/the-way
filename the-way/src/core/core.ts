@@ -10,7 +10,7 @@ import { LogService } from './service/log/log.service';
 export let CORE_CALLED = 0;
 
 export class CORE {
-    public static enabledDecoratorLog = false;
+    public static CORE_LOG_ENABLED = false;
     private static instance: CORE;
     private application: Object;
     private DEPENDENCIES: any = {};
@@ -26,17 +26,17 @@ export class CORE {
     }
     
     public buildApplication(constructor: Function, customInstances: Array<Function>): void {
-        this.logInfo('Building core instancies tree...')
+        this.logInfo('Building core instancies tree...', true)
         this.buildCoreInstances();
-        this.logInfo('Building dependencies tree...')
+        this.logInfo('Building dependencies tree...', true)
         this.buildDependenciesTree();
-        this.logInfo('Building instances...')
+        this.logInfo('Building instances...', true)
         this.buildInstances(Object.keys(this.DEPENDENCIES_TREE), this.DEPENDENCIES_TREE, null);
-        this.logInfo('Building custom instances...')
+        this.logInfo('Building custom instances...', true)
         this.buildCustomInstances(customInstances);
-        this.logInfo('Building Application...')
+        this.logInfo('Building Application...', true)
         this.application = this.buildObject(constructor.prototype);
-        this.logInfo('The application is fully loaded.');
+        this.logInfo('The application is fully loaded.'), true;
         this.ready$.next(true);
     }
     private buildCoreInstances(): void {
@@ -45,6 +45,14 @@ export class CORE {
         for (const coreInstance of coreInstances) {
             this.getInstance(coreInstance.name, coreInstance);
         }
+
+        const properties = (this.getInstanceByName('PropertiesConfiguration') as PropertiesConfiguration).properties['the-way'];
+        CORE.CORE_LOG_ENABLED = properties.core.log;
+        
+        (this.getInstanceByName('LogService') as LogService).setLogLevel(
+            properties.log.level
+        );
+        
     }
     private buildCustomInstances(customInstances: Array<Function>): void {
         for (const coreInstance of customInstances) {
@@ -163,8 +171,8 @@ export class CORE {
             (instance as AbstractConfiguration).configure();
         }
     }
-    private logInfo(message: string): void {
-        if (CORE.enabledDecoratorLog) {
+    private logInfo(message: string, force?: boolean): void {
+        if (CORE.CORE_LOG_ENABLED || force) {
             console.log('[The Way] ' + message);
         }
     }
