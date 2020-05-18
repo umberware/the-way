@@ -26,6 +26,11 @@ export class UserRest {
         }]);
     }
 
+    @Get('/api/token/user', true)
+    public getUserToken(@RequestingUser user: any): Observable<any> {
+        return of(user);
+    }
+
     @Post('/api/sign/in')
     public signIn(@BodyParam signIn: any): Observable<any> {
         const user = {

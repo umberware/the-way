@@ -64,8 +64,8 @@ export class HttpService {
         let pathParams: Array<any> = Reflect.getOwnMetadata(PathParamMetadataKey, target, propertyKey);
         let requestUser: any = Reflect.getOwnMetadata(RequestingUserMetaKey, target, propertyKey);
       
-        if (requestUser) {
-          functionArguments[requestUser] = user;
+        if (requestUser !== undefined) {
+            functionArguments[requestUser] = user;
         }
       
         if (pathParams) {
@@ -100,6 +100,12 @@ export class HttpService {
         httpType: HttpType, path: string, authenticated: boolean | undefined, 
         allowedProfiles: Array<any> | undefined, target: any, propertyKey: any, descriptor: any
     ): void {
+        let requestUser: any = Reflect.getOwnMetadata(RequestingUserMetaKey, target, propertyKey);
+
+        if (requestUser !== undefined && !authenticated) {
+            throw new ApplicationException('To inject the RequestingUser you must declare an authenticated path', 'Path not authenticated', 'RU-002');
+        }
+
         this.serverConfiguration.context[httpType](path, (req: any, res: any) => {
            this.execute(httpType, path, authenticated, allowedProfiles, target, propertyKey, descriptor, req, res);
         });

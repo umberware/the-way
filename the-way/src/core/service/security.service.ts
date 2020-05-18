@@ -8,12 +8,12 @@ import { CryptoService } from './crypto.service';
 
 export abstract class SecurityService {
 
-    protected TOKEN_KEY = 'Darth123456789987654321147852369963258741794613287391465Vader';
-    protected USER_PRIVATE_KEY = 'Darth123456789987654321147852369963258741794613287391465Vader';
+    protected TOKEN_KEY = 'Darth123456789987654321147852361';
+    protected USER_PRIVATE_KEY = 'Darth1234567899876543211asasddq2';
 
     public generateToken(user: any): string {
         const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
-        const cryptedUser: string = cryptoService.cypher(JSON.stringify(user), 'aes-256-cbc', this.TOKEN_KEY);
+        const cryptedUser: string = cryptoService.cypher(JSON.stringify(user), 'aes-256-cbc', this.USER_PRIVATE_KEY);
         return Jwt.sign({data: cryptedUser}, this.TOKEN_KEY, { expiresIn: '3 days' });
     }
     public getDecodedUser(token: string): any {

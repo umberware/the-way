@@ -7,7 +7,7 @@ export class CryptoService {
 
     public cypher(data: string, algorithmn: string, privateKey: string): string {
         let randomBuffer = Crypto.randomBytes(this.ivLength);
-        let cypher = Crypto.createCipheriv(algorithmn, Buffer.from(privateKey.substr(0, 32)), randomBuffer);
+        let cypher = Crypto.createCipheriv(algorithmn, Buffer.from(privateKey), randomBuffer);
         let encrypted = cypher.update(data);
         encrypted = Buffer.concat([encrypted, cypher.final()])
         return randomBuffer.toString('hex') + ':' + encrypted.toString('hex');
@@ -16,7 +16,7 @@ export class CryptoService {
         let encrypted = data.split(':');
         let randomBuffer = Buffer.from(encrypted.shift() as string, 'hex');
         let encryptedText = Buffer.from(encrypted.join(':'), 'hex');
-        let decypher = Crypto.createDecipheriv(algorithmn, Buffer.from(privateKey.substr(0, 32)), randomBuffer);
+        let decypher = Crypto.createDecipheriv(algorithmn, Buffer.from(privateKey), randomBuffer);
         let decrypted = decypher.update(encryptedText);
         decrypted = Buffer.concat([decrypted, decypher.final()])
         return decrypted.toString();
