@@ -1,6 +1,6 @@
 {
   "name": "@nihasoft/the-way-demos",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,7 @@
   },
   "private": false,
   "dependencies": {
-    "@nihasoft/the-way": "^0.2.1",
+    "@nihasoft/the-way": "^0.2.3",
     "core-js": "^3.6.5",
     "rxjs": "^6.5.5",
     "tslib": "^1.11.1"

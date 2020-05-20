@@ -13,13 +13,13 @@ export abstract class SecurityService {
 
     public generateToken(user: any): string {
         const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
-        const cryptedUser: string = cryptoService.cypher(JSON.stringify(user), 'aes-256-cbc', this.USER_PRIVATE_KEY);
+        const cryptedUser: string = cryptoService.cipherIv(JSON.stringify(user), 'aes-256-cbc', this.USER_PRIVATE_KEY);
         return Jwt.sign({data: cryptedUser}, this.TOKEN_KEY, { expiresIn: '3 days' });
     }
     public getDecodedUser(token: string): any {
         const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
         const claims: any = Jwt.verify(token, this.TOKEN_KEY);
-        return JSON.parse(cryptoService.decypher(claims.data, 'aes-256-cbc', this.USER_PRIVATE_KEY));
+        return JSON.parse(cryptoService.decipherIv(claims.data, 'aes-256-cbc', this.USER_PRIVATE_KEY));
     }
     private verifyProfile(user: any, profiles: Array<any>) {
         for (let profile of profiles) {

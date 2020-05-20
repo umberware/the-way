@@ -1,6 +1,6 @@
 {
   "name": "@nihasoft/the-way",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Is a way to Inject some dependencies and turn more easily the utilization of Rest concepts",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

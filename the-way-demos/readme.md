@@ -1,5 +1,5 @@
 
-[![Version](https://img.shields.io/badge/Version-0.2.2-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
+[![Version](https://img.shields.io/badge/Version-0.2.3-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
 [![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/bpmn-flows/master/LICENSE)
 [![Build Status](https://travis-ci.org/nihasoft/the-way.svg?branch=master)](https://travis-ci.org/nihasoft/bpmn-flows)
 [![Donate](https://img.shields.io/badge/%24-Donate-blue.svg)](https://www.paypal.com/donate/?token=Ov4xNE4bAuZWCSF9e0BjGy75laGShREyS7BDFs-oQSwMsGOVEzDZAq9VDVNKmaCewqrBUW&country.x=BR&locale.x=BR)
@@ -131,7 +131,7 @@ This library uses a property file in YAML format. The properties file load seque
 After this, we load the default properties and we merge this with the properties found in the file, preserving the properties passed. If no file is passed or found, the library will use the default properties.
 You can **@Inject** the **PropertiesConfiguration** into your class to use the properties.
 
-You can see the properties that the application uses at the section **# Application Properties** or in the file [application.properties.yml](https://github.com/nihasoft/the-way/blob/master/the-way/application.properties.yml).
+You can see the properties that the application uses at the section **Application Properties** or in the file [application.properties.yml](https://github.com/nihasoft/the-way/blob/master/the-way/application.properties.yml).
 
 Also, you can create your properties file with the name "application.properties.yml" in your project's root directory or an "external" application.properties.yml passing the --properties parameter with path of the file and the file name.
 
@@ -229,7 +229,18 @@ The **HttpService** Will register the paths and enable the paths for execution. 
 After this, your application will be enabled to use the **RestDecorators**. Besides that, you can pass a customized class to the **@Application** but the class SHOULD extends the HttpService and **@Inject** the **SecurityService**, **ServerConfiguration** and **LogService**
 
 ### CryptoService
-This service is used to cypher and decypher the user inside the token. It's called in **SecurityService**.
+You can use this service to: generate hashes, cipher, decipher and generate randomHash. You can use the algorithmns provided by **Crypto** from Node.js like: aes-cbc, aes-ecb, for hashes: Sha512, Sha256, MD5 and others.
+To Cipher and Decipher you can use the methods:
+
+    - cipherIv and DecipherIv when you want to use IV random buffer like: aes-256-cbc;
+    - cipher and decipher when you don't want to use IV random buffer like: aes-256-ecb;
+    - cipherWithRsa and decipherWithRsa when you want to use the RSA encryption and decryption.
+
+To generate Hashes you can use the methods:
+    - hash when you want to hash some data;
+    - randomHash when you want to generate a random hash =).
+
+This service is used to cipher and decipher the user inside the token. It's called in **SecurityService**.
 
 # The Rest Decorators
 With the decorators below you can define an endpoint, make this endpoint be allowed only if the user is logged in and you can allow the rest method if the user has a certain profile. Every method decorated with the decorators below **MUST** return an **Observable** of **RXJS**.
