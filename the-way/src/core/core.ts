@@ -1,31 +1,36 @@
 import 'reflect-metadata';
-import { BehaviorSubject } from 'rxjs';
+
+import { BehaviorSubject, Observable, forkJoin } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 import { ConfigurationMetaKey } from './decorator/configuration.decorator';
 import { AbstractConfiguration } from './configuration/abstract.configuration';
 import { CryptoService } from './service/crypto.service';
 import { PropertiesConfiguration } from './configuration/properties.configuration';
 import { LogService } from './service/log/log.service';
-
-export let CORE_CALLED = 0;
+import { HttpService } from './service/http/http.service';
+import { ApplicationException } from './exeption/application.exception';
 
 export class CORE {
     public static CORE_LOG_ENABLED = false;
+    public static CORE_CALLED = 0;
     private static instance: CORE;
+    
+    public ready$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
     private application: Object;
+    private customInstances: Array<Function>;
+    private properties: any;
+
     private DEPENDENCIES: any = {};
     private DEPENDENCIES_TREE: any = {};
     private OVERRIDDEN_DEPENDENCIES: any = {};
-
+    private CONFIGURATING: Array<Observable<boolean>> = [];
     private INSTANCES: any = {};
-
-    public ready$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-
-    constructor() {
-        CORE_CALLED += 1;
-    }
     
-    public buildApplication(constructor: Function, customInstances: Array<Function>): void {
+    public buildApplication(): void {
+        this.logInfo('Building properties', true)
+        this.buildProperties();
         this.logInfo('Building core instancies tree...', true)
         this.buildCoreInstances();
         this.logInfo('Building dependencies tree...', true)
@@ -33,29 +38,39 @@ export class CORE {
         this.logInfo('Building instances...', true)
         this.buildInstances(Object.keys(this.DEPENDENCIES_TREE), this.DEPENDENCIES_TREE, null);
         this.logInfo('Building custom instances...', true)
-        this.buildCustomInstances(customInstances);
-        this.logInfo('Building Application...', true)
-        this.application = this.buildObject(constructor.prototype);
-        this.logInfo('The application is fully loaded.'), true;
-        this.ready$.next(true);
+        this.buildCustomInstances();
+        this.buildHttpService();
+
+        (this.getInstanceByName('LogService') as LogService).setLogLevel(
+            this.properties.log.level
+        );
+
+        forkJoin(this.CONFIGURATING).pipe(
+            filter((values: Array<boolean>) => {
+                const configuring = values.find((value: boolean) => !value);
+                if (configuring) {
+                    this.logInfo('Still configuring...');
+                    return false;
+                }
+                return !configuring;
+            })
+        ).subscribe(() => {
+            this.logInfo('All configurations are done.', true);
+            this.logInfo('The application is fully loaded.', true);
+            this.ready$.next(true);
+        })
     }
     private buildCoreInstances(): void {
-        const coreInstances = [LogService, CryptoService, PropertiesConfiguration];
+        const coreInstances: Array<Function> = [LogService, CryptoService];
 
         for (const coreInstance of coreInstances) {
             this.getInstance(coreInstance.name, coreInstance);
         }
 
-        const properties = (this.getInstanceByName('PropertiesConfiguration') as PropertiesConfiguration).properties['the-way'];
-        CORE.CORE_LOG_ENABLED = properties.core.log;
-        
-        (this.getInstanceByName('LogService') as LogService).setLogLevel(
-            properties.log.level
-        );
-        
+        CORE.CORE_LOG_ENABLED = this.properties.core.log;
     }
-    private buildCustomInstances(customInstances: Array<Function>): void {
-        for (const coreInstance of customInstances) {
+    private buildCustomInstances(): void {
+        for (const coreInstance of this.customInstances) {
             this.getInstance(coreInstance.name, coreInstance);
         }
     }
@@ -92,16 +107,20 @@ export class CORE {
         }
 
         this.buildDependencyTree(treeNodes, this.DEPENDENCIES_TREE);
-        this.logInfo(this.DEPENDENCIES_TREE);
+        
+        if (CORE.CORE_LOG_ENABLED) {
+            console.log(this.DEPENDENCIES_TREE);
+        }
     }
-    private buildInstance(instanceableName: string, constructor: Function): Object {
-        const instance = this.buildObject(constructor.prototype);
-        const decorators = Reflect.getMetadataKeys(constructor);
-        this.handleInstance(instanceableName, instance, decorators);
-        return instance;
-    }
-    public buildObject(prototype: any): Object {
-        return new (Object.create(prototype)).constructor();
+    private buildInstance<T>(instanceableName: string, constructor: Function | undefined): T {
+        if (constructor) {
+            const instance = this.buildObject(constructor.prototype) as T;
+            const decorators = Reflect.getMetadataKeys(constructor);
+            this.handleInstance(instanceableName, instance, decorators);
+            return instance;
+        } else {
+            throw new ApplicationException('Constructor not found for: ' + instanceableName, 'Error Building Instance', 'RU-005');
+        }
     }
     private buildInstances(treeNodesNames: Array<string>, node: any, parentName: string | null): void {
         for (const treeNodeName of treeNodesNames) {
@@ -115,7 +134,7 @@ export class CORE {
                 const dependent = (parentName.includes(':')) ? parentName.split(':')[0] : parentName;
                 const dependency = (treeNodeName.includes(':')) ? treeNodeName.split(':')[0] : treeNodeName;
                 const dependencyInformation = this.DEPENDENCIES[dependent][dependency];
-                const instance = this.getInstance(dependency, dependencyInformation.constructor);
+                const instance = this.getInstance(dependency, dependencyInformation.constructor) as Function;
                 Reflect.set(dependencyInformation.target, dependencyInformation.key, instance);
                 
                 let found = 'Not found';
@@ -129,8 +148,29 @@ export class CORE {
             }
         }
     }
+    private buildHttpService(): void {
+        if (this.properties.server.enabled) {
+            this.logInfo('Building HttpService', true)
+            this.getInstance(HttpService.name, HttpService);
+        }
+    }
+    public buildMain(application: Function): void {
+        this.buildObject(application.prototype);
+    }
+    public buildObject(prototype: any): Object {
+        return new (Object.create(prototype)).constructor();
+    }
+    private buildProperties(): any {
+        this.properties = this.getInstance<PropertiesConfiguration>(PropertiesConfiguration.name, PropertiesConfiguration).properties['the-way'];
+    }
     public getApplicationInstance(): Object {
         return this.application;
+    }
+    public static getCoreInstance(): CORE {
+        if (!CORE.instance) {
+            CORE.instance = new CORE();
+        }
+        return CORE.instance;
     }
     private getDependencyNode(treeNodeName: string, node: any): any {
         if (!this.OVERRIDDEN_DEPENDENCIES[treeNodeName]) {
@@ -139,36 +179,40 @@ export class CORE {
             return node[treeNodeName + ':' + this.OVERRIDDEN_DEPENDENCIES[treeNodeName].name] = {};
         }
     }
-    private getInstance(instanceableName: string, constructor: Function): Object | null {
-        if (this.OVERRIDDEN_DEPENDENCIES[instanceableName]) {
-            const overridden = this.OVERRIDDEN_DEPENDENCIES[instanceableName];
-            instanceableName = overridden.name;
-            constructor = overridden.constructor;
-        }
-        let instance: Object;
-        if (this.INSTANCES[instanceableName]) {
-            instance = this.getInstanceByName(instanceableName);
+    private getInstance<T>(instanceableName: string, constructor: Function): T {
+        const {realInstanceableName, realConstructor} =  this.getRealInstanceNameAndConstructor(instanceableName, constructor);
+        const instance = this.INSTANCES[realInstanceableName];
+        if (!instance) {
+            return this.buildInstance(realInstanceableName, realConstructor);
         } else {
-            instance = this.buildInstance(instanceableName, constructor);
+            return instance;
         }
-        return instance;
     }
-    public getInstanceByName(name: string): Object {
+    public getInstanceByName<T>(name: string): T {
+        const overridden = this.OVERRIDDEN_DEPENDENCIES[name];
+        
+        if (overridden) {
+            name = overridden.name;
+        }
         return this.INSTANCES[name];
-    }
-    public static getCoreInstance(): CORE {
-        if (!CORE.instance) {
-            CORE.instance = new CORE();
-        }
-        return CORE.instance;
     }
     public getInstances(): Map<String, Object> {
         return this.INSTANCES;
     }
+    private getRealInstanceNameAndConstructor(instanceableName: string, constructor?: Function): {realInstanceableName: string, realConstructor?: Function} {
+        const realInstanceableName = instanceableName;
+        const realConstructor = constructor;
+        const overridden = this.OVERRIDDEN_DEPENDENCIES[instanceableName];
+        if (overridden) {
+            instanceableName = overridden.name;
+            constructor = overridden.constructor;
+        }
+        return {realInstanceableName, realConstructor};
+    }
     private handleInstance(instanceableName: string, instance: Object, decorators: Array<string>): void {
         this.INSTANCES[instanceableName] = instance;
         if (decorators.includes(ConfigurationMetaKey) && instance instanceof AbstractConfiguration) {
-            (instance as AbstractConfiguration).configure();
+            this.CONFIGURATING.push((instance as AbstractConfiguration).configure());
         }
     }
     private logInfo(message: string, force?: boolean): void {
@@ -195,5 +239,8 @@ export class CORE {
             target: target,
             key: key
         }
+    }
+    public setCustomInstances(customInstances: Array<Function>): void {
+        this.customInstances = customInstances;
     }
 }

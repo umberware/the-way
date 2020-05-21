@@ -1,19 +1,23 @@
 the-way:
   core:
-    log: false
+    log: true
   log:
     level: 0
   server:
+    enabled: true
     port: 8080
-    api-endpoint: '/api/'
+    api-endpoint: '/api'
+    security:
+      user-key: '12345678901234567890123456789012'
+      token-key: '12345678901234567890123456789034'
     file:
-      enabled: true
-      fallback: true
+      enabled: false
+      fallback: false
       full: false
-      path: '/dist/web-interface'
+      path: ''
       static: 
-        path: '/static'
+        path: ''
         full: false
       assets: 
-        path: '/assets'
+        path: ''
         full: false

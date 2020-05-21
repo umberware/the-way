@@ -1,3 +1,7 @@
+import { Observable, of } from 'rxjs';
+
 export abstract class AbstractConfiguration {
-    public configure(): void {};
+    public configure(): Observable<boolean> {
+        return of(true);
+    };
 }

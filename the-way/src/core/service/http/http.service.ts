@@ -5,23 +5,28 @@ import { RequestingUserMetaKey } from '../../decorator/rest/param/requesting-use
 import { BodyParamMetadataKey } from '../../decorator/rest/param/body-param.decorator';
 import { QueryParamMetadataKey } from '../../decorator/rest/param/query-param.decorator';
 import { Service } from '../../decorator/service.decorator';
-
 import { ServerConfiguration } from '../../configuration/server.configuration';
 import { HttpType } from './http-type.enum';
 import { ApplicationException } from '../../exeption/application.exception';
 import { LogService } from '../log/log.service';
 import { BadRequestException } from '../../exeption/bad-request.exception';
 import { InternalException } from '../../exeption/internal.exception';
-import { Inject } from '../../decorator/inject.decorator';
 import { SecurityService } from '../security.service';
+import { HeaderMetadataKey } from '../../decorator/rest/param/header.decorator';
+import { ResponseMetadataKey } from '../../decorator/rest/param/response.decorator';
+import { RequestMetadataKey } from '../../decorator/rest/param/request.decorator';
+import { CORE } from '../../core';
 
 @Service()
 export class HttpService {
-    @Inject() serverConfiguration: ServerConfiguration;
-    @Inject() securityService: SecurityService;
-    @Inject() logService: LogService;
+    serverConfiguration: ServerConfiguration;
+    securityService: SecurityService;
+    logService: LogService;
 
     constructor() {
+        this.serverConfiguration = CORE.getCoreInstance().getInstanceByName<ServerConfiguration>('ServerConfiguration');
+        this.securityService = CORE.getCoreInstance().getInstanceByName<SecurityService>('SecurityService');
+        this.logService = CORE.getCoreInstance().getInstanceByName<LogService>('LogService');
         this.serverConfiguration.start();
     }
 
@@ -36,8 +41,8 @@ export class HttpService {
         }
     }
     private execute(
-        httpType: HttpType, path: string, authenticated: boolean | undefined, allowedProfiles: Array<any> | undefined, 
-        target: any, propertyKey: any, descriptor: any, req: any, res: any
+        httpType: HttpType, authenticated: boolean | undefined, allowedProfiles: Array<any> | undefined, 
+        target: any, propertyKey: any, req: any, res: any
     ): void {
         try {
             let user: any;
@@ -45,9 +50,11 @@ export class HttpService {
                 const token = req.headers.authorization;
                 user = this.securityService.verifyToken(token, allowedProfiles);
             }
-            this.executeMethod(httpType, target, propertyKey, req, user).subscribe(
+            this.executeMethod(httpType, target, propertyKey, req, res, user).subscribe(
                 (response: any) => {
-                    res.send(response);
+                    if (!res.headersSent) {
+                        res.send(response);
+                    }
                 }, (error: Error) => {
                     this.handleError(error, res);
                 }
@@ -56,13 +63,28 @@ export class HttpService {
             this.handleError(error, res);
         }
     }
-    private executeMethod(httpType: HttpType, target: any, propertyKey: any, req: any, user: any): Observable<any> {
+    private executeMethod(httpType: HttpType, target: any, propertyKey: any, req: any, res:any, user: any): Observable<any> {
         const method = target[propertyKey] as Function;
         const functionArgumentsLength = method.length;
         const functionArguments = new Array<any>().fill(undefined, 0, functionArgumentsLength);
       
-        let pathParams: Array<any> = Reflect.getOwnMetadata(PathParamMetadataKey, target, propertyKey);
-        let requestUser: any = Reflect.getOwnMetadata(RequestingUserMetaKey, target, propertyKey);
+        const pathParams: Array<any> = Reflect.getOwnMetadata(PathParamMetadataKey, target, propertyKey);
+        const requestUser: any = Reflect.getOwnMetadata(RequestingUserMetaKey, target, propertyKey);
+        const header: any = Reflect.getOwnMetadata(HeaderMetadataKey, target, propertyKey);
+        const response: any = Reflect.getOwnMetadata(ResponseMetadataKey, target, propertyKey);
+        const request: any = Reflect.getOwnMetadata(RequestMetadataKey, target, propertyKey);
+
+        if (header !== undefined) {
+            functionArguments[header] = req.headers;
+        }
+
+        if (response !== undefined) {
+            functionArguments[response] = res;
+        }
+
+        if (request !== undefined) {
+            functionArguments[request] = req;
+        }
       
         if (requestUser !== undefined) {
             functionArguments[requestUser] = user;
@@ -73,13 +95,13 @@ export class HttpService {
         }
       
         if (httpType === HttpType.GET || httpType === HttpType.DEL) {
-          let queryParam: any = Reflect.getOwnMetadata(QueryParamMetadataKey, target, propertyKey);
-          if (queryParam != null) {
+          const queryParam: any = Reflect.getOwnMetadata(QueryParamMetadataKey, target, propertyKey);
+          if (queryParam !== undefined && queryParam !== null) {
             functionArguments[queryParam] = req.query;
           }
         } else if (httpType === HttpType.POST || httpType === HttpType.PUT) {
-          let bodyParam: any = Reflect.getOwnMetadata(BodyParamMetadataKey, target, propertyKey);
-          if (bodyParam != null) {
+          const bodyParam: any = Reflect.getOwnMetadata(BodyParamMetadataKey, target, propertyKey);
+          if (bodyParam !== undefined && bodyParam !== null) {
             if (Object.keys(req.body).length === 0) {
                 throw new BadRequestException('Request is empty');
             }
@@ -106,8 +128,8 @@ export class HttpService {
             throw new ApplicationException('To inject the RequestingUser you must declare an authenticated path', 'Path not authenticated', 'RU-002');
         }
 
-        this.serverConfiguration.context[httpType](path, (req: any, res: any) => {
-           this.execute(httpType, path, authenticated, allowedProfiles, target, propertyKey, descriptor, req, res);
+        this.serverConfiguration.context[httpType](path, (req: unknown, res: unknown) => {
+           this.execute(httpType, authenticated, allowedProfiles, target, propertyKey, req, res);
         });
     }
 }

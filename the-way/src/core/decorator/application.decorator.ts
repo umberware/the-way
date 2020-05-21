@@ -1,12 +1,23 @@
 import 'reflect-metadata';
 
-import { CORE, CORE_CALLED } from '../core';
+import { CORE } from '../core';
+import { TheWayApplication } from '../../core/the-way-application';
+import { ApplicationException } from '../exeption/application.exception';
 
-export function Application(...customInstances: Array<Function>) {
+export function Application(params: {custom?: Array<any>, automatic?: boolean}) {
   return (constructor: Function) => {
-    CORE.getCoreInstance().buildApplication(constructor, customInstances);
-    if (CORE_CALLED > 1) {
-      throw new Error('The core are called more than one time.');
+    const core = CORE.getCoreInstance();
+
+    if (!(constructor.prototype instanceof TheWayApplication)) {
+      throw new ApplicationException('Your @Application class must extends the TheWayApplication', 'Application Error', 'RU-005')
+    }
+
+    if (params.custom) {
+      core.setCustomInstances(params.custom);
+    }
+
+    if (params.automatic || params.automatic === undefined) {
+      core.buildMain(constructor);
     }
   }
 }

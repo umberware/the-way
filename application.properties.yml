@@ -1,5 +1,6 @@
 the-way:
   server:
+    enabled: true
     port: 7272
     file:
       enabled: true

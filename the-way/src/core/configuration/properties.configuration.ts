@@ -1,6 +1,8 @@
 import * as Yaml from 'yaml';
 import * as fs from 'fs';
 
+import { Observable, of } from 'rxjs';
+
 import { AbstractConfiguration } from './abstract.configuration';
 import { Configuration } from '../decorator/configuration.decorator';
 import { LogService } from '../service/log/log.service';
@@ -19,13 +21,13 @@ export class PropertiesConfiguration extends AbstractConfiguration {
         this.logService = CORE.getCoreInstance().getInstanceByName('LogService') as LogService;
     }
 
-    public configure():void {
+    public configure(): Observable<boolean> {
         const args = process.argv
         const propertiesFilePath = args.find((arg: string) => arg.includes('--properties=')) as string;
-        this.loadProperties(propertiesFilePath);
+        return of(this.loadProperties(propertiesFilePath));
     }
 
-    private loadProperties(propertiesFilePath: string): void {
+    private loadProperties(propertiesFilePath: string): boolean {
         const defaultProperties = this.loadFile(__dirname + '/' + PropertiesConfiguration.PROPERTIES_NAME);
         
         if (!propertiesFilePath) {
@@ -34,8 +36,9 @@ export class PropertiesConfiguration extends AbstractConfiguration {
             this.properties = this.loadFile(propertiesFilePath.split('=')[1]);
         }
         this.sumProperties(this.properties, defaultProperties, []);
+        return true;
     }
-    private loadFile(path: string): any {
+    private loadFile(path: string): unknown {
         try {
             return Yaml.parse(fs.readFileSync(path).toString());
         } catch (ex) {

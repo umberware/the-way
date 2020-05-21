@@ -1,5 +1,5 @@
 
-[![Version](https://img.shields.io/badge/Version-0.2.3-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
+[![Version](https://img.shields.io/badge/Version-0.3.0-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
 [![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/bpmn-flows/master/LICENSE)
 [![Build Status](https://travis-ci.org/nihasoft/the-way.svg?branch=master)](https://travis-ci.org/nihasoft/bpmn-flows)
 [![Donate](https://img.shields.io/badge/%24-Donate-blue.svg)](https://www.paypal.com/donate/?token=Ov4xNE4bAuZWCSF9e0BjGy75laGShREyS7BDFs-oQSwMsGOVEzDZAq9VDVNKmaCewqrBUW&country.x=BR&locale.x=BR)
@@ -11,11 +11,64 @@ The examples in this readme can be viewed in the github in the [the-way-demos di
 
 Note: We support application properties with YAML format. See the section **Properties Configuration** and **Application Properties**.
 
-# Application Decorators
-Rembember: when you want to use a class with the decorator **YOU MUST** "Inject" that class into the main class decorated with **@Application**. 
-You can create a class that's groups the injections and Inject this group class into the main, with that the main class will be more clean.
+# Fast Setup
+To use this library you only need:
 
-##### Example:
+    - Create a class and extend that class with TheWayApplication;
+    - Decorate your class with **@Application()**.
+
+With that you can inject classes and use everything of the library **except** the  Rest decorators and the HttpService.
+
+## Using the HttpService
+If you want to use the **RestDecorators** and the **HttpService** you must provide an application.properties.yml and the properties below(see more in the section **Application Properties**):
+
+    the-way:
+    ...
+        server:
+            enabled: true
+
+Besides, this library allow you to generate token's with JWT to use this feature you MUST provide some application properties:
+
+    the-way:
+    ...
+        server:
+        ...
+            security:
+                user-key: '12345678901234567890123456789012'
+                token-key: '12345678901234567890123456789034'
+Where the keys MUST be 32 bytes like the example above.
+
+## Customizing the things
+You can customize the library components like SecurityService, ServerConfiguration and anothers. You only need extend the class  that will be overridden and decorating that respective class with the respective decorator like: **@Configuration(CLASS_TO_OVERRIDDEN)** or **@Service(CLASS_TO_OVERRIDDEN)** and defining the classes in the **@Application** decorator.
+
+##### The Main class decorated with @Application
+
+    import { Application } from '@nihasoft/the-way';
+    ....
+    import { CustomServerConfiguration } from './configuration/custom-server.configuration';
+    ...
+    @Application({
+        custom: [
+            CustomServerConfiguration
+        ]
+    })
+    export class Main extends TheWayApplication {
+        @Inject() restModule: RestModule;
+        ...
+    }
+Where the custom property is an array of the classes that are **custom**.
+
+##### The Customization of the ServerConfiguration class
+    import { Configuration, ServerConfiguration } from '@nihasoft/the-way'
+    ...
+    @Configuration(ServerConfiguration)
+    export class CustomServerConfiguration extends ServerConfiguration 
+    ....
+
+For the @Application decorator you can see the section **@Application** for the **@Configuration** or **@Service** you can see the respective section in this doc.
+
+## Grouping the injections to be more clean
+You can create a class that's groups the injections and Inject this group class into the main, with that the main class will be more clean.
 
 ##### The RestModule: a class that will group the "rest" classes
 
@@ -32,17 +85,18 @@ You can create a class that's groups the injections and Inject this group class 
 
 ##### The Main: decorated with **@Application** will be inject the **RestModule**
 
-    import { HttpService, Application, Inject } from '@nihasoft/the-way'
-    ...
-    import { CustomSecurityService } from './service/custom-security.service';
+    import { Application, Inject } from '@nihasoft/the-way'
     ...
     import { RestModule } from './rest/rest.module';
     ...
-    @Application(
-        HttpService, 
-        CustomSecurityService
-    )
-    export class Main {
+    import { CustomServerConfiguration } from './configuration/custom-server.configuration';
+    ...
+    @Application({
+        custom: [
+            CustomServerConfiguration
+        ]
+    })
+    export class Main extends TheWayApplication {
         ...
         @Inject() restModule: RestModule
         ...
@@ -50,25 +104,75 @@ You can create a class that's groups the injections and Inject this group class 
 
 With this code above the **UserRest** and the **HeroRest** will be injected in the context.
 
-## @Application
-This is necessary to the core knows when the application is fully loaded.
-When is passed inside of the main class decorated with **@Application** a class of type HttpService or an extension of that, the library will enable the `Rest Decoratos` and will start an **express** server.
-Besides that you can pass anothers classes inside of **@Application**. For more information about the **HttpService** see the section of this theme.
+# TheWayApplication
+When you want to use this library is mandatory to extends the **TheWayApplication** and decorate your main class with **@Application()**. When every is loaded, will be called the method **start(): void** of the TheWayApplication class, you can overridden this method as you want.
 
-##### Example:
+    import { TheWayApplication, Application } from '@nihasoft/the-way';
+    ...
 
-    ...
-    import { HttpService, Application, Inject } from '@nihasoft/the-way'
-    ...
-    import { CustomSecurityService } from './service/custom-security.service';
-    ...
-    @Application(
-        HttpService, 
-        CustomSecurityService
-    )
-    export class Main {
+    @Application()
+    export class Main extends TheWayApplication {
         ...
     }
+
+# Application Decorators
+Rembember: when you want to use a class with the decorator **YOU MUST** "Inject" that class into the main class decorated with **@Application**. 
+
+## @Application
+This is necessary to the core knows when the application is fully loaded. With this decorator you can customize some behavior of this library with the **custom** property passing to the array the classes that you want do overriden, like **SecurityService** and **ServerConfiguration**.
+Also, this decorator will **Automatically** build all the classes decorated with some library decorator and imported in the Main class and the Main class decorated with @Application. You can pass the property **automatic** = false to disable this behaviour. By default this parameter is true. When automatic is false, the library will build the classes when the classe decorated with **@Application** is created. 
+
+##### The main class with the default behavior:
+
+    import { TheWayApplication, Application } from '@nihasoft/the-way';
+    ...
+
+    @Application()
+    export class Main extends TheWayApplication {
+        ...
+    }
+The code above will enable all the The Way features to be used with the **default** implementation. Also, if server.enabled(in the application.properties.yml) the Rest decorators and the HttpServer will be enable too.
+
+##### The main class with a custom implementation of the ServerConfiguration
+
+    
+    import { Application, Inject } from '@nihasoft/the-way'
+    ...
+    import { CustomServerConfiguration } from './configuration/custom-server.configuration';
+    ...
+    @Application({
+        custom: [
+            CustomServerConfiguration
+        ]
+    })
+    export class Main extends TheWayApplication {
+    ...
+    }
+
+    
+The code above will enable all the The Way features. But the **ServerConfiguration** default implementation will be overriden with the **CustomServerConfiguration** implementation.
+
+##### The main class with a custom implementation of the ServerConfiguration and MANUAL building
+
+    
+    import { Application, Inject } from '@nihasoft/the-way'
+    ...
+    import { CustomServerConfiguration } from './configuration/custom-server.configuration';
+    ...
+    @Application({
+        custom: [
+            CustomServerConfiguration
+        ],
+        automatic: false
+    })
+    export class Main extends TheWayApplication {
+    ...
+    }
+
+    ...
+    new Main();
+The code above will enable all the The Way features. But the **ServerConfiguration** default implementation will be overriden with the **CustomServerConfiguration** implementation. Also, the **USER** must execute a **NEW to run the application**.
+
 
 ## @Inject
 When you want to **Inject** some class into your class this decorator do it for you. If exists a instance of the wanted class will be injected this instance or if doesn't exists, so will be created a new instance and injected.
@@ -90,38 +194,23 @@ The code above, will create a **UserRest** and **HeroRest** to be injected in **
 ## @Configuration
 When you want to configure or prepare some thing, this decorator can help you. The classes decorated with this decoration will execute the method "configure" when the class is being instantiated. To use correctly this decorator your configure class **MUST** extends the **AbstractConfiguration**  and implement the method configure, besides that the class must have the @Configuration() decorator. Also, you can pass an argument(a class) to this decorator to be overridden, same behavior of **@Service** at this point.
 
-##### Example:
-
 ##### CustomServerConfiguration: By the default this library will start a server in port 8081(when was passed the **HttpService**) the class below will override the property `port` to be 8080.
 
     import { Configuration, ServerConfiguration } from '@nihasoft/the-way'
+    ...
+    import { Observable, of } from 'rxjs';
+    ...
 
     @Configuration(ServerConfiguration)
     export class CustomServerConfiguration extends ServerConfiguration{
-        public configure(): void {
+        public configure(): Observable<boolean> {
             this.port = 8080;
+            return of(true);
         }
     }
 
-##### The main class:
-
-    import { Application, HttpService } from '@nihasoft/the-way';
-    import { CustomServerConfiguration } from './configuration/custom-server.configuration';
-    ...
-    import { RestModule } from './rest-server/rest.module';
-    ...
-    @Application(
-        CustomServerConfiguration,
-        HttpService
-    )
-    export class Main {
-        @Inject() restModule: RestModule;
-        ...
-    }
-
 ### ServerConfiguration
-By the default, when you put HttpService on @Application, this will inject the httpService and configure the ServerConfiguration.
-This class will create a http server using **Express**. You can customize this behavior creating your **HttpService** and injecting a class that extends the **ServerConfiguration**. Note: Your custom **HttpService** and your **ServerConfiguration** must extends the respective class.
+This class will create a http server (if enabled) using **Express**.
 
 ### PropertiesConfiguration
 This library uses a property file in YAML format. The properties file load sequence is:
@@ -136,11 +225,10 @@ You can see the properties that the application uses at the section **Applicatio
 Also, you can create your properties file with the name "application.properties.yml" in your project's root directory or an "external" application.properties.yml passing the --properties parameter with path of the file and the file name.
 
 
-
-##### Example: Passing an external properties file:
+##### Passing an external properties file:
 `node dist/main.js --properties=D:\\projects\\libs\\theway\\application.properties.yml`
 
-##### Example: Using the PropertiesConfiguration
+##### Using the PropertiesConfiguration
 
     import { Configuration, ServerConfiguration, PropertiesConfiguration, Inject } from '@nihasoft/the-way'
 
@@ -174,59 +262,80 @@ This decorator is designed for yours services. You can pass to this decorator an
     }
 
 ### Security Service
-This service is used to verify token(when method need a authenticated user), verify user profiles (when method is allowed only for certain profiles) and to generate the token. The private keys for **CryptoService** and JWT it's harded coded and **YOU** must override this with your keys for more segurance.
-To do that, you only need to extend this class and set your **TOKEN_KEY** and **USER_PRIVATE_KEY** and inject this class inside of you main class decorated with **@Application**.
+This service is used to verify token(when method need a authenticated user), verify user profiles (when method is allowed only for certain profiles) and to generate the token. The private keys for **CryptoService** and JWT are passed in application.properties (in the default implementation. You can customize this service and implement your behavior)
 
-##### Example: 
-##### CustomSecurityService
+##### The properties 
+    the-way:
+        ...
+            server:
+            ...
+                security:
+                    user-key: '12345678901234567890123456789012'
+                    token-key: '12345678901234567890123456789034'
+
+##### A CustomSecurityService implementation
 
     import { SecurityService, Service } from '@nihasoft/the-way'
-
+    ...
     @Service(SecurityService)
     export class CustomSecurityService extends SecurityService {
-        protected TOKEN_KEY = 'MY-CUSTOM-KEY-IS-SO-BEAUTIFULL-BUT-DARTH-VADER-IS-THE-KING-WTH';
-        protected USER_PRIVATE_KEY = 'MY-CUSTOM-KEY-IS-SO-BEAUTIFULL-BUT-DARTH-VADER-IS-THE-KING-WTH';
+        ...
+        @Inject() mongoDbService: MongoDbService;
+        private userKey: string;
+        private tokenKey: string;
+        ...
+        constructor() {
+            this.loadKeysFromDatabase();
+        }
+        private loadKeysFromDatabase(): void {
+            this.mongoDbService.findOne<SystemKeys>({active: true, type: 'system'}, 'key').subscribe(
+                (key: SystemKeys) => {
+                    this.userKey = key.user;
+                    this.tokenKey = token.user;
+                }, (error: Error) => {
+                    this.logService.error(error);
+                    throw new ApplicationException('Not found or Multiples SystemKeys', 'Internal Error', 'Ru-001');
+                }
+            );
+        }
+        ...
+        protected getUserKey(): string {
+            return this.userKey;
+        }
+        protected getTokenKey(): string {
+            return this.tokenUser;
+        }
+        ....
     }
+The code above override the default **SecurityService** to retrieve the keys from the database. You can customize every method in this class, you can also change the cipher algoritmns, jwt to Oauth2.0.
 
 ##### Main class
 
     ...
-    import { HttpService, Application, Inject } from '@nihasoft/the-way'
+    import { Application } from '@nihasoft/the-way'
     ...
     import { CustomSecurityService } from './service/custom-security.service';
     ...
-    import { RestModule } from './rest/rest.module';
-    ...
-    @Application(
-        HttpService, 
-        CustomSecurityService
-    )
-    export class Main {
-        ...
-        @Inject() restModule: RestModule;
+    @Application({
+        custom: [
+            CustomServerConfiguration
+        ]
+    })
+    export class Main extends TheWayApplication {
         ...
     }
 
 ### HttpService
 When you want to use a httpserver this lib will enable your application to use more easily http and https with some decorators to make your life more simple.
-The **HttpService** Will register the paths and enable the paths for execution. To use the httpService you need to put inside of your main class decorated with **@Application**. Also, you should put too a class that extends the class **SecurityService** setting your **TOKEN_KEY** and **USER_PRIVATE_KEY**. 
+The **HttpService** Will register the paths and enable the paths for execution. To use the httpService you need to flag = true the property enabled in the application.properties.yml.
 
-##### Example:
+    the-way:
+    ...
+        server:
+            enabled: true
 
-    ...
-    import { HttpService, Application, Inject } from '@nihasoft/the-way'
-    ...
-    import { CustomSecurityService } from './service/custom-security.service';
-    ...
-    @Application(
-        HttpService, 
-        CustomSecurityService
-    )
-    export class Main {
-        ...
-    }
 
-After this, your application will be enabled to use the **RestDecorators**. Besides that, you can pass a customized class to the **@Application** but the class SHOULD extends the HttpService and **@Inject** the **SecurityService**, **ServerConfiguration** and **LogService**
+After this, your application will be enabled to use the **RestDecorators**.
 
 ### CryptoService
 You can use this service to: generate hashes, cipher, decipher and generate randomHash. You can use the algorithmns provided by **Crypto** from Node.js like: aes-cbc, aes-ecb, for hashes: Sha512, Sha256, MD5 and others.
@@ -322,12 +431,22 @@ Will read pathparam of the request and put into method using the pathparam name 
 ## @RequestingUser
 Will decrypt the token getting the user of token, after that, will inject the user on the method. Example above.
 
+## @Header
+Will insert the request header received.
+
+## @Request
+Will insert the current request.
+
+## @Response
+Will insert the response.
+
 # How to get a instance at Runtime
-you can inject or get at runtime with the CORE object, example: `CORE.getInstance().getInjectableByName('SecurityService') as SecurityService`
+you can inject or get at runtime with the CORE object, example: `CORE.getCoreInstance().getInstanceByName<SecurityService>('SecurityService')`
     
 # Application Properties
 
 The current application properties:
+
 
     the-way:
         core:
@@ -335,13 +454,17 @@ The current application properties:
         log:
             level: 0
         server:
-            port: 8080
+            enabled: true
+            port: 8081
             api-endpoint: '/api'
+            security:
+                user-key: '12345678901234567890123456789012'
+                token-key: '12345678901234567890123456789034'
             file:
-                enabled: true
-                fallback: true
+                enabled: false
+                fallback: false
                 full: false
-                path: '/dist/web-interface'
+                path: ''
                 static: 
                     path: ''
                     full: false
@@ -358,8 +481,12 @@ The **core** property is vinculated to the **CORE** class. Actualy we have only 
 The **log** is a property vinculated to the **LogService**. Actualy we have only the level property. The level property tells to the LogService what types of log will be logged.
 
 The **server** is a property vincultated to the **ServerConfiguration**. Here we have multiples properties.
+ - enabled: if true, the library will start a HttppServer;
  - port: is the port where the api and files will be served;
  - api-endpoint: is a property to tell what is the "rest" services base path;
+ - security: is used in the default implementation of the security to generate token and cipher the user inside of the token
+    - user-key: The key used to cipher the user using aes-256-cbc algorithmn;
+    - token-key: The key for the JWT token;
  - file: is used when you want to serve some files:
     - enabled: is true when you want to serve files  too;
     - fallback: is a property to tell if needs to do the fallback to the index.html when the final user is requesting an application route, like Angular routes;

@@ -10,6 +10,7 @@ import { AbstractConfiguration } from './abstract.configuration';
 import { Inject } from '../decorator/inject.decorator';
 import { Configuration } from '../decorator/configuration.decorator';
 import { PropertiesConfiguration } from './properties.configuration';
+import { Observable, of } from 'rxjs';
 
 @Configuration()
 export class ServerConfiguration extends AbstractConfiguration {
@@ -21,9 +22,10 @@ export class ServerConfiguration extends AbstractConfiguration {
   public port: number;
   protected theWayProperties: any
   
-  public configure(): void {
+  public configure(): Observable<boolean> {
     this.theWayProperties = this.propertiesConfiguration.properties['the-way'];
     this.port = this.theWayProperties.server.port;
+    return of(true);
   }
   private initializeExpress(): void {
     const corsOptions: cors.CorsOptions = {
