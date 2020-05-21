@@ -18,6 +18,16 @@ To use this library you only need:
     - Decorate your class with **@Application()**.
 
 With that you can inject classes and use everything of the library **except** the  Rest decorators and the HttpService.
+You can see more in the section **TheWayApplication** and **@Application**.
+
+##### The fast example:
+    import { TheWayApplication, Application } from '@nihasoft/the-way';
+    ...
+
+    @Application()
+    export class Main extends TheWayApplication {
+        ...
+    }
 
 ## Using the HttpService
 If you want to use the **RestDecorators** and the **HttpService** you must provide an application.properties.yml and the properties below(see more in the section **Application Properties**):
