@@ -2,7 +2,7 @@ export class ApplicationException implements Error {
     public message: string;
     public name: string;
     
-    constructor(private detail: string, private description: string, private code: any) {
+    constructor(private detail: string, private description: string, private code: string | number) {
         this.message = detail + ' -> ' + description;
     }
 
@@ -12,7 +12,7 @@ export class ApplicationException implements Error {
     public getDescription(): string {
         return this.description;
     }
-    public getCode(): number {
+    public getCode(): string | number {
         return this.code;
     }
 }

@@ -17,5 +17,5 @@ export abstract class TheWayApplication {
         });
     }
 
-    public start(): void {};
+    public abstract start(): void
 }

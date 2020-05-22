@@ -38,7 +38,7 @@ export class PropertiesConfiguration extends AbstractConfiguration {
         this.sumProperties(this.properties, defaultProperties, []);
         return true;
     }
-    private loadFile(path: string): unknown {
+    private loadFile(path: string): any {
         try {
             return Yaml.parse(fs.readFileSync(path).toString());
         } catch (ex) {
@@ -58,7 +58,7 @@ export class PropertiesConfiguration extends AbstractConfiguration {
                 if (property[defaultPropertyKey] === undefined) {
                     property[defaultPropertyKey] = defaultProperties[defaultPropertyKey];
                 } else if (defaultProperties[defaultPropertyKey].constructor == Object) {
-                    this.sumProperties(properties, defaultProperties[defaultPropertyKey], [...keys, defaultPropertyKey]);
+                    this.sumProperties(properties, defaultProperties[defaultPropertyKey] as any, [...keys, defaultPropertyKey]);
                 }
             }
         } catch(ex) {

@@ -1,12 +1,12 @@
 import { Observable, of } from 'rxjs';
 
-import { Inject, Post, BodyParam, Get, PathParam, QueryParam, RequestingUser, SecurityService} from '@nihasoft/the-way'
+import { Inject, Post, BodyParam, Get, PathParam, Header, QueryParam, TokenUser, SecurityService, Response, Request} from '@nihasoft/the-way'
 
 export class UserRest {
     @Inject() securityService: SecurityService;
 
-    @Get('/api/user/:id')
-    public getUser(@PathParam('id') id: string): Observable<any> {
+    @Get('/api/user/:id', true)
+    public getUser(@PathParam('id') id: string,  @Header header, @Request req, @Response res): Observable<any> {
         return of({
             username: "Hanor",
             profiles: [0, 1],
@@ -14,7 +14,7 @@ export class UserRest {
         });
     }
     @Get('/api/user/:id/tenants', true, [1])
-    public getUserTenants(@PathParam('id') id: string, @QueryParam param: any, @RequestingUser user: any): Observable<Array<any>> {
+    public getUserTenants(@PathParam('id') id: string, @QueryParam param: any, @TokenUser user: any): Observable<Array<any>> {
         return of([{
             username: 'anakin',
             profiles: [3],
@@ -27,7 +27,7 @@ export class UserRest {
     }
 
     @Get('/api/token/user', true)
-    public getUserToken(@RequestingUser user: any): Observable<any> {
+    public getUserToken(@TokenUser user: any): Observable<any> {
         return of(user);
     }
 

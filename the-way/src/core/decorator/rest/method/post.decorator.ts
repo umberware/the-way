@@ -4,7 +4,7 @@ import { ApplicationException } from '../../../exeption/application.exception';
 import { HttpType } from '../../../service/http/http-type.enum';
 
 export function Post(path: string, authenticated?: boolean, allowedProfiles?: Array<any>) {
-    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    return (target:  any, propertyKey: string): void => {
         CORE.getCoreInstance().ready$.subscribe((ready: boolean) => {
             if (ready) {
                 const httpService = CORE.getCoreInstance().getInstanceByName('HttpService') as HttpService;
@@ -14,7 +14,7 @@ export function Post(path: string, authenticated?: boolean, allowedProfiles?: Ar
                         'you should pass HttpService or and extended class of HttpService on Application decorator',
                         'HttpService not found', 'RU-001');
                 } else {
-                    httpService.registerPath(HttpType.POST, path, authenticated, allowedProfiles, target, propertyKey, descriptor);
+                    httpService.registerPath(HttpType.POST, path, authenticated, allowedProfiles, target, propertyKey);
                 }
             }
         })

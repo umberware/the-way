@@ -1,6 +1,6 @@
-export const RequestingUserMetaKey = Symbol('RequestingUser');
+export const TokenUserMetaKey = Symbol('TokenUser');
 
-export function RequestingUser(target: Object, propertyKey: string | symbol, parameterIndex: number) {
-    let index: number = Reflect.getOwnMetadata(RequestingUserMetaKey, target, propertyKey) || [];
-    Reflect.defineMetadata(RequestingUserMetaKey, parameterIndex, target, propertyKey);
+export function TokenUser(target:  any, propertyKey: string | symbol, parameterIndex: number): void {
+    Reflect.getOwnMetadata(TokenUserMetaKey, target, propertyKey) || [];
+    Reflect.defineMetadata(TokenUserMetaKey, parameterIndex, target, propertyKey);
 }

@@ -10,6 +10,8 @@ import { PropertiesConfiguration } from './configuration/properties.configuratio
 import { LogService } from './service/log/log.service';
 import { HttpService } from './service/http/http.service';
 import { ApplicationException } from './exeption/application.exception';
+import { LogLevel } from './service/log/log-level.enum';
+import { PropertyModel } from '../../dist/core/property.model';
 
 export class CORE {
     public static CORE_LOG_ENABLED = false;
@@ -20,13 +22,13 @@ export class CORE {
 
     private application: Object;
     private customInstances: Array<Function>;
-    private properties: any;
+    private properties: PropertyModel;
 
     private DEPENDENCIES: any = {};
     private DEPENDENCIES_TREE: any = {};
     private OVERRIDDEN_DEPENDENCIES: any = {};
     private CONFIGURATING: Array<Observable<boolean>> = [];
-    private INSTANCES: any = {};
+    private INSTANCES: Map<string, Object> = new Map();
     
     public buildApplication(): void {
         this.logInfo('Building properties', true)
@@ -42,7 +44,7 @@ export class CORE {
         this.buildHttpService();
 
         (this.getInstanceByName('LogService') as LogService).setLogLevel(
-            this.properties.log.level
+            (this.properties.log as Record<string, LogLevel>).level
         );
 
         forkJoin(this.CONFIGURATING).pipe(
@@ -67,7 +69,7 @@ export class CORE {
             this.getInstance(coreInstance.name, coreInstance);
         }
 
-        CORE.CORE_LOG_ENABLED = this.properties.core.log;
+        CORE.CORE_LOG_ENABLED = (this.properties.core as PropertyModel).log as boolean;
     }
     private buildCustomInstances(): void {
         for (const coreInstance of this.customInstances) {
@@ -79,7 +81,7 @@ export class CORE {
             const childNodes: Array<string> = [];
             const treeNode: any = this.getDependencyNode(treeNodeName, node);
 
-            for (const dependentName in this.DEPENDENCIES[treeNodeName]) {
+            for (const dependentName in this.DEPENDENCIES[treeNodeName] as any) {
                 childNodes.push(dependentName);
             }
 
@@ -93,10 +95,9 @@ export class CORE {
         const keys = Object.keys(this.DEPENDENCIES);
 
         for (let i = 0; i < keys.length; i++) {
-            const dependentA = this.DEPENDENCIES[keys[i]];
             let isNode = true;
             for (let j = 0; j < keys.length; j++) {
-                const dependentB = this.DEPENDENCIES[keys[j]];
+                const dependentB = this.DEPENDENCIES[keys[j]] as any;
                 if (dependentB[keys[i]]) {
                     isNode = false;
                 }
@@ -107,7 +108,7 @@ export class CORE {
         }
 
         this.buildDependencyTree(treeNodes, this.DEPENDENCIES_TREE);
-        
+
         if (CORE.CORE_LOG_ENABLED) {
             console.log(this.DEPENDENCIES_TREE);
         }
@@ -124,18 +125,19 @@ export class CORE {
     }
     private buildInstances(treeNodesNames: Array<string>, node: any, parentName: string | null): void {
         for (const treeNodeName of treeNodesNames) {
-            const childNodes = Object.keys(node[treeNodeName]);
+            const childNodes = Object.keys(node[treeNodeName] as any);
 
             if (childNodes.length > 0) {
-                this.buildInstances(childNodes, node[treeNodeName], treeNodeName);
+                this.buildInstances(childNodes, node[treeNodeName] as any, treeNodeName);
             }
 
             if (parentName) {
                 const dependent = (parentName.includes(':')) ? parentName.split(':')[0] : parentName;
                 const dependency = (treeNodeName.includes(':')) ? treeNodeName.split(':')[0] : treeNodeName;
-                const dependencyInformation = this.DEPENDENCIES[dependent][dependency];
+                const dependencyInformation = (this.DEPENDENCIES[dependent] as any)[dependency] as any;
                 const instance = this.getInstance(dependency, dependencyInformation.constructor) as Function;
-                Reflect.set(dependencyInformation.target, dependencyInformation.key, instance);
+                const target = dependencyInformation.target as Function;
+                Reflect.set(target, dependencyInformation.key as string, instance);
                 
                 let found = 'Not found';
 
@@ -143,13 +145,14 @@ export class CORE {
                     found = instance.constructor.name
                 }
 
-                this.logInfo('Injecting:\n   Target: ' + dependencyInformation.target.constructor.name + '\n   Injectable: ' +
+                this.logInfo('Injecting:\n   Target: ' + target.constructor.name + '\n   Injectable: ' +
                 dependencyInformation.constructor.name + '\n   Found: ' + found);
             }
         }
     }
     private buildHttpService(): void {
-        if (this.properties.server.enabled) {
+        const serverProperties = this.properties.server as any
+        if (serverProperties.enabled) {
             this.logInfo('Building HttpService', true)
             this.getInstance(HttpService.name, HttpService);
         }
@@ -157,11 +160,11 @@ export class CORE {
     public buildMain(application: Function): void {
         this.buildObject(application.prototype);
     }
-    public buildObject(prototype: any): Object {
+    public buildObject<T>(prototype: Function): T {
         return new (Object.create(prototype)).constructor();
     }
-    private buildProperties(): any {
-        this.properties = this.getInstance<PropertiesConfiguration>(PropertiesConfiguration.name, PropertiesConfiguration).properties['the-way'];
+    private buildProperties(): void {
+        this.properties = this.getInstance<PropertiesConfiguration>(PropertiesConfiguration.name, PropertiesConfiguration).properties['the-way'] as PropertyModel;
     }
     public getApplicationInstance(): Object {
         return this.application;
@@ -176,12 +179,13 @@ export class CORE {
         if (!this.OVERRIDDEN_DEPENDENCIES[treeNodeName]) {
             return node[treeNodeName] = {};
         } else {
-            return node[treeNodeName + ':' + this.OVERRIDDEN_DEPENDENCIES[treeNodeName].name] = {};
+            const overridden = this.OVERRIDDEN_DEPENDENCIES[treeNodeName] as any;
+            return node[treeNodeName + ':' + overridden.name] = {};
         }
     }
     private getInstance<T>(instanceableName: string, constructor: Function): T {
         const {realInstanceableName, realConstructor} =  this.getRealInstanceNameAndConstructor(instanceableName, constructor);
-        const instance = this.INSTANCES[realInstanceableName];
+        const instance = this.INSTANCES.get(realInstanceableName) as T;
         if (!instance) {
             return this.buildInstance(realInstanceableName, realConstructor);
         } else {
@@ -189,28 +193,28 @@ export class CORE {
         }
     }
     public getInstanceByName<T>(name: string): T {
-        const overridden = this.OVERRIDDEN_DEPENDENCIES[name];
+        const overridden = this.OVERRIDDEN_DEPENDENCIES[name] as any;
         
         if (overridden) {
-            name = overridden.name;
+            name = overridden.name as string;
         }
-        return this.INSTANCES[name];
+        return this.INSTANCES.get(name) as T;
     }
-    public getInstances(): Map<String, Object> {
+    public getInstances(): Map<string, Object> {
         return this.INSTANCES;
     }
-    private getRealInstanceNameAndConstructor(instanceableName: string, constructor?: Function): {realInstanceableName: string, realConstructor?: Function} {
+    private getRealInstanceNameAndConstructor(instanceableName: string, constructor?: Function): {realInstanceableName: string; realConstructor?: Function} {
         const realInstanceableName = instanceableName;
         const realConstructor = constructor;
-        const overridden = this.OVERRIDDEN_DEPENDENCIES[instanceableName];
+        const overridden = this.OVERRIDDEN_DEPENDENCIES[instanceableName] as any;
         if (overridden) {
-            instanceableName = overridden.name;
+            instanceableName = overridden.name as string;
             constructor = overridden.constructor;
         }
         return {realInstanceableName, realConstructor};
     }
-    private handleInstance(instanceableName: string, instance: Object, decorators: Array<string>): void {
-        this.INSTANCES[instanceableName] = instance;
+    private handleInstance<T>(instanceableName: string, instance: T, decorators: Array<string>): void {
+        this.INSTANCES.set(instanceableName, instance as Object);
         if (decorators.includes(ConfigurationMetaKey) && instance instanceof AbstractConfiguration) {
             this.CONFIGURATING.push((instance as AbstractConfiguration).configure());
         }
@@ -220,13 +224,13 @@ export class CORE {
             console.log('[The Way] ' + message);
         }
     }
-    public overridenDependency(overridden: string, constructor: Function) : void {
+    public overridenDependency(overridden: string, constructor: Function): void {
         this.OVERRIDDEN_DEPENDENCIES[overridden] = {
             name: constructor.name,
             constructor: constructor
         };
     }
-    public registerDependency(constructor: Function, target: any, key: string): void {
+    public registerDependency(constructor: Function, target: Function, key: string): void {
         const dependentName: string = target.constructor.name;
         const dependencyName: string = constructor.name;
 
@@ -234,7 +238,7 @@ export class CORE {
             this.DEPENDENCIES[dependentName] = {};
         }
 
-        this.DEPENDENCIES[dependentName][dependencyName] = {
+        (this.DEPENDENCIES[dependentName] as any)[dependencyName] = {
             constructor: constructor,
             target: target,
             key: key

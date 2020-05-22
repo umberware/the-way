@@ -4,8 +4,6 @@ import { LogLevel } from './log-level.enum';
 export class LogService {
     
     level: LogLevel;
-    
-    constructor() {}
 
     public error(error: Error): void {
         if (error instanceof ApplicationException) {

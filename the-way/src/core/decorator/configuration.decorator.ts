@@ -1,9 +1,9 @@
-import { CORE } from "../core";
+import { CORE } from '../core';
 
 export const ConfigurationMetaKey = 'Configuration';
 
-export function Configuration(over?: any) {
-    return (constructor: Function) => {
+export function Configuration(over?: Function) {
+    return (constructor: Function): void => {
         if (over) {
             const coreInstance = CORE.getCoreInstance();
             if (CORE.CORE_LOG_ENABLED) {

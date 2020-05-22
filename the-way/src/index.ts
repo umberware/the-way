@@ -5,7 +5,7 @@ export { Configuration, ConfigurationMetaKey} from './core/decorator/configurati
 export { Service, ServiceMetaKey} from './core/decorator/service.decorator';
 export { PathParam, PathParamMetadataKey} from './core/decorator/rest/param/path-param.decorator';
 export { BodyParam, BodyParamMetadataKey} from './core/decorator/rest/param/body-param.decorator';
-export { RequestingUser, RequestingUserMetaKey} from './core/decorator/rest/param/requesting-user.decorator';
+export { TokenUser, TokenUserMetaKey} from './core/decorator/rest/param/requesting-user.decorator';
 export { QueryParam, QueryParamMetadataKey} from './core/decorator/rest/param/query-param.decorator';
 export { Post } from './core/decorator/rest/method/post.decorator';
 export { Get } from './core/decorator/rest/method/get.decorator';
@@ -27,3 +27,6 @@ export { AbstractConfiguration }  from './core/configuration/abstract.configurat
 export { ServerConfiguration } from './core/configuration/server.configuration';
 export { PropertiesConfiguration } from './core/configuration/properties.configuration';
 export { TheWayApplication } from './core/the-way-application';
+export { Header } from './core/decorator/rest/param/header.decorator';
+export { Request } from './core/decorator/rest/param/request.decorator';
+export { Response } from './core/decorator/rest/param/response.decorator';

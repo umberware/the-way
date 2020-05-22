@@ -1,6 +1,7 @@
 
-[![Version](https://img.shields.io/badge/Version-0.3.0-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
-[![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/bpmn-flows/master/LICENSE)
+[![Version](https://img.shields.io/badge/Version-0.3.1-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
+[![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/LICENSE)
+[![License](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
 [![Build Status](https://travis-ci.org/nihasoft/the-way.svg?branch=master)](https://travis-ci.org/nihasoft/bpmn-flows)
 [![Donate](https://img.shields.io/badge/%24-Donate-blue.svg)](https://www.paypal.com/donate/?token=Ov4xNE4bAuZWCSF9e0BjGy75laGShREyS7BDFs-oQSwMsGOVEzDZAq9VDVNKmaCewqrBUW&country.x=BR&locale.x=BR)
 
@@ -11,6 +12,17 @@ The examples in this readme can be viewed in the github in the [the-way-demos di
 
 Note: We support application properties with YAML format. See the section **Properties Configuration** and **Application Properties**.
 
+
+# Features
+
+    - More simple to map and use the Rest paths/methods concepts;
+    - Rest injections like: bodyParam(for put and post), pathParam, header, queryParam and others;
+    - Helpful decorators;
+    - Object injection;
+    - Class overridden (for injection);
+    - With a configuration to retrieve the properties from an application.properties.yml;
+    - And wonderful things =)
+
 # Fast Setup
 To use this library you only need:
 
@@ -18,6 +30,16 @@ To use this library you only need:
     - Decorate your class with **@Application()**.
 
 With that you can inject classes and use everything of the library **except** the  Rest decorators and the HttpService.
+You can see more in the section **TheWayApplication** and **@Application**.
+
+##### The fast example:
+    import { TheWayApplication, Application } from '@nihasoft/the-way';
+    ...
+
+    @Application()
+    export class Main extends TheWayApplication {
+        ...
+    }
 
 ## Using the HttpService
 If you want to use the **RestDecorators** and the **HttpService** you must provide an application.properties.yml and the properties below(see more in the section **Application Properties**):

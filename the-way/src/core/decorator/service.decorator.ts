@@ -2,8 +2,8 @@ import { CORE } from '../core';
 
 export const ServiceMetaKey = 'Service';
 
-export function Service(over?: any) {
-    return (constructor: Function) => {
+export function Service(over?: Function ) {
+    return (constructor: Function): void => {
         if (over) {
             const coreInstance = CORE.getCoreInstance();
             if (CORE.CORE_LOG_ENABLED) {

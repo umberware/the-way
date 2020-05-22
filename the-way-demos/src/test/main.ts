@@ -1,8 +1,11 @@
 import { Inject, PropertiesConfiguration, TheWayApplication, Application } from '@nihasoft/the-way';
 
+import { map, switchMap } from 'rxjs/operators'
+
 import { CustomServerConfiguration } from './configuration/custom-server.configuration';
 import { RestModule } from './rest-server/rest.module';
 import { RestClientService } from './rest-client/rest-client.service';
+
 
 @Application({
     custom: [
@@ -15,27 +18,11 @@ export class Main extends TheWayApplication {
     @Inject() restClient: RestClientService; // Only to test if the library is working.
 
     public start(): void {
-        this.restClient.signIn(8080).subscribe(
-            (credentials: any) => {
-                console.log('Credencias: ' + JSON.stringify(credentials));
-                this.restClient.getUserTenants(8080, credentials.token).subscribe(
-                    (users: Array<any>) => {
-                        console.log(users);
-                        this.restClient.getToken(8080, credentials.token).subscribe(
-                            (user: any) => {
-                                console.log('Usuário: ' + JSON.stringify(user));
-                            }, (error) => {
-                                console.log(error);
-                            }
-                        );
-                    }, (error) => {
-                        console.log(error);
-                    }
-                );
-            }, (error) => {
-                console.log(error);
-            });
+        this.restClient.signIn(8080).pipe(
+            switchMap((credentials: any) => {
+                const token = credentials.token;
+                return this.restClient.getUserById(8080, token, 10);
+            })
+        ).subscribe();
     }
 }
-
-// new Main()

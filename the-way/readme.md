@@ -1,6 +1,7 @@
 
-[![Version](https://img.shields.io/badge/Version-0.3.0-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
-[![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/bpmn-flows/master/LICENSE)
+[![Version](https://img.shields.io/badge/Version-0.3.1-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
+[![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/LICENSE)
+[![License](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
 [![Build Status](https://travis-ci.org/nihasoft/the-way.svg?branch=master)](https://travis-ci.org/nihasoft/bpmn-flows)
 [![Donate](https://img.shields.io/badge/%24-Donate-blue.svg)](https://www.paypal.com/donate/?token=Ov4xNE4bAuZWCSF9e0BjGy75laGShREyS7BDFs-oQSwMsGOVEzDZAq9VDVNKmaCewqrBUW&country.x=BR&locale.x=BR)
 
@@ -10,6 +11,17 @@ You can customize some behaviors with custom Classes and injecting this classes 
 The examples in this readme can be viewed in the github in the [the-way-demos directory](https://github.com/nihasoft/the-way/tree/master/the-way-demos)
 
 Note: We support application properties with YAML format. See the section **Properties Configuration** and **Application Properties**.
+
+
+# Features
+
+    - More simple to map and use the Rest paths/methods concepts;
+    - Rest injections like: bodyParam(for put and post), pathParam, header, queryParam and others;
+    - Helpful decorators;
+    - Object injection;
+    - Class overridden (for injection);
+    - With a configuration to retrieve the properties from an application.properties.yml;
+    - And wonderful things =)
 
 # Fast Setup
 To use this library you only need:
@@ -365,7 +377,7 @@ This service is used to cipher and decipher the user inside the token. It's call
 With the decorators below you can define an endpoint, make this endpoint be allowed only if the user is logged in and you can allow the rest method if the user has a certain profile. Every method decorated with the decorators below **MUST** return an **Observable** of **RXJS**.
 
 ## @Get and @Del
-You can inject the **@QueryParam**, **@RequestingUser** and **@PathParam** into your method.
+You can inject the **@QueryParam**, **@TokenUser** and **@PathParam** into your method.
 
 ##### Example: @Get with @PathParam
 
@@ -386,23 +398,23 @@ You can inject the **@QueryParam**, **@RequestingUser** and **@PathParam** into 
         ...
     }
 
-##### Example: @Get with @PathParam, @RequestingUser and @QueryParam. This method the user must be logged in and has the profile "1"
+##### Example: @Get with @PathParam, @TokenUser and @QueryParam. This method the user must be logged in and has the profile "1"
 
-    import { Get, PathParam, QueryParam, RequestingUser} from '@nihasoft/the-way'
+    import { Get, PathParam, QueryParam, TokenUser} from '@nihasoft/the-way'
 
     import { Observable, of } from 'rxjs';
 
     export class UserRest {
         ...
         @Get('/api/user/:id/tenants', true, [1])
-        public getUserTenants(@PathParam('id') id: string, @QueryParam param: any, @RequestingUser user: any): Observable<Array<any>> {
+        public getUserTenants(@PathParam('id') id: string, @QueryParam param: any, @TokenUser user: any): Observable<Array<any>> {
             return of([]);
         }
         ...
     }
 
 ## @Post and @Put
-You can inject the **@BodyParam**, **@RequestingUser** and **@PathParam** into you method.
+You can inject the **@BodyParam**, **@TokenUser** and **@PathParam** into you method.
 
 ##### Example: @Post with @BodyParam
 
@@ -438,7 +450,7 @@ Will read all queryparam of the request and build an object with that. Example a
 ## @PathParam
 Will read pathparam of the request and put into method using the pathparam name (:param, :id...). Example above;
 
-## @RequestingUser
+## @TokenUser
 Will decrypt the token getting the user of token, after that, will inject the user on the method. Example above.
 
 ## @Header

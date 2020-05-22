@@ -14,65 +14,73 @@ import { Observable, of } from 'rxjs';
 
 @Configuration()
 export class ServerConfiguration extends AbstractConfiguration {
-  @Inject() logService: LogService;
-  @Inject() propertiesConfiguration: PropertiesConfiguration;
+    @Inject() logService: LogService;
+    @Inject() propertiesConfiguration: PropertiesConfiguration;
 
-  public context: any;
-  public server: http.Server;
-  public port: number;
-  protected theWayProperties: any
-  
-  public configure(): Observable<boolean> {
-    this.theWayProperties = this.propertiesConfiguration.properties['the-way'];
-    this.port = this.theWayProperties.server.port;
-    return of(true);
-  }
-  private initializeExpress(): void {
-    const corsOptions: cors.CorsOptions = {
-      origin: true
-    }
-    this.context = express();
-    this.context
-      .use(cors(corsOptions))
-      .use(morgan('dev'))
-      .use(bodyParser.json())
-      .use(helmet())
-      .disable('x-powered-by')
-      .use(bodyParser.urlencoded({ extended: false }))
-
-    if (this.theWayProperties.server.file.enabled)   {
-      this.initializeFileServer();
-    }
+    public context: any;
+    public server: http.Server;
+    public port: number;
+    protected theWayProperties: any;
+    protected serverProperties: any;
     
-    this.server = http.createServer(this.context);
-  }
-  public initializeFileServer(): void {
-    const server = this.theWayProperties.server;
-    const fileProperties = server.file;
-    const dirName = process.cwd();
-    let filePath: string = (fileProperties.full) ? fileProperties.path : dirName + fileProperties.path;
-
-    if (fileProperties.assets && fileProperties.assets.path !== '') {
-      const assetsPath = (fileProperties.assets.full) ? fileProperties.assets.path : filePath + fileProperties.assets.path;
-      this.context.use('/assets', express.static(assetsPath));
-    } 
-
-    if (fileProperties.static && fileProperties.static.path !== '') {
-      const staticPath = (fileProperties.static.full) ? fileProperties.static.path : filePath + fileProperties.static.path;
-      this.context.use('/static', express.static(staticPath));
+    constructor() {
+        super();
+        this.theWayProperties = this.propertiesConfiguration.properties['the-way']
+        this.serverProperties = this.theWayProperties.server;
     }
-    this.context.get('/*', (req: any, res: any, next: Function) => {
-      if (req.path === '/' || (fileProperties.fallback && !req.path.includes(server['api-endpoint']))) {
-        res.sendFile(filePath + '/index.html');
-      } else {
-        next();
-      }
-    });
-  }
-  public start() {
-    this.initializeExpress();
-    this.server.listen(this.port, () => {
-      this.logService.info(`Server started on port ${this.port}`);
-    });
-  }
+
+    public configure(): Observable<boolean> {
+        this.port =  this.serverProperties.port as number;
+        return of(true);
+    }
+    private initializeExpress(): void {
+        const corsOptions: cors.CorsOptions = {
+            origin: true
+        }
+        this.context = express();
+        this.context
+            .use(cors(corsOptions))
+            .use(morgan('dev'))
+            .use(bodyParser.json())
+            .use(helmet())
+            .disable('x-powered-by')
+            .use(bodyParser.urlencoded({ extended: false }))
+
+        if (this.serverProperties.file.enabled)   {
+            this.initializeFileServer();
+        }
+        
+        this.server = http.createServer(this.context);
+    }
+    public initializeFileServer(): void {
+        const server = this.theWayProperties.server;
+        const fileProperties = server.file as any;
+        const dirName = process.cwd();
+        const filePath: string = (fileProperties.full) ? fileProperties.path as string : dirName + fileProperties.path as string;
+        const assets = fileProperties.assets as any;
+        const staticProperty = fileProperties.assets as any;
+
+        if (assets && assets.path !== '') {
+            const assetsPath: string = (assets.full) ? assets.path as string: filePath + assets.path as string;
+            this.context.use('/assets', express.static(assetsPath));
+        } 
+
+        if (staticProperty && staticProperty.path !== '') {
+            const staticPath = (staticProperty.full) ? staticProperty.path as string : filePath + staticProperty.path as string;
+            this.context.use('/static', express.static(staticPath));
+        }
+        this.context.get('/*', (req: any, res: any, next: Function) => {
+            if (req.path === '/' || (fileProperties.fallback && !(req.path as string).includes(server['api-endpoint'] as string))) {
+                (res.sendFile as Function)(filePath + '/index.html');
+            } else {
+                next();
+            }
+        });
+    }
+    public start(): void {
+        this.initializeExpress();
+        this.server.listen(this.port, () => {
+            this.logService.info(`Server started on port ${this.port}`);
+        });
+    }
 }

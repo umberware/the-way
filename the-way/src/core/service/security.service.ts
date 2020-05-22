@@ -12,46 +12,49 @@ export abstract class SecurityService {
 
     @Inject() propertiesConfiguration: PropertiesConfiguration;
 
-    constructor() {}
-
-    public generateToken(user: any): string {
+    public generateToken(user: unknown): string {
         const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
         const cryptedUser: string = cryptoService.cipherIv(JSON.stringify(user), 'aes-256-cbc', this.getUserKey());
         return Jwt.sign({data: cryptedUser}, this.getTokenKey(), { expiresIn: '3 days' });
     }
-    public getDecodedUser(token: string): any {
+    public getDecodedUser(token: string): Record<string, never> {
         const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
-        const claims: any = Jwt.verify(token, this.getTokenKey());
-        return JSON.parse(cryptoService.decipherIv(claims.data, 'aes-256-cbc', this.getUserKey()));
+        const claims = Jwt.verify(token, this.getTokenKey()) as {data: string};
+        if (claims.data) {
+            return JSON.parse(cryptoService.decipherIv(claims.data, 'aes-256-cbc', this.getUserKey()));    
+        } else {
+            return {};
+        }
     }
     protected getUserKey(): string {
-        const theWayProperties = this.propertiesConfiguration.properties['the-way'];
-        return theWayProperties.server.security['user-key'];
+        const theWayProperties = this.propertiesConfiguration.properties['the-way'] as any;
+        const serverProperties = theWayProperties['server'] as any;
+        return (serverProperties.security as any)['user-key'] as string;
     }
     protected getTokenKey(): string {
-        const theWayProperties = this.propertiesConfiguration.properties['the-way'];
-        return theWayProperties.server.security['token-key'];
+        const theWayProperties = this.propertiesConfiguration.properties['the-way'] as any;
+        const serverProperties = theWayProperties['server'] as any;
+        return (serverProperties.security as any)['token-key'] as string;
     }
-    protected verifyProfile(user: any, profiles: Array<any>) {
-        for (let profile of profiles) {
-          if (user.profiles.includes(profile)) {
-            return;
-          }
+    protected verifyProfile(userProfiles: Array<unknown>, profiles: Array<unknown>): void{
+        for (const profile of profiles) {
+            if (userProfiles.includes(profile)) {
+                return;
+            }
         }
     
         throw new NotAllowedException('You cannot perform that.');
     }
-    public verifyToken(token: string, profiles: Array<any> | undefined): any {
+    public verifyToken(token: string, profiles: Array<unknown> | undefined): Object {
         try {
             if (!token) {
                 throw new NotAllowedException('You have no token.');
             }
             token = token.replace('Bearer ', '');
-            let decodedUser = this.getDecodedUser(token);
-            let tokenUser: any = decodedUser;
+            const tokenUser: Record<string, never> = this.getDecodedUser(token);
 
             if (profiles && profiles.length > 0) {
-                this.verifyProfile(tokenUser, profiles);
+                this.verifyProfile(tokenUser.profiles, profiles);
             }
 
             return tokenUser;
