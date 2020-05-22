@@ -377,7 +377,7 @@ This service is used to cipher and decipher the user inside the token. It's call
 With the decorators below you can define an endpoint, make this endpoint be allowed only if the user is logged in and you can allow the rest method if the user has a certain profile. Every method decorated with the decorators below **MUST** return an **Observable** of **RXJS**.
 
 ## @Get and @Del
-You can inject the **@QueryParam**, **@TokenUser** and **@PathParam** into your method.
+You can inject the **@QueryParam**, **@RequestingUser** and **@PathParam** into your method.
 
 ##### Example: @Get with @PathParam
 
@@ -398,23 +398,23 @@ You can inject the **@QueryParam**, **@TokenUser** and **@PathParam** into your 
         ...
     }
 
-##### Example: @Get with @PathParam, @TokenUser and @QueryParam. This method the user must be logged in and has the profile "1"
+##### Example: @Get with @PathParam, @RequestingUser and @QueryParam. This method the user must be logged in and has the profile "1"
 
-    import { Get, PathParam, QueryParam, TokenUser} from '@nihasoft/the-way'
+    import { Get, PathParam, QueryParam, RequestingUser} from '@nihasoft/the-way'
 
     import { Observable, of } from 'rxjs';
 
     export class UserRest {
         ...
         @Get('/api/user/:id/tenants', true, [1])
-        public getUserTenants(@PathParam('id') id: string, @QueryParam param: any, @TokenUser user: any): Observable<Array<any>> {
+        public getUserTenants(@PathParam('id') id: string, @QueryParam param: any, @RequestingUser user: any): Observable<Array<any>> {
             return of([]);
         }
         ...
     }
 
 ## @Post and @Put
-You can inject the **@BodyParam**, **@TokenUser** and **@PathParam** into you method.
+You can inject the **@BodyParam**, **@RequestingUser** and **@PathParam** into you method.
 
 ##### Example: @Post with @BodyParam
 
@@ -450,7 +450,7 @@ Will read all queryparam of the request and build an object with that. Example a
 ## @PathParam
 Will read pathparam of the request and put into method using the pathparam name (:param, :id...). Example above;
 
-## @TokenUser
+## @RequestingUser
 Will decrypt the token getting the user of token, after that, will inject the user on the method. Example above.
 
 ## @Header
