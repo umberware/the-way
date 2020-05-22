@@ -1,0 +1,12 @@
+the-way:
+  core:
+    log: true
+  log:
+    level: 0
+  server:
+    enabled: true
+    port: 7070
+    api-endpoint: '/api'
+    security:
+      user-key: '12345678901234567890123456789012'
+      token-key: '12345678901234567890123456789034'

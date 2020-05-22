@@ -1,6 +1,0 @@
-{
-    "watch": ["src", "D:\\projects\\libs\\theway\\the-way\\dist"],
-    "ext": "ts",
-    "ignore": ["src/**/*.spec.ts", "node_modules/**", "src/**/*.js"],
-    "exec": "yarn build && yarn test"
-  }

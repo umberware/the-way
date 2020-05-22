@@ -1,0 +1,12 @@
+tsconfig.json
+yarn.lock
+yarn-error.log
+src
+test
+.eslintignore
+.eslintrc
+.editorconfig
+.gitignore
+.travis.yml
+application-test.properties.yml
+application.properties.yml

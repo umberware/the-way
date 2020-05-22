@@ -1,0 +1,16 @@
+language: node_js
+node_js: 
+  - "stable"
+cache:
+  directories:
+    - "node_modules"
+before_script:
+  - yarn install
+script:
+  - yarn buildx
+branches:
+  only:
+    - "master"
+    - "dev"
+after_success:
+  - bash <(curl -s https://codecov.io/bash) -t a5898a5e-8445-4608-8cde-8cb7305e0715

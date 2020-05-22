@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "outDir": "./dist/src/main/",
+    "strict": true,
+    "declaration": true,
+    "strictPropertyInitialization": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": false
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "src/main/**/*.ts",
+    "src/main/**/*.json"
+  ]
+}

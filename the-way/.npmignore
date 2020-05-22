@@ -1,7 +1,0 @@
-tsconfig.json
-yarn.lock
-yarn-error.log
-src
-test
-.eslintignore
-.eslintrc

@@ -1,17 +1,16 @@
 
-[![Version](https://img.shields.io/badge/Version-0.3.2-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
+[![Version](https://img.shields.io/badge/Version-0.3.4-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
 [![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/LICENSE)
-[![License](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
-[![Build Status](https://travis-ci.org/nihasoft/the-way.svg?branch=master)](https://travis-ci.org/nihasoft/bpmn-flows)
+[![EsLint](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/the-way/.eslintrc)
+[![Build Status](https://travis-ci.com/nihasoft/the-way.svg?branch=master)](https://travis-ci.org/nihasoft/bpmn-flows)
 [![Donate](https://img.shields.io/badge/%24-Donate-blue.svg)](https://www.paypal.com/donate/?token=Ov4xNE4bAuZWCSF9e0BjGy75laGShREyS7BDFs-oQSwMsGOVEzDZAq9VDVNKmaCewqrBUW&country.x=BR&locale.x=BR)
 
 # The Way
 This library will allow your application to @Inject some classes and use more easily the @Rest with some decorators.
 You can customize some behaviors with custom Classes and injecting this classes in the @Application decorator. Please, read the full documentation for more knowledge.
-The examples in this readme can be viewed in the github in the [the-way-demos directory](https://github.com/nihasoft/the-way/tree/master/the-way-demos)
+The examples in this readme can be viewed in the github in the [the-way-demos directory](https://github.com/nihasoft/the-way/tree/master/src/test).
 
 Note: We support application properties with YAML format. See the section **Properties Configuration** and **Application Properties**.
-
 
 # Features
 
@@ -58,6 +57,7 @@ Besides, this library allow you to generate token's with JWT to use this feature
             security:
                 user-key: '12345678901234567890123456789012'
                 token-key: '12345678901234567890123456789034'
+
 Where the keys MUST be 32 bytes like the example above.
 
 ## Customizing the things
@@ -214,7 +214,7 @@ When you want to **Inject** some class into your class this decorator do it for 
 The code above, will create a **UserRest** and **HeroRest** to be injected in **RestModule** class.
 
 ## @Configuration
-When you want to configure or prepare some thing, this decorator can help you. The classes decorated with this decoration will execute the method "configure" when the class is being instantiated. To use correctly this decorator your configure class **MUST** extends the **AbstractConfiguration**  and implement the method configure, besides that the class must have the @Configuration() decorator. Also, you can pass an argument(a class) to this decorator to be overridden, same behavior of **@Service** at this point.
+When you want to configure or prepare some thing, this decorator can help you. The classes decorated with this decoration will execute the method "configure" when the class is being instantiated. To use correctly this decorator your configure class **MUST** extends the **AbstractConfiguration**  and implement the method configure, besides that the class must have the **@Configuration()** decorator. Also, you can pass an argument(a class) to this decorator to be overridden, same behavior of **@Service** at this point.
 
 ##### CustomServerConfiguration: By the default this library will start a server in port 8081(when was passed the **HttpService**) the class below will override the property `port` to be 8080.
 
@@ -242,7 +242,7 @@ This library uses a property file in YAML format. The properties file load seque
 After this, we load the default properties and we merge this with the properties found in the file, preserving the properties passed. If no file is passed or found, the library will use the default properties.
 You can **@Inject** the **PropertiesConfiguration** into your class to use the properties.
 
-You can see the properties that the application uses at the section **Application Properties** or in the file [application.properties.yml](https://github.com/nihasoft/the-way/blob/master/the-way/application.properties.yml).
+You can see the properties that the application uses at the section **Application Properties** or in the file [application.properties.yml](https://raw.githubusercontent.com/nihasoft/the-way/master/application.properties.yml).
 
 Also, you can create your properties file with the name "application.properties.yml" in your project's root directory or an "external" application.properties.yml passing the --properties parameter with path of the file and the file name.
 
@@ -332,11 +332,11 @@ The private keys for **CryptoService** and JWT are passed in application.propert
             return this.userKey;
         }
         protected getTokenKey(): string {
-            return this.TokenClaims;
+            return this.tokenKey;
         }
         ....
     }
-The code above override the default **SecurityService** to retrieve the keys from the database. You can customize every method in this class, you can also change the cipher algoritmns, jwt to Oauth2.0.
+The code above override the default **SecurityService** to retrieve the keys from the database. You can customize every method in this class, you can also change the cipher algorithms, jwt to Oauth2.0.
 
 ##### Main class
 
@@ -457,7 +457,7 @@ Will read all queryparam of the request and build an object with that. Example a
 ## @PathParam
 Will read pathparam of the request and put into method using the pathparam name (:param, :id...). Example above;
 
-## @TokenClaims
+## @Claims
 Will decrypt the token getting the data(claims) and will inject the TokenClaims on the method. Example above.
 
 ## @Header
