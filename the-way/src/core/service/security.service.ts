@@ -7,17 +7,18 @@ import { CORE } from '../core';
 import { CryptoService } from './crypto.service';
 import { PropertiesConfiguration } from '../configuration/properties.configuration';
 import { Inject } from '../decorator/inject.decorator';
+import { TokenClaims } from '../model/token-claims.model';
 
-export abstract class SecurityService {
+export class SecurityService {
 
     @Inject() propertiesConfiguration: PropertiesConfiguration;
 
-    public generateToken(user: unknown): string {
+    public generateToken(tokenClaims: TokenClaims): string {
         const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
-        const cryptedUser: string = cryptoService.cipherIv(JSON.stringify(user), 'aes-256-cbc', this.getUserKey());
+        const cryptedUser: string = cryptoService.cipherIv(JSON.stringify(tokenClaims), 'aes-256-cbc', this.getUserKey());
         return Jwt.sign({data: cryptedUser}, this.getTokenKey(), { expiresIn: '3 days' });
     }
-    public getDecodedUser(token: string): Record<string, never> {
+    public getTokenClaims(token: string): TokenClaims {
         const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
         const claims = Jwt.verify(token, this.getTokenKey()) as {data: string};
         if (claims.data) {
@@ -36,28 +37,32 @@ export abstract class SecurityService {
         const serverProperties = theWayProperties['server'] as any;
         return (serverProperties.security as any)['token-key'] as string;
     }
-    protected verifyProfile(userProfiles: Array<unknown>, profiles: Array<unknown>): void{
-        for (const profile of profiles) {
-            if (userProfiles.includes(profile)) {
-                return;
+    protected mustValidateTheProfiles(tokenProfiles: Array<any>, profiles: Array<any> | undefined): boolean {
+        return profiles != undefined && profiles.length > 0 && tokenProfiles && tokenProfiles.length > 0;
+    }
+    protected verifyProfile(tokenProfiles: Array<any>, profiles: Array<any> | undefined): void{
+        if (profiles != undefined) {
+            for (const profile of profiles) {
+                if (tokenProfiles.includes(profile)) {
+                    return;
+                }
             }
         }
     
         throw new NotAllowedException('You cannot perform that.');
     }
-    public verifyToken(token: string, profiles: Array<unknown> | undefined): Object {
+    public verifyToken(token: string, profiles: Array<any> | undefined): TokenClaims {
         try {
             if (!token) {
                 throw new NotAllowedException('You have no token.');
             }
-            token = token.replace('Bearer ', '');
-            const tokenUser: Record<string, never> = this.getDecodedUser(token);
+            const tokenClaims: TokenClaims = this.getTokenClaims(token.replace('Bearer ', ''));
 
-            if (profiles && profiles.length > 0) {
-                this.verifyProfile(tokenUser.profiles, profiles);
+            if (this.mustValidateTheProfiles(tokenClaims.profiles, profiles)) {
+                this.verifyProfile(tokenClaims.profiles, profiles);
             }
 
-            return tokenUser;
+            return tokenClaims;
         } catch(ex) {
             if (ex instanceof ApplicationException) {
                 throw ex;

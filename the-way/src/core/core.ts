@@ -10,8 +10,7 @@ import { PropertiesConfiguration } from './configuration/properties.configuratio
 import { LogService } from './service/log/log.service';
 import { HttpService } from './service/http/http.service';
 import { ApplicationException } from './exeption/application.exception';
-import { LogLevel } from './service/log/log-level.enum';
-import { PropertyModel } from '../../dist/core/property.model';
+import { ServerConfiguration } from './configuration/server.configuration';
 
 export class CORE {
     public static CORE_LOG_ENABLED = false;
@@ -22,7 +21,7 @@ export class CORE {
 
     private application: Object;
     private customInstances: Array<Function>;
-    private properties: PropertyModel;
+    private properties: any;
 
     private DEPENDENCIES: any = {};
     private DEPENDENCIES_TREE: any = {};
@@ -44,7 +43,7 @@ export class CORE {
         this.buildHttpService();
 
         (this.getInstanceByName('LogService') as LogService).setLogLevel(
-            (this.properties.log as Record<string, LogLevel>).level
+            this.properties.log.level
         );
 
         forkJoin(this.CONFIGURATING).pipe(
@@ -69,7 +68,7 @@ export class CORE {
             this.getInstance(coreInstance.name, coreInstance);
         }
 
-        CORE.CORE_LOG_ENABLED = (this.properties.core as PropertyModel).log as boolean;
+        CORE.CORE_LOG_ENABLED = this.properties.core.log;
     }
     private buildCustomInstances(): void {
         for (const coreInstance of this.customInstances) {
@@ -151,9 +150,10 @@ export class CORE {
         }
     }
     private buildHttpService(): void {
-        const serverProperties = this.properties.server as any
+        const serverProperties = this.properties.server;
         if (serverProperties.enabled) {
             this.logInfo('Building HttpService', true)
+            this.getInstance(ServerConfiguration.name, ServerConfiguration);
             this.getInstance(HttpService.name, HttpService);
         }
     }
@@ -164,7 +164,7 @@ export class CORE {
         return new (Object.create(prototype)).constructor();
     }
     private buildProperties(): void {
-        this.properties = this.getInstance<PropertiesConfiguration>(PropertiesConfiguration.name, PropertiesConfiguration).properties['the-way'] as PropertyModel;
+        this.properties = this.getInstance<PropertiesConfiguration>(PropertiesConfiguration.name, PropertiesConfiguration).properties['the-way'];
     }
     public getApplicationInstance(): Object {
         return this.application;

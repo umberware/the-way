@@ -5,18 +5,19 @@ import * as helmet from 'helmet';
 import * as cors from 'cors';
 import * as http from 'http';
 
+import { Observable, of } from 'rxjs';
+
 import { LogService } from '../service/log/log.service';
 import { AbstractConfiguration } from './abstract.configuration';
-import { Inject } from '../decorator/inject.decorator';
 import { Configuration } from '../decorator/configuration.decorator';
 import { PropertiesConfiguration } from './properties.configuration';
-import { Observable, of } from 'rxjs';
+import { CORE } from '../core';
 
 @Configuration()
 export class ServerConfiguration extends AbstractConfiguration {
-    @Inject() logService: LogService;
-    @Inject() propertiesConfiguration: PropertiesConfiguration;
-
+    protected logService: LogService;
+    protected propertiesConfiguration: PropertiesConfiguration;
+    
     public context: any;
     public server: http.Server;
     public port: number;
@@ -25,6 +26,9 @@ export class ServerConfiguration extends AbstractConfiguration {
     
     constructor() {
         super();
+        const core = CORE.getCoreInstance();
+        this.logService = core.getInstanceByName<LogService>('LogService');
+        this.propertiesConfiguration = core.getInstanceByName<PropertiesConfiguration>('PropertiesConfiguration');
         this.theWayProperties = this.propertiesConfiguration.properties['the-way']
         this.serverProperties = this.theWayProperties.server;
     }

@@ -1,20 +1,21 @@
-import { Observable, of } from 'rxjs';
+import { Inject, Post, BodyParam, Get, PathParam, Header, QueryParam, TokenClaims, SecurityService, Response, Request} from '@nihasoft/the-way'
 
-import { Inject, Post, BodyParam, Get, PathParam, Header, QueryParam, TokenUser, SecurityService, Response, Request} from '@nihasoft/the-way'
+import { Observable, of } from 'rxjs';
 
 export class UserRest {
     @Inject() securityService: SecurityService;
 
-    @Get('/api/user/:id', true)
-    public getUser(@PathParam('id') id: string,  @Header header, @Request req, @Response res): Observable<any> {
+    @Get('/api/user/:id', true, [0])
+    public getUser(@PathParam('id') id: string,  @Header header, @Request req, @Response res, @TokenClaims tokenClaims): Observable<any> {
+        console.log(tokenClaims)
         return of({
-            username: "Hanor",
+            username: 'Hanor',
             profiles: [0, 1],
             id: id
         });
     }
     @Get('/api/user/:id/tenants', true, [1])
-    public getUserTenants(@PathParam('id') id: string, @QueryParam param: any, @TokenUser user: any): Observable<Array<any>> {
+    public getUserTenants(@PathParam('id') id: string, @QueryParam param: any, @TokenClaims user: any): Observable<Array<any>> {
         return of([{
             username: 'anakin',
             profiles: [3],
@@ -27,7 +28,7 @@ export class UserRest {
     }
 
     @Get('/api/token/user', true)
-    public getUserToken(@TokenUser user: any): Observable<any> {
+    public getUserToken(@TokenClaims user: any): Observable<any> {
         return of(user);
     }
 
@@ -39,7 +40,7 @@ export class UserRest {
         };
         return of({
             user: user,
-            token: this.securityService.generateToken(user)
+            token: this.securityService.generateToken({ username: user.id, profiles: user.profiles, requestorSystem: 'test'})
         });
     }
 }

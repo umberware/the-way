@@ -5,7 +5,7 @@ export { Configuration, ConfigurationMetaKey} from './core/decorator/configurati
 export { Service, ServiceMetaKey} from './core/decorator/service.decorator';
 export { PathParam, PathParamMetadataKey} from './core/decorator/rest/param/path-param.decorator';
 export { BodyParam, BodyParamMetadataKey} from './core/decorator/rest/param/body-param.decorator';
-export { TokenUser, TokenUserMetaKey} from './core/decorator/rest/param/requesting-user.decorator';
+export { TokenClaims, TokenClaimsMetaKey} from './core/decorator/rest/param/token-claims.decorator';
 export { QueryParam, QueryParamMetadataKey} from './core/decorator/rest/param/query-param.decorator';
 export { Post } from './core/decorator/rest/method/post.decorator';
 export { Get } from './core/decorator/rest/method/get.decorator';

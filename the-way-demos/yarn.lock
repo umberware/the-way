@@ -30,12 +30,11 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@nihasoft/the-way@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@nihasoft/the-way/-/the-way-0.2.1.tgz#ffe27bd68cf271136983fa8197e65622c9303e41"
-  integrity sha512-ulHMXCAouQg9l9o7ogDb+lf3fJFR7Qs4ttcmzm1fjXxWBv2pMjyxpRX+gUTczZkaAT/NOmdZ9l5Xj+BYIlQoqg==
+"@nihasoft/the-way@^0.3.2":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@nihasoft/the-way/-/the-way-0.3.1.tgz#cbbd302698306a5d5c8a6f814f83e47b60c920da"
+  integrity sha512-eIfX2YVoxPc/pc/bpAILbrg1OVu6cp0KCu2wVyDad/DTfKlxgVMPFilIZRw5q1C77WnCN7IFSo3TgyOh6SfzOQ==
   dependencies:
-    body-parser "^1.19.0"
     core-js "^3.6.5"
     cors "^2.8.5"
     express "^4.17.1"
@@ -156,7 +155,7 @@ binary-extensions@^2.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.0.0.tgz#23c0df14f6a88077f5f986c0d167ec03c3d5537c"
   integrity sha512-Phlt0plgpIIBOGTT/ehfFnbNlfsDEiqmzE2KRXoX1bLIlir4X/MR+zSyBEkL05ffWgnRSf/DXv+WrUAVr93/ow==
 
-body-parser@1.19.0, body-parser@^1.19.0:
+body-parser@1.19.0:
   version "1.19.0"
   resolved "https://registry.yarnpkg.com/body-parser/-/body-parser-1.19.0.tgz#96b2709e57c9c4e09a6fd66a8fd979844f69f08a"
   integrity sha512-dhEPs72UPbDnAQJ9ZKMNTP6ptJaionhP5cBb541nXPlW60Jepo9RV/a4fX4XWW9CuFNK22krhrj1+rgzifNCsw==

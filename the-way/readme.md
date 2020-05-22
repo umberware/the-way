@@ -1,5 +1,5 @@
 
-[![Version](https://img.shields.io/badge/Version-0.3.1-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
+[![Version](https://img.shields.io/badge/Version-0.3.2-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
 [![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/LICENSE)
 [![License](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
 [![Build Status](https://travis-ci.org/nihasoft/the-way.svg?branch=master)](https://travis-ci.org/nihasoft/bpmn-flows)
@@ -27,7 +27,7 @@ Note: We support application properties with YAML format. See the section **Prop
 To use this library you only need:
 
     - Create a class and extend that class with TheWayApplication;
-    - Decorate your class with **@Application()**.
+    - Decorate your class with @Application().
 
 With that you can inject classes and use everything of the library **except** the  Rest decorators and the HttpService.
 You can see more in the section **TheWayApplication** and **@Application**.
@@ -284,7 +284,14 @@ This decorator is designed for yours services. You can pass to this decorator an
     }
 
 ### Security Service
-This service is used to verify token(when method need a authenticated user), verify user profiles (when method is allowed only for certain profiles) and to generate the token. The private keys for **CryptoService** and JWT are passed in application.properties (in the default implementation. You can customize this service and implement your behavior)
+This service is used to:
+
+    - verifyToken: When method need a authenticated user;
+    - verifyProfiles: When the claims has profiles and the method has profiles. With this, you can allow the method for only certain profiles;
+    - generateToken: Used to generate the token. The argument is the TokenClaims with YOUR custom fields. 
+
+If the profiles field is provided in the TokenClaims and the method contains profiles,  will validate if the "token claims" profiles provided can execute the method. 
+The private keys for **CryptoService** and JWT are passed in application.properties (in the default implementation. You can customize this service and implement your behavior)
 
 ##### The properties 
     the-way:
@@ -325,7 +332,7 @@ This service is used to verify token(when method need a authenticated user), ver
             return this.userKey;
         }
         protected getTokenKey(): string {
-            return this.tokenUser;
+            return this.TokenClaims;
         }
         ....
     }
@@ -377,7 +384,7 @@ This service is used to cipher and decipher the user inside the token. It's call
 With the decorators below you can define an endpoint, make this endpoint be allowed only if the user is logged in and you can allow the rest method if the user has a certain profile. Every method decorated with the decorators below **MUST** return an **Observable** of **RXJS**.
 
 ## @Get and @Del
-You can inject the **@QueryParam**, **@RequestingUser** and **@PathParam** into your method.
+You can inject the **@QueryParam**, **@TokemClaims** and **@PathParam** into your method.
 
 ##### Example: @Get with @PathParam
 
@@ -398,23 +405,23 @@ You can inject the **@QueryParam**, **@RequestingUser** and **@PathParam** into 
         ...
     }
 
-##### Example: @Get with @PathParam, @RequestingUser and @QueryParam. This method the user must be logged in and has the profile "1"
+##### Example: @Get with @PathParam, @TokemClaims and @QueryParam. This method the user must be logged in and has the profile "1"
 
-    import { Get, PathParam, QueryParam, RequestingUser} from '@nihasoft/the-way'
+    import { Get, PathParam, QueryParam, TokemClaims} from '@nihasoft/the-way'
 
     import { Observable, of } from 'rxjs';
 
     export class UserRest {
         ...
         @Get('/api/user/:id/tenants', true, [1])
-        public getUserTenants(@PathParam('id') id: string, @QueryParam param: any, @RequestingUser user: any): Observable<Array<any>> {
+        public getUserTenants(@PathParam('id') id: string, @QueryParam param: any, @TokemClaims user: any): Observable<Array<any>> {
             return of([]);
         }
         ...
     }
 
 ## @Post and @Put
-You can inject the **@BodyParam**, **@RequestingUser** and **@PathParam** into you method.
+You can inject the **@BodyParam**, **@TokemClaims** and **@PathParam** into you method.
 
 ##### Example: @Post with @BodyParam
 
@@ -450,8 +457,8 @@ Will read all queryparam of the request and build an object with that. Example a
 ## @PathParam
 Will read pathparam of the request and put into method using the pathparam name (:param, :id...). Example above;
 
-## @RequestingUser
-Will decrypt the token getting the user of token, after that, will inject the user on the method. Example above.
+## @TokenClaims
+Will decrypt the token getting the data(claims) and will inject the TokenClaims on the method. Example above.
 
 ## @Header
 Will insert the request header received.

@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 
 import { PathParamMetadataKey } from '../../decorator/rest/param/path-param.decorator';
-import { TokenUserMetaKey } from '../../decorator/rest/param/requesting-user.decorator';
+import { TokenClaimsMetaKey } from '../../decorator/rest/param/token-claims.decorator';
 import { BodyParamMetadataKey } from '../../decorator/rest/param/body-param.decorator';
 import { QueryParamMetadataKey } from '../../decorator/rest/param/query-param.decorator';
 import { Service } from '../../decorator/service.decorator';
@@ -16,6 +16,7 @@ import { HeaderMetadataKey } from '../../decorator/rest/param/header.decorator';
 import { ResponseMetadataKey } from '../../decorator/rest/param/response.decorator';
 import { RequestMetadataKey } from '../../decorator/rest/param/request.decorator';
 import { CORE } from '../../core';
+import { TokenClaims } from '../../model/token-claims.model';
 
 @Service()
 export class HttpService {
@@ -34,26 +35,26 @@ export class HttpService {
         for (const param of pathParams) {
             const paramValue = req.params[param.name];
             if (paramValue) {
-                functionArguments[param.index as number] = paramValue;
+                functionArguments[param.index] = paramValue;
             } else {
                 throw new InternalException('The path variable and the method argument name are differents.');
             }
         }
     }
     private execute(
-        httpType: HttpType, authenticated: boolean | undefined, allowedProfiles: Array<unknown> | undefined, 
+        httpType: HttpType, authenticated: boolean | undefined, allowedProfiles: Array<any> | undefined, 
         target: any, propertyKey: string, req: any, res: any
     ): void {
         try {
-            let user: Object | null = null;
+            let tokenClaims: TokenClaims = {};
             if (authenticated) {
                 const token: string = req.headers.authorization;
-                user = this.securityService.verifyToken(token, allowedProfiles);
+                tokenClaims = this.securityService.verifyToken(token, allowedProfiles);
             }
-            this.executeMethod(httpType, target, propertyKey, req, res, user).subscribe(
+            this.executeMethod(httpType, target, propertyKey, req, res, tokenClaims).subscribe(
                 (response: any) => {
                     if (!res.headersSent) {
-                        (res.send as Function)(response);
+                        res.send(response);
                     }
                 }, (error: Error) => {
                     this.handleError(error, res);
@@ -63,31 +64,31 @@ export class HttpService {
             this.handleError(error, res);
         }
     }
-    private executeMethod(httpType: HttpType, target: any, propertyKey: string, req: any, res: any, user: any): Observable<unknown> {
+    private executeMethod(httpType: HttpType, target: any, propertyKey: string, req: any, res: any, tokenClaims: TokenClaims): Observable<unknown> {
         const method = target[propertyKey];
         const functionArgumentsLength = method.length;
         const functionArguments = new Array<any>().fill(undefined, 0, functionArgumentsLength);
       
         const pathParams: Array<any> = Reflect.getOwnMetadata(PathParamMetadataKey, target, propertyKey);
-        const requestUser: number = Reflect.getOwnMetadata(TokenUserMetaKey, target, propertyKey);
-        const header: number = Reflect.getOwnMetadata(HeaderMetadataKey, target, propertyKey);
-        const response: number = Reflect.getOwnMetadata(ResponseMetadataKey, target, propertyKey);
-        const request: number = Reflect.getOwnMetadata(RequestMetadataKey, target, propertyKey);
+        const tokenClaimsIndex: number = Reflect.getOwnMetadata(TokenClaimsMetaKey, target, propertyKey);
+        const headerIndex: number = Reflect.getOwnMetadata(HeaderMetadataKey, target, propertyKey);
+        const responseIndex: number = Reflect.getOwnMetadata(ResponseMetadataKey, target, propertyKey);
+        const requestIndex: number = Reflect.getOwnMetadata(RequestMetadataKey, target, propertyKey);
 
-        if (header !== undefined) {
-            functionArguments[header] = req.headers;
+        if (headerIndex !== undefined) {
+            functionArguments[headerIndex] = req.headers;
         }
 
-        if (response !== undefined) {
-            functionArguments[response] = res;
+        if (responseIndex !== undefined) {
+            functionArguments[responseIndex] = res;
         }
 
-        if (request !== undefined) {
-            functionArguments[request] = req;
+        if (requestIndex !== undefined) {
+            functionArguments[requestIndex] = req;
         }
       
-        if (requestUser !== undefined) {
-            functionArguments[requestUser] = user;
+        if (tokenClaimsIndex !== undefined) {
+            functionArguments[tokenClaimsIndex] = tokenClaims;
         }
       
         if (pathParams) {
@@ -102,33 +103,33 @@ export class HttpService {
         } else if (httpType === HttpType.POST || httpType === HttpType.PUT) {
             const bodyParam: number = Reflect.getOwnMetadata(BodyParamMetadataKey, target, propertyKey);
             if (bodyParam !== undefined && bodyParam !== null) {
-                if (Object.keys(req.body as Object).length === 0) {
+                if (Object.keys(req.body).length === 0) {
                     throw new BadRequestException('Request is empty');
                 }
                 functionArguments[bodyParam] = req.body;
             }
         }
-        return Reflect.apply(target[propertyKey] as Function, target, functionArguments);
+        return Reflect.apply(target[propertyKey], target, functionArguments);
     }
     private handleError(ex: Error, res: any): void {
         if (ex instanceof ApplicationException) {
-            (res.status as Function)(ex.getCode()).send(ex);
+            res.status(ex.getCode()).send(ex);
         } else {
-            (res.status as Function)('500').send(ex);
+            res.status('500').send(ex);
         }
         this.logService.error(ex);
     }
     public registerPath(
         httpType: HttpType, path: string, authenticated: boolean | undefined, 
-        allowedProfiles: Array<unknown> | undefined, target: Object, propertyKey: string
+        allowedProfiles: Array<any> | undefined, target: any, propertyKey: string
     ): void {
-        const requestUser: number = Reflect.getOwnMetadata(TokenUserMetaKey, target, propertyKey);
+        const requestUser: number = Reflect.getOwnMetadata(TokenClaimsMetaKey, target, propertyKey);
 
         if (requestUser !== undefined && !authenticated) {
-            throw new ApplicationException('To inject the TokenUser you must declare an authenticated path', 'Path not authenticated', 'RU-002');
+            throw new ApplicationException('To inject the TokenClaims you must declare an authenticated path', 'Path not authenticated', 'RU-002');
         }
 
-        this.serverConfiguration.context[httpType](path, (req: Object, res: Object) => {
+        this.serverConfiguration.context[httpType](path, (req: any, res: any) => {
             this.execute(httpType, authenticated, allowedProfiles, target, propertyKey, req, res);
         });
     }

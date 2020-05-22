@@ -6,7 +6,6 @@ import { CustomServerConfiguration } from './configuration/custom-server.configu
 import { RestModule } from './rest-server/rest.module';
 import { RestClientService } from './rest-client/rest-client.service';
 
-
 @Application({
     custom: [
         CustomServerConfiguration
