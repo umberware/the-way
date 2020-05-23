@@ -7,7 +7,7 @@ cache:
 before_script:
   - yarn install
 script:
-  - yarn buildx
+  - yarn build
 branches:
   only:
     - "master"
