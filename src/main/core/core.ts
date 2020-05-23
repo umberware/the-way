@@ -45,15 +45,6 @@ export class CORE {
         (this.getInstanceByName('LogService') as LogService).setLogLevel(
             this.properties.log.level
         );
-        let z = 0;
-        this.CONFIGURATING$.forEach((x: Observable<boolean>) => {
-            x.subscribe((xaa) => {
-                if (xaa) {
-                    z += 1;
-                    console.log(z, this.CONFIGURATING$.length)
-                }
-            })
-        })
         combineLatest(this.CONFIGURATING$).pipe(
             filter((values: Array<boolean>) => {
                 const configuring = values.find((value: boolean) => !value);
