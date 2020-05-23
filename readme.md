@@ -3,6 +3,7 @@
 [![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/LICENSE)
 [![EsLint](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/the-way/.eslintrc)
 [![Build Status](https://travis-ci.com/nihasoft/the-way.svg?branch=master)](https://travis-ci.org/nihasoft/bpmn-flows)
+[![codecov](https://codecov.io/gh/nihasoft/the-way/branch/master/graph/badge.svg)](https://codecov.io/gh/nihasoft/the-way)
 [![Donate](https://img.shields.io/badge/%24-Donate-blue.svg)](https://www.paypal.com/donate/?token=Ov4xNE4bAuZWCSF9e0BjGy75laGShREyS7BDFs-oQSwMsGOVEzDZAq9VDVNKmaCewqrBUW&country.x=BR&locale.x=BR)
 
 # The Way
