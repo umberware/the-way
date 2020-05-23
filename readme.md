@@ -1,5 +1,5 @@
 
-[![Version](https://img.shields.io/badge/Version-0.3.6-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
+[![Version](https://img.shields.io/badge/Version-0.3.8-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
 [![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/LICENSE)
 [![EsLint](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/the-way/.eslintrc)
 [![Build Status](https://travis-ci.com/nihasoft/the-way.svg?branch=master)](https://travis-ci.com/nihasoft/the-way)
