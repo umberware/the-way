@@ -14,3 +14,9 @@ branches:
     - "dev"
 after_success:
   - bash <(curl -s https://codecov.io/bash) -t a5898a5e-8445-4608-8cde-8cb7305e0715
+deploy:
+  provider: npm
+  email: $NPM_EMAIL
+  api_key: $NPM_TOKEN
+  on:
+    branch: master
