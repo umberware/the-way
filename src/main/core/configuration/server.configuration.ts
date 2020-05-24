@@ -5,7 +5,7 @@ import * as helmet from 'helmet';
 import * as cors from 'cors';
 import * as http from 'http';
 
-import { Observable, of, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 import { LogService } from '../service/log/log.service';
 import { AbstractConfiguration } from './abstract.configuration';
@@ -37,9 +37,17 @@ export class ServerConfiguration extends AbstractConfiguration {
 
     public configure(): Observable<boolean> {
         this.port =  this.serverProperties.port as number;
-        return of(true);
+        return this.start();
     }
-    private initializeExpress(): void {
+    public destroy(): Observable<boolean> {
+        const destroy: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+        this.server.close(() => {
+            destroy.next(true);
+            destroy.complete();
+        });
+        return destroy;
+    }
+    protected initializeExpress(): void {
         const corsOptions: cors.CorsOptions = {
             origin: true
         }
@@ -83,11 +91,12 @@ export class ServerConfiguration extends AbstractConfiguration {
             }
         });
     }
-    public start(): Observable<boolean> {
+    protected start(): Observable<boolean> {
         this.initializeExpress();
         this.server.listen(this.port, () => {
             this.logService.info(`Server started on port ${this.port}`);
             this.ready$.next(true);
+            this.ready$.complete();
         });
         return this.ready$;
     }

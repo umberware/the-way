@@ -8,6 +8,7 @@ import { Configuration } from '../decorator/configuration.decorator';
 import { LogService } from '../service/log/log.service';
 import { CORE } from '../core';
 import { ApplicationException } from '../exeption/application.exception';
+import { ErrorCodeEnum } from '../model/error-code.enum';
 
 @Configuration()
 export class PropertiesConfiguration extends AbstractConfiguration {
@@ -26,7 +27,9 @@ export class PropertiesConfiguration extends AbstractConfiguration {
         const propertiesFilePath = args.find((arg: string) => arg.includes('--properties=')) as string;
         return of(this.loadProperties(propertiesFilePath));
     }
-
+    public destroy(): Observable<boolean> {
+        return of(true);
+    }
     private loadProperties(propertiesFilePath: string): boolean {
         const defaultProperties = this.loadFile(__dirname + '/' + PropertiesConfiguration.PROPERTIES_NAME);
         
@@ -62,7 +65,7 @@ export class PropertiesConfiguration extends AbstractConfiguration {
                 }
             }
         } catch(ex) {
-            new ApplicationException('Error on processing the properties file', 'Properties File Error', 'RU-03');
+            new ApplicationException('Error on processing the properties file', 'Properties File Error', ErrorCodeEnum["RU-003"]);
         }
     }
 }

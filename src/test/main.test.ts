@@ -10,8 +10,10 @@ export class App extends TheWayApplication {
     }
 }
 
-afterAll(() => {
-    CORE.getCoreInstance().destroy();
+afterAll(done => {
+    CORE.getCoreInstance().destroy().subscribe(() => {
+        done();
+    });
 })
 
 beforeAll(done => {

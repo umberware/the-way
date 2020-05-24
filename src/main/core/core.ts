@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { ConfigurationMetaKey } from './decorator/configuration.decorator';
 import { AbstractConfiguration } from './configuration/abstract.configuration';
@@ -11,8 +11,10 @@ import { LogService } from './service/log/log.service';
 import { HttpService } from './service/http/http.service';
 import { ApplicationException } from './exeption/application.exception';
 import { ServerConfiguration } from './configuration/server.configuration';
+import { Destroyable } from './destroyable';
+import { ErrorCodeEnum } from './model/error-code.enum';
 
-export class CORE {
+export class CORE extends Destroyable{
     public static CORE_LOG_ENABLED = false;
     public static CORE_CALLED = 0;
     private static instance: CORE;
@@ -26,7 +28,13 @@ export class CORE {
     private DEPENDENCIES: any = {};
     private DEPENDENCIES_TREE: any = {};
     private OVERRIDDEN_DEPENDENCIES: any = {};
-    private CONFIGURATING$: Array<Observable<boolean>> = [];
+    private CONFIGURATIONS: {
+        configure$: Array<Observable<boolean>>;
+        destructable: Array<any>;
+    } = {
+        configure$: new  Array<Observable<boolean>>(),
+        destructable: []
+    }
     private INSTANCES: Map<string, Object> = new Map();
     
     public buildApplication(): void {
@@ -45,20 +53,18 @@ export class CORE {
         (this.getInstanceByName('LogService') as LogService).setLogLevel(
             this.properties.log.level
         );
-        combineLatest(this.CONFIGURATING$).pipe(
-            filter((values: Array<boolean>) => {
-                const configuring = values.find((value: boolean) => !value);
-                if (configuring) {
-                    this.logInfo('Still configuring...');
-                    return false;
+        forkJoin(this.CONFIGURATIONS.configure$).subscribe(
+            (values: Array<boolean>) => {
+                const hasNotConfigured = values.find((value: boolean) => !value);
+                if (!hasNotConfigured) {
+                    this.logInfo('All configurations are done.', true);
+                    this.logInfo('The application is fully loaded.', true);
+                    this.ready$.next(true);
+                } else {
+                    throw new ApplicationException('Is not congigured.', 'Internal error', ErrorCodeEnum['RU-007']);
                 }
-                return !configuring;
-            })
-        ).subscribe(() => {
-            this.logInfo('All configurations are done.', true);
-            this.logInfo('The application is fully loaded.', true);
-            this.ready$.next(true);
-        })
+            }
+        );
     }
     private buildCoreInstances(): void {
         const coreInstances: Array<Function> = [LogService, CryptoService];
@@ -120,7 +126,7 @@ export class CORE {
             this.handleInstance(instanceableName, instance, decorators);
             return instance;
         } else {
-            throw new ApplicationException('Constructor not found for: ' + instanceableName, 'Error Building Instance', 'RU-005');
+            throw new ApplicationException('Constructor not found for: ' + instanceableName, 'Error Building Instance', ErrorCodeEnum['RU-005']);
         }
     }
     private buildInstances(treeNodesNames: Array<string>, node: any, parentName: string | null): void {
@@ -154,9 +160,8 @@ export class CORE {
         const serverProperties = this.properties.server;
         if (serverProperties.enabled) {
             this.logInfo('Building HttpService', true)
-            const serverConfiguration = this.getInstance<ServerConfiguration>(ServerConfiguration.name, ServerConfiguration);
+            this.getInstance<ServerConfiguration>(ServerConfiguration.name, ServerConfiguration);
             this.getInstance<HttpService>(HttpService.name, HttpService);
-            this.CONFIGURATING$.push(serverConfiguration.ready$);
         }
     }
     public buildMain(application: Function): void {
@@ -170,11 +175,31 @@ export class CORE {
         this.properties = this.getInstance<PropertiesConfiguration>(PropertiesConfiguration.name, PropertiesConfiguration).properties['the-way'];
         CORE.CORE_LOG_ENABLED = this.properties.core.log;
     }
-    public destroy(): void {
-        if (this.properties.server.enabled) {
-            const serverConfiguration = CORE.getCoreInstance().getInstanceByName<ServerConfiguration>('ServerConfiguration');
-            serverConfiguration.server.close();
+    public destroy(): Observable<boolean> {
+        this.logInfo('Destroying everything. ', true);
+        const destructions: Array<Observable<boolean>> = [];
+
+        for(const configurationInstance of this.CONFIGURATIONS.destructable) {
+            destructions.push(configurationInstance.destroy());
         }
+
+        if (destructions.length === 0) {
+            this.logInfo('One Man Army. Nice to meet too you, my time has come :(.', true);
+            delete CORE.instance;
+            return of(true);
+        }
+
+        return forkJoin(destructions).pipe(
+            map((values: Array<boolean>) => {
+                const hasNotDestroyed = values.find((value: boolean) => !value);
+                if (!hasNotDestroyed) {
+                    return true;
+                } else {
+                    throw new ApplicationException('Is not destoyed.', 'Internal error', ErrorCodeEnum['RU-006']);
+                }
+            })
+        );
+
     }
     public getApplicationInstance(): any {
         return this.application;
@@ -226,7 +251,12 @@ export class CORE {
     private handleInstance<T>(instanceableName: string, instance: T, decorators: Array<string>): void {
         this.INSTANCES.set(instanceableName, instance as Object);
         if (decorators.includes(ConfigurationMetaKey) && instance instanceof AbstractConfiguration) {
-            this.CONFIGURATING$.push((instance as AbstractConfiguration).configure());
+            console.log(instanceableName)
+            this.CONFIGURATIONS.configure$.push(instance.configure());
+        }
+
+        if (instance instanceof Destroyable) {
+            this.CONFIGURATIONS.destructable.push(instance);
         }
     }
     private logInfo(message: string, force?: boolean): void {

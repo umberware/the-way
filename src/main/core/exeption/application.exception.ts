@@ -1,8 +1,10 @@
+import { ErrorCodeEnum } from '../model/error-code.enum';
+
 export class ApplicationException implements Error {
     public message: string;
     public name: string;
     
-    constructor(private detail: string, private description: string, private code: string | number) {
+    constructor(private detail: string, private description: string, private code: ErrorCodeEnum) {
         this.message = detail + ' -> ' + description;
     }
 
