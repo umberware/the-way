@@ -2,6 +2,7 @@ import { CORE } from '../../../core';
 import { HttpService } from '../../../service/http/http.service';
 import { ApplicationException } from '../../../exeption/application.exception';
 import { HttpType } from '../../../service/http/http-type.enum';
+import { ErrorCodeEnum } from '../../../model/error-code.enum';
 
 export function Post(path: string, authenticated?: boolean, allowedProfiles?: Array<any>) {
     return (target:  any, propertyKey: string): void => {
@@ -12,7 +13,7 @@ export function Post(path: string, authenticated?: boolean, allowedProfiles?: Ar
                     throw new ApplicationException(
                         'If you want to use the HttpService and the rest decorators, ' + 
                         'you should pass HttpService or and extended class of HttpService on Application decorator',
-                        'HttpService not found', 'RU-001');
+                        'HttpService not found', ErrorCodeEnum['RU-002']);
                 } else {
                     httpService.registerPath(HttpType.POST, path, authenticated, allowedProfiles, target, propertyKey);
                 }

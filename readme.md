@@ -1,5 +1,5 @@
 
-[![Version](https://img.shields.io/badge/Version-0.3.8-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
+[![Version](https://img.shields.io/badge/Version-0.4.0-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
 [![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/LICENSE)
 [![EsLint](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/the-way/.eslintrc)
 [![Build Status](https://travis-ci.com/nihasoft/the-way.svg?branch=master)](https://travis-ci.com/nihasoft/the-way)
@@ -137,6 +137,20 @@ When you want to use this library is mandatory to extends the **TheWayApplicatio
     export class Main extends TheWayApplication {
         ...
     }
+
+# CORE
+This class is the heart and mind of this library. 
+The Core is reponsable to handle all the decorators of this library, instantiate and handler the instances for injection, configure the classes decorated with @Configuration and overridden the classes that must be overridden. When every thing is injected, instantiated and configured, the core tell with the **ready$** BehaviorSubject that's the application are fully loaded and ready to be executed. When a class is decorated with the @Configuration(see more in the **@Configuration** section), the core will watch the return of the method configure(an observable) to be warned when the configuration is completed, when all the classes decorated with @Configuration are configurated and all the injectios are made the ready$ will be true.
+
+## Getting the Core instance
+To get the core instance you only need to call the method: `CORE.getCoreInstance()`.
+
+## Getting an instance by name
+Some times we need to get an instance in runtime moment, you can do this using the method: `CORE.getCoreInstance().getInstanceByName<ServerConfiguration>('ServerConfiguration');`
+
+## Destroying the core
+You can DESTROY the core and all the "configurations" like: httpServer, database connections and more. To do that you only need to call the method `core.destroy()` or `CORE.getCoreInstance().destroy()`. Also, the destroyables classes **MUST** extends the **Destroyable**.
+Note: The class **AbstractConfiguration** extends by default the **Destroyable**.
 
 # Application Decorators
 Rembember: when you want to use a class with the decorator **YOU MUST** "Inject" that class into the main class decorated with **@Application**. 

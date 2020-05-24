@@ -17,6 +17,7 @@ import { ResponseMetadataKey } from '../../decorator/rest/param/response.decorat
 import { RequestMetadataKey } from '../../decorator/rest/param/request.decorator';
 import { CORE } from '../../core';
 import { TokenClaims } from '../../model/token-claims.model';
+import { ErrorCodeEnum } from '../../model/error-code.enum';
 
 @Service()
 export class HttpService {
@@ -28,7 +29,6 @@ export class HttpService {
         this.serverConfiguration = CORE.getCoreInstance().getInstanceByName<ServerConfiguration>('ServerConfiguration');
         this.securityService = CORE.getCoreInstance().getInstanceByName<SecurityService>('SecurityService');
         this.logService = CORE.getCoreInstance().getInstanceByName<LogService>('LogService');
-        this.serverConfiguration.start();
     }
 
     private buildPathParams(pathParams: Array<any>, req: any, functionArguments: Array<unknown>): void {
@@ -126,7 +126,7 @@ export class HttpService {
         const requestUser: number = Reflect.getOwnMetadata(ClaimsMetaKey, target, propertyKey);
 
         if (requestUser !== undefined && !authenticated) {
-            throw new ApplicationException('To inject the TokenClaims you must declare an authenticated path', 'Path not authenticated', 'RU-002');
+            throw new ApplicationException('To inject the TokenClaims you must declare an authenticated path', 'Path not authenticated', ErrorCodeEnum['RU-004']);
         }
 
         this.serverConfiguration.context[httpType](path, (req: any, res: any) => {
