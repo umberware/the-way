@@ -9,13 +9,14 @@ export abstract class TheWayApplication {
             throw new Error('The core are called more than one time.');
         }
 
-        core.buildApplication();  
-        core.ready$.subscribe((ready: boolean) => {
-            if (ready) {
+        core.buildApplication().subscribe(
+            () => {
                 this.start();
                 core.setApplicationInstance(this);
+            }, () => {
+                core.destroy();
             }
-        });
+        );
     }
 
     public abstract start(): void

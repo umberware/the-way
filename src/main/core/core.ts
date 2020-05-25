@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
 import { BehaviorSubject, Observable, of, forkJoin } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, catchError, take } from 'rxjs/operators';
 
 import { ConfigurationMetaKey } from './decorator/configuration.decorator';
 import { AbstractConfiguration } from './configuration/abstract.configuration';
@@ -12,12 +12,12 @@ import { HttpService } from './service/http/http.service';
 import { ApplicationException } from './exeption/application.exception';
 import { ServerConfiguration } from './configuration/server.configuration';
 import { Destroyable } from './destroyable';
-import { ErrorCodeEnum } from './model/error-code.enum';
+import { ErrorCodeEnum } from './exeption/error-code.enum';
 
 export class CORE extends Destroyable{
     public static CORE_LOG_ENABLED = false;
     public static CORE_CALLED = 0;
-    private static instance: CORE;
+    public static instance: CORE;
     
     public ready$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
@@ -37,7 +37,7 @@ export class CORE extends Destroyable{
     }
     private INSTANCES: Map<string, Object> = new Map();
     
-    public buildApplication(): void {
+    public buildApplication(): Observable<boolean> {
         this.logInfo('Building core instancies tree...', true)
         this.buildCoreInstances();
         this.logInfo('Building properties', true)
@@ -53,18 +53,7 @@ export class CORE extends Destroyable{
         (this.getInstanceByName('LogService') as LogService).setLogLevel(
             this.properties.log.level
         );
-        forkJoin(this.CONFIGURATIONS.configure$).subscribe(
-            (values: Array<boolean>) => {
-                const hasNotConfigured = values.find((value: boolean) => !value);
-                if (!hasNotConfigured) {
-                    this.logInfo('All configurations are done.', true);
-                    this.logInfo('The application is fully loaded.', true);
-                    this.ready$.next(true);
-                } else {
-                    throw new ApplicationException('Is not congigured.', 'Internal error', ErrorCodeEnum['RU-007']);
-                }
-            }
-        );
+        return this.whenReady();
     }
     private buildCoreInstances(): void {
         const coreInstances: Array<Function> = [LogService, CryptoService];
@@ -180,25 +169,9 @@ export class CORE extends Destroyable{
         const destructions: Array<Observable<boolean>> = [];
 
         for(const configurationInstance of this.CONFIGURATIONS.destructable) {
-            destructions.push(configurationInstance.destroy());
+            destructions.push((configurationInstance as AbstractConfiguration).destroy().pipe(take(1)));
         }
-
-        if (destructions.length === 0) {
-            this.logInfo('One Man Army. Nice to meet too you, my time has come :(.', true);
-            delete CORE.instance;
-            return of(true);
-        }
-
-        return forkJoin(destructions).pipe(
-            map((values: Array<boolean>) => {
-                const hasNotDestroyed = values.find((value: boolean) => !value);
-                if (!hasNotDestroyed) {
-                    return true;
-                } else {
-                    throw new ApplicationException('Is not destoyed.', 'Internal error', ErrorCodeEnum['RU-006']);
-                }
-            })
-        );
+        return this.whenDestroyed(destructions);
 
     }
     public getApplicationInstance(): any {
@@ -251,8 +224,7 @@ export class CORE extends Destroyable{
     private handleInstance<T>(instanceableName: string, instance: T, decorators: Array<string>): void {
         this.INSTANCES.set(instanceableName, instance as Object);
         if (decorators.includes(ConfigurationMetaKey) && instance instanceof AbstractConfiguration) {
-            console.log(instanceableName)
-            this.CONFIGURATIONS.configure$.push(instance.configure());
+            this.CONFIGURATIONS.configure$.push(instance.configure().pipe(take(1)));
         }
 
         if (instance instanceof Destroyable) {
@@ -289,5 +261,52 @@ export class CORE extends Destroyable{
     }
     public setCustomInstances(customInstances: Array<Function>): void {
         this.customInstances = customInstances;
+    }
+    private whenDestroyed(destructions: Array<Observable<boolean>>): Observable<boolean> {
+        if (destructions.length === 0) {
+            this.logInfo('One Man Army. Nice to meet too you, my time has come :(.', true);
+            delete CORE.instance;
+            CORE.CORE_CALLED = 0;
+            return of(true);
+        }
+
+        return forkJoin(destructions).pipe(
+            map((values: Array<boolean>) => {
+                const hasNotDestroyed = values.find((value: boolean) => !value);
+                if (!hasNotDestroyed) {
+                    this.logInfo('Fire in the hole! Nice to meet too you, my time has come :(.', true);
+                    CORE.CORE_CALLED = 0;
+                    delete CORE.instance;
+                    return true;
+                } else {
+                    throw new ApplicationException('Is not destoyed.', 'Internal error', ErrorCodeEnum['RU-006']);
+                }
+            }),
+            catchError((error: Error) => {
+                console.error(error);
+                console.log('Please, let me go.')
+                throw error;
+            })
+        );
+    }
+    private whenReady(): Observable<boolean> {
+        return forkJoin(this.CONFIGURATIONS.configure$).pipe(
+            map((values: Array<boolean>) => {
+                const hasNotConfigured = values.find((value: boolean) => !value);
+                if (!hasNotConfigured) {
+                    this.logInfo('All configurations are done.', true);
+                    this.logInfo('The application is fully loaded.', true);
+                    this.ready$.next(true);
+                    return true;
+                } else {
+                    this.ready$.next(false);
+                    throw new ApplicationException('Is not configured.', 'Internal error', ErrorCodeEnum['RU-007']);
+                }
+            }),
+            catchError((error: Error) => {
+                console.error(error);
+                throw error;
+            })
+        );
     }
 }

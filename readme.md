@@ -1,5 +1,5 @@
 
-[![Version](https://img.shields.io/badge/Version-0.4.0-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
+[![Version](https://img.shields.io/badge/Version-0.4.1-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
 [![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/LICENSE)
 [![EsLint](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/the-way/.eslintrc)
 [![Build Status](https://travis-ci.com/nihasoft/the-way.svg?branch=master)](https://travis-ci.com/nihasoft/the-way)
@@ -157,7 +157,7 @@ Rembember: when you want to use a class with the decorator **YOU MUST** "Inject"
 
 ## @Application
 This is necessary to the core knows when the application is fully loaded. With this decorator you can customize some behavior of this library with the **custom** property passing to the array the classes that you want do overriden, like **SecurityService** and **ServerConfiguration**.
-Also, this decorator will **Automatically** build all the classes decorated with some library decorator and imported in the Main class and the Main class decorated with @Application. You can pass the property **automatic** = false to disable this behaviour. By default this parameter is true. When automatic is false, the library will build the classes when the classe decorated with **@Application** is created. 
+Also, this decorator will **Automatically** build all the classes decorated with some library decorator and imported in the Main class and the Main class decorated with @Application. You can pass the property **automatic** = false to disable this behavior. By default this parameter is true. When automatic is false, the library will build the classes when the classe decorated with **@Application** is created. 
 
 ##### The main class with the default behavior:
 

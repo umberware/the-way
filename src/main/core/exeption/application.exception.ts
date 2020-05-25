@@ -1,4 +1,4 @@
-import { ErrorCodeEnum } from '../model/error-code.enum';
+import { ErrorCodeEnum } from './error-code.enum';
 
 export class ApplicationException implements Error {
     public message: string;

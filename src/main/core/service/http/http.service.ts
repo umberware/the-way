@@ -17,7 +17,7 @@ import { ResponseMetadataKey } from '../../decorator/rest/param/response.decorat
 import { RequestMetadataKey } from '../../decorator/rest/param/request.decorator';
 import { CORE } from '../../core';
 import { TokenClaims } from '../../model/token-claims.model';
-import { ErrorCodeEnum } from '../../model/error-code.enum';
+import { ErrorCodeEnum } from '../../exeption/error-code.enum';
 
 @Service()
 export class HttpService {

@@ -5,18 +5,18 @@ import * as helmet from 'helmet';
 import * as cors from 'cors';
 import * as http from 'http';
 
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { LogService } from '../service/log/log.service';
 import { AbstractConfiguration } from './abstract.configuration';
 import { Configuration } from '../decorator/configuration.decorator';
 import { PropertiesConfiguration } from './properties.configuration';
 import { CORE } from '../core';
+import { ApplicationException } from '../exeption/application.exception';
+import { ErrorCodeEnum } from '../exeption/error-code.enum';
 
 @Configuration()
 export class ServerConfiguration extends AbstractConfiguration {
-    public ready$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-
     protected logService: LogService;
     protected propertiesConfiguration: PropertiesConfiguration;
     
@@ -40,12 +40,15 @@ export class ServerConfiguration extends AbstractConfiguration {
         return this.start();
     }
     public destroy(): Observable<boolean> {
-        const destroy: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-        this.server.close(() => {
-            destroy.next(true);
-            destroy.complete();
+        return new Observable((observer) => {
+            if (!this.server) {
+                observer.next(true);
+            }
+
+            this.server.close(() => {
+                observer.next(true);
+            });
         });
-        return destroy;
     }
     protected initializeExpress(): void {
         const corsOptions: cors.CorsOptions = {
@@ -92,12 +95,17 @@ export class ServerConfiguration extends AbstractConfiguration {
         });
     }
     protected start(): Observable<boolean> {
-        this.initializeExpress();
-        this.server.listen(this.port, () => {
-            this.logService.info(`Server started on port ${this.port}`);
-            this.ready$.next(true);
-            this.ready$.complete();
+        return new Observable<boolean>((observer) => {
+            this.initializeExpress();
+            this.server.listen(this.port, () => {
+                this.logService.info(`Server started on port ${this.port}`);
+                observer.next(true);
+            });
+            this.server.on('error', (error: any) => {
+                if (error.code === 'EADDRINUSE') {
+                    observer.error(new ApplicationException('Cannot listener at port:' + this.port + ', because are another app on it.', 'EADDRINUSE', ErrorCodeEnum['RU-007']));
+                }
+            })
         });
-        return this.ready$;
     }
 }
