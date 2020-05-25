@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { CORE } from '../core';
 import { TheWayApplication } from '../../core/the-way-application';
 import { ApplicationException } from '../exeption/application.exception';
-import { ErrorCodeEnum } from '../model/error-code.enum';
+import { ErrorCodeEnum } from '../exeption/error-code.enum';
 
 export function Application(params?: {custom?: Array<any>; automatic?: boolean}) {
     return (constructor: Function): void => {

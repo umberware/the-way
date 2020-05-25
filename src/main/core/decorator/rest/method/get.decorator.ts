@@ -2,7 +2,7 @@ import { CORE } from '../../../core';
 import { HttpService } from '../../../service/http/http.service';
 import { ApplicationException } from '../../../exeption/application.exception';
 import { HttpType } from '../../../service/http/http-type.enum';
-import { ErrorCodeEnum } from '../../../model/error-code.enum';
+import { ErrorCodeEnum } from '../../../exeption/error-code.enum';
 
 export function Get(path: string, authenticated?: boolean, allowedProfiles?: Array<any>) {
     return function (target:  any, propertyKey: string): void {

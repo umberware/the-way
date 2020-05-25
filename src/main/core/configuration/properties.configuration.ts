@@ -8,7 +8,7 @@ import { Configuration } from '../decorator/configuration.decorator';
 import { LogService } from '../service/log/log.service';
 import { CORE } from '../core';
 import { ApplicationException } from '../exeption/application.exception';
-import { ErrorCodeEnum } from '../model/error-code.enum';
+import { ErrorCodeEnum } from '../exeption/error-code.enum';
 
 @Configuration()
 export class PropertiesConfiguration extends AbstractConfiguration {
@@ -65,7 +65,7 @@ export class PropertiesConfiguration extends AbstractConfiguration {
                 }
             }
         } catch(ex) {
-            new ApplicationException('Error on processing the properties file', 'Properties File Error', ErrorCodeEnum["RU-003"]);
+            new ApplicationException('Error on processing the properties file', 'Properties File Error', ErrorCodeEnum['RU-003']);
         }
     }
 }

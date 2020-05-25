@@ -2,7 +2,7 @@ import { CORE } from '../../../core';
 import { ApplicationException } from '../../../exeption/application.exception';
 import { HttpType } from '../../../service/http/http-type.enum';
 import { HttpService } from '../../../service/http/http.service';
-import { ErrorCodeEnum } from '../../../model/error-code.enum';
+import { ErrorCodeEnum } from '../../../exeption/error-code.enum';
 
 export function Del(path: string, authenticated?: boolean, allowedProfiles?: Array<any>) {
     return (target:  any, propertyKey: string): void => {
