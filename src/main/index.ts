@@ -31,3 +31,8 @@ export { Header } from './core/decorator/rest/param/header.decorator';
 export { Request } from './core/decorator/rest/param/request.decorator';
 export { Response } from './core/decorator/rest/param/response.decorator';
 export { TokenClaims } from './core/model/token-claims.model';
+export { Destroyable } from './core/destroyable';
+export { Patch } from './core/decorator/rest/method/patch.decorator';
+export { Head } from './core/decorator/rest/method/head.decorator';
+export { ErrorCodeEnum } from './core/exeption/error-code.enum';
+export { MessagesEnum } from './core/model/messages.enum';

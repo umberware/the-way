@@ -13,6 +13,7 @@ import { ApplicationException } from './exeption/application.exception';
 import { ServerConfiguration } from './configuration/server.configuration';
 import { Destroyable } from './destroyable';
 import { ErrorCodeEnum } from './exeption/error-code.enum';
+import { MessagesEnum } from './model/messages.enum';
 
 export class CORE extends Destroyable{
     public static CORE_LOG_ENABLED = false;
@@ -38,15 +39,15 @@ export class CORE extends Destroyable{
     private INSTANCES: Map<string, Object> = new Map();
     
     public buildApplication(): Observable<boolean> {
-        this.logInfo('Building core instancies tree...', true)
+        this.logInfo(MessagesEnum['building-core-instances'], true)
         this.buildCoreInstances();
-        this.logInfo('Building properties', true)
+        this.logInfo(MessagesEnum['building-properties'], true)
         this.buildProperties();
-        this.logInfo('Building dependencies tree...', true)
+        this.logInfo(MessagesEnum['building-tree-instances'], true)
         this.buildDependenciesTree();
-        this.logInfo('Building instances...', true)
+        this.logInfo(MessagesEnum['building-instances'], true)
         this.buildInstances(Object.keys(this.DEPENDENCIES_TREE), this.DEPENDENCIES_TREE, null);
-        this.logInfo('Building custom instances...', true)
+        this.logInfo(MessagesEnum['building-custom-instances'], true)
         this.buildCustomInstances();
         this.buildHttpService();
 
@@ -115,7 +116,7 @@ export class CORE extends Destroyable{
             this.handleInstance(instanceableName, instance, decorators);
             return instance;
         } else {
-            throw new ApplicationException('Constructor not found for: ' + instanceableName, 'Error Building Instance', ErrorCodeEnum['RU-005']);
+            throw new ApplicationException(MessagesEnum['not-found'] + instanceableName, MessagesEnum['building-instance-error'], ErrorCodeEnum['RU-005']);
         }
     }
     private buildInstances(treeNodesNames: Array<string>, node: any, parentName: string | null): void {
@@ -140,15 +141,14 @@ export class CORE extends Destroyable{
                     found = instance.constructor.name
                 }
 
-                this.logInfo('Injecting:\n   Target: ' + target.constructor.name + '\n   Injectable: ' +
-                dependencyInformation.constructor.name + '\n   Found: ' + found);
+                this.logInfo(MessagesEnum['injecting'] + target.constructor.name + MessagesEnum['injectable'] +dependencyInformation.constructor.name + MessagesEnum['injectable-found'] + found);
             }
         }
     }
     private buildHttpService(): void {
         const serverProperties = this.properties.server;
         if (serverProperties.enabled) {
-            this.logInfo('Building HttpService', true)
+            this.logInfo(MessagesEnum['building-http-service'], true)
             this.getInstance<ServerConfiguration>(ServerConfiguration.name, ServerConfiguration);
             this.getInstance<HttpService>(HttpService.name, HttpService);
         }
@@ -165,7 +165,7 @@ export class CORE extends Destroyable{
         CORE.CORE_LOG_ENABLED = this.properties.core.log;
     }
     public destroy(): Observable<boolean> {
-        this.logInfo('Destroying everything. ', true);
+        this.logInfo(MessagesEnum['destroy-all'], true);
         const destructions: Array<Observable<boolean>> = [];
 
         for(const configurationInstance of this.CONFIGURATIONS.destructable) {
@@ -264,7 +264,7 @@ export class CORE extends Destroyable{
     }
     private whenDestroyed(destructions: Array<Observable<boolean>>): Observable<boolean> {
         if (destructions.length === 0) {
-            this.logInfo('One Man Army. Nice to meet too you, my time has come :(.', true);
+            this.logInfo(MessagesEnum['time-has-come-one'], true);
             delete CORE.instance;
             CORE.CORE_CALLED = 0;
             return of(true);
@@ -274,17 +274,17 @@ export class CORE extends Destroyable{
             map((values: Array<boolean>) => {
                 const hasNotDestroyed = values.find((value: boolean) => !value);
                 if (!hasNotDestroyed) {
-                    this.logInfo('Fire in the hole! Nice to meet too you, my time has come :(.', true);
+                    this.logInfo(MessagesEnum['time-has-come-army'], true);
                     CORE.CORE_CALLED = 0;
                     delete CORE.instance;
                     return true;
                 } else {
-                    throw new ApplicationException('Is not destoyed.', 'Internal error', ErrorCodeEnum['RU-006']);
+                    throw new ApplicationException(MessagesEnum['not-destroyed'], MessagesEnum['internal-error'], ErrorCodeEnum['RU-006']);
                 }
             }),
             catchError((error: Error) => {
                 console.error(error);
-                console.log('Please, let me go.')
+                console.log(MessagesEnum['let-me-go'])
                 throw error;
             })
         );
@@ -294,13 +294,13 @@ export class CORE extends Destroyable{
             map((values: Array<boolean>) => {
                 const hasNotConfigured = values.find((value: boolean) => !value);
                 if (!hasNotConfigured) {
-                    this.logInfo('All configurations are done.', true);
-                    this.logInfo('The application is fully loaded.', true);
+                    this.logInfo(MessagesEnum['configuration-done'], true);
+                    this.logInfo(MessagesEnum['ready'], true);
                     this.ready$.next(true);
                     return true;
                 } else {
                     this.ready$.next(false);
-                    throw new ApplicationException('Is not configured.', 'Internal error', ErrorCodeEnum['RU-007']);
+                    throw new ApplicationException(MessagesEnum['not-configured'], MessagesEnum['internal-error'], ErrorCodeEnum['RU-007']);
                 }
             }),
             catchError((error: Error) => {

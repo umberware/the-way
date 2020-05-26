@@ -1,4 +1,5 @@
 import { CORE } from '../core';
+import { MessagesEnum } from '../model/messages.enum';
 
 export const ConfigurationMetaKey = 'Configuration';
 
@@ -9,7 +10,7 @@ export function Configuration(over?: Function) {
             if (CORE.CORE_LOG_ENABLED) {
                 console.log('Configuration: ' + constructor.name)
                 if (over) {
-                    console.log('   Overriding Configuration:\n      Target: ' + constructor.name + '\n      Override: ' +
+                    console.log( MessagesEnum['configuration-overridden'] + MessagesEnum['overridden-target'] + constructor.name + MessagesEnum['overridden-override'] +
                     over.name);
                 }
             }

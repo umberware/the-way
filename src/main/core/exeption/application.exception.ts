@@ -4,7 +4,7 @@ export class ApplicationException implements Error {
     public message: string;
     public name: string;
     
-    constructor(private detail: string, private description: string, private code: ErrorCodeEnum) {
+    constructor(public detail: string, public description: string, public code: ErrorCodeEnum) {
         this.message = detail + ' -> ' + description;
     }
 

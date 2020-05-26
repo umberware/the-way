@@ -9,6 +9,7 @@ import { LogService } from '../service/log/log.service';
 import { CORE } from '../core';
 import { ApplicationException } from '../exeption/application.exception';
 import { ErrorCodeEnum } from '../exeption/error-code.enum';
+import { MessagesEnum } from '../model/messages.enum';
 
 @Configuration()
 export class PropertiesConfiguration extends AbstractConfiguration {
@@ -31,7 +32,8 @@ export class PropertiesConfiguration extends AbstractConfiguration {
         return of(true);
     }
     private loadProperties(propertiesFilePath: string): boolean {
-        const defaultProperties = this.loadFile(__dirname + '/' + PropertiesConfiguration.PROPERTIES_NAME);
+        const path = (__dirname && __dirname !== '') ? __dirname + '/' : '';
+        const defaultProperties = this.loadFile(path + PropertiesConfiguration.PROPERTIES_NAME);
         
         if (!propertiesFilePath) {
             this.properties = this.loadFile(PropertiesConfiguration.PROPERTIES_NAME);
@@ -45,7 +47,7 @@ export class PropertiesConfiguration extends AbstractConfiguration {
         try {
             return Yaml.parse(fs.readFileSync(path).toString());
         } catch (ex) {
-            this.logService.info('Properties file not found. Will be used the default.');
+            this.logService.info(MessagesEnum['properties-not-found']);
             return {}
         }
     }
@@ -65,7 +67,7 @@ export class PropertiesConfiguration extends AbstractConfiguration {
                 }
             }
         } catch(ex) {
-            new ApplicationException('Error on processing the properties file', 'Properties File Error', ErrorCodeEnum['RU-003']);
+            new ApplicationException(MessagesEnum['properties-wrong-format'], MessagesEnum['internal-error'], ErrorCodeEnum['RU-003']);
         }
     }
 }

@@ -1,4 +1,5 @@
 import { CORE } from '../core';
+import { MessagesEnum } from '../model/messages.enum';
 
 export const ServiceMetaKey = 'Service';
 
@@ -9,7 +10,7 @@ export function Service(over?: Function ) {
             if (CORE.CORE_LOG_ENABLED) {
                 console.log('Service: ' + constructor.name)
                 if (over) {
-                    console.log('   Overriding Service:\n      Target: ' + constructor.name + '\n      Override: ' +
+                    console.log(MessagesEnum['service-overridden'] + MessagesEnum['overridden-target'] + constructor.name + MessagesEnum['overridden-override'] +
                     over.name);
                 }
             }

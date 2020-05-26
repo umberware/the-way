@@ -1,6 +1,8 @@
 export enum HttpType {
     POST = 'post',
     GET = 'get',
-    DEL = 'del',
-    PUT = 'put'
+    DEL = 'delete',
+    PUT = 'put',
+    PATCH = 'patch',
+    HEAD = 'head'
 }

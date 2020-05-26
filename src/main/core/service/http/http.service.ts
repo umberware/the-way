@@ -18,6 +18,7 @@ import { RequestMetadataKey } from '../../decorator/rest/param/request.decorator
 import { CORE } from '../../core';
 import { TokenClaims } from '../../model/token-claims.model';
 import { ErrorCodeEnum } from '../../exeption/error-code.enum';
+import { MessagesEnum } from '../../model/messages.enum';
 
 @Service()
 export class HttpService {
@@ -37,13 +38,13 @@ export class HttpService {
             if (paramValue) {
                 functionArguments[param.index] = paramValue;
             } else {
-                throw new InternalException('The path variable and the method argument name are differents.');
+                throw new InternalException(MessagesEnum['rest-parameters-are-differents']);
             }
         }
     }
     private execute(
         httpType: HttpType, authenticated: boolean | undefined, allowedProfiles: Array<any> | undefined, 
-        target: any, propertyKey: string, req: any, res: any
+        target: any, propertyKey: string,  req: any, res: any
     ): void {
         try {
             let tokenClaims: TokenClaims = {};
@@ -54,7 +55,12 @@ export class HttpService {
             this.executeMethod(httpType, target, propertyKey, req, res, tokenClaims).subscribe(
                 (response: any) => {
                     if (!res.headersSent) {
-                        res.send(response);
+                        if (httpType !== HttpType.HEAD) {
+                            res.send(response);
+                        } else {
+                            res.send();
+                        }
+            
                     }
                 }, (error: Error) => {
                     this.handleError(error, res);
@@ -95,27 +101,28 @@ export class HttpService {
             this.buildPathParams(pathParams, req, functionArguments);
         }
       
-        if (httpType === HttpType.GET || httpType === HttpType.DEL) {
+        if (httpType === HttpType.GET || httpType === HttpType.DEL || httpType === HttpType.HEAD) {
             const queryParam: number = Reflect.getOwnMetadata(QueryParamMetadataKey, target, propertyKey);
             if (queryParam !== undefined && queryParam !== null) {
                 functionArguments[queryParam] = req.query;
             }
-        } else if (httpType === HttpType.POST || httpType === HttpType.PUT) {
+        } else if (httpType === HttpType.POST || httpType === HttpType.PUT || httpType === HttpType.PATCH) {
             const bodyParam: number = Reflect.getOwnMetadata(BodyParamMetadataKey, target, propertyKey);
             if (bodyParam !== undefined && bodyParam !== null) {
                 if (Object.keys(req.body).length === 0) {
-                    throw new BadRequestException('Request is empty');
+                    throw new BadRequestException(MessagesEnum['rest-empty-request']);
                 }
                 functionArguments[bodyParam] = req.body;
             }
         }
-        return Reflect.apply(target[propertyKey], target, functionArguments);
+        const instance = CORE.getCoreInstance().getInstanceByName(target.constructor.name);
+        return Reflect.apply(target[propertyKey], instance, functionArguments);
     }
     private handleError(ex: Error, res: any): void {
         if (ex instanceof ApplicationException) {
             res.status(ex.getCode()).send(ex);
         } else {
-            res.status('500').send(ex);
+            res.status(ErrorCodeEnum.INTERNAL_SERVER_ERROR).send(ex);
         }
         this.logService.error(ex);
     }
@@ -126,10 +133,9 @@ export class HttpService {
         const requestUser: number = Reflect.getOwnMetadata(ClaimsMetaKey, target, propertyKey);
 
         if (requestUser !== undefined && !authenticated) {
-            throw new ApplicationException('To inject the TokenClaims you must declare an authenticated path', 'Path not authenticated', ErrorCodeEnum['RU-004']);
+            throw new ApplicationException(MessagesEnum['rest-claims-without-token-verify'], MessagesEnum['rest-without-authentication'], ErrorCodeEnum['RU-004']);
         }
-
-        this.serverConfiguration.context[httpType](path, (req: any, res: any) => {
+        this.serverConfiguration.registerPath(path, httpType,  (req: any, res: any) => {
             this.execute(httpType, authenticated, allowedProfiles, target, propertyKey, req, res);
         });
     }

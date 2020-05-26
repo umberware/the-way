@@ -8,6 +8,7 @@ import { CryptoService } from './crypto.service';
 import { PropertiesConfiguration } from '../configuration/properties.configuration';
 import { Inject } from '../decorator/inject.decorator';
 import { TokenClaims } from '../model/token-claims.model';
+import { MessagesEnum } from '../model/messages.enum';
 
 export class SecurityService {
 
@@ -16,7 +17,7 @@ export class SecurityService {
     public generateToken(tokenClaims: TokenClaims): string {
         const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
         const cryptedUser: string = cryptoService.cipherIv(JSON.stringify(tokenClaims), 'aes-256-cbc', this.getUserKey());
-        return Jwt.sign({data: cryptedUser}, this.getTokenKey(), { expiresIn: '3 days' });
+        return Jwt.sign({data: cryptedUser}, this.getTokenKey(), { expiresIn: this.getTokenExpiration() });
     }
     public getTokenClaims(token: string): TokenClaims {
         const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
@@ -28,14 +29,19 @@ export class SecurityService {
         }
     }
     protected getUserKey(): string {
-        const theWayProperties = this.propertiesConfiguration.properties['the-way'] as any;
-        const serverProperties = theWayProperties['server'] as any;
-        return (serverProperties.security as any)['user-key'] as string;
+        const theWayProperties = this.propertiesConfiguration.properties['the-way'];
+        const serverProperties = theWayProperties['server'];
+        return serverProperties.security['user-key'] as string;
     }
     protected getTokenKey(): string {
-        const theWayProperties = this.propertiesConfiguration.properties['the-way'] as any;
-        const serverProperties = theWayProperties['server'] as any;
-        return (serverProperties.security as any)['token-key'] as string;
+        const theWayProperties = this.propertiesConfiguration.properties['the-way'];
+        const serverProperties = theWayProperties['server'];
+        return serverProperties.security['token-key'] as string;
+    }
+    protected getTokenExpiration(): string {
+        const theWayProperties = this.propertiesConfiguration.properties['the-way'];
+        const serverProperties = theWayProperties['server'];
+        return serverProperties.security['token-expiration'] as string;
     }
     protected mustValidateTheProfiles(tokenProfiles: Array<any>, profiles: Array<any> | undefined): boolean {
         return profiles != undefined && profiles.length > 0 && tokenProfiles && tokenProfiles.length > 0;
@@ -49,12 +55,12 @@ export class SecurityService {
             }
         }
     
-        throw new NotAllowedException('You cannot perform that.');
+        throw new NotAllowedException(MessagesEnum['rest-cannot-perform']);
     }
     public verifyToken(token: string, profiles: Array<any> | undefined): TokenClaims {
         try {
             if (!token) {
-                throw new NotAllowedException('You have no token.');
+                throw new NotAllowedException(MessagesEnum['rest-no-token']);
             }
             const tokenClaims: TokenClaims = this.getTokenClaims(token.replace('Bearer ', ''));
 
@@ -68,7 +74,7 @@ export class SecurityService {
                 throw ex;
             } else {
                 console.error(ex);
-                throw new UnauthorizedException('Invalid token');
+                throw new UnauthorizedException(MessagesEnum['rest-invalid-token']);
             }
         }
     }
