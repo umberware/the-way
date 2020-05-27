@@ -21,11 +21,5 @@ export class GuideComponent implements OnInit {
     public appService: AppService
   ) {}
 
-  public ngOnInit(): void {
-    // this.route.fragment.pipe(debounceTime(100)).subscribe((fragment: string) => {
-    //   console.log(fragment);
-    //   this.actualSubGuide = fragment;
-    //   this.appService.currentSubGuide$.next(this.actualSubGuide);
-    // })
-  }
+  public ngOnInit(): void {}
 }

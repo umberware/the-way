@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { FastSetupComponent } from '../fast-setup/fast-setup.component';
+import { FastSetupComponent } from './fast-setup/fast-setup.component';
 import { RestDecoratorComponent } from '../rest-decorator/rest-decorator.component';
 
 export const guideRoutes: Routes = [{

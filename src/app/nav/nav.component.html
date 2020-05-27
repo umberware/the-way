@@ -27,7 +27,7 @@
                 'ui-nav-sub-item': true,
                 'ui-nav-item-selected': actualSubGuide === subGuide.name
             }" *ngFor = "let subGuide of guide.sub"  (click) = "eventSelected($event, subGuide, false)">
-                ○   {{subGuide.name}}
+                {{(actualSubGuide !== subGuide.name) ? '○ ' + subGuide.name : '● ' + subGuide.name}}
             </div>
         </div>
     </div>
