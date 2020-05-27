@@ -1,0 +1,34 @@
+<div class = "ui-nav-system" (click) = "eventNavigateToHome()">
+    <div class = "ui-nav-system-name">
+        {{systemName}}
+    </div>
+    <div class = "ui-nav-system-version">
+        {{version}}
+    </div>
+</div>
+<div class = "ui-nav-items">
+    <div [ngClass] = "{
+        'ui-nav-item': true,
+        'ui-nav-item-selected': actualGuide === guide.name
+    }"  *ngFor = "let guide of guides" (click) = "eventSelected($event, guide, true)">
+        <div class = "ui-nav-item-information">
+            <div class = "ui-nav-item-label">{{guide.alias}}</div>
+            <div class = "ui-nav-item-icon" *ngIf = "guide.sub">
+                <span [ngClass] = "{
+                    'fas': true,
+                    'fa-chevron-right':  actualGuide !== guide.name,
+                    'fa-chevron-down':  actualGuide === guide.name
+                }"></span>
+            </div>
+        </div>
+        <div class = "ui-nav-items ui-nav-sub-items" *ngIf = "guide.sub && actualGuide === guide.name">
+            <div [ngClass] = "{
+                'ui-nav-item': true,
+                'ui-nav-sub-item': true,
+                'ui-nav-item-selected': actualSubGuide === subGuide.name
+            }" *ngFor = "let subGuide of guide.sub"  (click) = "eventSelected($event, subGuide, false)">
+                ○   {{subGuide.name}}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,6 @@
+<div class = "ui-links">
+    <a target = "_blank" [href] = "link.href" class = "ui-link" *ngFor = "let link of links">
+        <span [class] = "link.icon"></span>
+        <a>{{link.alias}}</a>
+    </a>
+</div>
