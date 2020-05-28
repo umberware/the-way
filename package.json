@@ -7,7 +7,7 @@
     "build-stats": "ng build --stats-json",
     "clean": "node ../build-tools/main.js --type=interface --path=src/app/core/security --systemToken=1",
     "lint": "ng lint && stylelint \"./**/*.scss\" ",
-    "publish": "ng build --prod --base-href https://nihasoft.github.io/the-way/ && ngh --dir=dist/",
+    "publish-page": "ng build --prod --base-href https://nihasoft.github.io/the-way/ && git checkout gh-pages-final && copyfiles ./dist .",
     "serve": "ng serve --proxy-config proxy.conf.json",
     "test": "yarn lint && ng test --browsers CustomChromeHeadless",
     "test-coverage": "yarn lint && ng test --code-coverage --browsers CustomChromeHeadless --no-watch"
@@ -42,7 +42,6 @@
     "@types/jasmine": "^3.3.10",
     "@types/jasminewd2": "^2.0.6",
     "@types/node": "^12.11.1",
-    "angular-cli-ghpages": "^0.6.2",
     "codelyzer": "^5.1.2",
     "cpx": "^1.5.0",
     "jasmine-core": "^3.3.0",
