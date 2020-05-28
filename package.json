@@ -2,7 +2,10 @@
   "name": "the-way-final-page",
   "version": "1.0.0",
   "description": "",
-  "scripts": {},
+  "scripts": {
+    "push": "git add . &&  git commit -m 'New Version' && git push",
+    "publish-page": "copyfiles -a -u1 dist/* . && yarn push && git checkout gh-pages -f && git clean -fd"
+  },
   "author": "Hanor Sátiro Cintra",
   "private": true,
   "dependencies": {
