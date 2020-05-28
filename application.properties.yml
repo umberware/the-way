@@ -1,6 +1,0 @@
-server:
-  port: 80
-system:
-  url: https://schoolkeeper-f64d4.firebaseapp.com/
-interface:
-  path: 'dist/interface'
