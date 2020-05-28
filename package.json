@@ -5,7 +5,7 @@
   "scripts": {
     "push": "git add . &&  git commit -m \"New Version\" && git push",
     "create-404": "node -e \"require('fs').rename('index.html', '404.html', function(err) { if (err) console.log(err); console.log('File successfully renamed!') })\"",
-    "publish-page": "(yarn create-404 && copyfiles -a -u1 dist/* . && yarn push && git checkout gh-pages -f && git clean -fd) || git checkout gh-pages-final -f && git clean -fd"
+    "publish-page": "(yarn create-404 && copyfiles -a -u1 dist/* . && yarn push && git checkout gh-pages-final -f && git clean -fd) || git checkout gh-pages-final -f && git clean -fd"
   },
   "author": "Hanor Sátiro Cintra",
   "private": true,
