@@ -6,7 +6,7 @@
     "analyse": "yarn lint && yarn build-stats && webpack-bundle-analyzer dist/webapp/stats-es5.json",
     "build-stats": "ng build --stats-json",
     "clean": "node ../build-tools/main.js --type=interface --path=src/app/core/security --systemToken=1",
-    "build": "ng build --prod --base-href https://nihasoft.github.io/the-way/ && git checkout gh-pages-final && yarn publish-page",
+    "build": "ng build --prod --base-href https://nihasoft.github.io/the-way/ && git checkout gh-pages && yarn publish-page",
     "serve": "ng serve --proxy-config proxy.conf.json",
     "test": "yarn lint && ng test --browsers CustomChromeHeadless",
     "test-coverage": "yarn lint && ng test --code-coverage --browsers CustomChromeHeadless --no-watch"
