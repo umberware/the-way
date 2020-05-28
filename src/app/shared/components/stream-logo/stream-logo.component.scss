@@ -1,0 +1,37 @@
+@import '../../../../styling/variables.scss';
+
+div {
+    color: $ui-primary-text-color;
+}
+
+.ui-lib-name {
+    font-family: Tron;
+    font-size: 96px;
+    position: relative;
+
+    .ui-lib-version {
+        position: absolute;
+        font-size: 40px;
+        font-family: JesaScript;
+        right: 20px;
+        top: -10px;
+    }
+}
+
+.ui-lib-label {
+    font-size: 25px;
+}
+
+@media(max-width: 500px) {
+    .ui-lib-name {
+        font-size: 50px;
+
+        .ui-lib-version {
+            font-size: 18px;
+        }
+    }
+
+    .ui-lib-label {
+        font-size: 16px;        
+    }
+}

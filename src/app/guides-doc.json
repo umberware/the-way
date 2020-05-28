@@ -1,0 +1,131 @@
+{
+    "0.5.0": {
+        "fast-setup": {
+            "name": "fast-setup",
+            "alias": "Fast Setup",
+            "description": "Here we will configure a project in Node.Js to use typescript and after run this example with <b>The Way</b>.",
+            "fragments": [
+                {
+                    "name": "tsNode",
+                    "alias": "Configuring Node.js with Typescript",
+                    "description": "This section will describe how to setup your application to be ready to use the framework.",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "First of all we need to create a NodeJs project, so let's create a directory",
+                            "code": "mkdir my-the-way-project",
+                            "type": "markdown"
+                        }, {
+                            "order": 1,
+                            "description": "Now we need to init the project with the command below",
+                            "code": "npm init -y",
+                            "type": "markdown"
+                        }, {
+                            "order": 2,
+                            "description": "Let's add the typescript libraries and the nodemon(is way to watch the change files and recompile)\nNPM:",
+                            "code": "npm i typescript nodemon ts-node --save-dev",
+                            "type": "markdown"
+                        }, {
+                            "order": 3,
+                            "description": "or Yarn",
+                            "code": "yarn add typescript nodemon ts-node --dev",
+                            "type": "markdown"
+                        }, {
+                            "order": 4,
+                            "description": "Initializing your project to use Typescript",
+                            "code": "./node_modules/.bin/tsc --init",
+                            "type": "markdown"
+                        }, {
+                            "order": 5,
+                            "description": "Now we need to create a directory structure, we suggest the follow structure:",
+                            "code": "my-the-way-project ->\n   src ->\n      main ->\n         YOUR-PROJECT-DIRECTORIES-AND-FILES\n      test ->\n         YOUR-TESTS",
+                            "type": "markdown"
+                        }, {
+                            "order": 5,
+                            "description": "We need to update the tsconfig.json with the follow:\nNote: The outDir is the directory where the compiler will put the \"builded\" files. With the builded files we can execute with node.The include object tell do the compiler the files that needs to be compiled.",
+                            "type": "json",
+                            "code": "{\r\n    \"compileOnSave\": false,\r\n    \"compilerOptions\": {\r\n        \"baseUrl\": \".\/\",\r\n        \"downlevelIteration\": true,\r\n        \"outDir\": \".\/dist\/out-tsc\",\r\n        \"sourceMap\": true,\r\n        \"declaration\": false,\r\n        \"module\": \"esnext\",\r\n        \"moduleResolution\": \"node\",\r\n        \"emitDecoratorMetadata\": true,\r\n        \"experimentalDecorators\": true,\r\n        \"importHelpers\": true,\r\n        \"resolveJsonModule\": true,\r\n        \"target\": \"es2015\",\r\n        \"typeRoots\": [\r\n            \"node_modules\/@types\"\r\n        ],\r\n        \"lib\": [\r\n            \"es2018\",\r\n            \"dom\"\r\n        ]\r\n    }\r\n}\r\n  "
+                        }, {
+                            "order": 6,
+                            "description": "Now we create a main.ts file at src/main/main.ts to test if everything is ok",
+                            "type": "typescript",
+                            "code": "export class Main {\r\n    constructor() {\r\n        console.log('Yeah')\r\n    }\r\n}\r\nnew Main();"
+                        }, {
+                            "order": 7,
+                            "description": "Let's create a nodemon.json to watch your files",
+                            "type": "json",
+                            "code": "{\r\n    \"watch\": [\"src\"],\r\n    \"ext\": \"ts\",\r\n    \"ignore\": [\"src\/**\/*.spec.ts\", \"node_modules\/**\", \"src\/**\/*.js\"],\r\n    \"exec\": \"yarn build && node dist\/src\/main\/main.js\"\r\n  }"
+                        }, {
+                            "order": 8,
+                            "description": "Now in your project lets add some script's in to your package.json",
+                            "type": "json",
+                            "code": "\"scripts\": {\r\n    \"build\": \"tsc\",\r\n    \"serve\": \"nodemon --config nodemon.json --watch\"\r\n  }"
+                        }, {
+                            "order": 9,
+                            "description": "Now we can execute an test if the main.ts are executed, to do that you only need to execute:<br> NPM:",
+                            "code": "npm run serve",
+                            "type": "markdown"
+                        }, {
+                            "order": 10,
+                            "description": "Or Yarn:",
+                            "code": "yarn serve",
+                            "type": "markdown"
+                        }
+                    ]
+                }, {
+                    "name": "theWay",
+                    "alias": "Configuring The Way",
+                    "description": "In this section we will configure and run an application with The Way",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "Let's install The Way<br> NPM:",
+                            "code": "npm i @nihasoft/the-way",
+                            "type": "markdown"
+                        }, {
+                            "order": 1,
+                            "description": "Yarn:",
+                            "code": "yarn add @nihasoft/the-way",
+                            "type": "markdown"
+                        }, {
+                            "order": 2,
+                            "description": "Let's adjust your main class to extends TheWayApplication and decorate with @Application()",
+                            "code": "import { TheWayApplication, Application } from '@nihasoft\/the-way'\r\n\r\n@Application()\r\nexport class Main extends TheWayApplication {\r\n    public start(): void {\r\n        console.log('Yeah, now I\\'m The Way application');\r\n    }\r\n}",
+                            "type": "typescript"
+                        }
+                    ]
+                }, {
+                    "name": "injection-example",
+                    "alias": "Injection example",
+                    "description": "Now we create a class to be injected and test if it's work",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "Creating a class to inject",
+                            "code": "export class InjectionExample {\r\n    public helloWorld() {\r\n        console.log('hello world');\r\n    }\r\n}"
+                        }, {
+                            "order": 1,
+                            "description": "Injecting the created class into the main",
+                            "code": "import { TheWayApplication, Application, Inject } from '@nihasoft\/the-way'\r\nimport { InjectionExample } from '.\/injection-example';\r\n\r\n@Application()\r\nexport class Main extends TheWayApplication {\r\n\r\n    @Inject() injectionExample: InjectionExample;\r\n\r\n    public start(): void {\r\n        this.injectionExample.helloWorld();\r\n    }\r\n}"
+                        }
+                    ]
+                }, {
+                    "name": "rest-example",
+                    "alias": "Rest Example",
+                    "description": "Now we create a REST class with some methods to be executed",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "Creating REST class with some methods",
+                            "code": "import { Get } from '@nihasoft\/the-way';\r\nimport { Observable, of } from 'rxjs';\r\n\r\nexport class HereRest {\r\n    @Get('\/hero')\r\n    public getHero(): Observable<{id: number, name: string, power: number}> {\r\n        return of({\r\n            id: 10,\r\n            name: 'Batman',\r\n            power: 10000\r\n        })\r\n    }\r\n}"
+                        }, {
+                            "order": 1,
+                            "description": "Injecting the created class into the main",
+                            "code": "import { TheWayApplication, Application, Inject } from '@nihasoft\/the-way'\r\nimport { InjectionExample } from '.\/injection-example';\r\nimport { HereRest } from '.\/hero.rest';\r\n\r\n@Application()\r\nexport class Main extends TheWayApplication {\r\n\r\n    @Inject() injectionExample: InjectionExample;\r\n    @Inject() heroRest: HereRest;\r\n\r\n    public start(): void {\r\n        this.injectionExample.helloWorld();\r\n    }\r\n}"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

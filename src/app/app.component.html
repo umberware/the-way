@@ -1,0 +1,7 @@
+<div class = "ui-container">
+    <app-nav *ngIf = "isGuide" class = "ui-nav" [version] = 'version' [guides] = "guides" [systemName] = 'systemName'></app-nav>
+    <div class = "ui-component-container">
+        <router-outlet></router-outlet>
+    </div>
+</div>
+<div id="particles-js"></div>

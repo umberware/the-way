@@ -1,0 +1,44 @@
+@import '../../../styling/variables.scss';
+
+
+.ui-doc-title {
+    padding: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    color: $ui-primary-text-color;
+}
+
+.ui-doc-description {
+    padding: 0 20px;
+    font-size: 16px;
+    color: $ui-primary-text-color;
+}
+
+.ui-fragment-title {
+    padding: 20px;
+    padding-bottom: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: $ui-primary-text-color;
+}
+
+.ui-fragment-description {
+    padding: 0 20px 10px 20px;
+    font-size: 16px;
+    color: $ui-primary-text-color;
+}
+
+.ui-guide-description {
+    padding: 0 20px;
+    font-size: 14px;
+    color: $ui-primary-text-color;
+}
+
+.ui-guide-code {
+    padding: 0 20px;
+    padding-bottom: 10px;
+
+    pre {
+        width: 100%;
+    }
+}
