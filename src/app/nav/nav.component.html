@@ -10,7 +10,7 @@
     <div [ngClass] = "{
         'ui-nav-item': true,
         'ui-nav-item-selected': actualGuide === guide.name
-    }"  *ngFor = "let guide of guides" (click) = "eventSelected($event, guide, true)">
+    }"  *ngFor = "let guide of actualGuides" (click) = "eventSelected($event, guide, true)">
         <div class = "ui-nav-item-information">
             <div class = "ui-nav-item-label">{{guide.alias}}</div>
             <div class = "ui-nav-item-icon" *ngIf = "guide.sub">
@@ -27,7 +27,7 @@
                 'ui-nav-sub-item': true,
                 'ui-nav-item-selected': actualSubGuide === subGuide.name
             }" *ngFor = "let subGuide of guide.sub"  (click) = "eventSelected($event, subGuide, false)">
-                {{(actualSubGuide !== subGuide.name) ? '○ ' + subGuide.name : '● ' + subGuide.name}}
+                {{(actualSubGuide !== subGuide.alias) ? '○ ' + subGuide.alias : '● ' + subGuide.alias}}
             </div>
         </div>
     </div>

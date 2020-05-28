@@ -10,6 +10,7 @@ import { DonateModule } from './donate/donate.module';
 import { SharedModule } from './shared/shared.module';
 import { NavComponent } from './nav/nav.component';
 import { GuideModule } from './guide/guide.module';
+import { HighlightService } from './shared/services/highlight.service';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,7 @@ import { GuideModule } from './guide/guide.module';
     HttpClientModule,
     DonateModule,
     SharedModule,
-    GuideModule
+    GuideModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

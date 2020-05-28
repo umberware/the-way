@@ -11,25 +11,11 @@ import { filter } from 'rxjs/operators';
 export class NavComponent implements OnInit {
   @Input() systemName: string;
   @Input() version: string;
+  @Input() guides: {[key: string]: any};
 
-  guides: any = [{
-    name: 'fast-setup',
-    alias: 'Fast Setup'
-  }, {
-    name: 'rest-decorator',
-    alias: 'Rest decorator',
-    sub: [{
-      name: 'get'
-    },{
-      name: 'post'
-    },{
-      name: 'del'
-    },{
-      name: 'put'
-    }]
-  }];
   actualGuide: string;
   actualSubGuide: string;
+  actualGuides: Array<any> = [];
 
   constructor(
     public route: ActivatedRoute,
@@ -38,6 +24,7 @@ export class NavComponent implements OnInit {
   ) {}
 
   public ngOnInit(): void {
+    this.initializeGuides();
     this.handleUrl(window.location.href.replace('/http:\/\/.*\//', ''));
     
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
@@ -59,5 +46,12 @@ export class NavComponent implements OnInit {
     const actualState = url.split('/').pop().replace('/', '').split('#');
       this.actualGuide = actualState[0];
       this.actualSubGuide = actualState[1];
+      this.appService.currentGuide$.next(this.actualGuide);
+      this.appService.currentSubGuide$.next(this.actualSubGuide);
+  }
+  private initializeGuides(): void {
+    for(const key in this.guides) {
+      this.actualGuides.push(this.guides[key]);
+    }
   }
 }

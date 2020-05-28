@@ -1,4 +1,4 @@
-import { LinkModel } from './shared/link/link.model';
+import { LinkModel } from './shared/components/link/link.model';
 
 export const SOCIAL_LINKS: Array<LinkModel> = [
     new LinkModel({

@@ -4,6 +4,7 @@ $fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
 @import '~@fortawesome/fontawesome-free/scss/brands.scss';
 @import '~@fortawesome/fontawesome-free/scss/regular.scss';
 @import '~@fortawesome/fontawesome-free/scss/fontawesome.scss';
+@import '~highlight.js/scss/default.scss';
 
 @import './variables.scss';
 
@@ -31,11 +32,18 @@ html {
     min-width: 400px;
     min-height: 350px;
     background: white;
-    overflow: hidden;
 }
 
 .ui-link {
     color: $ui-primary-text-color;
     font-weight: bold;
     cursor: pointer;
+}
+
+.ui-component {
+    height: auto;
+}
+
+.ui-flex {
+    flex: 1;
 }

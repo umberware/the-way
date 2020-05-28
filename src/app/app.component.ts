@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy} from '@angular/core';
+import { Component } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
 import { filter } from 'rxjs/operators';
@@ -7,6 +7,10 @@ import { AppService } from './app.service';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { ParticlesConfig } from './particles.config';
 
+import * as guides from './guides.json';
+import * as guidesDoc from './guides-doc.json';
+import { AbstractComponent } from './shared/abstract.component';
+
 declare var particlesJS: any;
 
 @Component({
@@ -14,11 +18,13 @@ declare var particlesJS: any;
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent extends AbstractComponent {
   public systemId = 'The Way';
   public systemName = 'The Way';
   public isGuide: boolean = false;
-  public version = '0.5.0';
+  public guides: any;
+  public guidesDoc: any;
+  public version: string;
 
   constructor(
     private titleService: Title,
@@ -26,7 +32,12 @@ export class AppComponent implements OnInit, OnDestroy {
     public route: ActivatedRoute,
     public router: Router
   ) {
+    super();
     this.titleService.setTitle(this.systemName);
+    this.guides = guides['0.5.0'];
+    this.guidesDoc = guidesDoc['0.5.0'];
+    this.appService.currentGuideDoc$.next(this.guidesDoc);
+    this.version = this.appService.version = guides['currentVersion'];
   }
 
   public ngOnInit(): void {

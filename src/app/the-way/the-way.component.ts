@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostBinding } from '@angular/core';
 
-import { LinkModel } from '../shared/link/link.model';
+import { LinkModel } from '../shared/components/link/link.model';
 import { SOCIAL_LINKS } from '../social-links';
 
 @Component({
@@ -9,6 +9,8 @@ import { SOCIAL_LINKS } from '../social-links';
   styleUrls: ['./the-way.component.scss']
 })
 export class TheWayComponent implements OnInit {
+
+  @HostBinding('class') class = 'ui-flex';
 
   links: Array<LinkModel> = SOCIAL_LINKS
 
