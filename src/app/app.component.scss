@@ -22,6 +22,7 @@
     box-shadow: 0px 0px 5px 1px $ui-primary-border-color;
     align-items: center;
     background: $ui-primary-background-color;
+    overflow-y: auto;
 }
 
 canvas {

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { GuideComponent } from './guide.component';
 import { GuideRouteModule } from './guide.route.module';
-import { FastSetupComponent } from './fast-setup/fast-setup.component';
+import { DocComponent } from './doc/doc.component';
 import { SharedModule } from '../shared/shared.module';
 
 export function getHighlightLanguages() {
@@ -18,7 +18,7 @@ export function getHighlightLanguages() {
 @NgModule({
   declarations: [
     GuideComponent,
-    FastSetupComponent
+    DocComponent
   ],
   imports: [
     CommonModule,

@@ -21,7 +21,9 @@ const appRoutes: Routes = [
   declarations: [
   ],
   imports: [
-    RouterModule.forRoot(appRoutes)
+    RouterModule.forRoot(appRoutes, {
+      anchorScrolling: 'enabled'
+    })
   ],
   exports: [
     RouterModule

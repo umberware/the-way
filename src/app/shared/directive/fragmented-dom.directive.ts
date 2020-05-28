@@ -1,11 +1,13 @@
 import { Directive, ElementRef } from '@angular/core';
+import { element } from 'protractor';
 
 @Directive({
   selector: '[fragmented-dom]'
 })
 export class FragmentedDomDirective {
-    fragment: string;
-    constructor(public element: ElementRef) {
-        this.fragment = (element.nativeElement as HTMLElement).getAttribute('data-fragment');
-    }
+  nativeElement: HTMLElement;
+  
+  constructor(public element: ElementRef) {
+    this.nativeElement = element.nativeElement
+  }
 }

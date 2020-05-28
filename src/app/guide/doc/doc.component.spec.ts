@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FastSetupComponent } from './fast-setup.component';
+import { DocComponent } from './doc.component';
 
-describe('FastSetupComponent', () => {
-  let component: FastSetupComponent;
-  let fixture: ComponentFixture<FastSetupComponent>;
+describe('DocComponent', () => {
+  let component: DocComponent;
+  let fixture: ComponentFixture<DocComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FastSetupComponent ]
+      declarations: [ DocComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FastSetupComponent);
+    fixture = TestBed.createComponent(DocComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
