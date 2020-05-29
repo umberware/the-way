@@ -9,4 +9,3 @@ test
 .gitignore
 .travis.yml
 application-test.properties.yml
-application.properties.yml
