@@ -8,7 +8,7 @@
   "scripts": {
     "test": "jest --no-cache --properties=application-test.properties.yml --i --verbose --collectCoverage",
     "lint": "eslint . --ext .ts",
-    "build": "yarn test && tsc && copyfiles ./src/main/core/configuration/application.properties.yml ./dist",
+    "build": "yarn lint && tsc && yarn test && copyfiles ./src/main/core/configuration/application.properties.yml ./dist",
     "publish-version": "yarn build && npm publish"
   },
   "dependencies": {
