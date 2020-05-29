@@ -1,17 +1,19 @@
-import { Component, ViewChildren, QueryList, Input, AfterViewChecked, ElementRef } from '@angular/core';
+import { Component, ViewChildren, QueryList, Input, ElementRef, AfterViewInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+
 import { FragmentedDomDirective } from '../../shared/directive/fragmented-dom.directive';
 import { AbstractComponent } from '../../shared/abstract.component';
 import { HighlightService } from '../../shared/services/highlight.service';
-import { ActivatedRoute, Router } from '@angular/router';
-
 @Component({
   selector: 'app-doc',
   templateUrl: './doc.component.html',
   styleUrls: ['./doc.component.scss']
 })
-export class DocComponent extends AbstractComponent implements AfterViewChecked {
+export class DocComponent extends AbstractComponent implements AfterViewInit {
   @Input() doc: any;
   @ViewChildren(FragmentedDomDirective) fragments: QueryList<FragmentedDomDirective>;
+
+  ready: boolean = false;
 
   actualFrament: string;
   highlighted: boolean = false;
@@ -28,10 +30,11 @@ export class DocComponent extends AbstractComponent implements AfterViewChecked 
 
   public ngOnInit(): void {
   }
-  public ngAfterViewChecked(): void {
+  public ngAfterViewInit(): void {
     this.fragments.forEach((fragmentDom: FragmentedDomDirective) => {
       const native: HTMLElement = fragmentDom.element.nativeElement;
       const appNative: HTMLElement = this.elRef.nativeElement;
+      
       if (!this.fragmentsRef[native.id]) {
         this.fragmentsRef[native.id] = native;
       }

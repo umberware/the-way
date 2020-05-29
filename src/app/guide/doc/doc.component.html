@@ -6,7 +6,7 @@
     <div *ngFor = "let guide of fragment.guides">
         <div class = "ui-guide-description" [innerHTML] = "guide.description"></div>
         <div class = "ui-guide-code">
-            <pre><code [class] = "guide.type" [innerHTML] = "highlightTheCode(guide.code, guide.type)"></code></pre> 
+            <pre><code [class] = "guide.type">{{guide.code}}</code></pre> 
         </div>
     </div>
 </div>

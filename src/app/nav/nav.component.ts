@@ -44,10 +44,17 @@ export class NavComponent implements OnInit {
   }
   private handleUrl(url: string): void {
     const actualState = url.split('/').pop().replace('/', '').split('#');
-      this.actualGuide = actualState[0];
-      this.actualSubGuide = actualState[1];
-      this.appService.currentGuide$.next(this.actualGuide);
-      this.appService.currentSubGuide$.next(this.actualSubGuide);
+    if (actualState[0] === 'guide') {
+      this.router.navigate(['/guide/' + this.actualGuides[0].name], {
+        replaceUrl: true
+      });
+      return null;
+    }
+
+    this.actualGuide = actualState[0];
+    this.actualSubGuide = actualState[1];
+    this.appService.currentGuide$.next(this.actualGuide);
+    this.appService.currentSubGuide$.next(this.actualSubGuide);
   }
   private initializeGuides(): void {
     for(const key in this.guides) {
