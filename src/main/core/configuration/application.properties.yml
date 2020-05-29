@@ -15,6 +15,9 @@ the-way:
       outputPath: ./dist/src/main/swagger.json
       version: 1.0.0
       filesMatcher: './*.rest.ts'
+      type:
+        name: 'openapi'
+        version: 3.0.0
       contact:
         name: The Way
     security:
