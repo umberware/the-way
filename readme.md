@@ -26,9 +26,9 @@ You also can customize some behaviors of this framework with decorators [@Config
 
 - [Installation](#installation)
 - [Usage](#usage)
-- [All The Current Application Properties](#ApplicationProperties)
+- [All The Current Application Properties](#applicationproperties)
 - [Issues](#issues)
-- [Full Documentation](#Documentation)
+- [Full Documentation](#documentation)
 
 # Installation
 To use this framework you must have a project with Node.js and configurated to use Typescript, you can see how to do this [here](https://nihasoft.github.io/the-way/guide/fast-setup#tsNode).
@@ -145,38 +145,42 @@ We use an application.propertles.yml to be configurable by parameters, you can p
 The current default properties are:
 
     the-way:
-      core:
-        log: true
-      log:
-        level: 0
-      server:
-        enabled: true
-        port: 8082
-        path: /api
-        swagger:
+        core:
+          log: true
+        log:
+          level: 0
+        server:
           enabled: true
-          path: /swagger
-          title: Amazing Swagger
-          description: i'm inevitable
-          outputPath: ./dist/src/main/swagger.json
-          version: 1.0.0
-          filesMatcher: './*.rest.ts'
-          contact:
-            name: The Way
-        security:
-          user-key: A2345678901234567890123456789012
-          token-key: B2345678901234567890123456789034
-        file:
-          enabled: false
-          fallback: false
-          full: false
-          path: ''
-          static: 
-            path: ''
+          port: 8081
+          path: /api
+          swagger:
+            enabled: true
+            path: /swagger
+            title: Amazing Swagger
+            description: i'm inevitable
+            outputPath: ./dist/src/main/swagger.json
+            version: 1.0.0
+            filesMatcher: './*.rest.ts'
+            type:
+              name: 'openapi',
+              version: 3.0.0
+            contact:
+              name: The Way
+          security:
+            user-key: A2345678901234567890123456789012
+            token-key: B2345678901234567890123456789034
+            token-expiration: '3 days'
+          file:
+            enabled: false
+            fallback: false
             full: false
-          assets: 
             path: ''
-            full: false
+            static: 
+              path: ''
+              full: false
+            assets: 
+              path: ''
+              full: false
 
 # Issues
 

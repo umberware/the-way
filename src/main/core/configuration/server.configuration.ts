@@ -109,7 +109,7 @@ export class ServerConfiguration extends AbstractConfiguration {
     }
     private initializeSwagger(): void {
         const swaggerProperties = this.serverProperties.swagger;
-        const swaggerOptions = {
+        const swaggerOptions: any = {
             swaggerDefinition: {
                 info: {
                     version: swaggerProperties.version,
@@ -120,6 +120,9 @@ export class ServerConfiguration extends AbstractConfiguration {
                 basePath: this.serverProperties.path
             },
             apis: [swaggerProperties.filesMatcher]
+        }
+        if (swaggerProperties.type) {
+            swaggerOptions.swaggerDefinition[swaggerProperties.type.name] = swaggerProperties.type.version
         }
         const swaggerDocs = SwaggerDocs(swaggerOptions);
         writeFileSync(swaggerProperties.outputPath, JSON.stringify(swaggerDocs));

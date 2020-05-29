@@ -9,3 +9,4 @@ test
 .gitignore
 .travis.yml
 application-test.properties.yml
+swagger.json
