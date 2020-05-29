@@ -117,11 +117,11 @@
                         {
                             "order": 0,
                             "description": "Creating REST class with some methods",
-                            "code": "import { Get } from '@nihasoft\/the-way';\r\nimport { Observable, of } from 'rxjs';\r\n\r\nexport class HereRest {\r\n    @Get('\/hero')\r\n    public getHero(): Observable<{id: number, name: string, power: number}> {\r\n        return of({\r\n            id: 10,\r\n            name: 'Batman',\r\n            power: 10000\r\n        })\r\n    }\r\n}"
+                            "code": "import { Get } from '@nihasoft\/the-way';\r\nimport { Observable, of } from 'rxjs';\r\n\r\nexport class HeroRest{\r\n    @Get('\/hero')\r\n    public getHero(): Observable<{id: number, name: string, power: number}> {\r\n        return of({\r\n            id: 10,\r\n            name: 'Batman',\r\n            power: 10000\r\n        })\r\n    }\r\n}"
                         }, {
                             "order": 1,
                             "description": "Injecting the created class into the main",
-                            "code": "import { TheWayApplication, Application, Inject } from '@nihasoft\/the-way'\r\nimport { InjectionExample } from '.\/injection-example';\r\nimport { HereRest } from '.\/hero.rest';\r\n\r\n@Application()\r\nexport class Main extends TheWayApplication {\r\n\r\n    @Inject() injectionExample: InjectionExample;\r\n    @Inject() heroRest: HereRest;\r\n\r\n    public start(): void {\r\n        this.injectionExample.helloWorld();\r\n    }\r\n}"
+                            "code": "import { TheWayApplication, Application, Inject } from '@nihasoft\/the-way'\r\nimport { InjectionExample } from '.\/injection-example';\r\nimport { HeroRest } from '.\/hero.rest';\r\n\r\n@Application()\r\nexport class Main extends TheWayApplication {\r\n\r\n    @Inject() injectionExample: InjectionExample;\r\n    @Inject() heroRest: HeroRest;\r\n\r\n    public start(): void {\r\n        this.injectionExample.helloWorld();\r\n    }\r\n}"
                         }
                     ]
                 }
