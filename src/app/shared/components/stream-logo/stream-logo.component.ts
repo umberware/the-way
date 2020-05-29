@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { AppService } from '../../../app.service';
 
 @Component({
   selector: 'app-stream-logo',
@@ -9,9 +10,13 @@ export class StreamLogoComponent implements OnInit {
 
   @Input() small: boolean;
 
-  version: string = 'v0.5.0'
+  version: string;
 
-  constructor() { }
+  constructor(
+    private appService: AppService
+  ) {
+    this.version = 'v' + this.appService.version;
+  }
 
   ngOnInit(): void {
   }

@@ -34,8 +34,8 @@ export class AppComponent extends AbstractComponent {
   ) {
     super();
     this.titleService.setTitle(this.systemName);
-    this.guides = guides['0.5.1'];
-    this.guidesDoc = guidesDoc['0.5.1'];
+    this.guides = guides['0.5.2'];
+    this.guidesDoc = guidesDoc['0.5.2'];
     this.appService.currentGuideDoc$.next(this.guidesDoc);
     this.version = this.appService.version = guides['currentVersion'];
   }
