@@ -26,9 +26,9 @@ You also can customize some behaviors of this framework with decorators [@Config
 
 - [Installation](#installation)
 - [Usage](#usage)
-- [All The Current Application Properties](#ApplicationProperties)
+- [All The Current Application Properties](#applicationproperties)
 - [Issues](#issues)
-- [Full Documentation](#Documentation)
+- [Full Documentation](#documentation)
 
 # Installation
 To use this framework you must have a project with Node.js and configurated to use Typescript, you can see how to do this [here](https://nihasoft.github.io/the-way/guide/fast-setup#tsNode).
