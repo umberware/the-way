@@ -1,13 +1,14 @@
 {
   "name": "@nihasoft/the-way",
-  "version": "0.4.1",
-  "description": "Is a way to Inject some dependencies and turn more easily the utilization of Rest concepts",
+  "version": "0.5.0",
+  "description": "We are a framework to help the development life to be better.",
   "main": "dist/src/main/index.js",
   "types": "dist/src/main/index.d.ts",
+  "site": "https://nihasoft.github.io/the-way/",
   "scripts": {
-    "test": "jest --no-cache --verbose --collectCoverage --i --properties=application-test.properties.yml",
+    "test": "jest --no-cache --properties=application-test.properties.yml --i --verbose --collectCoverage",
     "lint": "eslint . --ext .ts",
-    "build": "yarn lint && yarn test && tsc && copyfiles application.properties.yml dist/src/main/core/configuration",
+    "build": "tsc && copyfiles ./src/main/core/configuration/application.properties.yml ./dist",
     "publish-version": "yarn build && npm publish"
   },
   "dependencies": {
@@ -19,8 +20,11 @@
     "morgan": "^1.10.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.5",
+    "swagger-jsdoc": "^4.0.0",
+    "swagger-ui-express": "^4.1.4",
     "tslib": "^1.11.1",
-    "yaml": "^1.9.2"
+    "yaml": "^1.9.2",
+    "@types/node": "^13.13.0"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.0",
@@ -32,11 +36,14 @@
     "@types/jsonwebtoken": "^8.3.9",
     "@types/morgan": "^1.9.0",
     "@types/node": "^13.13.0",
+    "@types/swagger-ui-express": "^4.1.2",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
+    "@types/swagger-jsdoc": "^3.0.2",
     "copyfiles": "^2.2.0",
     "eslint": "^7.0.0",
     "jest": "^26.0.1",
+    "jest-html-reporter": "^3.1.3",
     "ts-jest": "^26.0.0",
     "ts-node": "^8.8.2",
     "tslint": "^6.1.1",
@@ -76,7 +83,9 @@
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/src/main/",
-      "/src/test/util"
+      "/src/test/util",
+      "/src/test/scenario",
+      "/src/test/mock"
     ],
     "testRegex": ".test.ts",
     "moduleFileExtensions": [
@@ -87,7 +96,24 @@
       "json",
       "node"
     ],
-    "testTimeout": 10000,
-    "coverageDirectory": "./dist/src/test"
+    "testTimeout": 30000,
+    "reporters": [
+      "default",
+      [
+        "./node_modules/jest-html-reporter",
+        {
+          "pageTitle": "Test Report",
+          "outputPath": "./dist/src/test/test-report/index.html",
+          "includeFailureMsg": true,
+          "includeConsoleLog": true
+        }
+      ]
+    ],
+    "coverageDirectory": "./dist/src/test/corevage/",
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "tsconfig.test.json"
+      }
+    }
   }
 }

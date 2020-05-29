@@ -4,8 +4,11 @@ import * as morgan from 'morgan';
 import * as helmet from 'helmet';
 import * as cors from 'cors';
 import * as http from 'http';
+import * as SwaggerUi from 'swagger-ui-express';
+import * as SwaggerDocs from 'swagger-jsdoc';
+import { writeFileSync } from 'fs';
 
-import { Observable } from 'rxjs';
+import { Observable, Subscriber } from 'rxjs';
 
 import { LogService } from '../service/log/log.service';
 import { AbstractConfiguration } from './abstract.configuration';
@@ -14,6 +17,8 @@ import { PropertiesConfiguration } from './properties.configuration';
 import { CORE } from '../core';
 import { ApplicationException } from '../exeption/application.exception';
 import { ErrorCodeEnum } from '../exeption/error-code.enum';
+import { HttpType } from '../service/http/http-type.enum';
+import { MessagesEnum } from '../model/messages.enum';
 
 @Configuration()
 export class ServerConfiguration extends AbstractConfiguration {
@@ -62,12 +67,6 @@ export class ServerConfiguration extends AbstractConfiguration {
             .use(helmet())
             .disable('x-powered-by')
             .use(bodyParser.urlencoded({ extended: false }))
-
-        if (this.serverProperties.file && this.serverProperties.file.enabled)   {
-            this.initializeFileServer();
-        }
-        
-        this.server = http.createServer(this.context);
     }
     public initializeFileServer(): void {
         const server = this.theWayProperties.server;
@@ -94,18 +93,58 @@ export class ServerConfiguration extends AbstractConfiguration {
             }
         });
     }
-    protected start(): Observable<boolean> {
-        return new Observable<boolean>((observer) => {
-            this.initializeExpress();
-            this.server.listen(this.port, () => {
-                this.logService.info(`Server started on port ${this.port}`);
-                observer.next(true);
-            });
-            this.server.on('error', (error: any) => {
-                if (error.code === 'EADDRINUSE') {
-                    observer.error(new ApplicationException('Cannot listener at port:' + this.port + ', because are another app on it.', 'EADDRINUSE', ErrorCodeEnum['RU-007']));
-                }
-            })
+    private initializeServer(observer: Subscriber<boolean>): void {
+        this.server = http.createServer(this.context);
+        this.server.listen(this.port, () => {
+            this.logService.info(`Server started on port ${this.port}`);
+            observer.next(true);
         });
+        this.server.on('error', (error: any) => {
+            if (error.code === 'EADDRINUSE') {
+                observer.error(new ApplicationException(MessagesEnum['server-couldnt-initialize'] + this.port, MessagesEnum['server-port-in-use'], ErrorCodeEnum['RU-007']));
+            } else {
+                observer.error(error);
+            }
+        })
+    }
+    private initializeSwagger(): void {
+        const swaggerProperties = this.serverProperties.swagger;
+        const swaggerOptions = {
+            swaggerDefinition: {
+                info: {
+                    version: swaggerProperties.version,
+                    title: swaggerProperties.title,
+                    description: swaggerProperties.description,
+                    contact: swaggerProperties.contact
+                },
+                basePath: this.serverProperties.path
+            },
+            apis: [swaggerProperties.filesMatcher]
+        }
+        const swaggerDocs = SwaggerDocs(swaggerOptions);
+        writeFileSync(swaggerProperties.outputPath, JSON.stringify(swaggerDocs));
+        this.context.use(this.serverProperties.path + swaggerProperties.path, SwaggerUi.serve, SwaggerUi.setup(swaggerDocs));
+    }
+    private isFileServerEnabled(): boolean {
+        return this.serverProperties.file && this.serverProperties.file.enabled
+    }
+    private isSwaggerEnabled(): boolean {
+        return this.serverProperties.swagger && this.serverProperties.swagger.enabled
+    }
+    protected start(): Observable<boolean> {
+        return new Observable<boolean>((observer: Subscriber<boolean>) => {
+            this.initializeExpress();
+            if (this.isFileServerEnabled())   {
+                this.initializeFileServer();
+            }
+            if (this.isSwaggerEnabled())   {
+                this.initializeSwagger();
+            }
+            this.initializeServer(observer);
+        });
+    }
+    public registerPath(path: string, httpType: HttpType, executor: Function): void {
+        const finalPath = this.serverProperties.path + path;
+        this.context[httpType](finalPath, executor);
     }
 }

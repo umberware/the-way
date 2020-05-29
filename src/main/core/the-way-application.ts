@@ -1,4 +1,5 @@
 import { CORE } from './core';
+import { MessagesEnum } from './model/messages.enum';
 
 export abstract class TheWayApplication {
     constructor() {
@@ -6,7 +7,7 @@ export abstract class TheWayApplication {
         CORE.CORE_CALLED += 1;
 
         if (CORE.CORE_CALLED > 1) {
-            throw new Error('The core are called more than one time.');
+            throw new Error(MessagesEnum['application-multiples']);
         }
 
         core.buildApplication().subscribe(

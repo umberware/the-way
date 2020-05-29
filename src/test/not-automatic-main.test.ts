@@ -1,24 +1,28 @@
-import { CORE } from '../main/core/core';
-
-import { TheWayApplication, Application } from '../main/index';
+import { Application, TheWayApplication, CORE, Inject } from '../main/index';
 import { EnvironmentTest } from './util/environtment.test';
+import { HeroRestTest } from './mock/hero.rest.test';
 
-@Application()
+@Application({
+    automatic: false
+})
 export class Main extends TheWayApplication {
+    @Inject() restTest: HeroRestTest
+
     public start(): void {
         console.log('Running...');
     }
 }
 
-afterEach(done => {
+afterAll(done => {
     EnvironmentTest.whenCoreWasDestroyed(done);
 });
 
-beforeEach(done => {
+beforeAll(done => {
+    new Main();
     EnvironmentTest.whenCoreReady(done);
 });
 
-it('The main must be initialized', () => {
+test('The main must be initialized', () => {
     const core = CORE.getCoreInstance();
     const main = core.getApplicationInstance();
     expect(main).not.toBeUndefined();

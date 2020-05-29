@@ -4,13 +4,14 @@ import { CORE } from '../core';
 import { TheWayApplication } from '../../core/the-way-application';
 import { ApplicationException } from '../exeption/application.exception';
 import { ErrorCodeEnum } from '../exeption/error-code.enum';
+import { MessagesEnum } from '../model/messages.enum';
 
 export function Application(params?: {custom?: Array<any>; automatic?: boolean}) {
-    return (constructor: Function): void => {
+    return (constructor: any): void => {
         const core = CORE.getCoreInstance();
 
         if (!(constructor.prototype instanceof TheWayApplication)) {
-            throw new ApplicationException('Your @Application class must extends the TheWayApplication', 'Application Error', ErrorCodeEnum['RU-001'])
+            throw new ApplicationException(MessagesEnum['not-the-way'], MessagesEnum['internal-error'], ErrorCodeEnum['RU-001'])
         }
 
         if (params?.custom) {
