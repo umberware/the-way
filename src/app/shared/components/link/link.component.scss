@@ -30,3 +30,13 @@
         color: $ui-primary-text-color;
     }
 }
+
+@media(max-width: 982px) {
+    .ui-links {
+        position: relative !important;
+    }
+
+    :host {
+        width: 100%;
+    }
+}

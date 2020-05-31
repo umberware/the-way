@@ -1,6 +1,12 @@
 @import '../../../styling/variables.scss';
 
-
+.ui-doc-empty {
+    flex: 1;
+    display: flex;
+    font-size: 30px;
+    justify-content: center;
+    align-items: center;
+}
 .ui-doc-title {
     padding: 20px;
     font-size: 30px;

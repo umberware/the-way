@@ -76,9 +76,14 @@
     }
 }
 
-@media(max-width: 500px) {
+@media(max-width: 982px) {
     .ui-component {
         padding: 0px 20px;
+    }
+}
+@media(max-height: 500px) {
+    .ui-component {
+        justify-content: unset;
     }
 }
 

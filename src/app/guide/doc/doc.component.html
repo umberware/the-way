@@ -1,3 +1,6 @@
+<div class = "ui-doc-empty" *ngIf = "!doc">
+    Comming Soon
+</div>
 <div class = "ui-doc-title" [innerHTML] = "doc?.alias"></div>
 <div class = "ui-doc-description" [innerHTML] = "doc?.description"></div>
 <div class = "ui-flex-column" [id] = "fragment.name" *ngFor = "let fragment of doc?.fragments" fragmented-dom>
