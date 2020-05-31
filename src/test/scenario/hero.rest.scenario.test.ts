@@ -1,7 +1,7 @@
-import { EnvironmentTest } from '../util/environtment.test';
-import { HeroModel } from '../mock/model/hero.model';
-import { ApplicationException } from '../../main/core/exeption/application.exception';
-import { ErrorCodeEnum } from '../../main/core/exeption/error-code.enum';
+import { ErrorCodeEnum, ApplicationException } from '../../main';
+
+import { EnvironmentTest } from '../environment/environtment.test';
+import { HeroModel } from '../application-test/rest/model/hero.model';
 
 export const heroRestScenarioTest = describe('multiples rest tests', () => {
     test('Head: Hero exists', done => {
@@ -9,7 +9,7 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
             (result: any) => {
                 expect(result).toBeUndefined();
                 done();
-            }, (error: any) => {
+            }, (error: ApplicationException) => {
                 expect(error).toBeUndefined();
                 done();
             }
@@ -34,9 +34,8 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 expect(result.name).toBe('Anakin Skywalker');
                 expect(result.power).toBe(10001);
                 done();
-            }, (error: any) => {
+            }, (error: ApplicationException) => {
                 expect(error).toBeUndefined();
-                done();
             }
         );
     })
@@ -45,7 +44,7 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
             (result: HeroModel) => {
                 expect(result).toBeUndefined();
                 done();
-            }, (error: any) => {
+            }, (error: ApplicationException) => {
                 expect(error).not.toBeUndefined();
                 expect(error.code).toBe(ErrorCodeEnum.NOT_FOUND);
                 done();
@@ -64,9 +63,8 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 expect(result.name).toBe('Batman');
                 expect(result.power).toBe(100000);
                 done();
-            }, (error: any) => {
+            }, (error: ApplicationException) => {
                 expect(error).toBeUndefined();
-                done();
             }
         );
     })
@@ -76,9 +74,8 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 expect(result).not.toBeUndefined();
                 expect(result.length).toBe(2);
                 done();
-            }, (error: any) => {
+            }, (error: ApplicationException) => {
                 expect(error).toBeUndefined();
-                done();
             }
         );
     })
@@ -93,9 +90,8 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 expect(result.name).toBe('Future Batman');
                 expect(result.power).toBe(100001);
                 done();
-            }, (error: any) => {
+            }, (error: ApplicationException) => {
                 expect(error).toBeUndefined();
-                done();
             }
         );
     })
@@ -109,9 +105,28 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 expect(result.name).toBe('Future Batman');
                 expect(result.power).toBe(200001);
                 done();
-            }, (error: any) => {
+            }, (error: ApplicationException) => {
                 expect(error).toBeUndefined();
-                done();
+            }
+        );
+    })
+    test('Del: Remove a Hero', done => {
+        EnvironmentTest.Del<HeroModel>('/api/hero/2').subscribe(
+            (result: HeroModel) => {
+                expect(result).not.toBeUndefined();
+                expect(result.name).toBe('Future Batman');
+                expect(result.power).toBe(200001);
+                EnvironmentTest.Get<Array<HeroModel>>('/api/heroes').subscribe(
+                    (result: Array<HeroModel>) => {
+                        expect(result).not.toBeUndefined();
+                        expect(result.length).toBe(1);
+                        done();
+                    }, (error: ApplicationException) => {
+                        expect(error).toBeUndefined();
+                    }
+                );
+            }, (error: ApplicationException) => {
+                expect(error).toBeUndefined();
             }
         );
     })

@@ -1,8 +1,9 @@
-import { SignInModel } from '../mock/model/sign-in.model';
-import { EnvironmentTest } from '../util/environtment.test';
-import { ApplicationException } from '../../main/core/exeption/application.exception';
-import { ErrorCodeEnum } from '../../main/core/exeption/error-code.enum';
+import { ErrorCodeEnum, ApplicationException } from '../../main';
+
 import { switchMap } from 'rxjs/operators';
+
+import { SignInModel } from '../application-test/rest/model/sign-in.model';
+import { EnvironmentTest } from '../environment/environtment.test';
 
 export const userRestScenarioTest = describe('multiples rest tests', () => {
     test('Post: Realize the sign in', done => {

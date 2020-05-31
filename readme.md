@@ -1,6 +1,6 @@
 [![Documentation](https://img.shields.io/badge/Documentation-lightseagreen.svg)](https://nihasoft.github.io/the-way/)
 [![Exampples](https://img.shields.io/badge/Examples-lightseagreen.svg)](https://github.com/nihasoft/the-way-examples)
-[![Version](https://img.shields.io/badge/Version-0.5.4-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
+[![Version](https://img.shields.io/badge/Version-0.5.5-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
 [![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/LICENSE)
 [![EsLint](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/.eslintrc)
 [![Build Status](https://travis-ci.com/nihasoft/the-way.svg?branch=master)](https://travis-ci.com/nihasoft/the-way)
@@ -108,8 +108,7 @@ In this section we will create a rest class with some methods enabled to be call
     import { Get } from '@nihasoft/the-way';
     import { Observable, of } from 'rxjs';
 
-    export class HeroRest
- {
+    export class HeroRest {
         @Get('/hero')
         public getHero(): Observable<{id: number, name: string, power: number}> {
             return of({
@@ -124,15 +123,13 @@ In this section we will create a rest class with some methods enabled to be call
 
     import { TheWayApplication, Application, Inject } from '@nihasoft/the-way'
     import { InjectionExample } from './injection-example';
-    import { HeroRest
- } from './hero.rest';
+    import { HeroRest } from './hero.rest';
 
     @Application()
     export class Main extends TheWayApplication {
 
         @Inject() injectionExample: InjectionExample;
-        @Inject() heroRest: HeroRest
-;
+        @Inject() heroRest: HeroRest;
 
         public start(): void {
             this.injectionExample.helloWorld();
