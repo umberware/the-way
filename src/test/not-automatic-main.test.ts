@@ -1,12 +1,12 @@
 import { Application, TheWayApplication, CORE, Inject } from '../main/index';
-import { EnvironmentTest } from './util/environtment.test';
-import { HeroRestTest } from './mock/hero.rest.test';
+import { EnvironmentTest } from './environment/environtment.test';
+import { ApplicationRestTest } from './application-test/rest/application.rest.test';
 
 @Application({
     automatic: false
 })
 export class Main extends TheWayApplication {
-    @Inject() restTest: HeroRestTest
+    @Inject() applicationRest: ApplicationRestTest;
 
     public start(): void {
         console.log('Running...');

@@ -109,7 +109,7 @@ export class CORE extends Destroyable{
             console.log(this.DEPENDENCIES_TREE);
         }
     }
-    private buildInstance<T>(instanceableName: string, constructor: Function | undefined): T {
+    public buildInstance<T>(instanceableName: string, constructor: Function | undefined): T {
         if (constructor) {
             const instance = this.buildObject(constructor.prototype) as T;
             const decorators = Reflect.getMetadataKeys(constructor);
@@ -212,12 +212,12 @@ export class CORE extends Destroyable{
         return this.INSTANCES;
     }
     private getRealInstanceNameAndConstructor(instanceableName: string, constructor?: Function): {realInstanceableName: string; realConstructor?: Function} {
-        const realInstanceableName = instanceableName;
-        const realConstructor = constructor;
+        let realInstanceableName = instanceableName;
+        let realConstructor = constructor;
         const overridden = this.OVERRIDDEN_DEPENDENCIES[instanceableName] as any;
         if (overridden) {
-            instanceableName = overridden.name as string;
-            constructor = overridden.constructor;
+            realInstanceableName = overridden.name as string;
+            realConstructor = overridden.constructor;
         }
         return {realInstanceableName, realConstructor};
     }

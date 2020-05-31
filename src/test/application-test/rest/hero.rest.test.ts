@@ -1,14 +1,8 @@
+import { Put, Patch, Del, QueryParam, Post, BodyParam, Head, Get, PathParam, NotFoundException} from '../../../main';
+
 import { Observable, of } from 'rxjs';
 
-import { Get, PathParam } from '../../main/index';
-import { NotFoundException } from '../../main/core/exeption/not-found.exception';
-import { Head } from '../../main/core/decorator/rest/method/head.decorator';
 import { HeroModel } from './model/hero.model';
-import { BodyParam } from '../../main/core/decorator/rest/param/body-param.decorator';
-import { Post } from '../../main/core/decorator/rest/method/post.decorator';
-import { QueryParam } from '../../main/core/decorator/rest/param/query-param.decorator';
-import { Put } from '../../main/core/decorator/rest/method/put.decorator';
-import { Patch } from '../../main/core/decorator/rest/method/patch.decorator';
 
 export class HeroRestTest {
     public heroes: {[key: string]: HeroModel | number} = {
@@ -75,7 +69,6 @@ export class HeroRestTest {
     */
     @Head('/hero/:id')
     public heroExists(@PathParam('id') id: number): Observable<void> {
-        console.log(this.heroes)
         if (!this.heroes[id.toString()]) {
             throw new NotFoundException('Hero not found');
         }
@@ -91,12 +84,20 @@ export class HeroRestTest {
     }
     @Get('/heroes')
     public getHeroes(@QueryParam params: {id: Array<number>}): Observable<Array<HeroModel>> {
-        console.log(params)
         const foundHeroes: Array<HeroModel> = [];
-        for (const id of params.id) {
-            const hero = this.heroes[id.toString()]
-            if (hero) {
-                foundHeroes.push(hero as HeroModel);
+        if (!params.id) {
+            for(const heroId in this.heroes) {
+                if (heroId !== 'lastId') {
+                    foundHeroes.push(this.heroes[heroId] as HeroModel)
+                }
+            }
+            return of(foundHeroes);
+        } else {
+            for (const id of params.id) {
+                const hero = this.heroes[id.toString()]
+                if (hero) {
+                    foundHeroes.push(hero as HeroModel);
+                }
             }
         }
         return of(foundHeroes)
@@ -126,6 +127,16 @@ export class HeroRestTest {
         if (toUpdate.power) {
             hero.power = toUpdate.power;
         }
+
+        return of(hero);
+    }
+    @Del('/hero/:id')
+    public deleteUser(@PathParam('id') id: number): Observable<HeroModel> {
+        const hero: HeroModel = {...this.heroes[id.toString()] as HeroModel};
+        if (!hero) {
+            throw new NotFoundException('Hero not found');
+        }
+        delete this.heroes[id.toString()];
 
         return of(hero);
     }

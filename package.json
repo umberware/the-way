@@ -1,6 +1,6 @@
 {
   "name": "@nihasoft/the-way",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "We are a framework to help the development life to be better.",
   "main": "dist/src/main/index.js",
   "types": "dist/src/main/index.d.ts",
@@ -84,9 +84,9 @@
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/src/main/",
-      "/src/test/util",
+      "/src/test/environment",
       "/src/test/scenario",
-      "/src/test/mock"
+      "/src/test/application-test"
     ],
     "testRegex": ".test.ts",
     "moduleFileExtensions": [
@@ -110,7 +110,9 @@
         }
       ]
     ],
+    "collectCoverage": true,
     "coverageDirectory": "./dist/src/test/corevage/",
+    "collectCoverageFrom": ["src/main/**/*.ts","!src/*/filesToExclude.ts"],
     "globals": {
       "ts-jest": {
         "tsConfig": "tsconfig.test.json"

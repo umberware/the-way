@@ -166,7 +166,7 @@ export class EnvironmentTest {
                 hostname: hostname,
                 port: port,
                 path: path,
-                method: 'DEL',
+                method: 'DELETE',
                 headers: {
                     ...headers,
                     'Content-Type': 'application/json'
