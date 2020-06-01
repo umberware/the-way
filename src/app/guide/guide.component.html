@@ -1,5 +1,5 @@
-<div *ngIf = "mobile" class = "ui-guide-mobile-selected">
-    {{mobileSelected}}
+<div *ngIf = "mobile" class = "ui-guide-mobile-expand-options" (click) = "eventOpenOptions($event)">
+    <span class = "fas fa-arrow-right"></span>
 </div>
 <div class = "ui-guide-items" *ngIf = "canShowOptions">
     <div [ngClass] = "{
@@ -16,7 +16,7 @@
                 }"></span>
             </div>
         </div>
-        <div class = "ui-guide-items ui-guide-sub-items" *ngIf = "guideState.sub && selectedGuideState?.name === guideState.name">
+        <div class = "ui-guide-sub-items" *ngIf = "guideState.sub && selectedGuideState?.name === guideState.name">
             <div [ngClass] = "{
                 'ui-guide-item': true,
                 'ui-guide-sub-item': true,
@@ -28,3 +28,4 @@
     </div>
 </div>
 <app-doc class = "ui-guide-doc" (viewingDocument) = "eventViewingDocument($event)"></app-doc>
+<div *ngIf = "mobile && canShowOptions" class = "ui-guide-disabled"></div>

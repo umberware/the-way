@@ -5,6 +5,7 @@
     flex-flow: row wrap;
 }
 
+.ui-guide-sub-items,
 .ui-guide-items {
     width: 250px;
     height: 100%;
@@ -12,6 +13,7 @@
     align-items: center;
     padding-top: 20px;
     flex-flow: column;
+    box-shadow: 0 0 1px 1px $ui-primary-border-color;
 }
 
 .ui-guide-item {
@@ -30,6 +32,7 @@
     padding: 0 20px 0 20px;
     overflow-y: hidden;
     height: auto;
+    box-shadow: unset;
 }
 
 .ui-guide-sub-item {
@@ -66,21 +69,46 @@
     flex: 1;
 }
 
+.ui-guide-disabled {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 2;
+    height: 100%;
+    width: 100%;
+}
+
 @media(max-width: 800px) {
-    .ui-guide-mobile-selected{
-        width: 100%;
-        padding: 10px 20px;
+    .ui-guide-mobile-expand-options {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        top: 80px;
+        left: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         color: $ui-primary-selected-text-color;
         font-weight: bold;
-        font-size: 18px;
-    }
-
-    .ui-guide-items {
-        width: 100%;
-        min-height: 40px;
+        font-size: 20px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0px 0px 5px -1px $ui-second-color;
     }
 
     .ui-guide-doc {
-        flex: unset;
+        margin-top: 40px;
+        padding-top: 20px;
+    }
+
+    .ui-guide-items {
+        background: white;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        z-index: 3;
     }
 }

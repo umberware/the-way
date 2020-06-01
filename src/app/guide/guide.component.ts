@@ -84,6 +84,10 @@ export class GuideComponent extends AbstractComponent {
       }
     ));
   }
+  public eventOpenOptions(event: any): void {
+    this.canShowOptions = true;
+    event.stopPropagation();
+  }
   public eventSelected(event: any, guide: any, isPrincipal: boolean): void {
     if (!isPrincipal) {
       this.router.navigate(['/guide/' + this.selectedGuideState.name], {fragment: guide.name});
@@ -93,6 +97,11 @@ export class GuideComponent extends AbstractComponent {
       this.router.navigate(['/guide/' + guide.name]);
     }
     this.loadState(guide, isPrincipal);
+    
+    if (this.mobile && this.canShowOptions) {
+      this.canShowOptions = false;
+    }
+
     if (event) { 
       event.stopPropagation();
     }
@@ -101,6 +110,14 @@ export class GuideComponent extends AbstractComponent {
     const sub = this.guides[this.selectedGuideState.name].states.sub.find((sub: any) => sub.name === event);
     this.eventSelected(null, sub, false);
   }
+  
+  @HostListener('document:click', ['$event'])
+  public eventOutsideClick(event): void {
+    if (this.mobile && this.canShowOptions) {
+      this.canShowOptions = false;
+    }
+  }
+
   private loadState(guide: any, isPrincicpal: boolean): void {
     if (isPrincicpal) {
       this.selectedGuideState = guide;

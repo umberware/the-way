@@ -29,7 +29,7 @@
     flex-wrap: wrap;
     border-top: 1px solid  $ui-primary-border-color;
     border-bottom: 1px solid  $ui-primary-border-color;
-    color: $ui-second-color;
+    color: $ui-primary-text-color;
     justify-content: center;
 }
 
@@ -43,13 +43,13 @@
         font-size: 18px;
         font-weight: bold;
         font-weight: bold;
-        color: $ui-second-color;
+        color: $ui-primary-text-color;
     }
 
     .ui-best-content {
         padding-top: 10px;
         font-size: 14px;
-        color: $ui-second-color;
+        color: $ui-primary-text-color;
         word-wrap: break-word;
     }
 }

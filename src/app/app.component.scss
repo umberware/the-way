@@ -42,7 +42,6 @@ canvas {
 @media(max-width: 900px) {
     .ui-container {
         flex-flow: column;
-        overflow-y: auto;
     }
     .ui-nav {
         width: 100%;
@@ -54,6 +53,5 @@ canvas {
 
     .ui-component-container {
         flex: unset;
-        overflow-y: unset;
     }
 }

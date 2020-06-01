@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { SOCIAL_LINKS } from '../social-links';
 import { LinkModel } from '../shared/components/link/link.model';
+import { AppService } from '../app.service';
 
 @Component({
   selector: 'app-nav',
@@ -16,7 +17,8 @@ export class NavComponent implements OnInit {
 
   constructor(
     public route: ActivatedRoute,
-    public router: Router
+    public router: Router,
+    public appService: AppService
   ) {}
 
   public ngOnInit(): void {}
