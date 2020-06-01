@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Router, ActivatedRoute, Params, NavigationEnd, ActivatedRouteSnapshot } from '@angular/router';
-import { AppService } from '../app.service';
-import { filter } from 'rxjs/operators';
+import { Router, ActivatedRoute } from '@angular/router';
+import { SOCIAL_LINKS } from '../social-links';
+import { LinkModel } from '../shared/components/link/link.model';
 
 @Component({
   selector: 'app-nav',
@@ -11,54 +11,17 @@ import { filter } from 'rxjs/operators';
 export class NavComponent implements OnInit {
   @Input() systemName: string;
   @Input() version: string;
-  @Input() guides: {[key: string]: any};
 
-  actualGuide: string;
-  actualSubGuide: string;
-  actualGuides: Array<any> = [];
+  links: Array<LinkModel> = SOCIAL_LINKS;
 
   constructor(
     public route: ActivatedRoute,
-    public router: Router,
-    private appService: AppService
+    public router: Router
   ) {}
 
-  public ngOnInit(): void {
-    this.initializeGuides();
-    this.handleUrl(window.location.href.replace('/http:\/\/.*\//', ''));
-    
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
-      this.handleUrl((event as NavigationEnd).url);
-    });
-  }
+  public ngOnInit(): void {}
+  
   public eventNavigateToHome(): void {
     this.router.navigate(['/']);
-  }
-  public eventSelected(event: any, actualGuide: any, isPrincipal: boolean): void {
-    if (!isPrincipal) {
-      this.router.navigate(['/guide/' + this.actualGuide], {fragment: actualGuide.name});
-    } else {
-      this.router.navigate(['/guide/' + actualGuide.name]);
-    }
-    event.stopPropagation();
-  }
-  private handleUrl(url: string): void {
-    const actualState = url.split('/').pop().replace('/', '').split('#');
-    if (actualState[0] === 'guide') {
-      this.router.navigate(['/guide/' + this.actualGuides[0].name], {
-        replaceUrl: true
-      });
-      return null;
-    }
-
-    this.actualGuide = actualState[0];
-    this.actualSubGuide = actualState[1];
-    this.appService.currentGuide$.next(this.actualGuide);
-    this.appService.currentSubGuide$.next(this.actualSubGuide);
-  }
-  private initializeGuides(): void {
-    for(const key in this.guides) {
-      this.actualGuides.push(this.guides[key]);
-    }
   }
 }

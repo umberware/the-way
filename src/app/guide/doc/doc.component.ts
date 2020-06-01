@@ -1,67 +1,100 @@
-import { Component, ViewChildren, QueryList, Input, ElementRef, AfterViewInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, ElementRef, AfterViewChecked, ViewChildren, QueryList, HostListener, Output, EventEmitter } from '@angular/core';
 
-import { FragmentedDomDirective } from '../../shared/directive/fragmented-dom.directive';
 import { AbstractComponent } from '../../shared/abstract.component';
+import { GuideService } from '../guide.service';
+import { FragmentedDomDirective } from '../../shared/directive/fragmented-dom.directive';
+import { BehaviorSubject } from 'rxjs';
+import { filter, switchMap } from 'rxjs/operators';
 import { HighlightService } from '../../shared/services/highlight.service';
+
 @Component({
   selector: 'app-doc',
   templateUrl: './doc.component.html',
   styleUrls: ['./doc.component.scss']
 })
-export class DocComponent extends AbstractComponent implements AfterViewInit {
-  @Input() doc: any;
+export class DocComponent extends AbstractComponent implements AfterViewChecked{
   @ViewChildren(FragmentedDomDirective) fragments: QueryList<FragmentedDomDirective>;
+  @Output() viewingDocument: EventEmitter<string> = new EventEmitter();
 
-  ready: boolean = false;
+  private automaticScrool: boolean = false;
+  public documentsChanged: boolean = false;
+  public selectedGuide: any;
+  private selectedSubStateGuide: string;
+  private fragmentsView: Array<ElementRef>;
 
-  actualFrament: string;
-  highlighted: boolean = false;
-  fragmentsRef: {[key: string]: HTMLElement} = {};
+  private ready$ = new BehaviorSubject<boolean>(false);
 
   constructor(
-    private highlightService: HighlightService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private elRef: ElementRef
+    private guideService: GuideService,
+    private element: ElementRef,
+    private highlightService: HighlightService
   ) {
     super();
   }
 
   public ngOnInit(): void {
+    this.watchState();
   }
-  public ngAfterViewInit(): void {
-    this.fragments.forEach((fragmentDom: FragmentedDomDirective) => {
-      const native: HTMLElement = fragmentDom.element.nativeElement;
-      const appNative: HTMLElement = this.elRef.nativeElement;
-      
-      if (!this.fragmentsRef[native.id]) {
-        this.fragmentsRef[native.id] = native;
-      }
-      if (this.isFragmentTerritory(native, appNative) && this.actualFrament != native.id) {
-        this.actualFrament = native.id;
-        this.router.navigate([], {
-          relativeTo: this.route,
-          fragment: this.actualFrament
-        })
+  public ngAfterViewChecked(): void {
+    if (!this.ready$.getValue()) {
+      this.collectDocs();
+    }
+  }
+  public collectDocs(): void {
+    this.fragmentsView = this.fragments.toArray();
+    this.fragmentsView.forEach((element: ElementRef) => {
+      (element.nativeElement as HTMLElement).querySelectorAll('code').forEach((codeBlock) => {
+        this.highlightService.highlightBlock(codeBlock);
+      });
+    });
+    this.ready$.next(true);
+  }
+  @HostListener('scroll', ['$event'])
+  public eventScroll(event: any): void {
+    if (this.automaticScrool) {
+      this.automaticScrool = false;
+      return;
+    }
+
+    this.fragmentsView.forEach((fragment: FragmentedDomDirective) => {
+      const native: HTMLElement = fragment.element.nativeElement;
+      const appNative: HTMLElement = this.element.nativeElement;
+      if (this.isFragmentTerritory(native, appNative) && this.selectedSubStateGuide !== native.id) {
+        this.selectedSubStateGuide = native.id;
+        this.viewingDocument.emit(native.id);
       }
     });
-    if (!this.highlighted) {
-      this.highlightService.highlightAll();
-      this.highlighted = true;
-    }
-    this.subscriptions$.add(this.route.fragment.subscribe((fragment: string) => {
-      if (fragment && fragment !== this.actualFrament) {
-        const fragmentRef = this.fragmentsRef[fragment];
-        fragmentRef.scrollIntoView();
-        this.actualFrament = fragment;
-      }
-    }));
-  }
-  public highlightTheCode(code: string, langague: string): string {
-    return code;
   }
   private isFragmentTerritory(native: HTMLElement, appNative: HTMLElement): boolean {
-    return appNative.scrollTop >=  native.offsetTop && appNative.scrollTop <= native.offsetTop + native.offsetHeight
+    return (appNative.scrollTop + window.innerHeight/2) >= native.offsetTop && appNative.scrollTop <= native.offsetTop + native.offsetHeight - (window.innerHeight/2);
+  }
+  public scrollTo(): void {
+    this.automaticScrool = true;
+
+    const fragmentRef: HTMLElement = this.fragmentsView.find((view: ElementRef) => {
+      return view.nativeElement.id === this.selectedSubStateGuide;
+    }).nativeElement;
+    fragmentRef.scrollIntoView();
+  }
+  public watchState(): void {
+    this.subscriptions$.add(this.guideService.actualGuide$.subscribe(
+      (guide: any) => {
+        this.selectedGuide = guide;
+        this.ready$.next(false);
+      }
+    ));
+    this.subscriptions$.add(
+      this.ready$.pipe(filter((ready: boolean) => ready), switchMap(() => {
+        return this.guideService.actualSubGuideState$;
+      })).subscribe(
+      (subGuideState: any) => {
+        if (subGuideState !== null && subGuideState.name !== this.selectedSubStateGuide) {
+          this.selectedSubStateGuide = subGuideState.name;
+          this.scrollTo();
+        } else if (subGuideState !== this.selectedSubStateGuide) {
+          this.selectedSubStateGuide = null;
+        }
+      }
+    ));
   }
 }

@@ -74,7 +74,7 @@
                     ]
                 }, {
                     "name": "theWay",
-                    "alias": "Configuring The Way",
+                    "alias": "Running with The Way",
                     "description": "In this section we will configure and run an application with The Way",
                     "guides": [
                         {

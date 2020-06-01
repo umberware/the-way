@@ -1,3 +1,86 @@
+@import '../../styling/variables.scss';
+
 :host {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.ui-guide-items {
+    width: 250px;
+    height: 100%;
     overflow-y: auto;
+    align-items: center;
+    padding-top: 20px;
+    flex-flow: column;
+}
+
+.ui-guide-item {
+    display: flex;
+    width: 100%;
+    min-height: 40px;
+    font-size: 14px;
+    color: $ui-primary-selection-text-color;
+    align-items: center;
+    flex-flow: column;
+    cursor: pointer;
+    flex: unset;
+}
+
+.ui-guide-sub-items {
+    padding: 0 20px 0 20px;
+    overflow-y: hidden;
+    height: auto;
+}
+
+.ui-guide-sub-item {
+    align-items: unset;
+    min-height: 40px;
+    height: auto;
+    padding: 10px;
+}
+
+.ui-guide-item-information {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 40px;
+    padding: 0 20px;
+}
+
+.ui-guide-item-information:hover {
+    background: $ui-primary-selection-background-color;
+    color: $ui-primary-text-color;
+}
+
+.ui-guide-item-label {
+    flex: 1;
+}
+
+.ui-guide-item-selected {
+    color: $ui-primary-selected-text-color;
+    font-weight: bold;
+}
+
+.ui-guide-doc {
+    overflow-y: auto;
+    flex: 1;
+}
+
+@media(max-width: 800px) {
+    .ui-guide-mobile-selected{
+        width: 100%;
+        padding: 10px 20px;
+        color: $ui-primary-selected-text-color;
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .ui-guide-items {
+        width: 100%;
+        min-height: 40px;
+    }
+
+    .ui-guide-doc {
+        flex: unset;
+    }
 }

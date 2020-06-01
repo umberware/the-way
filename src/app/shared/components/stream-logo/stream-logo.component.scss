@@ -1,7 +1,10 @@
 @import '../../../../styling/variables.scss';
 
-div {
-    color: $ui-primary-text-color;
+:host {
+    width: 100%;
+    div {
+        color: $ui-primary-text-color;
+    }
 }
 
 .ui-lib-name {

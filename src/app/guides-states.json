@@ -1,7 +1,7 @@
 {
     "currentVersion": "0.5.5",
     "0.5.5": {
-        "fastSetup": {
+        "fast-setup": {
             "name": "fast-setup",
             "alias": "Fast Setup",
             "sub": [
@@ -40,7 +40,7 @@
                 "alias": "Destroy"
             }]
         }, 
-        "restDecorator": {
+        "rest-decorator": {
                 "name": "rest-decorator",
                 "alias": "Rest decorator",
             "sub": [{
@@ -58,7 +58,7 @@
             }]
             
         }, 
-        "applicationDecorator": {
+        "application-decorator": {
             "name": "application-decorator",
             "alias": "Application Decorator",
             "sub": [{
@@ -75,7 +75,7 @@
                 "alias": "@Service"
             }]
         },
-        "applicationProperties": {
+        "application-properties": {
             "name": "application-properties",
             "alias": "Application Properties",
             "sub": [{

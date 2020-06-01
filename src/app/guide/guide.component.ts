@@ -1,8 +1,10 @@
-import { Component, OnInit, HostBinding, OnDestroy } from '@angular/core';
+import { Component, HostBinding, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+
 import { AppService } from '../app.service';
 import { GuideService } from './guide.service';
 import { AbstractComponent } from '../shared/abstract.component';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-guide',
@@ -12,9 +14,21 @@ import { AbstractComponent } from '../shared/abstract.component';
 export class GuideComponent extends AbstractComponent {
 
   @HostBinding('class') class = 'ui-flex';
-  
-  actualDoc: any;
-  actualGuideDoc: any;
+
+  guides: {
+    [key: string] : {
+      states: {[key: string]: any},
+      docs: {[key: string]: any}
+    }
+  } = {};
+
+  canShowOptions: boolean = true;
+  fromMe: boolean = false;
+  guidesStates: Array<any> = [];
+  mobile: boolean = false;
+  selectedGuideDoc: any;
+  selectedGuideState: any;
+  selectedSubGuideState: any;
 
   constructor(
     public route: ActivatedRoute,
@@ -26,17 +40,76 @@ export class GuideComponent extends AbstractComponent {
   }
 
   public ngOnInit(): void {
-    this.initializeDoc();
+    this.initializeGuidesStatesAndDoc();
+    this.eventResize();
   }
-  public ngOnDestroy(): void {
+  public ngOnDestroy(): void {}
 
+  @HostListener('window:resize')
+  public eventResize(): void{
+    if (window.innerWidth < 800) {
+      this.mobile = true;
+      this.canShowOptions = false;
+    } else {
+      this.mobile = false;
+      this.canShowOptions = true;
+    }
   }
-  private initializeDoc(): void {
-    this.subscriptions$.add(this.appService.currentGuide$.subscribe((actualGuide: string) => {
-      if (actualGuide) {
-        this.actualDoc = this.appService.currentGuideDoc$.getValue();
-        this.actualGuideDoc = this.actualDoc[actualGuide];
+  private initializeGuidesStatesAndDoc(): void {
+    this.subscriptions$.add(this.appService.guidesStates$.pipe(
+      switchMap((guidesStates: any) => {
+        for (const state in guidesStates) {
+          if (!this.guides[state]) {
+            this.guides[state] = {states: {}, docs: {}};
+          }
+          this.guides[state].states = guidesStates[state];
+          this.guidesStates.push(guidesStates[state]);
+        }
+        return this.appService.guidesDocs$;
+      })
+    ).subscribe(
+      (guidesDocs: any) => {
+        const paths = this.route.snapshot.url;
+        const path = (!paths[0]) ? this.guidesStates[0].name : paths[0].path;
+        const fragment = this.route.snapshot.fragment;
+        for (const state in guidesDocs) {
+          this.guides[state].docs = guidesDocs[state]; 
+          if (path === state) {
+            this.eventSelected(null, this.guides[state].states, true);
+            if (fragment) {
+              this.eventSelected(null, this.guides[state].states.sub.find((subGuide: any) => subGuide.name === fragment), false);
+            }
+          }
+        } 
       }
-    }));
+    ));
+  }
+  public eventSelected(event: any, guide: any, isPrincipal: boolean): void {
+    if (!isPrincipal) {
+      this.router.navigate(['/guide/' + this.selectedGuideState.name], {fragment: guide.name});
+      this.fromMe = true;
+    } else {
+      this.fromMe = true;
+      this.router.navigate(['/guide/' + guide.name]);
+    }
+    this.loadState(guide, isPrincipal);
+    if (event) { 
+      event.stopPropagation();
+    }
+  }
+  public eventViewingDocument(event: string): void {
+    const sub = this.guides[this.selectedGuideState.name].states.sub.find((sub: any) => sub.name === event);
+    this.eventSelected(null, sub, false);
+  }
+  private loadState(guide: any, isPrincicpal: boolean): void {
+    if (isPrincicpal) {
+      this.selectedGuideState = guide;
+      this.selectedSubGuideState = null;
+      this.guideService.actualGuide$.next(this.guides[this.selectedGuideState.name]);
+      this.guideService.actualSubGuideState$.next(null);
+    } else {
+      this.selectedSubGuideState = guide;
+      this.guideService.actualSubGuideState$.next(guide);
+    }
   }
 }

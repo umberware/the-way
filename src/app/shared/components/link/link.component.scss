@@ -1,16 +1,17 @@
 @import '../../../../styling/variables.scss';
 
-.ui-links {
+:host {
     display: flex;
-    flex-flow: column wrap;
-    position: absolute;
-    top: 5px;
-    left: 5px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    flex: 1;
+    padding-right: 10px;
 }
 .ui-link {
-    flex: 1;
     display: flex;
-    padding: 5px;
+    padding: 10px;
     cursor: pointer;
     z-index: 1000;
     text-decoration: none;
@@ -28,15 +29,5 @@
         margin-left: 10px;
         margin-top: 10px;
         color: $ui-primary-text-color;
-    }
-}
-
-@media(max-width: 982px) {
-    .ui-links {
-        position: relative !important;
-    }
-
-    :host {
-        width: 100%;
     }
 }

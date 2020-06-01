@@ -1,14 +1,12 @@
 import { Component } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-
-import { filter } from 'rxjs/operators';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { AppService } from './app.service';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { ParticlesConfig } from './particles.config';
 
-import * as guides from './guides.json';
-import * as guidesDoc from './guides-doc.json';
+import * as guidesStates from './guides-states.json';
+import * as guidesDocs from './guides-docs.json';
 import { AbstractComponent } from './shared/abstract.component';
 
 declare var particlesJS: any;
@@ -21,7 +19,6 @@ declare var particlesJS: any;
 export class AppComponent extends AbstractComponent {
   public systemId = 'The Way';
   public systemName = 'The Way';
-  public isGuide: boolean = false;
   public guides: any;
   public guidesDoc: any;
   public version: string;
@@ -34,16 +31,12 @@ export class AppComponent extends AbstractComponent {
   ) {
     super();
     this.titleService.setTitle(this.systemName);
-    this.guides = guides['0.5.5'];
-    this.guidesDoc = guidesDoc['0.5.5'];
-    this.appService.currentGuideDoc$.next(this.guidesDoc);
-    this.version = this.appService.version = guides['currentVersion'];
+    this.appService.guidesStates$.next(guidesStates['0.5.5']);
+    this.appService.guidesDocs$.next(guidesDocs['0.5.5']);
+    this.version = this.appService.version = guidesStates['currentVersion'];
   }
 
   public ngOnInit(): void {
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
-      this.isGuide = (event as NavigationEnd).url.includes('/guide');
-    });
     this.initializeParticles();
   }
 

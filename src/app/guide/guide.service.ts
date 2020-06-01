@@ -7,7 +7,8 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class GuideService {
 
-  actualDoc$: BehaviorSubject<any> = new BehaviorSubject(null);
+  actualGuide$: BehaviorSubject<any> = new BehaviorSubject(null);
+  actualSubGuideState$: BehaviorSubject<any> = new BehaviorSubject(null);
   actualGuideDoc$: BehaviorSubject<any> = new BehaviorSubject(null);
 
   constructor() { }

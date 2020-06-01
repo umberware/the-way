@@ -1,8 +1,12 @@
 @import '../../styling/variables.scss';
 
+:host {
+    height: auto;
+}
+
 .ui-component {
     display: flex;
-    flex-flow: column;
+    flex-flow: row wrap;
     justify-content: center;
     align-items: center;
     padding: 20px 120px;
@@ -56,6 +60,7 @@
     align-items: center;
     padding: 10px 10px 30px 10px;
     z-index: 1;
+    width: 100%;
 
     .ui-link {
         margin: 0 20px;
@@ -80,13 +85,11 @@
     .ui-component {
         padding: 0px 20px;
     }
-}
-@media(max-height: 500px) {
     .ui-component {
         justify-content: unset;
+        height: auto !important;
     }
 }
-
 .ui-license {
     display: flex;
     width: 100%;

@@ -1,1 +1,30 @@
-<app-doc [doc] = "actualGuideDoc"></app-doc>
+<div *ngIf = "mobile" class = "ui-guide-mobile-selected">
+    {{mobileSelected}}
+</div>
+<div class = "ui-guide-items" *ngIf = "canShowOptions">
+    <div [ngClass] = "{
+        'ui-guide-item': true,
+        'ui-guide-item-selected': selectedGuideState?.name === guideState.name
+    }"  *ngFor = "let guideState of guidesStates" (click) = "eventSelected($event, guideState, true)">
+        <div class = "ui-guide-item-information">
+            <div class = "ui-guide-item-label">{{guideState.alias}}</div>
+            <div class = "ui-guide-item-icon" *ngIf = "guideState.sub">
+                <span [ngClass] = "{
+                    'fas': true,
+                    'fa-chevron-right':  selectedGuideState?.name !== guideState.name,
+                    'fa-chevron-down':  selectedGuideState?.name === guideState.name
+                }"></span>
+            </div>
+        </div>
+        <div class = "ui-guide-items ui-guide-sub-items" *ngIf = "guideState.sub && selectedGuideState?.name === guideState.name">
+            <div [ngClass] = "{
+                'ui-guide-item': true,
+                'ui-guide-sub-item': true,
+                'ui-guide-item-selected': selectedSubGuideState?.name === subGuideState.name
+            }" *ngFor = "let subGuideState of guideState.sub" (click) = "eventSelected($event, subGuideState, false)">
+                {{(selectedSubGuideState !== subGuideState.alias) ? '○ ' + subGuideState.alias : '● ' + subGuideState.alias}}
+            </div>
+        </div>
+    </div>
+</div>
+<app-doc class = "ui-guide-doc" (viewingDocument) = "eventViewingDocument($event)"></app-doc>

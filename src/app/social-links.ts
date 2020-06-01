@@ -10,5 +10,10 @@ export const SOCIAL_LINKS: Array<LinkModel> = [
         href: 'https://github.com/nihasoft/the-way',
         alias: 'The Way on GitHub',
         icon: 'fab fa-github'
+    }),
+    new LinkModel({
+        href: 'https://github.com/nihasoft/the-way-examples',
+        alias: 'Examples of The Way',
+        icon: 'fas fa-chalkboard-teacher'
     })
 ]

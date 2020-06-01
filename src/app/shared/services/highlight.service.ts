@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 import hljs from 'highlight.js';
 import json from 'highlight.js/lib/languages/json';
@@ -17,12 +17,7 @@ export class HighlightService {
   public highlightAll(): void {
     hljs.initHighlightingOnLoad();
   }
-
-  // public highlight(code: string, language: string): string {
-  //   // console.log(Prism.highlight(code, Prism.languages.typescript))
-  //   // console.log(Prism.languages)
-  //   console.log(Prism)
-
-  //   return Prism.highlight(code, Prism.languages[language]);
-  // }
+  public highlightBlock(block: HTMLElement): void {
+    hljs.highlightBlock(block);
+  }
 }

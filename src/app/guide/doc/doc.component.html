@@ -1,9 +1,9 @@
-<div class = "ui-doc-empty" *ngIf = "!doc">
+<div class = "ui-doc-empty" *ngIf = "!selectedGuide?.docs.alias">
     Comming Soon
 </div>
-<div class = "ui-doc-title" [innerHTML] = "doc?.alias"></div>
-<div class = "ui-doc-description" [innerHTML] = "doc?.description"></div>
-<div class = "ui-flex-column" [id] = "fragment.name" *ngFor = "let fragment of doc?.fragments" fragmented-dom>
+<div class = "ui-doc-title" [innerHTML] = "selectedGuide?.docs.alias"></div>
+<div class = "ui-doc-description" [innerHTML] = "selectedGuide?.docs.description"></div>
+<div class = "ui-flex-column" [id] = "fragment.name" *ngFor = "let fragment of selectedGuide?.docs.fragments" fragmented-dom>
     <div class = "ui-fragment-title" [innerHTML] = "fragment.alias"></div>
     <div class = "ui-fragment-description" [innerHTML] = "fragment.description"></div>
     <div *ngFor = "let guide of fragment.guides">

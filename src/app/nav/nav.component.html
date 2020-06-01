@@ -6,29 +6,5 @@
         {{version}}
     </div>
 </div>
-<div class = "ui-nav-items">
-    <div [ngClass] = "{
-        'ui-nav-item': true,
-        'ui-nav-item-selected': actualGuide === guide.name
-    }"  *ngFor = "let guide of actualGuides" (click) = "eventSelected($event, guide, true)">
-        <div class = "ui-nav-item-information">
-            <div class = "ui-nav-item-label">{{guide.alias}}</div>
-            <div class = "ui-nav-item-icon" *ngIf = "guide.sub">
-                <span [ngClass] = "{
-                    'fas': true,
-                    'fa-chevron-right':  actualGuide !== guide.name,
-                    'fa-chevron-down':  actualGuide === guide.name
-                }"></span>
-            </div>
-        </div>
-        <div class = "ui-nav-items ui-nav-sub-items" *ngIf = "guide.sub && actualGuide === guide.name">
-            <div [ngClass] = "{
-                'ui-nav-item': true,
-                'ui-nav-sub-item': true,
-                'ui-nav-item-selected': actualSubGuide === subGuide.name
-            }" *ngFor = "let subGuide of guide.sub"  (click) = "eventSelected($event, subGuide, false)">
-                {{(actualSubGuide !== subGuide.alias) ? '○ ' + subGuide.alias : '● ' + subGuide.alias}}
-            </div>
-        </div>
-    </div>
-</div>
+
+<app-link [links] = "links"></app-link>
