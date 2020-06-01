@@ -1,6 +1,6 @@
 [![Documentation](https://img.shields.io/badge/Documentation-lightseagreen.svg)](https://nihasoft.github.io/the-way/)
 [![Exampples](https://img.shields.io/badge/Examples-lightseagreen.svg)](https://github.com/nihasoft/the-way-examples)
-[![Version](https://img.shields.io/badge/Version-0.5.5-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
+[![Version](https://img.shields.io/badge/Version-0.5.6-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
 [![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/LICENSE)
 [![EsLint](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/.eslintrc)
 [![Build Status](https://travis-ci.com/nihasoft/the-way.svg?branch=master)](https://travis-ci.com/nihasoft/the-way)

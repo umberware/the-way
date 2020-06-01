@@ -172,7 +172,6 @@ export class CORE extends Destroyable{
             destructions.push((configurationInstance as AbstractConfiguration).destroy().pipe(take(1)));
         }
         return this.whenDestroyed(destructions);
-
     }
     public getApplicationInstance(): any {
         return this.application;
@@ -270,7 +269,7 @@ export class CORE extends Destroyable{
             return of(true);
         }
 
-        return forkJoin(destructions).pipe(
+        const destructionsObservable = forkJoin(destructions).pipe(
             map((values: Array<boolean>) => {
                 const hasNotDestroyed = values.find((value: boolean) => !value);
                 if (!hasNotDestroyed) {
@@ -288,6 +287,10 @@ export class CORE extends Destroyable{
                 throw error;
             })
         );
+        destructionsObservable.subscribe(() => {
+            console.log('----End Game----');
+        });
+        return destructionsObservable;
     }
     private whenReady(): Observable<boolean> {
         return forkJoin(this.CONFIGURATIONS.configure$).pipe(
