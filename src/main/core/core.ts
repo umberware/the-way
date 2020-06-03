@@ -20,6 +20,7 @@ export class CORE extends Destroyable{
     public static CORE_CALLED = 0;
     public static instance: CORE;
     
+    public destroyed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     public ready$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
     private application: Object;
@@ -269,7 +270,7 @@ export class CORE extends Destroyable{
             return of(true);
         }
 
-        const destructionsObservable = forkJoin(destructions).pipe(
+        forkJoin(destructions).pipe(
             map((values: Array<boolean>) => {
                 const hasNotDestroyed = values.find((value: boolean) => !value);
                 if (!hasNotDestroyed) {
@@ -286,11 +287,9 @@ export class CORE extends Destroyable{
                 console.log(MessagesEnum['let-me-go'])
                 throw error;
             })
-        );
-        destructionsObservable.subscribe(() => {
-            console.log('----End Game----');
-        });
-        return destructionsObservable;
+        ).subscribe(this.destroyed$);
+
+        return this.destroyed$;
     }
     private whenReady(): Observable<boolean> {
         return forkJoin(this.CONFIGURATIONS.configure$).pipe(
