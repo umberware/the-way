@@ -208,8 +208,7 @@ export class EnvironmentTest {
         this.whenCoreReady(whenReady);
     }
     public static whenCoreReady(whenReady: Function): void {
-        const core = CORE.getCoreInstance();
-        core.ready$.subscribe((ready: boolean) => {
+        CORE.ready$.subscribe((ready: boolean) => {
             if (ready) {
                 timer(2000).subscribe(() => {
                     const core = CORE.getCoreInstance();
@@ -221,9 +220,11 @@ export class EnvironmentTest {
     }
     public static whenCoreWasDestroyed(whenDestroyed: Function): void {
         CORE.getCoreInstance().destroy().subscribe(
-            () => {
-                expect(CORE.instance).toBeUndefined();
-                whenDestroyed();
+            (destroyed: boolean) => {
+                if (destroyed) {
+                    expect(CORE.instance).toBeUndefined();
+                    whenDestroyed();
+                }
             }, (error: Error) => {
                 throw error;
             }

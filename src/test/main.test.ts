@@ -28,7 +28,7 @@ beforeAll(done => {
     EnvironmentTest.whenCoreReady(done);
 });
 
-describe('allTests', () => {
+describe('Automatic: Framework: Test', () => {
     coreScenarioTest
     heroRestScenarioTest
     userRestScenarioTest

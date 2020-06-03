@@ -4,6 +4,6 @@ import { MessagesEnum } from '../model/messages.enum';
 
 export class InternalException extends ApplicationException {
     constructor(message: string) {
-        super(message, MessagesEnum['internal-server-error'], ErrorCodeEnum.BAD_REQUEST);
+        super(message, MessagesEnum['internal-server-error'], ErrorCodeEnum.INTERNAL_SERVER_ERROR);
     }
 }

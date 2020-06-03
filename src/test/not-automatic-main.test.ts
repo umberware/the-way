@@ -22,8 +22,17 @@ beforeAll(done => {
     EnvironmentTest.whenCoreReady(done);
 });
 
-test('The main must be initialized', () => {
+test('Not Automatic: The main must be initialized', () => {
     const core = CORE.getCoreInstance();
     const main = core.getApplicationInstance();
     expect(main).not.toBeUndefined();
+    expect(core.getInstances().size).toBeGreaterThan(0);
 });
+test('Not Automatic: Make the destroy twice', done => {
+    const core = CORE.getCoreInstance();
+    core.destroy().subscribe(() => {
+        core.destroy().subscribe(() => {
+            done();
+        });
+    });
+})
