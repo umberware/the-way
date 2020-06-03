@@ -7,7 +7,7 @@ import { MessagesEnum } from '../../../model/messages.enum';
 
 export const Get = function (path: string, authenticated?: boolean, allowedProfiles?: Array<any>) {  
     return (target:  any, propertyKey: string, descriptor: any): any => {
-        CORE.getCoreInstance().ready$.subscribe((ready: boolean) => {
+        CORE.ready$.subscribe((ready: boolean) => {
             if (ready) {
                 const httpService = CORE.getCoreInstance().getInstanceByName('HttpService') as HttpService;
                 if (!httpService) {

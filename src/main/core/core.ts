@@ -20,13 +20,13 @@ export class CORE extends Destroyable{
     public static CORE_CALLED = 0;
     public static instance: CORE;
     
-    public destroyed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-    public ready$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    public static destroyed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    public static ready$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
     private application: Object;
     private customInstances: Array<Function>;
     private properties: any;
-
+    private destroyng = false;
     private DEPENDENCIES: any = {};
     private DEPENDENCIES_TREE: any = {};
     private OVERRIDDEN_DEPENDENCIES: any = {};
@@ -166,6 +166,10 @@ export class CORE extends Destroyable{
         CORE.CORE_LOG_ENABLED = this.properties.core.log;
     }
     public destroy(): Observable<boolean> {
+        if (this.destroyng) {
+            return CORE.destroyed$;
+        }
+        this.destroyng = true;
         this.logInfo(MessagesEnum['destroy-all'], true);
         const destructions: Array<Observable<boolean>> = [];
 
@@ -179,6 +183,8 @@ export class CORE extends Destroyable{
     }
     public static getCoreInstance(): CORE {
         if (!CORE.instance) {
+            CORE.ready$.next(false);
+            CORE.destroyed$.next(false);
             CORE.instance = new CORE();
         }
         return CORE.instance;
@@ -287,9 +293,9 @@ export class CORE extends Destroyable{
                 console.log(MessagesEnum['let-me-go'])
                 throw error;
             })
-        ).subscribe(this.destroyed$);
+        ).subscribe(CORE.destroyed$);
 
-        return this.destroyed$;
+        return CORE.destroyed$;
     }
     private whenReady(): Observable<boolean> {
         return forkJoin(this.CONFIGURATIONS.configure$).pipe(
@@ -298,15 +304,16 @@ export class CORE extends Destroyable{
                 if (!hasNotConfigured) {
                     this.logInfo(MessagesEnum['configuration-done'], true);
                     this.logInfo(MessagesEnum['ready'], true);
-                    this.ready$.next(true);
+                    CORE.ready$.next(true);
                     return true;
                 } else {
-                    this.ready$.next(false);
+                    CORE.ready$.next(false);
                     throw new ApplicationException(MessagesEnum['not-configured'], MessagesEnum['internal-error'], ErrorCodeEnum['RU-007']);
                 }
             }),
             catchError((error: Error) => {
                 console.error(error);
+                CORE.ready$.error(error);
                 throw error;
             })
         );
