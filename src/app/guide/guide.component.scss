@@ -13,7 +13,16 @@
     align-items: center;
     padding-top: 20px;
     flex-flow: column;
-    box-shadow: 0 0 1px 1px $ui-primary-border-color;
+    box-shadow: 0 0 6px 1px $ui-primary-border-color;
+}
+
+.ui-guide-items-version {
+    display: flex;
+    font-size: 16px;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    color: $ui-primary-selection-text-color;
 }
 
 .ui-guide-item {

@@ -31,9 +31,11 @@ export class AppComponent extends AbstractComponent {
   ) {
     super();
     this.titleService.setTitle(this.systemName);
-    this.appService.guidesStates$.next(guidesStates['0.5.7']);
-    this.appService.guidesDocs$.next(guidesDocs['0.5.7']);
-    this.version = this.appService.version = guidesStates['currentVersion'];
+    this.version = this.appService.version = guidesStates['currentVersion'].toString().trim();
+    this.appService.selectedVersion$.next(this.version);
+    this.appService.guides$.next(guidesStates);
+    this.appService.guidesStates$.next(guidesStates['default'][this.version]);
+    this.appService.guidesDocs$.next(guidesDocs['default'][this.version]);
   }
 
   public ngOnInit(): void {

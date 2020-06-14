@@ -1,6 +1,6 @@
 {
-    "currentVersion": "0.5.7",
-    "0.5.7": {
+    "currentVersion": "0.5.8",
+    "0.5.8": {
         "fast-setup": {
             "name": "fast-setup",
             "alias": "Fast Setup",
@@ -50,8 +50,8 @@
                 "name": "post",
                 "alias": "@Post"
             },{
-                "name": "del",
-                "alias": "@Del"
+                "name": "delete",
+                "alias": "@Delete"
             },{
                 "name": "put",
                 "alias": "@Put"

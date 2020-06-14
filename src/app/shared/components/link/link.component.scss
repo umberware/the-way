@@ -4,7 +4,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
     justify-content: flex-end;
     flex: 1;
     padding-right: 10px;
@@ -29,5 +28,12 @@
         margin-left: 10px;
         margin-top: 10px;
         color: $ui-primary-text-color;
+    }
+}
+
+@media(max-width: 460px) {
+    :host {
+        justify-content: center;
+        align-items: center;
     }
 }

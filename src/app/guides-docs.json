@@ -1,5 +1,5 @@
 {
-    "0.5.7": {
+    "0.5.8": {
         "fast-setup": {
             "name": "fast-setup",
             "alias": "Fast Setup",
@@ -54,7 +54,7 @@
                             "order": 7,
                             "description": "Let's create a nodemon.json to watch your files",
                             "type": "json",
-                            "code": "{\r\n    \"watch\": [\"src\"],\r\n    \"ext\": \"ts\",\r\n    \"ignore\": [\"src\/**\/*.spec.ts\", \"node_modules\/**\", \"src\/**\/*.js\"],\r\n    \"exec\": \"yarn build && node dist\/src\/main\/main.js\"\r\n  }"
+                            "code": "{\r\n    \"watch\": [\"src\"],\r\n    \"ext\": \"ts\",\r\n    \"ignore\": [\"src\/**\/*.spec.ts\", \"node_modules\/**\", \"src\/**\/*.js\"],\r\n    \"exec\": \"ts-node src/main/main.ts\"\r\n  }"
                         }, {
                             "order": 8,
                             "description": "Now in your project lets add some script's in to your package.json",
@@ -122,6 +122,84 @@
                             "order": 1,
                             "description": "Injecting the created class into the main",
                             "code": "import { TheWayApplication, Application, Inject } from '@nihasoft\/the-way'\r\nimport { InjectionExample } from '.\/injection-example';\r\nimport { HeroRest } from '.\/hero.rest';\r\n\r\n@Application()\r\nexport class Main extends TheWayApplication {\r\n\r\n    @Inject() injectionExample: InjectionExample;\r\n    @Inject() heroRest: HeroRest;\r\n\r\n    public start(): void {\r\n        this.injectionExample.helloWorld();\r\n    }\r\n}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "core": {
+            "name": "core",
+            "alias": "CORE",
+            "description": "The class CORE is the heart and mind of this framework. It's is responsable to build the dependency tree, inject, configure and destroy.<br>Also, you can watch when everything is ready, when every is destroyed =(, you can get an instance by name, you can get all instances that are injected and you can destroy.",
+            "fragments": [
+                {
+                    "name": "ready",
+                    "alias": "When Is Ready",
+                    "description": "We provided an observable to tell you when everything is ready(all configurations are done, all injections are done, all overridden are done), to use this you only need to get the core instance and call the method: whenReady.<br> <b>Note:</b> the initial value of this observable is false.",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "<br><b>Using the method whenReady</b>",
+                            "code": "CORE.getCoreInstance().whenReady().subscribe((ready: boolean) => {\r\n    if(ready) {\r\n        console.log('Hi, I\\'m ready.');\r\n    }\r\n});",
+                            "type": "typescript"
+                        }
+                    ]
+                }, {
+                    "name": "the-way-application",
+                    "alias": "The Way Application",
+                    "description": "When you want to use this framework, you must provide a class decorated with @Application and extension of TheWayApplication.",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "When your class extends the TheWayApplication, you must implement the method <b>start(): void</b>. The method start will be called when the application(core) is ready. <br>The code below is an example of a class that extends TheWayApplication and is decorated with @Application.",
+                            "code": "import { TheWayApplication, Application, Inject, CORE} from '@nihasoft\/the-way'\r\nimport { InjectionExample } from '.\/injection-example';\r\nimport { HeroRest} from '.\/hero.rest';\r\n\r\n@Application()\r\nexport class Main extends TheWayApplication {\r\n\r\n    @Inject() injectionExample: InjectionExample;\r\n    @Inject() heroRest: HeroRest;\r\n\r\n    constructor() {\r\n        super();\r\n        CORE.getCoreInstance().whenReady().subscribe((ready: boolean) => {\r\n            if(ready) {\r\n                console.log('Hi, I\\'m ready.');\r\n            }\r\n        });\r\n    }\r\n\r\n    public start(): void {\r\n        this.injectionExample.helloWorld();\r\n    }\r\n}",
+                            "type": "typescript"
+                        }
+                    ]
+                }, {
+                    "name": "application",
+                    "alias": "Get Instance Of The Application",
+                    "description": "When the application is fully loaded, you can get the Application Instance. This instace is the class that extended the TheWayApplication and is decorated with @Application.",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "Getting the Application Instance:",
+                            "code": "CORE.getCoreInstance().getApplicationInstance();",
+                            "type": "typescript"
+                        }
+                    ]
+                }, {
+                    "name": "instance-by-name",
+                    "alias": "Get Instance By Name",
+                    "description": "When you want to inject a class in another class the default way to do that is using the <b>@Inject</b> decorator. But sometimes we don't want to inject a class but we want to get the instance at runtime and use this. So, we provided a way to get a instance at runtime. <br><b>Note:</b> You only can get an instance that is decorated with @Service, @Configuraation or is an injection of another class.",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "To get an instance you need to use the method getInstanceByName<T>(instanceName: string), where T is the class and instanceName is the name that class you want to get.<br><b>Note:</b> The type or class is optional.<br>See the code below:",
+                            "code": "CORE.getCoreInstance().getInstanceByName<SecurityService>('SecurityService');",
+                            "type": "typescript"
+                        }
+                    ]
+                }, {
+                    "name": "destroy",
+                    "alias": "Destroy",
+                    "description": "You can destroy everything. With this method's all the configurations done, the http server builded and the injections will be destroyed. The classes that extends AbstractConfiguration or extends the Destroyable class, will be destroyed when the method destroy of the core is called. <b>Note:</b>yours classes  that extends AbstractConfigurration or Destroyable MUST implement correctly the method destroy(): Observable<boolean> emitting the value true when all the conections or things that must be destroyed are destroyed.",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "Calling the destroy method of a core instance",
+                            "code": "const core = CORE.getCoreInstance();\r\ncore.destroy().subscribe((destroyed: boolean) => {\r\n    if (destroyed) {\r\n        console.log('DIED: 1');\r\n    }\r\n});",
+                            "type": "typescript"
+                        }, {
+                            "order": 1,
+                            "description": "Calling the destroy method of a core instance and watching the CORE.destroyed$",
+                            "code": "const core = CORE.getCoreInstance();\r\ncore.destroy().subscribe();\r\nCORE.destroyed$.subscribe((destroyed: boolean) => {\r\n    if (destroyed) {\r\n        console.log('DIED: 2');\r\n    }\r\n});",
+                            "type": "typescript"
+                        }, {
+                            "order": 2,
+                            "description": "A destroyable class",
+                            "code": "import { AbstractConfiguration, Configuration } from '@nihasoft\/the-way';\r\n\r\nimport { Observable, timer } from 'rxjs';\r\nimport { map } from 'rxjs\/operators';\r\n\r\n@Configuration()\r\nexport class DestructableConfiguration extends AbstractConfiguration {\r\n    public destroy(): Observable<boolean> {\r\n        return timer(1000).pipe(\r\n            map(() => {\r\n                console.log('I loved this world to much...');\r\n                return true;\r\n            })\r\n        );\r\n    }\r\n}",
+                            "type": "typescript"
                         }
                     ]
                 }

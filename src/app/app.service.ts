@@ -9,8 +9,10 @@ import { Observable, BehaviorSubject } from 'rxjs'
 export class AppService {
 
   version: string;
+  guides$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   guidesDocs$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   guidesStates$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  selectedVersion$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
   constructor(
     private http: HttpClient

@@ -2,6 +2,9 @@
     <span class = "fas fa-arrow-right"></span>
 </div>
 <div class = "ui-guide-items" *ngIf = "canShowOptions">
+    <div class = "ui-guide-items-version">
+        Version: {{appService.selectedVersion$ | async}}
+    </div>
     <div [ngClass] = "{
         'ui-guide-item': true,
         'ui-guide-item-selected': selectedGuideState?.name === guideState.name
@@ -22,7 +25,7 @@
                 'ui-guide-sub-item': true,
                 'ui-guide-item-selected': selectedSubGuideState?.name === subGuideState.name
             }" *ngFor = "let subGuideState of guideState.sub" (click) = "eventSelected($event, subGuideState, false)">
-                {{(selectedSubGuideState !== subGuideState.alias) ? '○ ' + subGuideState.alias : '● ' + subGuideState.alias}}
+                {{(selectedSubGuideState?.name !== subGuideState.name) ? '○ ' + subGuideState.alias : '● ' + subGuideState.alias}}
             </div>
         </div>
     </div>

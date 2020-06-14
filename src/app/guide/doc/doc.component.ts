@@ -71,10 +71,13 @@ export class DocComponent extends AbstractComponent implements AfterViewChecked{
   public scrollTo(): void {
     this.automaticScrool = true;
 
-    const fragmentRef: HTMLElement = this.fragmentsView.find((view: ElementRef) => {
+    const fragmentRef: ElementRef = this.fragmentsView.find((view: ElementRef) => {
       return view.nativeElement.id === this.selectedSubStateGuide;
-    }).nativeElement;
-    fragmentRef.scrollIntoView();
+    });
+    if (fragmentRef) {
+      const htmlRef = fragmentRef.nativeElement
+      htmlRef.scrollIntoView();
+    }
   }
   public watchState(): void {
     this.subscriptions$.add(this.guideService.actualGuide$.subscribe(

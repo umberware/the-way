@@ -26,7 +26,6 @@ export class GuideComponent extends AbstractComponent {
   fromMe: boolean = false;
   guidesStates: Array<any> = [];
   mobile: boolean = false;
-  selectedGuideDoc: any;
   selectedGuideState: any;
   selectedSubGuideState: any;
 
