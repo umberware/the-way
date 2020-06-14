@@ -101,7 +101,7 @@ export class HttpService {
             this.buildPathParams(pathParams, req, functionArguments);
         }
       
-        if (httpType === HttpType.GET || httpType === HttpType.DEL || httpType === HttpType.HEAD) {
+        if (httpType === HttpType.GET || httpType === HttpType.DELETE || httpType === HttpType.HEAD) {
             const queryParam: number = Reflect.getOwnMetadata(QueryParamMetadataKey, target, propertyKey);
             if (queryParam !== undefined && queryParam !== null) {
                 functionArguments[queryParam] = req.query;

@@ -10,6 +10,7 @@ export { QueryParam} from './core/decorator/rest/param/query-param.decorator';
 export { Post } from './core/decorator/rest/method/post.decorator';
 export { Get } from './core/decorator/rest/method/get.decorator';
 export { Del } from './core/decorator/rest/method/del.decorator';
+export { Delete } from './core/decorator/rest/method/delete.decorator';
 export { Put } from './core/decorator/rest/method/put.decorator';
 export { SecurityService } from './core/service/security.service';
 export { CryptoService } from './core/service/crypto.service';

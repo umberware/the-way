@@ -6,13 +6,19 @@ import { ApplicationException } from '../exeption/application.exception';
 import { CORE } from '../core';
 import { CryptoService } from './crypto.service';
 import { PropertiesConfiguration } from '../configuration/properties.configuration';
-import { Inject } from '../decorator/inject.decorator';
 import { TokenClaims } from '../model/token-claims.model';
 import { MessagesEnum } from '../model/messages.enum';
+import { Service } from '../decorator/service.decorator';
 
+@Service()
 export class SecurityService {
 
-    @Inject() propertiesConfiguration: PropertiesConfiguration;
+    protected propertiesConfiguration: PropertiesConfiguration;
+
+    constructor() {
+        const core = CORE.getCoreInstance();
+        this.propertiesConfiguration = core.getInstanceByName<PropertiesConfiguration>('PropertiesConfiguration');
+    }
 
     public generateToken(tokenClaims: TokenClaims): string {
         const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;

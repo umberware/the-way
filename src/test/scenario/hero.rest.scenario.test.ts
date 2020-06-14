@@ -110,8 +110,8 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
             }
         );
     })
-    test('Del: Remove a Hero', done => {
-        EnvironmentTest.Del<HeroModel>('/api/hero/2').subscribe(
+    test('Delete: Remove a Hero', done => {
+        EnvironmentTest.Delete<HeroModel>('/api/hero/2').subscribe(
             (result: HeroModel) => {
                 expect(result).not.toBeUndefined();
                 expect(result.name).toBe('Future Batman');

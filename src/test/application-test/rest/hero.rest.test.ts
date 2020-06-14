@@ -1,4 +1,4 @@
-import { Put, Patch, Del, QueryParam, Post, BodyParam, Head, Get, PathParam, NotFoundException} from '../../../main';
+import { Put, Patch, Delete, QueryParam, Post, BodyParam, Head, Get, PathParam, NotFoundException} from '../../../main';
 
 import { Observable, of } from 'rxjs';
 
@@ -130,7 +130,7 @@ export class HeroRestTest {
 
         return of(hero);
     }
-    @Del('/hero/:id')
+    @Delete('/hero/:id')
     public deleteUser(@PathParam('id') id: number): Observable<HeroModel> {
         const hero: HeroModel = {...this.heroes[id.toString()] as HeroModel};
         if (!hero) {

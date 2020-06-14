@@ -14,6 +14,7 @@ import { ServerConfiguration } from './configuration/server.configuration';
 import { Destroyable } from './destroyable';
 import { ErrorCodeEnum } from './exeption/error-code.enum';
 import { MessagesEnum } from './model/messages.enum';
+import { SecurityService } from './service/security.service';
 
 export class CORE extends Destroyable{
     public static CORE_LOG_ENABLED = false;
@@ -55,7 +56,7 @@ export class CORE extends Destroyable{
         (this.getInstanceByName('LogService') as LogService).setLogLevel(
             this.properties.log.level
         );
-        return this.whenReady();
+        return this.watchConfigurations();
     }
     private buildCoreInstances(): void {
         const coreInstances: Array<Function> = [LogService, CryptoService];
@@ -150,6 +151,7 @@ export class CORE extends Destroyable{
         const serverProperties = this.properties.server;
         if (serverProperties.enabled) {
             this.logInfo(MessagesEnum['building-http-service'], true)
+            this.getInstance<SecurityService>(SecurityService.name, SecurityService);
             this.getInstance<ServerConfiguration>(ServerConfiguration.name, ServerConfiguration);
             this.getInstance<HttpService>(HttpService.name, HttpService);
         }
@@ -176,7 +178,7 @@ export class CORE extends Destroyable{
         for(const configurationInstance of this.CONFIGURATIONS.destructable) {
             destructions.push((configurationInstance as AbstractConfiguration).destroy().pipe(take(1)));
         }
-        return this.whenDestroyed(destructions);
+        return this.watchDestructions(destructions);
     }
     public getApplicationInstance(): any {
         return this.application;
@@ -268,7 +270,28 @@ export class CORE extends Destroyable{
     public setCustomInstances(customInstances: Array<Function>): void {
         this.customInstances = customInstances;
     }
-    private whenDestroyed(destructions: Array<Observable<boolean>>): Observable<boolean> {
+    private watchConfigurations(): Observable<boolean> {
+        return forkJoin(this.CONFIGURATIONS.configure$).pipe(
+            map((values: Array<boolean>) => {
+                const hasNotConfigured = values.find((value: boolean) => !value);
+                if (!hasNotConfigured) {
+                    this.logInfo(MessagesEnum['configuration-done'], true);
+                    this.logInfo(MessagesEnum['ready'], true);
+                    CORE.ready$.next(true);
+                    return true;
+                } else {
+                    CORE.ready$.next(false);
+                    throw new ApplicationException(MessagesEnum['not-configured'], MessagesEnum['internal-error'], ErrorCodeEnum['RU-007']);
+                }
+            }),
+            catchError((error: Error) => {
+                console.error(error);
+                CORE.ready$.error(error);
+                throw error;
+            })
+        );
+    }
+    private watchDestructions(destructions: Array<Observable<boolean>>): Observable<boolean> {
         if (destructions.length === 0) {
             this.logInfo(MessagesEnum['time-has-come-one'], true);
             delete CORE.instance;
@@ -297,25 +320,10 @@ export class CORE extends Destroyable{
 
         return CORE.destroyed$;
     }
-    private whenReady(): Observable<boolean> {
-        return forkJoin(this.CONFIGURATIONS.configure$).pipe(
-            map((values: Array<boolean>) => {
-                const hasNotConfigured = values.find((value: boolean) => !value);
-                if (!hasNotConfigured) {
-                    this.logInfo(MessagesEnum['configuration-done'], true);
-                    this.logInfo(MessagesEnum['ready'], true);
-                    CORE.ready$.next(true);
-                    return true;
-                } else {
-                    CORE.ready$.next(false);
-                    throw new ApplicationException(MessagesEnum['not-configured'], MessagesEnum['internal-error'], ErrorCodeEnum['RU-007']);
-                }
-            }),
-            catchError((error: Error) => {
-                console.error(error);
-                CORE.ready$.error(error);
-                throw error;
-            })
-        );
+    public whenDestroyed(): Observable<boolean> {
+        return CORE.destroyed$;
+    }
+    public whenReady(): Observable<boolean> {
+        return CORE.ready$;
     }
 }
