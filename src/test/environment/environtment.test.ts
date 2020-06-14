@@ -159,7 +159,7 @@ export class EnvironmentTest {
             req.end();
         }).pipe(take(1));
     }
-    public static Del<T>(path: string, headers: any = {}): Observable<T> {
+    public static Delete<T>(path: string, headers: any = {}): Observable<T> {
         return new Observable<T>((observer) => {
             const {hostname, port} = this.getHostnameAndPort();
             const options = {
