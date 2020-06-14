@@ -40,13 +40,19 @@
                 "alias": "Destroy"
             }]
         }, 
-        "rest-decorator": {
-                "name": "rest-decorator",
-                "alias": "Rest decorator",
+        "rest": {
+            "name": "rest",
+            "alias": "Rest & decorators",
             "sub": [{
+                "name": "http-server",
+                "alias": "Http Server"
+            },{
+                "name": "user-rest",
+                "alias": "User and token to safe endpoints"
+            }, {
                 "name": "get",
                 "alias": "@Get"
-            },{
+            }, {
                 "name": "post",
                 "alias": "@Post"
             },{
@@ -55,8 +61,10 @@
             },{
                 "name": "put",
                 "alias": "@Put"
+            },{
+                "name": "other-decorators",
+                "alias": "Argument REST decorators"
             }]
-            
         }, 
         "application-decorator": {
             "name": "application-decorator",
@@ -65,14 +73,14 @@
                 "name": "application",
                 "alias": "@Application()"
             },{
-                "name": "inject",
-                "alias": "@Inject()"
-                },{
                 "name": "configure",
                 "alias": "@Configure()"
             },{
                 "name": "service",
                 "alias": "@Service"
+            },{
+                "name": "inject",
+                "alias": "@Inject()"
             }]
         },
         "application-properties": {

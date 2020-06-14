@@ -34,6 +34,12 @@
     color: $ui-primary-text-color;
 }
 
+.ui-guide {
+    display: flex;
+    flex-flow: column;
+    padding: 5px 0;
+}
+
 .ui-guide-description {
     padding: 0 20px;
     font-size: 14px;
@@ -42,7 +48,6 @@
 
 .ui-guide-code {
     padding: 0 20px;
-    padding-bottom: 10px;
 
     pre {
         width: 100%;

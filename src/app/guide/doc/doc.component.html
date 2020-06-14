@@ -6,9 +6,9 @@
 <div class = "ui-flex-column" [id] = "fragment.name" *ngFor = "let fragment of selectedGuide?.docs.fragments" fragmented-dom>
     <div class = "ui-fragment-title" [innerHTML] = "fragment.alias"></div>
     <div class = "ui-fragment-description" [innerHTML] = "fragment.description"></div>
-    <div *ngFor = "let guide of fragment.guides">
+    <div class = "ui-guide" *ngFor = "let guide of fragment.guides">
         <div class = "ui-guide-description" [innerHTML] = "guide.description"></div>
-        <div class = "ui-guide-code">
+        <div *ngIf = "guide.code" class = "ui-guide-code">
             <pre><code [class] = "guide.type">{{guide.code}}</code></pre> 
         </div>
     </div>

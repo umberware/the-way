@@ -183,7 +183,7 @@
                 }, {
                     "name": "destroy",
                     "alias": "Destroy",
-                    "description": "You can destroy everything. With this method's all the configurations done, the http server builded and the injections will be destroyed. The classes that extends AbstractConfiguration or extends the Destroyable class, will be destroyed when the method destroy of the core is called. <b>Note:</b>yours classes  that extends AbstractConfigurration or Destroyable MUST implement correctly the method destroy(): Observable<boolean> emitting the value true when all the conections or things that must be destroyed are destroyed.",
+                    "description": "You can destroy everything. With this method's all the configurations done, the http server builded and the injections will be destroyed. The classes that extends AbstractConfiguration or extends the Destroyable class, will be destroyed when the method destroy of the core is called.<br><b>Note:</b>yours classes  that extends AbstractConfigurration or Destroyable MUST implement correctly the method destroy(): Observable<boolean> emitting the value true when all the conections or things that must be destroyed are destroyed.",
                     "guides": [
                         {
                             "order": 0,
@@ -199,6 +199,210 @@
                             "order": 2,
                             "description": "A destroyable class",
                             "code": "import { AbstractConfiguration, Configuration } from '@nihasoft\/the-way';\r\n\r\nimport { Observable, timer } from 'rxjs';\r\nimport { map } from 'rxjs\/operators';\r\n\r\n@Configuration()\r\nexport class DestructableConfiguration extends AbstractConfiguration {\r\n    public destroy(): Observable<boolean> {\r\n        return timer(1000).pipe(\r\n            map(() => {\r\n                console.log('I loved this world to much...');\r\n                return true;\r\n            })\r\n        );\r\n    }\r\n}",
+                            "type": "typescript"
+                        }
+                    ]
+                }
+            ]
+        },
+        "rest": {
+            "name": "rest",
+            "alias": "Rest & decorators",
+            "description": "This framework provide for your application a loot of decorators to user REST concepts more easealy. You can map a path with the decorators like @Post, @Get, @Put, @Delete and others. You can inject into your method parameters from the request or context of the request using the decoratos like: @PathParam, @BodyParam, @QueryParam, @Header, @Claims, @Request and @Response. Also, you can verify if the user has a token and if  has a certain profile inside the token claims of the user, with that you can enable or reject requests with safetily. You can change some behavior like the security service providing your custom security service.",
+            "fragments": [
+                {
+                    "name": "http-server",
+                    "alias": "Http Server",
+                    "description": "To use the REST decorators your application must enable the http server by application parameters. The default behavior will enable http server. When the http server is enabled you can use the REST decorators",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "Creating an interface to represent the Hero",
+                            "code": "export interface HeroModel {\r\n    id: number;\r\n    name: string;\r\n    power: number;\r\n}",
+                            "type": "typescript"
+                        }, {
+                            "order": 1,
+                            "description": "Creating a REST class",
+                            "code": "import { Get, BodyParam, Post, BadRequestException } from '@nihasoft\/the-way';\r\nimport { Observable, of } from 'rxjs';\r\nimport { HeroModel } from '.\/hero.model';\r\n\r\nexport class HeroRest {\r\n    heroes: Array<HeroModel> = [{\r\n        id: 10,\r\n        name: 'Batman',\r\n        power: 10000\r\n    }];\r\n    @Get('\/heroes')\r\n    public getHeroes(): Observable<Array<HeroModel>> {\r\n        return of(this.heroes);\r\n    }\r\n}",
+                            "type": "typescript"
+                        }, {
+                            "order": 2,
+                            "description": "Injecting your REST class into your main. <br><b>Note:</b> You can create a class that inject all yours class rest and inject only this class into your main.",
+                            "code": "import { TheWayApplication, Application, Inject } from '@nihasoft\/the-way';\r\nimport { HeroRest} from '.\/hero.rest';\r\n\r\n@Application()\r\nexport class Main extends TheWayApplication {\r\n\r\n    @Inject() heroRest: HeroRest;\r\n\r\n    public start(): void {\r\n        console.log('I\\'m ready.');\r\n    }\r\n}",
+                            "type": "typescript"
+                        }
+                    ]
+                }, {
+                    "name": "user-rest",
+                    "alias": "User and token to safe endpoints",
+                    "description": "Below we will create an endpoint to simulate a sign in process. We will generate a JWT token to be used in endpoints where needs a user logged and the user must contain a certain profile.",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "Creating a rest class to generate a token",
+                            "code": "import { Post, BodyParam, UnauthorizedException, Inject, SecurityService } from '@nihasoft\/the-way';\r\nimport { Observable, of } from 'rxjs';\r\n\r\nexport class UserRest {\r\n    @Inject() securityService: SecurityService;\r\n\r\n    user: {\r\n        username: 'anakin',\r\n        password: 'I\\'m the force',\r\n        profiles: ['master', 'jedi']\r\n    }\r\n    @Post('\/sign\/in')\r\n    public signIn(@BodyParam signInForm: any): Observable<string> {\r\n        if (this.user.username === signInForm.username && this.user.password === signInForm.password) {\r\n            return of(this.securityService.generateToken({\r\n                username: this.user.username,\r\n                profiles: this.user.profiles\r\n            }));\r\n        } else {\r\n            throw new UnauthorizedException('Username or password is incorrect.');\r\n        }\r\n    }\r\n}",
+                            "type": "typescript"
+                        }, {
+                            "order": 1,
+                            "description": "Injecting the user rest into the main",
+                            "code": "import { TheWayApplication, Application, Inject } from '@nihasoft\/the-way';\r\nimport { HeroRest} from '.\/hero.rest';\r\nimport { UserRest } from '.\/user.rest';\r\n\r\n@Application()\r\nexport class Main extends TheWayApplication {\r\n\r\n    @Inject() heroRest: HeroRest;\r\n    @Inject() userRest: UserRest;\r\n\r\n    public start(): void {\r\n        console.log('I\\'m ready.');\r\n    }\r\n}",
+                            "type": "typescript"
+                        }
+                    ]
+                }, {
+                    "name": "get",
+                    "alias": "@Get",
+                    "description": "With this decorator you can map and use the http get method.",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "Get example",
+                            "code": "heroes: Array<HeroModel> = [{\r\n    id: 10,\r\n    name: 'Batman',\r\n    power: 10000\r\n}];\r\n@Get('\/heroes')\r\npublic getHeroes(): Observable<Array<HeroModel>> {\r\n    return of(this.heroes);\r\n}",
+                            "type": "typescript"
+                        }, {
+                            "order": 1,
+                            "description": "Get example with @PathParam",
+                            "code": "@Get('\/hero\/{id}')\r\npublic getHero(@PathParam('id') id: number): Observable<HeroModel> {\r\n    const hero = this.getHeroById(id);\r\n    if (!hero) {\r\n        throw new NotFoundException('Hero not found');\r\n    }\r\n    return of(hero);\r\n}\r\npublic getHeroById(id: number): HeroModel {\r\n    return this.heroes.find((hero:HeroModel) => hero.id === id)\r\n}",
+                            "type": "typescript"
+                        }, {
+                            "order": 2,
+                            "description": "Get example with @QueryParam",
+                            "code": "@Get('\/hero')\r\npublic getHeroesWithQuery(@QueryParam query: {ids: Array<number>}): Observable<Array<HeroModel>> {\r\n    const heroes: Array<HeroModel> = [];\r\n    for (const id of query.ids) {\r\n        const hero: HeroModel = this.getHeroById(id);\r\n        if (hero) {\r\n            heroes.push(hero);\r\n        }\r\n    }\r\n    return of(heroes);\r\n}",
+                            "type": "typescript"
+                        }
+                    ]
+                }, {
+                    "name": "post",
+                    "alias": "@Post",
+                    "description": "With this decorator you can map and use the http post method. ",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "Post example with @BodyParam injection (inside of the HeroRest).",
+                            "code": "@Post('\/hero')\r\npublic createHero(@BodyParam newHero: HeroModel): Observable<HeroModel> {\r\n    if (this.hasHero(newHero)) {\r\n        throw new BadRequestException('The hero is registered.');\r\n    }\r\n    this.heroes.push(newHero);\r\n    return of(newHero);\r\n}\r\npublic hasHero(newHero: HeroModel): boolean {\r\n    return this.getHeroById(newHero.id) !== null;\r\n}",
+                            "type": "typescript"
+                        }
+                    ]
+                }, {
+                    "name": "delete",
+                    "alias": "@Delete",
+                    "description": "With this decorator you can map and use the http delete method.",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "In the code below we created an endpoint in the HeroRest where must has a logged user and that user must contain the profile 'master'. So, we only can delete a hero if the user is logged(true) and the user has the profile 'master' (['master']).<br><b>Note:</b> You can pass more than one profile in the third parameter and when the user has one of the profiles, the rest will be executed.",
+                            "code": "@Delete('\/hero\/{id}', true, ['master'])\r\npublic deleteHero(@PathParam('id') id: number): Observable<boolean> {\r\n    let hero: HeroModel;\r\n    for (let i = 0; i < this.heroes.length; i++) {\r\n        if (this.heroes[i].id === id) {\r\n            hero = this.heroes.splice(i, 1)[0];\r\n            break;\r\n        }\r\n    }\r\n    if (!hero) {\r\n        throw new BadRequestException('The hero not exists.');\r\n    }\r\n    return of(true);\r\n}",
+                            "type": "typescript"
+                        }
+                    ]
+                }, {
+                    "name": "put",
+                    "alias": "@Put",
+                    "description": "With this decorator you can map and use the http put method.",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "In the code below we created an endpoint in the HeroRest where must has a logged user to update a hero.",
+                            "code": "@Put('\/hero', true)\r\npublic updateHero(@BodyParam updateHero: HeroModel): Observable<HeroModel> {\r\n    const hero = this.getHeroById(updateHero.id);\r\n    if (!hero) {\r\n        throw new BadRequestException('The hero not exists.');\r\n    }\r\n    hero.name = updateHero.name;\r\n    hero.power = updateHero.power;\r\n    return of(hero);\r\n}",
+                            "type": "typescript"
+                        }
+                    ]
+                },{
+                    "name": "other-decorators",
+                    "alias": "Argument REST decorators",
+                    "description": "The sections below will describe all the decorations that can be injected as parameter into your rest methods.<br><b>Note:</b> Some scenarios you can put more than one argument rest decorator.",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "<b>@QueryParam</b> is responsible to bring the query parameters passed in the url to an object. To use this decorator you only need to put into your method an argument with @QueryParam."
+                        }, {
+                            "order": 1,
+                            "description": "<b>@BodyParam</b> is responsible to bring the body passed in the request. To use this decorator you only need to put into your method an argument with @BodyParam."
+                        }, {
+                            "order": 2,
+                            "description": "<b>@PathParam</b> is an argument passed in the url where sometimes is used to pass an id or an identifier. To use this decorator you must provide in your method an argument with @PathParam('VARIABLE_NAME') where VARIABLE_NAME is the parameter from url."
+                        }, {
+                            "order": 3,
+                            "description": "<b>@Claims</b> is an argument from the token. When you generate the token you pass some things like user profiles, username and others, with this decorator you can retrieve that informations from the token. To use this it's very simple you only need to put an argument with @Claims"
+                        }, {
+                            "order": 4,
+                            "description": "<b>@Request</b> is the current request. To use this you only need to put an argument with @Request."
+                        }, {
+                            "order": 5,
+                            "description": "<b>@Response</b> is the current response. You can send the response with that. To use this you only need to put an argument with @Response."
+                        }, {
+                            "order": 6,
+                            "description": "<b>@Header</b> is the header of the request. To use this you only need to put an argument with @Header."
+                        }
+                    ]
+                }
+            ]
+        },
+        "application-decorator": {
+            "name": "application-decorator",
+            "alias": "Application Decorator",
+            "description": "In this section we will describe the applications decorators like: @Inject, @Configure and others.",
+            "fragments": [
+                {
+                    "name": "application",
+                    "alias": "@Application",
+                    "description": "Is the core decorator. When you want to use this framework you must supply a class that is decorated with this an extends the TheWayApplication. This decorator has a json parameter, in this json parameter you can set automatic and custom, the sections below will explain this behaviors.",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "<b>Default Class</b>: A class decorated with @Application with the default behavior.",
+                            "code": "import { TheWayApplication, Application } from '@nihasoft\/the-way';\r\n\r\n@Application()\r\nexport class Main extends TheWayApplication {\r\n\r\n    public start(): void {\r\n        console.log('I\\'m ready.');\r\n    }\r\n}",
+                            "type": "typescript"
+                        }, {
+                            "order": 1,
+                            "description": "<b>Not automatic</b>: A class decorated with @Application and with the parameter automatic=false, will not start automatically. To start you must create the instance.",
+                            "code": "import { TheWayApplication, Application } from '@nihasoft\/the-way';\r\n\r\n@Application({\r\n    automatic: false\r\n})\r\nexport class Main extends TheWayApplication {\r\n\r\n    public start(): void {\r\n        console.log('I\\'m ready.');\r\n    }\r\n}\r\nnew Main();",
+                            "type": "typescript"
+                        }, {
+                            "order": 2,
+                            "description": "<b>Custom classes part 1</b>: A customized class",
+                            "code": "import { ServerConfiguration, Configuration } from '@nihasoft\/the-way';\r\nimport { Observable } from 'rxjs';\r\n\r\n@Configuration(ServerConfiguration)\r\nexport class CustomServerConfiguration extends ServerConfiguration {\r\n    public configure(): Observable<boolean> {\r\n        this.port = 12345;\r\n        return this.start();\r\n    }\r\n}",
+                            "type": "typescript"
+                        }, {
+                            "order": 3,
+                            "description": "<b>Custom classes part 2</b>: A main class with custom class",
+                            "code": "import { TheWayApplication, Application } from '@nihasoft\/the-way';\r\nimport { CustomServerConfiguration } from '.\/configuration\/server.configuration';\r\n\r\n@Application({\r\n    custom: [\r\n        CustomServerConfiguration\r\n    ]\r\n})\r\nexport class Main extends TheWayApplication {\r\n\r\n    public start(): void {\r\n        console.log('I\\'m ready.');\r\n    }\r\n}",
+                            "type": "typescript"
+                        }
+                    ]
+                }, {
+                    "name": "configure",
+                    "alias": "@Configure",
+                    "description": "Is a decorator designed for configurations or things that need to started like database connections, servers and others. When you decorate a class with that you must extends the class AbstractConfiguration and implement the methods: configure(): Observable<boolean> and destroy(): Observable<boolean>, the method configure will be called at the init of the application and must stream true when the configuration/connection are done. The destroy method is called when the core will be destroyed and must stream true when all configurations/connectios are closed or destroyed. Also, when is provided in the decorator a class, this means, that class must be overridden for the current class decorated with @Configuration",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "An example",
+                            "code": "import { ServerConfiguration, Configuration } from '@nihasoft\/the-way';\r\nimport { Observable } from 'rxjs';\r\n\r\n@Configuration(ServerConfiguration)\r\nexport class CustomServerConfiguration extends ServerConfiguration {\r\n    public configure(): Observable<boolean> {\r\n        this.port = 12345;\r\n        return this.start();\r\n    }\r\n}",
+                            "type": "typescript"
+                        }
+                    ]
+                }, {
+                    "name": "service",
+                    "alias": "@Service",
+                    "description": "Is a decorator designed for services. When is provided in the decorator a class, this means, that class must be overridden for the current class decorated with @Service",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "An example",
+                            "code": "import { Service } from '@nihasoft\/the-way';\r\n\r\n@Service()\r\nexport class FooService {\r\n    public print(): void {\r\n        console.log('BAR!');\r\n    }\r\n}",
+                            "type": "typescript"
+                        }
+                    ]
+                },  {
+                    "name": "inject",
+                    "alias": "@Inject",
+                    "description": "This decorator is responsible to inject class into another class. When you use this decorator the injection is like a singleton(only one instance for all injections)",
+                    "guides": [
+                        {
+                            "order": 0,
+                            "description": "Injecting the service created above into the main",
+                            "code": "import { TheWayApplication, Application, Inject } from '@nihasoft\/the-way';\r\nimport { CustomServerConfiguration } from '.\/configuration\/server.configuration';\r\nimport { FooService } from '.\/foo\/foo.service';\r\n\r\n@Application({\r\n    custom: [\r\n        CustomServerConfiguration\r\n    ]\r\n})\r\nexport class Main extends TheWayApplication {\r\n\r\n    @Inject() fooService: FooService;\r\n\r\n    public start(): void {\r\n        this.fooService.print();\r\n    }\r\n}",
                             "type": "typescript"
                         }
                     ]

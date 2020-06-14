@@ -71,6 +71,12 @@ export class DocComponent extends AbstractComponent implements AfterViewChecked{
   public scrollTo(): void {
     this.automaticScrool = true;
 
+    if (this.selectedSubStateGuide === null) {
+      const htmlRef = this.element.nativeElement as HTMLElement;
+      htmlRef.scrollTo({top: 0})
+      return;
+    }
+
     const fragmentRef: ElementRef = this.fragmentsView.find((view: ElementRef) => {
       return view.nativeElement.id === this.selectedSubStateGuide;
     });
@@ -91,7 +97,11 @@ export class DocComponent extends AbstractComponent implements AfterViewChecked{
         return this.guideService.actualSubGuideState$;
       })).subscribe(
       (subGuideState: any) => {
-        if (subGuideState !== null && subGuideState.name !== this.selectedSubStateGuide) {
+        if (subGuideState === null) {
+          this.selectedSubStateGuide = null;
+          this.scrollTo();
+        }
+        else if (subGuideState !== null && subGuideState.name !== this.selectedSubStateGuide) {
           this.selectedSubStateGuide = subGuideState.name;
           this.scrollTo();
         } else if (subGuideState !== this.selectedSubStateGuide) {
