@@ -18,21 +18,24 @@ afterAll(done => {
 });
 
 beforeAll(done => {
+    process.argv.push('--the-way.server.port=3333');
     new Main();
     EnvironmentTest.whenCoreReady(done);
 });
 
-test('Not Automatic: The main must be initialized', () => {
-    const core = CORE.getCoreInstance();
-    const main = core.getApplicationInstance();
-    expect(main).not.toBeUndefined();
-    expect(core.getInstances().size).toBeGreaterThan(0);
-});
-test('Not Automatic: Make the destroy twice', done => {
-    const core = CORE.getCoreInstance();
-    core.destroy().subscribe(() => {
-        core.destroy().subscribe(() => {
-            done();
-        });
+describe('Not Automatic:', () => {
+    test('Not Automatic: The main must be initialized', () => {
+        const core = CORE.getCoreInstance();
+        const main = core.getApplicationInstance();
+        expect(main).not.toBeUndefined();
+        expect(core.getInstances().size).toBeGreaterThan(0);
     });
-})
+    test('Not Automatic: Make the destroy twice', done => {
+        const core = CORE.getCoreInstance();
+        core.destroy().subscribe(() => {
+            core.destroy().subscribe(() => {
+                done();
+            });
+        });
+    })
+});

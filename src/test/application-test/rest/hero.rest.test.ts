@@ -1,8 +1,9 @@
-import { Put, Patch, Delete, QueryParam, Post, BodyParam, Head, Get, PathParam, NotFoundException} from '../../../main';
+import { Put, Patch, Claims, Delete, QueryParam, Post, BodyParam, Head, Get, PathParam, NotFoundException} from '../../../main';
 
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 
 import { HeroModel } from './model/hero.model';
+import { delay } from 'rxjs/operators';
 
 export class HeroRestTest {
     public heroes: {[key: string]: HeroModel | number} = {
@@ -13,37 +14,6 @@ export class HeroRestTest {
         },
         lastId: 1
     };
-
-    /**
-    *   @swagger 
-    *   /hero/{id}:
-    *       get:
-    *           description: Use to get a hero
-    *           produces:
-    *               - application/json
-    *           parameters:
-    *               -   in: path
-    *                   name: id
-    *                   description: Id do hero.
-    *                   required: true
-    *                   type: number
-    *           responses:
-    *               200:
-    *                   description: The hero
-    *                   content:
-    *                       application/json:
-    *                           schema:
-    *                               type: object
-    *                               properties:
-    *                                   id: # the unique user id
-    *                                      type: number
-    *                                   power: # The hero power
-    *                                      type: number
-    *                                   name: # The hero name
-    *                                       type: string
-    *               404: 
-    *                   description: Hero not found
-    */
     @Get('/hero/:id')
     public getHero(@PathParam('id') id: number): Observable<HeroModel> {
         const hero = this.heroes[id.toString()];
@@ -54,19 +24,6 @@ export class HeroRestTest {
         }
     }
 
-    /**
-    *   @swagger 
-    *   /hero/{id}:
-    *       head:
-    *           description: check if hero exists
-    *           consumes:
-    *               - application/json
-    *           responses:
-    *               '200':
-    *                   description: Hero exists
-    *               '404': 
-    *                   description: Hero not found
-    */
     @Head('/hero/:id')
     public heroExists(@PathParam('id') id: number): Observable<void> {
         if (!this.heroes[id.toString()]) {
@@ -132,6 +89,17 @@ export class HeroRestTest {
     }
     @Delete('/hero/:id')
     public deleteUser(@PathParam('id') id: number): Observable<HeroModel> {
+        if (!this.heroes[id.toString()]) {
+            return throwError(new Error('Hero not found'));
+        }
+
+        const hero: HeroModel = {...this.heroes[id.toString()] as HeroModel};
+        delete this.heroes[id.toString()];
+
+        return of(hero);
+    }
+    @Delete('/hero/wrongParam/:id')
+    public wrongParam(@PathParam('uid') id: number): Observable<HeroModel> {
         const hero: HeroModel = {...this.heroes[id.toString()] as HeroModel};
         if (!hero) {
             throw new NotFoundException('Hero not found');
@@ -139,5 +107,9 @@ export class HeroRestTest {
         delete this.heroes[id.toString()];
 
         return of(hero);
+    }
+    @Delete('/hero/wrongAuthentication')
+    public wrongAuthentication(@Claims claims: unknown): Observable<unknown> {
+        return of(claims);
     }
 }

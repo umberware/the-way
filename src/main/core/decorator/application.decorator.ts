@@ -6,6 +6,7 @@ import { ApplicationException } from '../exeption/application.exception';
 import { ErrorCodeEnum } from '../exeption/error-code.enum';
 import { MessagesEnum } from '../model/messages.enum';
 
+/*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
 export function Application(params?: {custom?: Array<any>; automatic?: boolean}) {
     return (constructor: any): void => {
         const core = CORE.getCoreInstance();

@@ -80,8 +80,13 @@ export class UserRestTest {
     @Get('/user/check')
     public check(@Request request: any, @Response response: any): Observable<boolean> {
         if (!request || !response) {
-            throw new InternalException('Not injected the request and responsne');
+            throw new InternalException('Not injected the request and response');
         }
+        response.send(true)
         return of(true);
+    }
+    @Get('/user/test-internal-exception')
+    public testInternalException(): Observable<boolean> {
+        throw new InternalException('internal-server-worker');
     }
 }

@@ -5,8 +5,7 @@ import * as helmet from 'helmet';
 import * as cors from 'cors';
 import * as http from 'http';
 import * as SwaggerUi from 'swagger-ui-express';
-import * as SwaggerDocs from 'swagger-jsdoc';
-import { writeFileSync } from 'fs';
+import { readFileSync } from 'fs';
 
 import { Observable, Subscriber } from 'rxjs';
 
@@ -20,17 +19,18 @@ import { ErrorCodeEnum } from '../exeption/error-code.enum';
 import { HttpType } from '../service/http/http-type.enum';
 import { MessagesEnum } from '../model/messages.enum';
 
+/*eslint-disable @typescript-eslint/ban-types */
 @Configuration()
 export class ServerConfiguration extends AbstractConfiguration {
     protected logService: LogService;
     protected propertiesConfiguration: PropertiesConfiguration;
-    
+
     public context: any;
     public server: http.Server;
     public port: number;
     protected theWayProperties: any;
     protected serverProperties: any;
-    
+
     constructor() {
         super();
         const core = CORE.getCoreInstance();
@@ -79,7 +79,7 @@ export class ServerConfiguration extends AbstractConfiguration {
         if (assets && assets.path !== '') {
             const assetsPath: string = (assets.full) ? assets.path as string: filePath + assets.path as string;
             this.context.use('/assets', express.static(assetsPath));
-        } 
+        }
 
         if (staticProperty && staticProperty.path !== '') {
             const staticPath = (staticProperty.full) ? staticProperty.path as string : filePath + staticProperty.path as string;
@@ -109,24 +109,8 @@ export class ServerConfiguration extends AbstractConfiguration {
     }
     private initializeSwagger(): void {
         const swaggerProperties = this.serverProperties.swagger;
-        const swaggerOptions: any = {
-            swaggerDefinition: {
-                info: {
-                    version: swaggerProperties.version,
-                    title: swaggerProperties.title,
-                    description: swaggerProperties.description,
-                    contact: swaggerProperties.contact
-                },
-                basePath: this.serverProperties.path
-            },
-            apis: [swaggerProperties.filesMatcher]
-        }
-        if (swaggerProperties.type) {
-            swaggerOptions.swaggerDefinition[swaggerProperties.type.name] = swaggerProperties.type.version
-        }
-        const swaggerDocs = SwaggerDocs(swaggerOptions);
-        writeFileSync(swaggerProperties.outputPath, JSON.stringify(swaggerDocs));
-        this.context.use(this.serverProperties.path + swaggerProperties.path, SwaggerUi.serve, SwaggerUi.setup(swaggerDocs));
+        const swaggerDoc = readFileSync(swaggerProperties.filePath);
+        this.context.use(this.serverProperties.path + swaggerProperties.path, SwaggerUi.serve, SwaggerUi.setup(swaggerDoc));
     }
     private isFileServerEnabled(): boolean {
         return this.serverProperties.file && this.serverProperties.file.enabled

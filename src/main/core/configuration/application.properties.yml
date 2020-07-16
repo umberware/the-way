@@ -8,18 +8,9 @@ the-way:
     port: 8081
     path: /api
     swagger:
-      enabled: true
+      enabled: false
       path: /swagger
-      title: Amazing Swagger
-      description: i'm inevitable
-      outputPath: ./dist/src/main/swagger.json
-      version: 1.0.0
-      filesMatcher: './*.rest.ts'
-      type:
-        name: 'openapi'
-        version: 3.0.0
-      contact:
-        name: The Way
+      filePath: './swagger.json'
     security:
       user-key: A2345678901234567890123456789012
       token-key: B2345678901234567890123456789034

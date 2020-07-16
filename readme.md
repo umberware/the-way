@@ -9,7 +9,7 @@
 
 # The Way
 To improve the life cicle of the development, we created this framework to help your application to be more clean and intelligible with a loot of decorators.
-With this you can use an express server with improvements (best practices from express) with **swagger**, inject classes (as singleton), overridde classes, automatic configurations provided by [@Configuration](https://nihasoft.github.io/the-way/guide/application-decorator#configure), [destroy](https://nihasoft.github.io/the-way/guide/core#destroy), you can map and use **REST** method's more intuitive and more clean with the [Rest Decoratos](https://nihasoft.github.io/the-way/guide/rest-decorator). You can [define some properties](https://nihasoft.github.io/the-way/guide/application-properties)  overriding the default properties and putting in this file **yours** custom properties to use in your classes injecting the  class [PropertiesConfiguration](https://nihasoft.github.io/the-way/guide/configurations#properties-configuration).
+With this you can use an express server with improvements (best practices from express) with **swagger** (when provided the swagger.json), inject classes (as singleton), overridde classes, automatic configurations provided by [@Configuration](https://nihasoft.github.io/the-way/guide/application-decorator#configure), [destroy](https://nihasoft.github.io/the-way/guide/core#destroy), you can map and use **REST** method's more intuitive and more clean with the [Rest & Decoratos](https://nihasoft.github.io/the-way/guide/rest). You can [define some properties](https://nihasoft.github.io/the-way/guide/application-properties)  overriding the default properties and putting in this file **yours** custom properties to use in your classes injecting the  class [PropertiesConfiguration](https://nihasoft.github.io/the-way/guide/configurations#properties-configuration).
 
 You also can customize some behaviors of this framework with decorators [@Configuration](https://nihasoft.github.io/the-way/guide/application-decorator#configure) and [@Service](https://nihasoft.github.io/the-way/guide/application-decorator#service).
 
@@ -60,7 +60,7 @@ In your project:
 
     tsc && path_to_your_dist/main.js
 
-This example above, will enable the application to use [Rest Decoratos](https://nihasoft.github.io/the-way/guide/rest-decorator) and the [Application Decorators](https://nihasoft.github.io/the-way/guide/application-decorator). Will be used the **default configurations** like properties, security, configurations and services. You can check all the default properties and beheviors [here](https://nihasoft.github.io/the-way/).
+This example above, will enable the application to use [Rest & Decorators](https://nihasoft.github.io/the-way/guide/rest) and the [Application Decorators](https://nihasoft.github.io/the-way/guide/application-decorator). Will be used the **default configurations** like properties, security, configurations and services. You can check all the default properties and beheviors [here](https://nihasoft.github.io/the-way/).
 
 ## Inject decorator
 Some times we want to use a singleton and import/inject this class into another class. You can to this using the decorator [@Inject()](https://nihasoft.github.io/the-way/guide/application-decorator#inject). The example below can be viewed [here](https://nihasoft.github.io/the-way/guide/fast-setup#injection-example)
@@ -88,7 +88,7 @@ Some times we want to use a singleton and import/inject this class into another 
     }
 
 
-## Rest Decorator
+## Rest & Decorator
 In this section we will create a rest class with some methods enabled to be called. The example below, can be viewed [here](https://nihasoft.github.io/the-way/guide/fast-setup#rest-example)
 
 **Note**: We will concat your path in decorators with the property **the-way.server.path**. To change this behavior you must provide an **application.properties.yml in the root path of your project** or with the command line argument: **--properties=/path/to/your/properties/application.properties.yml**
@@ -143,41 +143,32 @@ The current default properties are:
 
     the-way:
         core:
-          log: true
+            log: true
         log:
-          level: 0
+            level: 0
         server:
-          enabled: true
-          port: 8081
-          path: /api
-          swagger:
             enabled: true
-            path: /swagger
-            title: Amazing Swagger
-            description: i'm inevitable
-            outputPath: ./dist/src/main/swagger.json
-            version: 1.0.0
-            filesMatcher: './*.rest.ts'
-            type:
-              name: 'openapi'
-              version: 3.0.0
-            contact:
-              name: The Way
-          security:
-            user-key: A2345678901234567890123456789012
-            token-key: B2345678901234567890123456789034
-            token-expiration: '3 days'
-          file:
-            enabled: false
-            fallback: false
-            full: false
-            path: ''
-            static: 
-              path: ''
-              full: false
-            assets: 
-              path: ''
-              full: false
+            port: 8081
+            path: /api
+            swagger:
+                enabled: false
+                path: /swagger
+                filePath: './swagger.json'
+            security:
+                user-key: A2345678901234567890123456789012
+                token-key: B2345678901234567890123456789034
+                token-expiration: '3 days'
+            file:
+                enabled: false
+                fallback: false
+                full: false
+                path: ''
+                static: 
+                    path: ''
+                    full: false
+                assets: 
+                    path: ''
+                    full: false
 
 # Issues
 

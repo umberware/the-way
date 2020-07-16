@@ -15,19 +15,23 @@ import { Destroyable } from './destroyable';
 import { ErrorCodeEnum } from './exeption/error-code.enum';
 import { MessagesEnum } from './model/messages.enum';
 import { SecurityService } from './service/security.service';
+import { HttpType } from './service/http/http-type.enum';
 
+/*eslint-disable @typescript-eslint/ban-types */
+/*eslint-disable @typescript-eslint/no-explicit-any*/
+/*eslint-disable no-console*/
 export class CORE extends Destroyable{
     public static CORE_LOG_ENABLED = false;
     public static CORE_CALLED = 0;
     public static instance: CORE;
-    
+
     public static destroyed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     public static ready$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
     private application: Object;
     private customInstances: Array<Function>;
     private properties: any;
-    private destroyng = false;
+    private destroying = false;
     private DEPENDENCIES: any = {};
     private DEPENDENCIES_TREE: any = {};
     private OVERRIDDEN_DEPENDENCIES: any = {};
@@ -39,7 +43,7 @@ export class CORE extends Destroyable{
         destructable: []
     }
     private INSTANCES: Map<string, Object> = new Map();
-    
+
     public buildApplication(): Observable<boolean> {
         this.logInfo(MessagesEnum['building-core-instances'], true)
         this.buildCoreInstances();
@@ -69,7 +73,7 @@ export class CORE extends Destroyable{
         if (!this.customInstances) {
             return;
         }
-        
+
         for (const coreInstance of this.customInstances) {
             this.getInstance(coreInstance.name, coreInstance);
         }
@@ -136,7 +140,7 @@ export class CORE extends Destroyable{
                 const instance = this.getInstance(dependency, dependencyInformation.constructor) as Function;
                 const target = dependencyInformation.target as Function;
                 Reflect.set(target, dependencyInformation.key as string, instance);
-                
+
                 let found = 'Not found';
 
                 if (instance) {
@@ -168,10 +172,10 @@ export class CORE extends Destroyable{
         CORE.CORE_LOG_ENABLED = this.properties.core.log;
     }
     public destroy(): Observable<boolean> {
-        if (this.destroyng) {
+        if (this.destroying) {
             return CORE.destroyed$;
         }
-        this.destroyng = true;
+        this.destroying = true;
         this.logInfo(MessagesEnum['destroy-all'], true);
         const destructions: Array<Observable<boolean>> = [];
 
@@ -210,7 +214,7 @@ export class CORE extends Destroyable{
     }
     public getInstanceByName<T>(name: string): T {
         const overridden = this.OVERRIDDEN_DEPENDENCIES[name] as any;
-        
+
         if (overridden) {
             name = overridden.name as string;
         }
@@ -262,6 +266,19 @@ export class CORE extends Destroyable{
             constructor: constructor,
             target: target,
             key: key
+        }
+    }
+    /*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
+    public registerPath(
+        httpType: HttpType, path: string, authenticated: boolean | undefined,
+        allowedProfiles: Array<any> | undefined, target: any, propertyKey: string
+    ): void {
+        if (this.properties.server.enabled) {
+            const httpService = CORE.getCoreInstance().getInstanceByName('HttpService') as HttpService;
+            httpService.registerPath(httpType, path, authenticated, allowedProfiles, target, propertyKey);
+        } else {
+            console.error(MessagesEnum['no-http-service'], MessagesEnum['not-found'], ErrorCodeEnum['RU-002']);
+            this.destroy();
         }
     }
     public setApplicationInstance(instance: any): void {

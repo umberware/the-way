@@ -1,4 +1,5 @@
 tsconfig.json
+tsconfig-test.json
 yarn.lock
 yarn-error.log
 src

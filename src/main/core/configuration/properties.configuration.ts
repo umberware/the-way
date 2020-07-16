@@ -11,6 +11,7 @@ import { ApplicationException } from '../exeption/application.exception';
 import { ErrorCodeEnum } from '../exeption/error-code.enum';
 import { MessagesEnum } from '../model/messages.enum';
 
+/*eslint-disable @typescript-eslint/ban-types */
 @Configuration()
 export class PropertiesConfiguration extends AbstractConfiguration {
     static readonly PROPERTIES_NAME = 'application.properties.yml';
@@ -28,19 +29,29 @@ export class PropertiesConfiguration extends AbstractConfiguration {
         const propertiesFilePath = args.find((arg: string) => arg.includes('--properties=')) as string;
         return of(this.loadProperties(propertiesFilePath));
     }
+    private convertValue(value: string): any {
+        if (value === 'true' || value === 'false') {
+            return (value === 'true') ? true : false;
+        } else if (value.search(/^\d+(\.\d+){0,1}$/) > -1) {
+            return (value.includes('.')) ? parseFloat(value) : parseInt(value);
+        } else {
+            return value;
+        }
+    }
     public destroy(): Observable<boolean> {
         return of(true);
     }
     private loadProperties(propertiesFilePath: string): boolean {
         const path = (__dirname && __dirname !== '') ? __dirname + '/' : '';
         const defaultProperties = this.loadFile(path + PropertiesConfiguration.PROPERTIES_NAME);
-        
+
         if (!propertiesFilePath) {
             this.properties = this.loadFile(PropertiesConfiguration.PROPERTIES_NAME);
         } else {
             this.properties = this.loadFile(propertiesFilePath.split('=')[1]);
         }
         this.sumProperties(this.properties, defaultProperties, []);
+        this.sumCommandLineProperties();
         return true;
     }
     private loadFile(path: string): any {
@@ -49,6 +60,37 @@ export class PropertiesConfiguration extends AbstractConfiguration {
         } catch (ex) {
             this.logService.info(MessagesEnum['properties-not-found']);
             return {}
+        }
+    }
+    private sumCommandLineProperties(): void {
+        const commandLineProperties =  process.argv.filter((arg: string) => arg.search(/^--.*=.*/) > -1);
+        for (const commandLineProperty of commandLineProperties) {
+            const propertyAndValue = commandLineProperty.split('=');
+            const propertyPaths = propertyAndValue[0].replace('--', '').split('.');
+            let property: any;
+            const pathSize = propertyPaths.length;
+            for (let i = 0; i < pathSize; i++) {
+                const propertyPath = propertyPaths[i];
+
+                if (property && pathSize === i + 1) {
+                    property[propertyPath] = this.convertValue(propertyAndValue[1]);
+                } else if (property && pathSize > i + 1) {
+                    if (property[propertyPath]) {
+                        property = property[propertyPath]
+                    } else {
+                        property = property[propertyPath] = {};
+                    }
+                } else if (!property && pathSize > 1) {
+                    if (this.properties[propertyPath]) {
+                        property = this.properties[propertyPath];
+                    } else {
+                        property = this.properties[propertyPath] = {};
+                    }
+                }
+                else if (!property && pathSize === 1) {
+                    this.properties[propertyPath] = this.convertValue(propertyAndValue[1]);
+                }
+            }
         }
     }
     private sumProperties(properties: any, defaultProperties: any, keys: Array<string>): void {
