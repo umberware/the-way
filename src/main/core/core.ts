@@ -19,6 +19,7 @@ import { HttpType } from './service/http/http-type.enum';
 
 /*eslint-disable @typescript-eslint/ban-types */
 /*eslint-disable @typescript-eslint/no-explicit-any*/
+/*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
 /*eslint-disable no-console*/
 export class CORE extends Destroyable{
     public static CORE_LOG_ENABLED = false;
