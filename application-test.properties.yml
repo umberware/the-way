@@ -8,5 +8,4 @@ the-way:
     port: 7070
     path: /api
     swagger:
-      enabled: true,
-      filePath: ./swagger.json
+      enabled: false
