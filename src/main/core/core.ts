@@ -28,21 +28,21 @@ export class CORE extends Destroyable{
     public static destroyed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     public static ready$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-    private application: Object;
-    private customInstances: Array<Function>;
-    private properties: any;
-    private destroying = false;
-    private DEPENDENCIES: any = {};
-    private DEPENDENCIES_TREE: any = {};
-    private OVERRIDDEN_DEPENDENCIES: any = {};
-    private CONFIGURATIONS: {
+    protected application: Object;
+    protected customInstances: Array<Function>;
+    protected properties: any;
+    protected destroying = false;
+    protected DEPENDENCIES: any = {};
+    protected DEPENDENCIES_TREE: any = {};
+    protected OVERRIDDEN_DEPENDENCIES: any = {};
+    protected CONFIGURATIONS: {
         configure$: Array<Observable<boolean>>;
         destructable: Array<any>;
     } = {
         configure$: new  Array<Observable<boolean>>(),
         destructable: []
     }
-    private INSTANCES: Map<string, Object> = new Map();
+    protected INSTANCES: Map<string, Object> = new Map();
 
     public buildApplication(): Observable<boolean> {
         this.logInfo(MessagesEnum['building-core-instances'], true)
@@ -62,14 +62,14 @@ export class CORE extends Destroyable{
         );
         return this.watchConfigurations();
     }
-    private buildCoreInstances(): void {
+    protected buildCoreInstances(): void {
         const coreInstances: Array<Function> = [LogService, CryptoService];
 
         for (const coreInstance of coreInstances) {
             this.getInstance(coreInstance.name, coreInstance);
         }
     }
-    private buildCustomInstances(): void {
+    protected buildCustomInstances(): void {
         if (!this.customInstances) {
             return;
         }
@@ -78,7 +78,7 @@ export class CORE extends Destroyable{
             this.getInstance(coreInstance.name, coreInstance);
         }
     }
-    private buildDependencyTree(treeNodesNames: Array<string>, node: any): void {
+    protected buildDependencyTree(treeNodesNames: Array<string>, node: any): void {
         for (const treeNodeName of treeNodesNames) {
             const childNodes: Array<string> = [];
             const treeNode: any = this.getDependencyNode(treeNodeName, node);
@@ -92,7 +92,7 @@ export class CORE extends Destroyable{
             }
         }
     }
-    private buildDependenciesTree(): void {
+    protected buildDependenciesTree(): void {
         const treeNodes: Array<string> = [];
         const keys = Object.keys(this.DEPENDENCIES);
 
@@ -125,7 +125,7 @@ export class CORE extends Destroyable{
             throw new ApplicationException(MessagesEnum['not-found'] + instanceableName, MessagesEnum['building-instance-error'], ErrorCodeEnum['RU-005']);
         }
     }
-    private buildInstances(treeNodesNames: Array<string>, node: any, parentName: string | null): void {
+    protected buildInstances(treeNodesNames: Array<string>, node: any, parentName: string | null): void {
         for (const treeNodeName of treeNodesNames) {
             const childNodes = Object.keys(node[treeNodeName] as any);
 
@@ -151,7 +151,7 @@ export class CORE extends Destroyable{
             }
         }
     }
-    private buildHttpService(): void {
+    protected buildHttpService(): void {
         const serverProperties = this.properties.server;
         if (serverProperties.enabled) {
             this.logInfo(MessagesEnum['building-http-service'], true)
@@ -167,7 +167,7 @@ export class CORE extends Destroyable{
     public buildObject<T>(prototype: Function): T {
         return new (Object.create(prototype)).constructor();
     }
-    private buildProperties(): void {
+    protected buildProperties(): void {
         this.properties = this.getInstance<PropertiesConfiguration>(PropertiesConfiguration.name, PropertiesConfiguration).properties['the-way'];
         CORE.CORE_LOG_ENABLED = this.properties.core.log;
     }
@@ -195,7 +195,7 @@ export class CORE extends Destroyable{
         }
         return CORE.instance;
     }
-    private getDependencyNode(treeNodeName: string, node: any): any {
+    protected getDependencyNode(treeNodeName: string, node: any): any {
         if (!this.OVERRIDDEN_DEPENDENCIES[treeNodeName]) {
             return node[treeNodeName] = {};
         } else {
@@ -203,7 +203,7 @@ export class CORE extends Destroyable{
             return node[treeNodeName + ':' + overridden.name] = {};
         }
     }
-    private getInstance<T>(instanceableName: string, constructor: Function): T {
+    protected getInstance<T>(instanceableName: string, constructor: Function): T {
         const {realInstanceableName, realConstructor} =  this.getRealInstanceNameAndConstructor(instanceableName, constructor);
         const instance = this.INSTANCES.get(realInstanceableName) as T;
         if (!instance) {
@@ -223,7 +223,7 @@ export class CORE extends Destroyable{
     public getInstances(): Map<string, Object> {
         return this.INSTANCES;
     }
-    private getRealInstanceNameAndConstructor(instanceableName: string, constructor?: Function): {realInstanceableName: string; realConstructor?: Function} {
+    protected getRealInstanceNameAndConstructor(instanceableName: string, constructor?: Function): {realInstanceableName: string; realConstructor?: Function} {
         let realInstanceableName = instanceableName;
         let realConstructor = constructor;
         const overridden = this.OVERRIDDEN_DEPENDENCIES[instanceableName] as any;
@@ -233,7 +233,7 @@ export class CORE extends Destroyable{
         }
         return {realInstanceableName, realConstructor};
     }
-    private handleInstance<T>(instanceableName: string, instance: T, decorators: Array<string>): void {
+    protected handleInstance<T>(instanceableName: string, instance: T, decorators: Array<string>): void {
         this.INSTANCES.set(instanceableName, instance as Object);
         if (decorators.includes(ConfigurationMetaKey) && instance instanceof AbstractConfiguration) {
             this.CONFIGURATIONS.configure$.push(instance.configure().pipe(take(1)));
@@ -243,7 +243,7 @@ export class CORE extends Destroyable{
             this.CONFIGURATIONS.destructable.push(instance);
         }
     }
-    private logInfo(message: string, force?: boolean): void {
+    protected logInfo(message: string, force?: boolean): void {
         if (CORE.CORE_LOG_ENABLED || force) {
             console.log('[The Way] ' + message);
         }
@@ -287,7 +287,7 @@ export class CORE extends Destroyable{
     public setCustomInstances(customInstances: Array<Function>): void {
         this.customInstances = customInstances;
     }
-    private watchConfigurations(): Observable<boolean> {
+    protected watchConfigurations(): Observable<boolean> {
         return forkJoin(this.CONFIGURATIONS.configure$).pipe(
             map((values: Array<boolean>) => {
                 const hasNotConfigured = values.find((value: boolean) => !value);
@@ -308,7 +308,7 @@ export class CORE extends Destroyable{
             })
         );
     }
-    private watchDestructions(destructions: Array<Observable<boolean>>): Observable<boolean> {
+    protected watchDestructions(destructions: Array<Observable<boolean>>): Observable<boolean> {
         if (destructions.length === 0) {
             this.logInfo(MessagesEnum['time-has-come-one'], true);
             delete CORE.instance;
