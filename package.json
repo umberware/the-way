@@ -1,6 +1,6 @@
 {
   "name": "@nihasoft/the-way",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "We are a framework to help the development life to be better.",
   "main": "dist/src/main/index.js",
   "types": "dist/src/main/index.d.ts",
