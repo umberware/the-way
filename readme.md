@@ -13,7 +13,7 @@ With this you can use an express server with improvements (best practices from e
 
 You also can customize some behaviors of this framework with decorators [@Configuration](https://nihasoft.github.io/the-way/#/guide/application-decorator#configure) and [@Service](https://nihasoft.github.io/the-way/#/guide/application-decorator#service).
 
-**Note**: When you use  the @Configure you **MUST** extends the class [AbstractConfiguration](https://nihasoft.github.io/the-way/#/guide/configurations#abstract-configuration).
+**Note**: When you use the @Configure you **MUST** extends the class [AbstractConfiguration](https://nihasoft.github.io/the-way/#/guide/configurations#abstract-configuration).
 
 **Note**: By default, we start an express http server. To change this behavior you must provide an **application.properties.yml in the root path of your project** or with the command line argument: **--properties=/path/to/your/properties/application.properties.yml**
 
@@ -36,6 +36,8 @@ To use this framework you must have a project with Node.js and configurated to u
 With a project in Node.Js configurated with Typescript you only need to install this framework with commando below:
 
     npm i @nihasoft/the-way
+
+**Note:** This library use the @types/node and the rxjs. So, your application must have this libraries as devDependency and as dependency respectively.
 
 # Usage
 With the framework installed you can now do the magic.
