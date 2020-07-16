@@ -210,6 +210,7 @@ export class EnvironmentTest {
     public static whenCoreReady(whenReady: Function): void {
         CORE.ready$.subscribe((ready: boolean) => {
             if (ready) {
+                ready = true;
                 timer(2000).subscribe(() => {
                     const core = CORE.getCoreInstance();
                     expect(core.getApplicationInstance()).not.toBeUndefined();

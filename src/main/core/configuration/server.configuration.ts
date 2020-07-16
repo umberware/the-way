@@ -116,14 +116,14 @@ export class ServerConfiguration extends AbstractConfiguration {
                     title: swaggerProperties.title,
                     description: swaggerProperties.description,
                     contact: swaggerProperties.contact
-                },
-                basePath: this.serverProperties.path
+                }
             },
             apis: [swaggerProperties.filesMatcher]
         }
         if (swaggerProperties.type) {
             swaggerOptions.swaggerDefinition[swaggerProperties.type.name] = swaggerProperties.type.version
         }
+
         const swaggerDocs = SwaggerDocs(swaggerOptions);
         writeFileSync(swaggerProperties.outputPath, JSON.stringify(swaggerDocs));
         this.context.use(this.serverProperties.path + swaggerProperties.path, SwaggerUi.serve, SwaggerUi.setup(swaggerDocs));

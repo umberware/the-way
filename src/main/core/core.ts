@@ -15,6 +15,7 @@ import { Destroyable } from './destroyable';
 import { ErrorCodeEnum } from './exeption/error-code.enum';
 import { MessagesEnum } from './model/messages.enum';
 import { SecurityService } from './service/security.service';
+import { HttpType } from './service/http/http-type.enum';
 
 export class CORE extends Destroyable{
     public static CORE_LOG_ENABLED = false;
@@ -27,7 +28,7 @@ export class CORE extends Destroyable{
     private application: Object;
     private customInstances: Array<Function>;
     private properties: any;
-    private destroyng = false;
+    private destroying = false;
     private DEPENDENCIES: any = {};
     private DEPENDENCIES_TREE: any = {};
     private OVERRIDDEN_DEPENDENCIES: any = {};
@@ -168,10 +169,10 @@ export class CORE extends Destroyable{
         CORE.CORE_LOG_ENABLED = this.properties.core.log;
     }
     public destroy(): Observable<boolean> {
-        if (this.destroyng) {
+        if (this.destroying) {
             return CORE.destroyed$;
         }
-        this.destroyng = true;
+        this.destroying = true;
         this.logInfo(MessagesEnum['destroy-all'], true);
         const destructions: Array<Observable<boolean>> = [];
 
@@ -187,6 +188,7 @@ export class CORE extends Destroyable{
         if (!CORE.instance) {
             CORE.ready$.next(false);
             CORE.destroyed$.next(false);
+            console.log('asdasd')
             CORE.instance = new CORE();
         }
         return CORE.instance;
@@ -262,6 +264,18 @@ export class CORE extends Destroyable{
             constructor: constructor,
             target: target,
             key: key
+        }
+    }
+    public registerPath(
+        httpType: HttpType, path: string, authenticated: boolean | undefined, 
+        allowedProfiles: Array<any> | undefined, target: any, propertyKey: string
+    ): void {
+        if (this.properties.server.enabled) {
+            const httpService = CORE.getCoreInstance().getInstanceByName('HttpService') as HttpService;
+            httpService.registerPath(httpType, path, authenticated, allowedProfiles, target, propertyKey);
+        } else {
+            console.error(MessagesEnum['no-http-service'], MessagesEnum['not-found'], ErrorCodeEnum['RU-002']);
+            this.destroy();
         }
     }
     public setApplicationInstance(instance: any): void {

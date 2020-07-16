@@ -135,6 +135,7 @@ export class HttpService {
         if (requestUser !== undefined && !authenticated) {
             throw new ApplicationException(MessagesEnum['rest-claims-without-token-verify'], MessagesEnum['rest-without-authentication'], ErrorCodeEnum['RU-004']);
         }
+        this.logService.debug('Registered: ' + path + ', method: ' + httpType);
         this.serverConfiguration.registerPath(path, httpType,  (req: any, res: any) => {
             this.execute(httpType, authenticated, allowedProfiles, target, propertyKey, req, res);
         });

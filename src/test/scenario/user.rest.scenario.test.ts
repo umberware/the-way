@@ -4,6 +4,7 @@ import { switchMap } from 'rxjs/operators';
 
 import { SignInModel } from '../application-test/rest/model/sign-in.model';
 import { EnvironmentTest } from '../environment/environtment.test';
+import { InternalException } from '../../main/core/exeption/internal.exception';
 
 export const userRestScenarioTest = describe('multiples rest tests', () => {
     test('Post: Realize the sign in', done => {
@@ -206,6 +207,18 @@ export const userRestScenarioTest = describe('multiples rest tests', () => {
                 done();
             }, (error: ApplicationException) => {
                 expect(error).toBeUndefined();
+                done();
+            }
+        );
+    })
+
+    test('Get: Test the @Request and @Response', done => {
+        EnvironmentTest.Get<boolean>('/api/user/test-internal-exception').subscribe(
+            (result: boolean) => {
+                expect(result).toBeUndefined();
+            }, (error: InternalException) => {
+                expect(error).not.toBeUndefined();
+                expect(error.detail).toBe('internal-server-worker');
                 done();
             }
         );

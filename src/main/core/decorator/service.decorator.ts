@@ -9,10 +9,8 @@ export function Service(over?: Function ) {
             const coreInstance = CORE.getCoreInstance();
             if (CORE.CORE_LOG_ENABLED) {
                 console.log('Service: ' + constructor.name)
-                if (over) {
-                    console.log(MessagesEnum['service-overridden'] + MessagesEnum['overridden-target'] + constructor.name + MessagesEnum['overridden-override'] +
-                    over.name);
-                }
+                console.log(MessagesEnum['service-overridden'] + MessagesEnum['overridden-target'] + constructor.name + MessagesEnum['overridden-override'] +
+                over.name);
             }
             Reflect.defineMetadata(ServiceMetaKey, over, constructor);
             coreInstance.overridenDependency(over.name, constructor);
