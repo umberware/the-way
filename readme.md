@@ -1,6 +1,6 @@
 [![Documentation](https://img.shields.io/badge/Documentation-lightseagreen.svg)](https://nihasoft.github.io/the-way/)
 [![Exampples](https://img.shields.io/badge/Examples-lightseagreen.svg)](https://github.com/nihasoft/the-way-examples)
-[![Version](https://img.shields.io/badge/Version-0.5.8-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
+[![npm version](https://badge.fury.io/js/%40nihasoft%2Fthe-way.svg)](https://badge.fury.io/js/%40nihasoft%2Fthe-way)
 [![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/LICENSE)
 [![EsLint](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/.eslintrc)
 [![Build Status](https://travis-ci.com/nihasoft/the-way.svg?branch=master)](https://travis-ci.com/nihasoft/the-way)
@@ -141,6 +141,11 @@ In this section we will create a rest class with some methods enabled to be call
 # ApplicationProperties
 
 We use an application.propertles.yml to be configurable by parameters, you can provide in the root path of your project **application.properties.yml** or with command line argument: **--properties=/path/to/your/properties/application.properties.yml**. You can see more [here](https://nihasoft.github.io/the-way/#/guide/application-properties).
+You can also pass **command line properties**. Properties passed in argument line will be the priority.
+Example:
+    --the-way.server.port=8090
+if in my application properties the the-way.server.port is 8081 but if is passed the the-way.server.port in command line so the value will be the value passed in command line (like the example above, the value will be 8090).
+
 The current default properties are:
 
     the-way:

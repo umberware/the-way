@@ -16,7 +16,7 @@ export class Main extends TheWayApplication {
     @Inject() applicationRest: ApplicationRestTest;
 
     public start(): void {
-        console.log('Running...');
+        console.log('Running');
     }
 }
 
