@@ -60,7 +60,7 @@ In your project:
 
     tsc && path_to_your_dist/main.js
 
-This example above, will enable the application to use [Rest & Decoratos](https://nihasoft.github.io/the-way/guide/rest) and the [Application Decorators](https://nihasoft.github.io/the-way/guide/application-decorator). Will be used the **default configurations** like properties, security, configurations and services. You can check all the default properties and beheviors [here](https://nihasoft.github.io/the-way/).
+This example above, will enable the application to use [Rest & Decorators](https://nihasoft.github.io/the-way/guide/rest) and the [Application Decorators](https://nihasoft.github.io/the-way/guide/application-decorator). Will be used the **default configurations** like properties, security, configurations and services. You can check all the default properties and beheviors [here](https://nihasoft.github.io/the-way/).
 
 ## Inject decorator
 Some times we want to use a singleton and import/inject this class into another class. You can to this using the decorator [@Inject()](https://nihasoft.github.io/the-way/guide/application-decorator#inject). The example below can be viewed [here](https://nihasoft.github.io/the-way/guide/fast-setup#injection-example)
