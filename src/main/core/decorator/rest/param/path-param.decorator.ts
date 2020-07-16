@@ -1,5 +1,6 @@
 export const PathParamMetadataKey = Symbol('PathParam');
 
+/*eslint-disable @typescript-eslint/ban-types */
 export function PathParam(name: string) {
     return (target: Object, propertyKey: string | symbol, parameterIndex: number): void => {
         const parameters: Array<{index: number; name: string}> = Reflect.getOwnMetadata(PathParamMetadataKey, target, propertyKey) || [];

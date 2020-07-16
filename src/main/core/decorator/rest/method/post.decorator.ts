@@ -1,6 +1,7 @@
 import { CORE } from '../../../core';
 import { HttpType } from '../../../service/http/http-type.enum';
 
+/*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
 export const Post = (path: string, authenticated?: boolean, allowedProfiles?: Array<any>) => {
     return (target:  any, propertyKey: string): void => {
         const core: CORE = CORE.getCoreInstance();

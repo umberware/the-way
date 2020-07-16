@@ -5,13 +5,12 @@ import { HeroModel } from '../application-test/rest/model/hero.model';
 
 export const heroRestScenarioTest = describe('multiples rest tests', () => {
     test('Head: Hero exists', done => {
-        EnvironmentTest.Head<void>('/api/hero/' + 1).subscribe(
+        EnvironmentTest.Head<void>('/api/hero/1').subscribe(
             (result: any) => {
                 expect(result).toBeUndefined();
                 done();
             }, (error: ApplicationException) => {
                 expect(error).toBeUndefined();
-                done();
             }
         );
     });
@@ -65,6 +64,16 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 done();
             }, (error: ApplicationException) => {
                 expect(error).toBeUndefined();
+            }
+        );
+    })
+    test('Post: Create a hero with no hero', done => {
+        EnvironmentTest.Post<HeroModel>({}, '/api/hero').subscribe(
+            (result: HeroModel) => {
+                expect(result).toBeUndefined();
+            }, (error: ApplicationException) => {
+                expect(error).not.toBeUndefined();
+                done();
             }
         );
     })
@@ -127,6 +136,36 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 );
             }, (error: ApplicationException) => {
                 expect(error).toBeUndefined();
+            }
+        );
+    })
+    test('Delete: Remove a Unexisting Hero', done => {
+        EnvironmentTest.Delete<HeroModel>('/api/hero/testOne').subscribe(
+            (result: HeroModel) => {
+                expect(result).toBeUndefined();
+            }, (error: ApplicationException) => {
+                expect(error).not.toBeUndefined();
+                done();
+            }
+        );
+    })
+    test('Delete: Wrong param test', done => {
+        EnvironmentTest.Delete<HeroModel>('/api/hero/wrongParam/2').subscribe(
+            (result: HeroModel) => {
+                expect(result).toBeUndefined;
+            }, (error: ApplicationException) => {
+                expect(error).not.toBeUndefined();
+                done();
+            }
+        );
+    })
+    test('Delete: A path not authenticated trying to use Claims', done => {
+        EnvironmentTest.Delete<HeroModel>('/api/hero/wrongAuthentication').subscribe(
+            (result: HeroModel) => {
+                expect(result).toBeUndefined;
+            }, (error: ApplicationException) => {
+                expect(error).not.toBeUndefined();
+                done();
             }
         );
     })

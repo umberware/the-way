@@ -1,7 +1,6 @@
 import { Application, TheWayApplication, CORE, Inject } from '../main/index';
 import { EnvironmentTest } from './environment/environtment.test';
 import { ApplicationRestTest } from './application-test/rest/application.rest.test';
-import { heroRestScenarioTest } from './scenario/hero.rest.scenario.test';
 
 @Application({
     automatic: false

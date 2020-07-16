@@ -10,7 +10,7 @@
 /interface/dist
 /interface/tmp
 /interface/out-tsc
-
+swagger.json
 **/visitors-count.json
 
 # dependencies

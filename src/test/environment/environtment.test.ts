@@ -4,7 +4,9 @@ import { timer, Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { CORE } from '../../main/core/core';
 import { PropertiesConfiguration } from '../../main/core/configuration/properties.configuration';
-export class EnvironmentTest {    
+
+/*eslint-disable @typescript-eslint/no-explicit-any*/
+export class EnvironmentTest {
     public static Post<T>(body: any, path: string, headers: any = {}): Observable<T> {
         const {hostname, port} = this.getHostnameAndPort();
         return new Observable<T>((observer) => {

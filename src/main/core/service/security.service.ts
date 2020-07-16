@@ -10,6 +10,7 @@ import { TokenClaims } from '../model/token-claims.model';
 import { MessagesEnum } from '../model/messages.enum';
 import { Service } from '../decorator/service.decorator';
 
+/*eslint-disable @typescript-eslint/no-explicit-any*/
 @Service()
 export class SecurityService {
 
@@ -29,7 +30,7 @@ export class SecurityService {
         const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
         const claims = Jwt.verify(token, this.getTokenKey()) as {data: string};
         if (claims.data) {
-            return JSON.parse(cryptoService.decipherIv(claims.data, 'aes-256-cbc', this.getUserKey()));    
+            return JSON.parse(cryptoService.decipherIv(claims.data, 'aes-256-cbc', this.getUserKey()));
         } else {
             return {};
         }
@@ -60,7 +61,7 @@ export class SecurityService {
                 }
             }
         }
-    
+
         throw new NotAllowedException(MessagesEnum['rest-cannot-perform']);
     }
     public verifyToken(token: string, profiles: Array<any> | undefined): TokenClaims {

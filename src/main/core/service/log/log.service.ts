@@ -1,8 +1,9 @@
 import { ApplicationException } from '../../exeption/application.exception';
 import { LogLevel } from './log-level.enum';
 
+/*eslint-disable no-console*/
 export class LogService {
-    
+
     protected level: LogLevel;
 
     public error(error: Error): void {

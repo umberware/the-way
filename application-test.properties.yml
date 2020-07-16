@@ -8,4 +8,5 @@ the-way:
     port: 7070
     path: /api
     swagger:
-      filesMatcher: './src/test/mock/*.ts'
+      enabled: true,
+      filePath: ./swagger.json

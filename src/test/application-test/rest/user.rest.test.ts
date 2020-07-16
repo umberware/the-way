@@ -82,6 +82,7 @@ export class UserRestTest {
         if (!request || !response) {
             throw new InternalException('Not injected the request and response');
         }
+        response.send(true)
         return of(true);
     }
     @Get('/user/test-internal-exception')

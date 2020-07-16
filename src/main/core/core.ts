@@ -17,11 +17,14 @@ import { MessagesEnum } from './model/messages.enum';
 import { SecurityService } from './service/security.service';
 import { HttpType } from './service/http/http-type.enum';
 
+/*eslint-disable @typescript-eslint/ban-types */
+/*eslint-disable @typescript-eslint/no-explicit-any*/
+/*eslint-disable no-console*/
 export class CORE extends Destroyable{
     public static CORE_LOG_ENABLED = false;
     public static CORE_CALLED = 0;
     public static instance: CORE;
-    
+
     public static destroyed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     public static ready$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
@@ -40,7 +43,7 @@ export class CORE extends Destroyable{
         destructable: []
     }
     private INSTANCES: Map<string, Object> = new Map();
-    
+
     public buildApplication(): Observable<boolean> {
         this.logInfo(MessagesEnum['building-core-instances'], true)
         this.buildCoreInstances();
@@ -70,7 +73,7 @@ export class CORE extends Destroyable{
         if (!this.customInstances) {
             return;
         }
-        
+
         for (const coreInstance of this.customInstances) {
             this.getInstance(coreInstance.name, coreInstance);
         }
@@ -137,7 +140,7 @@ export class CORE extends Destroyable{
                 const instance = this.getInstance(dependency, dependencyInformation.constructor) as Function;
                 const target = dependencyInformation.target as Function;
                 Reflect.set(target, dependencyInformation.key as string, instance);
-                
+
                 let found = 'Not found';
 
                 if (instance) {
@@ -188,7 +191,6 @@ export class CORE extends Destroyable{
         if (!CORE.instance) {
             CORE.ready$.next(false);
             CORE.destroyed$.next(false);
-            console.log('asdasd')
             CORE.instance = new CORE();
         }
         return CORE.instance;
@@ -212,7 +214,7 @@ export class CORE extends Destroyable{
     }
     public getInstanceByName<T>(name: string): T {
         const overridden = this.OVERRIDDEN_DEPENDENCIES[name] as any;
-        
+
         if (overridden) {
             name = overridden.name as string;
         }
@@ -266,8 +268,9 @@ export class CORE extends Destroyable{
             key: key
         }
     }
+    /*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
     public registerPath(
-        httpType: HttpType, path: string, authenticated: boolean | undefined, 
+        httpType: HttpType, path: string, authenticated: boolean | undefined,
         allowedProfiles: Array<any> | undefined, target: any, propertyKey: string
     ): void {
         if (this.properties.server.enabled) {

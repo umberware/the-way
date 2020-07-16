@@ -11,6 +11,7 @@ import { ApplicationException } from '../exeption/application.exception';
 import { ErrorCodeEnum } from '../exeption/error-code.enum';
 import { MessagesEnum } from '../model/messages.enum';
 
+/*eslint-disable @typescript-eslint/ban-types */
 @Configuration()
 export class PropertiesConfiguration extends AbstractConfiguration {
     static readonly PROPERTIES_NAME = 'application.properties.yml';
@@ -43,7 +44,7 @@ export class PropertiesConfiguration extends AbstractConfiguration {
     private loadProperties(propertiesFilePath: string): boolean {
         const path = (__dirname && __dirname !== '') ? __dirname + '/' : '';
         const defaultProperties = this.loadFile(path + PropertiesConfiguration.PROPERTIES_NAME);
-        
+
         if (!propertiesFilePath) {
             this.properties = this.loadFile(PropertiesConfiguration.PROPERTIES_NAME);
         } else {

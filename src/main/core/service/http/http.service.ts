@@ -25,7 +25,7 @@ export class HttpService {
     serverConfiguration: ServerConfiguration;
     securityService: SecurityService;
     logService: LogService;
-    
+
     constructor() {
         this.serverConfiguration = CORE.getCoreInstance().getInstanceByName<ServerConfiguration>('ServerConfiguration');
         this.securityService = CORE.getCoreInstance().getInstanceByName<SecurityService>('SecurityService');
@@ -43,7 +43,7 @@ export class HttpService {
         }
     }
     private execute(
-        httpType: HttpType, authenticated: boolean | undefined, allowedProfiles: Array<any> | undefined, 
+        httpType: HttpType, authenticated: boolean | undefined, allowedProfiles: Array<any> | undefined,
         target: any, propertyKey: string,  req: any, res: any
     ): void {
         try {
@@ -55,12 +55,7 @@ export class HttpService {
             this.executeMethod(httpType, target, propertyKey, req, res, tokenClaims).subscribe(
                 (response: any) => {
                     if (!res.headersSent) {
-                        if (httpType !== HttpType.HEAD) {
-                            res.send(response);
-                        } else {
-                            res.send();
-                        }
-            
+                        res.send(response);
                     }
                 }, (error: Error) => {
                     this.handleError(error, res);
@@ -74,7 +69,7 @@ export class HttpService {
         const method = target[propertyKey];
         const functionArgumentsLength = method.length;
         const functionArguments = new Array<any>().fill(undefined, 0, functionArgumentsLength);
-      
+
         const pathParams: Array<any> = Reflect.getOwnMetadata(PathParamMetadataKey, target, propertyKey);
         const tokenClaimsIndex: number = Reflect.getOwnMetadata(ClaimsMetaKey, target, propertyKey);
         const headerIndex: number = Reflect.getOwnMetadata(HeaderMetadataKey, target, propertyKey);
@@ -92,15 +87,15 @@ export class HttpService {
         if (requestIndex !== undefined) {
             functionArguments[requestIndex] = req;
         }
-      
+
         if (tokenClaimsIndex !== undefined) {
             functionArguments[tokenClaimsIndex] = tokenClaims;
         }
-      
+
         if (pathParams) {
             this.buildPathParams(pathParams, req, functionArguments);
         }
-      
+
         if (httpType === HttpType.GET || httpType === HttpType.DELETE || httpType === HttpType.HEAD) {
             const queryParam: number = Reflect.getOwnMetadata(QueryParamMetadataKey, target, propertyKey);
             if (queryParam !== undefined && queryParam !== null) {
@@ -126,13 +121,14 @@ export class HttpService {
         }
         this.logService.error(ex);
     }
+    /*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
     public registerPath(
-        httpType: HttpType, path: string, authenticated: boolean | undefined, 
+        httpType: HttpType, path: string, authenticated: boolean | undefined,
         allowedProfiles: Array<any> | undefined, target: any, propertyKey: string
     ): void {
-        const requestUser: number = Reflect.getOwnMetadata(ClaimsMetaKey, target, propertyKey);
+        const claims: number = Reflect.getOwnMetadata(ClaimsMetaKey, target, propertyKey);
 
-        if (requestUser !== undefined && !authenticated) {
+        if (claims !== undefined && !authenticated) {
             throw new ApplicationException(MessagesEnum['rest-claims-without-token-verify'], MessagesEnum['rest-without-authentication'], ErrorCodeEnum['RU-004']);
         }
         this.logService.debug('Registered: ' + path + ', method: ' + httpType);

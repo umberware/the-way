@@ -3,6 +3,8 @@ import { MessagesEnum } from '../model/messages.enum';
 
 export const ConfigurationMetaKey = 'Configuration';
 
+/*eslint-disable @typescript-eslint/ban-types*/
+/*eslint-disable no-console*/
 export function Configuration(over?: Function) {
     return (constructor: Function): void => {
         if (over) {
