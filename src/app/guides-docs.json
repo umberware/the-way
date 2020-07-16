@@ -1,5 +1,5 @@
 {
-    "0.6.4": {
+    "0.6.5": {
         "fast-setup": {
             "name": "fast-setup",
             "alias": "Fast Setup",
@@ -23,12 +23,12 @@
                         }, {
                             "order": 2,
                             "description": "Let's add the typescript libraries and the nodemon(is way to watch the change files and recompile)\nNPM:",
-                            "code": "npm i typescript nodemon ts-node --save-dev",
+                            "code": "npm i typescript nodemon ts-node @types/node --save-dev",
                             "type": "markdown"
                         }, {
                             "order": 3,
                             "description": "or Yarn",
-                            "code": "yarn add typescript nodemon ts-node --dev",
+                            "code": "yarn add typescript nodemon ts-node @types/node --dev",
                             "type": "markdown"
                         }, {
                             "order": 4,
@@ -79,13 +79,13 @@
                     "guides": [
                         {
                             "order": 0,
-                            "description": "Let's install The Way<br> NPM:",
-                            "code": "npm i @nihasoft/the-way",
+                            "description": "Let's install The Way and the RxJs<br> NPM:",
+                            "code": "npm i @nihasoft/the-way rxjs",
                             "type": "markdown"
                         }, {
                             "order": 1,
                             "description": "Yarn:",
-                            "code": "yarn add @nihasoft/the-way",
+                            "code": "yarn add @nihasoft/the-way rxjs",
                             "type": "markdown"
                         }, {
                             "order": 2,
