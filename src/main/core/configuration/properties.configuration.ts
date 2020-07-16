@@ -93,6 +93,7 @@ export class PropertiesConfiguration extends AbstractConfiguration {
             }
         }
     }
+    /*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
     protected sumProperties(properties: any, defaultProperties: any, keys: Array<string>): void {
         try {
             for(const defaultPropertyKey in defaultProperties) {

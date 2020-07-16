@@ -110,7 +110,7 @@ export class ServerConfiguration extends AbstractConfiguration {
     protected initializeSwagger(): void {
         const swaggerProperties = this.serverProperties.swagger;
         const swaggerDoc = readFileSync(swaggerProperties.filePath);
-        this.context.use(this.serverProperties.path + swaggerProperties.path, SwaggerUi.serve, SwaggerUi.setup(swaggerDoc));
+        this.context.use(this.serverProperties.path + swaggerProperties.path, SwaggerUi.serve, SwaggerUi.setup(JSON.parse(swaggerDoc.toString())));
     }
     protected isFileServerEnabled(): boolean {
         return this.serverProperties.file && this.serverProperties.file.enabled

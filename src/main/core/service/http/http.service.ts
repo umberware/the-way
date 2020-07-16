@@ -20,6 +20,7 @@ import { TokenClaims } from '../../model/token-claims.model';
 import { ErrorCodeEnum } from '../../exeption/error-code.enum';
 import { MessagesEnum } from '../../model/messages.enum';
 
+/*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
 @Service()
 export class HttpService {
     serverConfiguration: ServerConfiguration;
