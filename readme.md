@@ -141,6 +141,11 @@ In this section we will create a rest class with some methods enabled to be call
 # ApplicationProperties
 
 We use an application.propertles.yml to be configurable by parameters, you can provide in the root path of your project **application.properties.yml** or with command line argument: **--properties=/path/to/your/properties/application.properties.yml**. You can see more [here](https://nihasoft.github.io/the-way/#/guide/application-properties).
+You can also pass **command line properties**. Properties passed in argument line will be the priority.
+Example:
+    --the-way.server.port=8090
+if in my application properties the the-way.server.port is 8081 but if is passed the the-way.server.port in command line so the value will be the value passed in command line (like the example above, the value will be 8090).
+
 The current default properties are:
 
     the-way:
