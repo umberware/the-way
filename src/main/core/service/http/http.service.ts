@@ -20,6 +20,7 @@ import { TokenClaims } from '../../model/token-claims.model';
 import { ErrorCodeEnum } from '../../exeption/error-code.enum';
 import { MessagesEnum } from '../../model/messages.enum';
 
+/*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
 @Service()
 export class HttpService {
     serverConfiguration: ServerConfiguration;
@@ -32,7 +33,7 @@ export class HttpService {
         this.logService = CORE.getCoreInstance().getInstanceByName<LogService>('LogService');
     }
 
-    private buildPathParams(pathParams: Array<any>, req: any, functionArguments: Array<unknown>): void {
+    protected buildPathParams(pathParams: Array<any>, req: any, functionArguments: Array<unknown>): void {
         for (const param of pathParams) {
             const paramValue = req.params[param.name];
             if (paramValue) {
@@ -42,7 +43,7 @@ export class HttpService {
             }
         }
     }
-    private execute(
+    protected execute(
         httpType: HttpType, authenticated: boolean | undefined, allowedProfiles: Array<any> | undefined,
         target: any, propertyKey: string,  req: any, res: any
     ): void {
@@ -65,7 +66,7 @@ export class HttpService {
             this.handleError(error, res);
         }
     }
-    private executeMethod(httpType: HttpType, target: any, propertyKey: string, req: any, res: any, tokenClaims: TokenClaims): Observable<unknown> {
+    protected executeMethod(httpType: HttpType, target: any, propertyKey: string, req: any, res: any, tokenClaims: TokenClaims): Observable<unknown> {
         const method = target[propertyKey];
         const functionArgumentsLength = method.length;
         const functionArguments = new Array<any>().fill(undefined, 0, functionArgumentsLength);
@@ -113,7 +114,7 @@ export class HttpService {
         const instance = CORE.getCoreInstance().getInstanceByName(target.constructor.name);
         return Reflect.apply(target[propertyKey], instance, functionArguments);
     }
-    private handleError(ex: Error, res: any): void {
+    protected handleError(ex: Error, res: any): void {
         if (ex instanceof ApplicationException) {
             res.status(ex.getCode()).send(ex);
         } else {

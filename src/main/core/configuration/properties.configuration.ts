@@ -29,7 +29,7 @@ export class PropertiesConfiguration extends AbstractConfiguration {
         const propertiesFilePath = args.find((arg: string) => arg.includes('--properties=')) as string;
         return of(this.loadProperties(propertiesFilePath));
     }
-    private convertValue(value: string): any {
+    protected convertValue(value: string): any {
         if (value === 'true' || value === 'false') {
             return (value === 'true') ? true : false;
         } else if (value.search(/^\d+(\.\d+){0,1}$/) > -1) {
@@ -41,7 +41,7 @@ export class PropertiesConfiguration extends AbstractConfiguration {
     public destroy(): Observable<boolean> {
         return of(true);
     }
-    private loadProperties(propertiesFilePath: string): boolean {
+    protected loadProperties(propertiesFilePath: string): boolean {
         const path = (__dirname && __dirname !== '') ? __dirname + '/' : '';
         const defaultProperties = this.loadFile(path + PropertiesConfiguration.PROPERTIES_NAME);
 
@@ -54,7 +54,7 @@ export class PropertiesConfiguration extends AbstractConfiguration {
         this.sumCommandLineProperties();
         return true;
     }
-    private loadFile(path: string): any {
+    protected loadFile(path: string): any {
         try {
             return Yaml.parse(fs.readFileSync(path).toString());
         } catch (ex) {
@@ -62,7 +62,7 @@ export class PropertiesConfiguration extends AbstractConfiguration {
             return {}
         }
     }
-    private sumCommandLineProperties(): void {
+    protected sumCommandLineProperties(): void {
         const commandLineProperties =  process.argv.filter((arg: string) => arg.search(/^--.*=.*/) > -1);
         for (const commandLineProperty of commandLineProperties) {
             const propertyAndValue = commandLineProperty.split('=');
@@ -93,7 +93,8 @@ export class PropertiesConfiguration extends AbstractConfiguration {
             }
         }
     }
-    private sumProperties(properties: any, defaultProperties: any, keys: Array<string>): void {
+    /*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
+    protected sumProperties(properties: any, defaultProperties: any, keys: Array<string>): void {
         try {
             for(const defaultPropertyKey in defaultProperties) {
                 let property = properties;

@@ -1,6 +1,6 @@
 [![Documentation](https://img.shields.io/badge/Documentation-lightseagreen.svg)](https://nihasoft.github.io/the-way/)
 [![Exampples](https://img.shields.io/badge/Examples-lightseagreen.svg)](https://github.com/nihasoft/the-way-examples)
-[![Version](https://img.shields.io/badge/Version-0.5.8-lightseagreen.svg)](https://www.npmjs.com/package/@nihasoft/the-way)
+[![npm version](https://badge.fury.io/js/%40nihasoft%2Fthe-way.svg)](https://badge.fury.io/js/%40nihasoft%2Fthe-way)
 [![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/LICENSE)
 [![EsLint](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/.eslintrc)
 [![Build Status](https://travis-ci.com/nihasoft/the-way.svg?branch=master)](https://travis-ci.com/nihasoft/the-way)
@@ -13,7 +13,7 @@ With this you can use an express server with improvements (best practices from e
 
 You also can customize some behaviors of this framework with decorators [@Configuration](https://nihasoft.github.io/the-way/#/guide/application-decorator#configure) and [@Service](https://nihasoft.github.io/the-way/#/guide/application-decorator#service).
 
-**Note**: When you use  the @Configure you **MUST** extends the class [AbstractConfiguration](https://nihasoft.github.io/the-way/#/guide/configurations#abstract-configuration).
+**Note**: When you use the @Configure you **MUST** extends the class [AbstractConfiguration](https://nihasoft.github.io/the-way/#/guide/configurations#abstract-configuration).
 
 **Note**: By default, we start an express http server. To change this behavior you must provide an **application.properties.yml in the root path of your project** or with the command line argument: **--properties=/path/to/your/properties/application.properties.yml**
 
@@ -36,6 +36,8 @@ To use this framework you must have a project with Node.js and configurated to u
 With a project in Node.Js configurated with Typescript you only need to install this framework with commando below:
 
     npm i @nihasoft/the-way
+
+**Note:** This library use the @types/node and the rxjs. So, your application must have this libraries as devDependency and as dependency respectively.
 
 # Usage
 With the framework installed you can now do the magic.
@@ -139,6 +141,11 @@ In this section we will create a rest class with some methods enabled to be call
 # ApplicationProperties
 
 We use an application.propertles.yml to be configurable by parameters, you can provide in the root path of your project **application.properties.yml** or with command line argument: **--properties=/path/to/your/properties/application.properties.yml**. You can see more [here](https://nihasoft.github.io/the-way/#/guide/application-properties).
+You can also pass **command line properties**. Properties passed in argument line will be the priority.
+Example:
+    --the-way.server.port=8090
+if in my application properties the the-way.server.port is 8081 but if is passed the the-way.server.port in command line so the value will be the value passed in command line (like the example above, the value will be 8090).
+
 The current default properties are:
 
     the-way:

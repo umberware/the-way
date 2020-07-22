@@ -93,7 +93,7 @@ export class ServerConfiguration extends AbstractConfiguration {
             }
         });
     }
-    private initializeServer(observer: Subscriber<boolean>): void {
+    protected initializeServer(observer: Subscriber<boolean>): void {
         this.server = http.createServer(this.context);
         this.server.listen(this.port, () => {
             this.logService.info(`Server started on port ${this.port}`);
@@ -107,15 +107,15 @@ export class ServerConfiguration extends AbstractConfiguration {
             }
         })
     }
-    private initializeSwagger(): void {
+    protected initializeSwagger(): void {
         const swaggerProperties = this.serverProperties.swagger;
         const swaggerDoc = readFileSync(swaggerProperties.filePath);
-        this.context.use(this.serverProperties.path + swaggerProperties.path, SwaggerUi.serve, SwaggerUi.setup(swaggerDoc));
+        this.context.use(this.serverProperties.path + swaggerProperties.path, SwaggerUi.serve, SwaggerUi.setup(JSON.parse(swaggerDoc.toString())));
     }
-    private isFileServerEnabled(): boolean {
+    protected isFileServerEnabled(): boolean {
         return this.serverProperties.file && this.serverProperties.file.enabled
     }
-    private isSwaggerEnabled(): boolean {
+    protected isSwaggerEnabled(): boolean {
         return this.serverProperties.swagger && this.serverProperties.swagger.enabled
     }
     protected start(): Observable<boolean> {
