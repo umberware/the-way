@@ -31,13 +31,13 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 expect(result).not.toBeUndefined();
                 expect(result.id).toBe(1);
                 expect(result.name).toBe('Anakin Skywalker');
-                expect(result.power).toBe(10001);
+                expect(result.power).toBe(100001);
                 done();
             }, (error: ApplicationException) => {
                 expect(error).toBeUndefined();
             }
         );
-    })
+    });
     test('Get: Hero not exists', done => {
         EnvironmentTest.Get<HeroModel>('/api/hero/' + 100).subscribe(
             (result: HeroModel) => {
@@ -49,7 +49,7 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 done();
             }
         );
-    })
+    });
     test('Post: Create a hero', done => {
         const batman = {
             power: 100000,
@@ -66,7 +66,7 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 expect(error).toBeUndefined();
             }
         );
-    })
+    });
     test('Post: Create a hero with no hero', done => {
         EnvironmentTest.Post<HeroModel>({}, '/api/hero').subscribe(
             (result: HeroModel) => {
@@ -76,7 +76,7 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 done();
             }
         );
-    })
+    });
     test('Get: Find all heroes', done => {
         EnvironmentTest.Get<Array<HeroModel>>('/api/heroes?id=2&id=1').subscribe(
             (result: Array<HeroModel>) => {
@@ -87,7 +87,7 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 expect(error).toBeUndefined();
             }
         );
-    })
+    });
     test('Put: Update hero', done => {
         const batman = {
             power: 100001,
@@ -103,7 +103,7 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 expect(error).toBeUndefined();
             }
         );
-    })
+    });
     test('Patch: Update hero information', done => {
         const batman = {
             power: 200001
@@ -118,7 +118,7 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 expect(error).toBeUndefined();
             }
         );
-    })
+    });
     test('Delete: Remove a Hero', done => {
         EnvironmentTest.Delete<HeroModel>('/api/hero/2').subscribe(
             (result: HeroModel) => {
@@ -138,7 +138,7 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 expect(error).toBeUndefined();
             }
         );
-    })
+    });
     test('Delete: Remove a Unexisting Hero', done => {
         EnvironmentTest.Delete<HeroModel>('/api/hero/testOne').subscribe(
             (result: HeroModel) => {
@@ -148,7 +148,7 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 done();
             }
         );
-    })
+    });
     test('Delete: Wrong param test', done => {
         EnvironmentTest.Delete<HeroModel>('/api/hero/wrongParam/2').subscribe(
             (result: HeroModel) => {
@@ -158,7 +158,7 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 done();
             }
         );
-    })
+    });
     test('Delete: A path not authenticated trying to use Claims', done => {
         EnvironmentTest.Delete<HeroModel>('/api/hero/wrongAuthentication').subscribe(
             (result: HeroModel) => {
@@ -168,5 +168,31 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 done();
             }
         );
-    })
+    });
+    test('Put: Kill a hero', done => {
+        EnvironmentTest.Put<HeroModel>(null, '/api/hero/1/kill').subscribe(
+            (result: HeroModel) => {
+                expect(result).not.toBeUndefined();
+                expect(result.name).toBe('Anakin Skywalker');
+                expect(result.power).toBe(100001);
+                expect(result.alive).toBe(false);
+                done();
+            }, (error: ApplicationException) => {
+                expect(error).toBeUndefined();
+            }
+        );
+    });
+    test('Put: Ressurect a hero', done => {
+        EnvironmentTest.Put<HeroModel>(null, '/api/hero/1/ressurect').subscribe(
+            (result: HeroModel) => {
+                expect(result).not.toBeUndefined();
+                expect(result.name).toBe('Anakin Skywalker');
+                expect(result.power).toBe(100001);
+                expect(result.alive).toBe(true);
+                done();
+            }, (error: ApplicationException) => {
+                expect(error).toBeUndefined();
+            }
+        );
+    });
 });

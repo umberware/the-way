@@ -5,8 +5,12 @@ import { switchMap } from 'rxjs/operators';
 import { SignInModel } from '../application-test/rest/model/sign-in.model';
 import { EnvironmentTest } from '../environment/environtment.test';
 import { InternalException } from '../../main/core/exeption/internal.exception';
+import { MessagesEnum } from '../../main/core/model/messages.enum';
 
 export const userRestScenarioTest = describe('multiples rest tests', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    })
     test('Post: Realize the sign in', done => {
         const signInModel = {
             username: 'batman',
@@ -185,7 +189,7 @@ export const userRestScenarioTest = describe('multiples rest tests', () => {
 
         EnvironmentTest.Post<{token: string}>(signInModel, '/api/sign/in').pipe(
             switchMap((result: {token: string}) => {
-                return EnvironmentTest.Get<boolean>('/api/user/verify', {'Authorization': result.token});
+                return EnvironmentTest.Get<boolean>('/api/user/verify', {'Authorization':   'Bearer ' + result.token});
             })
         ).subscribe(
             (result: boolean) => {
@@ -222,5 +226,55 @@ export const userRestScenarioTest = describe('multiples rest tests', () => {
                 done();
             }
         );
-    })
+    });
+    test('Get and Post: Realize Sign in and pass incorrect token on get user', done => {
+        const signInModel = {
+            username: 'batman',
+            password: '1234567890'
+        } as SignInModel;
+
+        EnvironmentTest.Post<{token: string}>(signInModel, '/api/sign/in').pipe(
+            switchMap((result: {token: string}) => {
+                return EnvironmentTest.Get<any>('/api/user', {'Authorization': result.token});
+            })
+        ).subscribe(
+            (result: any) => {
+                expect(result).toBeUndefined();
+            }, (error: ApplicationException) => {
+                expect(error).toBeDefined();
+                expect(error.detail).toBe(MessagesEnum['rest-invalid-token']);
+                done();
+            }
+        );
+    });
+    test('Get and Post: Realize Sign in and pass incorrect token with bearer on get user', done => {
+        EnvironmentTest.Get<any>('/api/user', {'Authorization': 'Bearer asasdadasd'}).subscribe(
+            (result: any) => {
+                expect(result).toBeUndefined();
+            }, (error: ApplicationException) => {
+                expect(error).toBeDefined();
+                expect(error.detail).toBe(MessagesEnum['rest-invalid-token']);
+                done();
+            }
+        );
+    });
+    test('Post: Sign with no claims', done => {
+        const signInModel = {
+            username: 'batman',
+            password: '1234567890'
+        } as SignInModel;
+        EnvironmentTest.Post<{token: string}>(signInModel, '/api/user/claims/sign/in/null').pipe(
+            switchMap((result: {token: string}) => {
+                return EnvironmentTest.Get<any>('/api/user/claims/null', {'Authorization': 'Bearer ' + result.token});
+            })
+        ).subscribe(
+            (result: boolean) => {
+                expect(result).toBeUndefined();
+            }, (error: ApplicationException) => {
+                expect(error).toBeDefined();
+                expect(error.detail).toBe(MessagesEnum['rest-cannot-perform']);
+                done();
+            }
+        );
+    });
 });

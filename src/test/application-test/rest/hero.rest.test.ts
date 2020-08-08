@@ -3,14 +3,14 @@ import { Put, Patch, Claims, Delete, QueryParam, Post, BodyParam, Head, Get, Pat
 import { Observable, of, throwError } from 'rxjs';
 
 import { HeroModel } from './model/hero.model';
-import { delay } from 'rxjs/operators';
 
 export class HeroRestTest {
     public heroes: {[key: string]: HeroModel | number} = {
         '1': {
             name: 'Anakin Skywalker',
-            power: 10001,
-            id: 1
+            power: 100001,
+            id: 1,
+            alive: true
         },
         lastId: 1
     };
@@ -69,6 +69,26 @@ export class HeroRestTest {
         hero.name = toUpdate.name;
         hero.power = toUpdate.power;
 
+        return of(hero);
+    }
+    @Put('/hero/:id/kill')
+    public killHero(@PathParam('id') id: number): Observable<HeroModel> {
+        const hero: HeroModel = this.heroes[id.toString()] as HeroModel;
+        if (!hero) {
+            throw new NotFoundException('Hero not found');
+        }
+
+        hero.alive = false;
+        return of(hero);
+    }
+    @Put('/hero/:id/ressurect')
+    public ressurectHero(@PathParam('id') id: number): Observable<HeroModel> {
+        const hero: HeroModel = this.heroes[id.toString()] as HeroModel;
+        if (!hero) {
+            throw new NotFoundException('Hero not found');
+        }
+
+        hero.alive = true;
         return of(hero);
     }
     @Patch('/hero/:id')

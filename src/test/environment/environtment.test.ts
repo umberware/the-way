@@ -10,7 +10,7 @@ export class EnvironmentTest {
     public static Post<T>(body: any, path: string, headers: any = {}): Observable<T> {
         const {hostname, port} = this.getHostnameAndPort();
         return new Observable<T>((observer) => {
-            const data = JSON.stringify(body);
+            const data = (body) ? JSON.stringify(body): undefined;
             const options = {
                 hostname: hostname,
                 port: port,
@@ -18,8 +18,7 @@ export class EnvironmentTest {
                 method: 'POST',
                 headers: {
                     ...headers,
-                    'Content-Type': 'application/json',
-                    'Content-Length': data.length
+                    'Content-Type': 'application/json'
                 }
             }
             const req = Http.request(options, (res) => {
@@ -34,14 +33,16 @@ export class EnvironmentTest {
             req.on('error', (error: Error) => {
                 observer.error(error);
             })
-            req.write(data);
+            if (data) {
+                req.write(data);
+            }
             req.end();
         }).pipe(take(1));
     }
     public static Put<T>(body: any, path: string, headers: any = {}): Observable<T> {
         const {hostname, port} = this.getHostnameAndPort();
         return new Observable<T>((observer) => {
-            const data = JSON.stringify(body);
+            const data = (body) ? JSON.stringify(body): undefined;
             const options = {
                 hostname: hostname,
                 port: port,
@@ -49,8 +50,7 @@ export class EnvironmentTest {
                 method: 'PUT',
                 headers: {
                     ...headers,
-                    'Content-Type': 'application/json',
-                    'Content-Length': data.length
+                    'Content-Type': 'application/json'
                 }
             }
             const req = Http.request(options, (res) => {
@@ -65,14 +65,16 @@ export class EnvironmentTest {
             req.on('error', (error: Error) => {
                 observer.error(error);
             })
-            req.write(data);
+            if (data) {
+                req.write(data);
+            }
             req.end();
         }).pipe(take(1));
     }
     public static Patch<T>(body: any, path: string, headers: any = {}): Observable<T> {
         const {hostname, port} = this.getHostnameAndPort();
         return new Observable<T>((observer) => {
-            const data = JSON.stringify(body);
+            const data = (body) ? JSON.stringify(body): undefined;
             const options = {
                 hostname: hostname,
                 port: port,
@@ -80,8 +82,7 @@ export class EnvironmentTest {
                 method: 'PATCH',
                 headers: {
                     ...headers,
-                    'Content-Type': 'application/json',
-                    'Content-Length': data.length
+                    'Content-Type': 'application/json'
                 }
             }
             const req = Http.request(options, (res) => {
@@ -96,7 +97,9 @@ export class EnvironmentTest {
             req.on('error', (error: Error) => {
                 observer.error(error);
             })
-            req.write(data);
+            if (data) {
+                req.write(data);
+            }
             req.end();
         }).pipe(take(1));
     }
@@ -205,6 +208,16 @@ export class EnvironmentTest {
     }
     public static getProperties(): any {
         return this.getInstance<PropertiesConfiguration>('PropertiesConfiguration').properties;
+    }
+    public static getTokenKey(): string {
+        const theWayProperties = this.getProperties()['the-way'];
+        const serverProperties = theWayProperties['server'];
+        return serverProperties.security['token-key'] as string;
+    }
+    public static getTokenExpiration(): string {
+        const theWayProperties = this.getProperties()['the-way'];
+        const serverProperties = theWayProperties['server'];
+        return serverProperties.security['token-expiration'] as string;
     }
     public static prepareEnvironment(whenReady: Function): void {
         this.whenCoreReady(whenReady);

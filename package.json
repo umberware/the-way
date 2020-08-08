@@ -7,7 +7,7 @@
   "site": "https://nihasoft.github.io/the-way/",
   "homepage": "https://nihasoft.github.io/the-way/",
   "scripts": {
-    "test": "jest --no-cache --properties=application-test.properties.yml --i --verbose --collectCoverage",
+    "test": "jest --silent --no-cache --properties=application-test.properties.yml --i --verbose --collectCoverage",
     "lint": "eslint . --ext .ts",
     "build": "yarn lint && tsc && yarn test && copyfiles ./src/main/core/configuration/application.properties.yml ./dist",
     "publish-version": "yarn build && npm publish"

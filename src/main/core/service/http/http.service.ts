@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 import { PathParamMetadataKey } from '../../decorator/rest/param/path-param.decorator';
 import { ClaimsMetaKey } from '../../decorator/rest/param/claims.decorator';
@@ -48,12 +49,11 @@ export class HttpService {
         target: any, propertyKey: string,  req: any, res: any
     ): void {
         try {
-            let tokenClaims: TokenClaims = {};
-            if (authenticated) {
-                const token: string = req.headers.authorization;
-                tokenClaims = this.securityService.verifyToken(token, allowedProfiles);
-            }
-            this.executeMethod(httpType, target, propertyKey, req, res, tokenClaims).subscribe(
+            this.securityService.verifyToken(req.headers.authorization, allowedProfiles, authenticated).pipe(
+                switchMap((tokenClaims: TokenClaims | undefined) => {
+                    return this.executeMethod(httpType, target, propertyKey, req, res, tokenClaims);
+                })
+            ).subscribe(
                 (response: any) => {
                     if (!res.headersSent) {
                         res.send(response);
@@ -66,7 +66,7 @@ export class HttpService {
             this.handleError(error, res);
         }
     }
-    protected executeMethod(httpType: HttpType, target: any, propertyKey: string, req: any, res: any, tokenClaims: TokenClaims): Observable<unknown> {
+    protected executeMethod(httpType: HttpType, target: any, propertyKey: string, req: any, res: any, tokenClaims: TokenClaims | undefined): Observable<unknown> {
         const method = target[propertyKey];
         const functionArgumentsLength = method.length;
         const functionArguments = new Array<any>().fill(undefined, 0, functionArgumentsLength);
@@ -97,12 +97,13 @@ export class HttpService {
             this.buildPathParams(pathParams, req, functionArguments);
         }
 
+        // Todo: Verify if post, put, patch can have query params and body.
         if (httpType === HttpType.GET || httpType === HttpType.DELETE || httpType === HttpType.HEAD) {
             const queryParam: number = Reflect.getOwnMetadata(QueryParamMetadataKey, target, propertyKey);
             if (queryParam !== undefined && queryParam !== null) {
                 functionArguments[queryParam] = req.query;
             }
-        } else if (httpType === HttpType.POST || httpType === HttpType.PUT || httpType === HttpType.PATCH) {
+        } else {
             const bodyParam: number = Reflect.getOwnMetadata(BodyParamMetadataKey, target, propertyKey);
             if (bodyParam !== undefined && bodyParam !== null) {
                 if (Object.keys(req.body).length === 0) {

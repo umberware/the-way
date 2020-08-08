@@ -89,4 +89,21 @@ export class UserRestTest {
     public testInternalException(): Observable<boolean> {
         throw new InternalException('internal-server-worker');
     }
+    @Get('/user/claims/null', true, ['death-star-master'])
+    public nullClaims(@Claims claims: TokenClaims): Observable<boolean> {
+        return of(!claims);
+    }
+    @Post('/user/claims/sign/in/null')
+    public claimSignInNull(@BodyParam signIn: SignInModel): Observable<{token: string}> {
+        this.logService.info('Trying to sign in for username: ' + signIn.username);
+        const user = this.users.find((user: any) => user.username === signIn.username);
+        const password = this.cryptoService.hash(signIn.password, 'sha512');
+        if (!user || password != user.password) {
+            const exception = new UnauthorizedException('Username or password incorrect.');
+            this.logService.error(exception)
+            throw exception;
+        }
+        this.logService.info('Sign in executed with success.');
+        return of({token: this.securityService.generateToken(null)});
+    }
 }

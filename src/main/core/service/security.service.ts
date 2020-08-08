@@ -1,5 +1,7 @@
 import * as Jwt from 'jsonwebtoken';
 
+import { Observable, of } from 'rxjs';
+
 import { UnauthorizedException } from '../exeption/unauthorized.exception';
 import { NotAllowedException } from '../exeption/not-allowed.exception';
 import { ApplicationException } from '../exeption/application.exception';
@@ -21,18 +23,18 @@ export class SecurityService {
         this.propertiesConfiguration = core.getInstanceByName<PropertiesConfiguration>('PropertiesConfiguration');
     }
 
-    public generateToken(tokenClaims: TokenClaims): string {
+    public generateToken(tokenClaims: TokenClaims | null): string {
         const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
-        const cryptedUser: string = cryptoService.cipherIv(JSON.stringify(tokenClaims), 'aes-256-cbc', this.getUserKey());
-        return Jwt.sign({data: cryptedUser}, this.getTokenKey(), { expiresIn: this.getTokenExpiration() });
+        const cryptedClaims: string | null = (tokenClaims) ? cryptoService.cipherIv(JSON.stringify(tokenClaims), 'aes-256-cbc', this.getUserKey()) : null;
+        return Jwt.sign({data: cryptedClaims}, this.getTokenKey(), { expiresIn: this.getTokenExpiration() });
     }
-    public getTokenClaims(token: string): TokenClaims {
+    public getTokenClaims(token: string): TokenClaims | undefined {
         const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
         const claims = Jwt.verify(token, this.getTokenKey()) as {data: string};
         if (claims.data) {
             return JSON.parse(cryptoService.decipherIv(claims.data, 'aes-256-cbc', this.getUserKey()));
         } else {
-            return {};
+            return undefined;
         }
     }
     protected getUserKey(): string {
@@ -50,32 +52,38 @@ export class SecurityService {
         const serverProperties = theWayProperties['server'];
         return serverProperties.security['token-expiration'] as string;
     }
-    protected mustValidateTheProfiles(tokenProfiles: Array<any>, profiles: Array<any> | undefined): boolean {
-        return profiles != undefined && profiles.length > 0 && tokenProfiles && tokenProfiles.length > 0;
-    }
-    protected verifyProfile(tokenProfiles: Array<any>, profiles: Array<any> | undefined): void{
-        if (profiles != undefined) {
-            for (const profile of profiles) {
-                if (tokenProfiles.includes(profile)) {
-                    return;
-                }
+    protected verifyProfile(token: TokenClaims | undefined, profiles: Array<any>): void{
+        if (!token || !token.profiles || !(token.profiles instanceof Array)) {
+            throw new NotAllowedException(MessagesEnum['rest-cannot-perform']);
+        }
+
+        const tokenProfiles: Array<any> = token.profiles;
+        for (const profile of profiles) {
+            if (tokenProfiles.includes(profile)) {
+                return;
             }
         }
 
         throw new NotAllowedException(MessagesEnum['rest-cannot-perform']);
     }
-    public verifyToken(token: string, profiles: Array<any> | undefined): TokenClaims {
+    public verifyToken(token: string, profiles: Array<any> | undefined, authenticated: boolean | undefined): Observable<TokenClaims | undefined> {
+        if (!authenticated) {
+            return of(undefined);
+        }
         try {
             if (!token) {
                 throw new NotAllowedException(MessagesEnum['rest-no-token']);
-            }
-            const tokenClaims: TokenClaims = this.getTokenClaims(token.replace('Bearer ', ''));
-
-            if (this.mustValidateTheProfiles(tokenClaims.profiles, profiles)) {
-                this.verifyProfile(tokenClaims.profiles, profiles);
+            } else if (token.search(/^Bearer /) === -1) {
+                throw new UnauthorizedException(MessagesEnum['rest-invalid-token']);
             }
 
-            return tokenClaims;
+            const tokenClaims: TokenClaims | undefined = this.getTokenClaims(token.replace('Bearer ', ''));
+
+            if (profiles != undefined && profiles.length > 0) {
+                this.verifyProfile(tokenClaims, profiles);
+            }
+
+            return of(tokenClaims);
         } catch(ex) {
             if (ex instanceof ApplicationException) {
                 throw ex;

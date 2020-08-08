@@ -250,6 +250,9 @@ export class CORE extends Destroyable{
         }
     }
     public overridenDependency(overridden: string, constructor: Function): void {
+        this.logInfo('Class will be overridden:');
+        this.logInfo('\tOriginal class: ' + constructor.name);
+        this.logInfo('\tOverride class: ' + overridden);
         this.OVERRIDDEN_DEPENDENCIES[overridden] = {
             name: constructor.name,
             constructor: constructor
