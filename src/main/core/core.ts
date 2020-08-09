@@ -345,7 +345,7 @@ export class CORE extends Destroyable{
             }, (error: ApplicationException) => {
                 console.error(error);
                 CORE.destroyed$.next(true);
-            } 
+            }
         );
 
         return CORE.destroyed$;
