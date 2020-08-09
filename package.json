@@ -1,13 +1,13 @@
 {
   "name": "@nihasoft/the-way",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "description": "We are a framework to help the development life to be better.",
   "main": "dist/src/main/index.js",
   "types": "dist/src/main/index.d.ts",
   "site": "https://nihasoft.github.io/the-way/",
   "homepage": "https://nihasoft.github.io/the-way/",
   "scripts": {
-    "test": "jest --silent --no-cache --properties=application-test.properties.yml --i --verbose --collectCoverage",
+    "test": "jest --silent --no-cache --properties=./src/test/application-test.properties.yml --i --verbose --collectCoverage",
     "lint": "eslint . --ext .ts",
     "build": "yarn lint && tsc && yarn test && copyfiles ./src/main/core/configuration/application.properties.yml ./dist",
     "publish-version": "yarn build && npm publish"

@@ -30,12 +30,4 @@ describe('Not Automatic:', () => {
         expect(main).not.toBeUndefined();
         expect(core.getInstances().size).toBeGreaterThan(0);
     });
-    test('Not Automatic: Make the destroy twice', done => {
-        const core = CORE.getCoreInstance();
-        core.destroy().subscribe(() => {
-            core.destroy().subscribe(() => {
-                done();
-            });
-        });
-    })
 });

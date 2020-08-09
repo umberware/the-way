@@ -317,6 +317,7 @@ export class CORE extends Destroyable{
             this.logInfo(MessagesEnum['time-has-come-one'], true);
             delete CORE.instance;
             CORE.CORE_CALLED = 0;
+            this.destroying = false;
             return of(true);
         }
 
@@ -327,6 +328,7 @@ export class CORE extends Destroyable{
                     this.logInfo(MessagesEnum['time-has-come-army'], true);
                     CORE.CORE_CALLED = 0;
                     delete CORE.instance;
+                    this.destroying = false;
                     return true;
                 } else {
                     throw new ApplicationException(MessagesEnum['not-destroyed'], MessagesEnum['internal-error'], ErrorCodeEnum['RU-006']);
@@ -337,7 +339,14 @@ export class CORE extends Destroyable{
                 console.log(MessagesEnum['let-me-go'])
                 throw error;
             })
-        ).subscribe(CORE.destroyed$);
+        ).subscribe(
+            () => {
+                CORE.destroyed$.next(true);
+            }, (error: ApplicationException) => {
+                console.error(error);
+                CORE.destroyed$.next(true);
+            } 
+        );
 
         return CORE.destroyed$;
     }
