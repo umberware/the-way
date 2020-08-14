@@ -298,10 +298,8 @@ export class CORE extends Destroyable{
                 if (!hasNotConfigured) {
                     this.logInfo(MessagesEnum['configuration-done'], true);
                     this.logInfo(MessagesEnum['ready'], true);
-                    CORE.ready$.next(true);
                     return true;
                 } else {
-                    CORE.ready$.next(false);
                     throw new ApplicationException(MessagesEnum['not-configured'], MessagesEnum['internal-error'], ErrorCodeEnum['RU-007']);
                 }
             }),

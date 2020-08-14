@@ -65,7 +65,6 @@ export class ServerConfiguration extends AbstractConfiguration {
             .use(morgan('dev'))
             .use(bodyParser.json())
             .use(helmet())
-            .disable('x-powered-by')
             .use(bodyParser.urlencoded({ extended: false }))
     }
     public initializeFileServer(): void {
@@ -74,7 +73,7 @@ export class ServerConfiguration extends AbstractConfiguration {
         const dirName = process.cwd();
         const filePath: string = (fileProperties.full) ? fileProperties.path as string : dirName + fileProperties.path as string;
         const assets = fileProperties.assets as any;
-        const staticProperty = fileProperties.assets as any;
+        const staticProperty = fileProperties.static as any;
 
         if (assets && assets.path !== '') {
             const assetsPath: string = (assets.full) ? assets.path as string: filePath + assets.path as string;
@@ -86,7 +85,7 @@ export class ServerConfiguration extends AbstractConfiguration {
             this.context.use('/static', express.static(staticPath));
         }
         this.context.get('/*', (req: any, res: any, next: Function) => {
-            if (req.path === '/' || (fileProperties.fallback && !(req.path as string).includes(server['api-endpoint'] as string))) {
+            if (req.path === '/' || (fileProperties.fallback && !(req.path as string).includes(server.path as string))) {
                 (res.sendFile as Function)(filePath + '/index.html');
             } else {
                 next();

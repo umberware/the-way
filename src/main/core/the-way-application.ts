@@ -14,7 +14,9 @@ export abstract class TheWayApplication {
             () => {
                 this.start();
                 core.setApplicationInstance(this);
+                CORE.ready$.next(true);
             }, () => {
+                CORE.ready$.next(false);
                 core.destroy();
             }
         );

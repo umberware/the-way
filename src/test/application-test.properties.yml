@@ -5,7 +5,8 @@ the-way:
     level: 0
   server:
     enabled: true
-    port: 7070
+    port: 7072
     path: /api
     swagger:
-      enabled: false
+      enabled: true
+      filePath: './src/test/swagger.json'

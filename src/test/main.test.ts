@@ -3,7 +3,6 @@ import { TheWayApplication } from '../main';
 
 import { EnvironmentTest } from './environment/environtment.test';
 import { heroRestScenarioTest } from './scenario/hero.rest.scenario.test';
-import { userRestScenarioTest } from './scenario/user.rest.scenario.test';
 import { ApplicationRestTest } from './application-test/rest/application.rest.test';
 import { CustomSecurityServiceTest } from './application-test/service/custom-security.service.test';
 import { CustomServerConfigurationTest } from './application-test/configuration/custom-server.configuration.test';
@@ -31,5 +30,4 @@ beforeAll(done => {
 describe('Automatic: Framework: Test', () => {
     coreScenarioTest
     heroRestScenarioTest
-    userRestScenarioTest
-})
+});

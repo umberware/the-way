@@ -131,6 +131,34 @@ export class EnvironmentTest {
             req.end();
         }).pipe(take(1));
     }
+    public static GetNoParse<T>(path: string, headers: any = {}): Observable<T> {
+        return new Observable<T>((observer) => {
+            const {hostname, port} = this.getHostnameAndPort();
+            const options = {
+                hostname: hostname,
+                port: port,
+                path: path,
+                method: 'GET',
+                headers: {
+                    ...headers,
+                    'Content-Type': 'application/json'
+                }
+            }
+            const req = Http.request(options, (res) => {
+                res.on('data', (d) => {
+                    if (res.statusCode !== 200 && res.statusCode !== 302) {
+                        observer.error(d);
+                    } else {
+                        observer.next(d);
+                    }
+                })
+            })
+            req.on('error', (error: Error) => {
+                observer.error(error);
+            })
+            req.end();
+        }).pipe(take(1));
+    }
     public static Head<T>(path: string, headers: any = {}): Observable<T> {
         return new Observable<T>((observer) => {
             const {hostname, port} = this.getHostnameAndPort();

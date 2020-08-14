@@ -54,7 +54,6 @@ describe('Configurations: Tests', () => {
                 break;
             }
         }
-        console.log(process.argv)
         try {
             new Main();
         } catch (error) {

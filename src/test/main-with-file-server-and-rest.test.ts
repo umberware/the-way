@@ -1,13 +1,38 @@
-import { ErrorCodeEnum, ApplicationException } from '../../main';
-
 import { switchMap } from 'rxjs/operators';
 
-import { SignInModel } from '../application-test/rest/model/sign-in.model';
-import { EnvironmentTest } from '../environment/environtment.test';
-import { InternalException } from '../../main/core/exeption/internal.exception';
-import { MessagesEnum } from '../../main/core/model/messages.enum';
+import { Application, TheWayApplication, Inject, ApplicationException, MessagesEnum, InternalException, ErrorCodeEnum, CORE } from '../main/index';
+import { EnvironmentTest } from './environment/environtment.test';
+import { LogService } from '../main/core/service/log/log.service';
+import { UserRestTest } from './application-test/rest/user.rest.test';
+import { CustomSecurityServiceTest } from './application-test/service/custom-security.service.test';
+import { CustomServerConfigurationTest } from './application-test/configuration/custom-server.configuration.test';
+import { SignInModel } from './application-test/rest/model/sign-in.model';
 
-export const userRestScenarioTest = describe('multiples rest tests', () => {
+@Application({
+    automatic: false,
+    custom: [CustomSecurityServiceTest, CustomServerConfigurationTest]
+})
+export class Main extends TheWayApplication {
+    @Inject() logService: LogService;
+    @Inject() userRest: UserRestTest
+
+    public start(): void {
+        this.logService.debug('Running...');
+    }
+}
+
+afterAll(done => {
+    EnvironmentTest.whenCoreWasDestroyed(done);
+});
+
+beforeAll(done => {
+    process.argv.push('--the-way.server.file.enabled=true');
+    process.argv.push('--the-way.server.file.fallback=true');
+    new Main();
+    EnvironmentTest.whenCoreReady(done);
+});
+
+describe('multiples rest tests', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     })
@@ -201,8 +226,7 @@ export const userRestScenarioTest = describe('multiples rest tests', () => {
                 done();
             }
         );
-    })
-    
+    });
     test('Get: Test the @Request and @Response', done => {
         EnvironmentTest.Get<boolean>('/api/user/check').subscribe(
             (result: boolean) => {
