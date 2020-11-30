@@ -21,7 +21,7 @@ import { TokenClaims } from '../../model/token-claims.model';
 import { ErrorCodeEnum } from '../../exeption/error-code.enum';
 import { MessagesEnum } from '../../model/messages.enum';
 
-/*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any */
 @Service()
 export class HttpService {
     serverConfiguration: ServerConfiguration;
@@ -66,7 +66,10 @@ export class HttpService {
             this.handleError(error, res);
         }
     }
-    protected executeMethod(httpType: HttpType, target: any, propertyKey: string, req: any, res: any, tokenClaims: TokenClaims | undefined): Observable<unknown> {
+    protected executeMethod(
+        httpType: HttpType, target: any, propertyKey: string, req: any,
+        res: any, tokenClaims: TokenClaims | undefined
+    ): Observable<unknown> {
         const method = target[propertyKey];
         const functionArgumentsLength = method.length;
         const functionArguments = new Array<any>().fill(undefined, 0, functionArgumentsLength);
@@ -123,7 +126,6 @@ export class HttpService {
         }
         this.logService.error(ex);
     }
-    /*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
     public registerPath(
         httpType: HttpType, path: string, authenticated: boolean | undefined,
         allowedProfiles: Array<any> | undefined, target: any, propertyKey: string
@@ -131,7 +133,11 @@ export class HttpService {
         const claims: number = Reflect.getOwnMetadata(ClaimsMetaKey, target, propertyKey);
 
         if (claims !== undefined && !authenticated) {
-            throw new ApplicationException(MessagesEnum['rest-claims-without-token-verify'], MessagesEnum['rest-without-authentication'], ErrorCodeEnum['RU-004']);
+            throw new ApplicationException(
+                MessagesEnum['rest-claims-without-token-verify'],
+                MessagesEnum['rest-without-authentication'],
+                ErrorCodeEnum['RU-004']
+            );
         }
         this.logService.debug('Registered: ' + path + ', method: ' + httpType);
         this.serverConfiguration.registerPath(path, httpType,  (req: any, res: any) => {

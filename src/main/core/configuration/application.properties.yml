@@ -20,9 +20,11 @@ the-way:
       fallback: false
       full: false
       path: ''
-      static: 
+      static:
         path: ''
         full: false
-      assets: 
+        enabled: false
+      assets:
         path: ''
         full: false
+        enabled: false

@@ -18,23 +18,10 @@
       "quotes": ["error", "single"],
       "no-trailing-spaces": "error",
       "eol-last":"error",
-      "@type-eslint/no-explicit-any": "off",
-      "@type-eslint/explicit-function-return-type": "off",
-      "@type-eslint/no-parameter-properties": "off",
-      "@type-eslint/no-object-literal-type-assertion": "off",
-      "@type-eslint/camelcase": "off",
       "max-len": [ "error", { "code": 140 }],
       "max-classes-per-file": ["error", 1],
       "max-lines": ["error", 1000],
       "object-curly-spacing": ["error", "always"],
-      "@type-eslint/member-delimiter-style": [
-          "error",
-          {
-              "singleline": {
-                  "delimiter": "semi",
-                  "requireLast": true
-              }
-          }
-      ]
+      "semi": "error"
   }
 }

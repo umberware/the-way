@@ -24,9 +24,15 @@ export class SecurityService {
     }
 
     public generateToken(tokenClaims: TokenClaims | null): string {
+        const cryptedClaims: string | null = this.generateTokenClaims(tokenClaims);
+        return Jwt.sign({ data: cryptedClaims }, this.getTokenKey(), { expiresIn: this.getTokenExpiration() });
+    }
+    protected generateTokenClaims(tokenClaims: TokenClaims | null): string | null {
+        if (!tokenClaims) {
+            return null;
+        }
         const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
-        const cryptedClaims: string | null = (tokenClaims) ? cryptoService.cipherIv(JSON.stringify(tokenClaims), 'aes-256-cbc', this.getUserKey()) : null;
-        return Jwt.sign({data: cryptedClaims}, this.getTokenKey(), { expiresIn: this.getTokenExpiration() });
+        return cryptoService.cipherIv(JSON.stringify(tokenClaims), 'aes-256-cbc', this.getUserKey());
     }
     public getTokenClaims(token: string): TokenClaims | undefined {
         const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
@@ -66,7 +72,10 @@ export class SecurityService {
 
         throw new NotAllowedException(MessagesEnum['rest-cannot-perform']);
     }
-    public verifyToken(token: string, profiles: Array<any> | undefined, authenticated: boolean | undefined): Observable<TokenClaims | undefined> {
+    public verifyToken(
+        token: string, profiles: Array<any> | undefined,
+        authenticated: boolean | undefined
+    ): Observable<TokenClaims | undefined> {
         if (!authenticated) {
             return of(undefined);
         }

@@ -19,7 +19,7 @@ import { ErrorCodeEnum } from '../exeption/error-code.enum';
 import { HttpType } from '../service/http/http-type.enum';
 import { MessagesEnum } from '../model/messages.enum';
 
-/*eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any */
 @Configuration()
 export class ServerConfiguration extends AbstractConfiguration {
     protected logService: LogService;
@@ -36,16 +36,26 @@ export class ServerConfiguration extends AbstractConfiguration {
         const core = CORE.getCoreInstance();
         this.logService = core.getInstanceByName<LogService>('LogService');
         this.propertiesConfiguration = core.getInstanceByName<PropertiesConfiguration>('PropertiesConfiguration');
-        this.theWayProperties = this.propertiesConfiguration.properties['the-way']
+        this.theWayProperties = this.propertiesConfiguration.properties['the-way'];
         this.serverProperties = this.theWayProperties.server;
     }
 
+    private buildPath(fileProperty: any, beginPath: string): string {
+        let path = fileProperty.path as string;
+        if (!fileProperty.full) {
+            if (path.charAt(0) !== '/') {
+                path = '/' + path;
+            }
+            path = beginPath + path;
+        }
+        return path;
+    }
     public configure(): Observable<boolean> {
         this.port =  this.serverProperties.port as number;
         return this.start();
     }
     public destroy(): Observable<boolean> {
-        return new Observable((observer) => {
+        return new Observable((observer: { next: (arg0: boolean) => void; }) => {
             if (!this.server) {
                 observer.next(true);
             }
@@ -58,35 +68,34 @@ export class ServerConfiguration extends AbstractConfiguration {
     protected initializeExpress(): void {
         const corsOptions: cors.CorsOptions = {
             origin: true
-        }
+        };
         this.context = express();
         this.context
             .use(cors(corsOptions))
             .use(morgan('dev'))
             .use(bodyParser.json())
             .use(helmet())
-            .use(bodyParser.urlencoded({ extended: false }))
+            .use(bodyParser.urlencoded({ extended: false }));
     }
     public initializeFileServer(): void {
         const server = this.theWayProperties.server;
         const fileProperties = server.file as any;
-        const dirName = process.cwd();
-        const filePath: string = (fileProperties.full) ? fileProperties.path as string : dirName + fileProperties.path as string;
-        const assets = fileProperties.assets as any;
+        const filePath: string = this.buildPath(fileProperties, process.cwd());
+
+        const assetsProperty = fileProperties.assets as any;
         const staticProperty = fileProperties.static as any;
 
-        if (assets && assets.path !== '') {
-            const assetsPath: string = (assets.full) ? assets.path as string: filePath + assets.path as string;
-            this.context.use('/assets', express.static(assetsPath));
+        if (assetsProperty.enabled) {
+            this.context.use('/assets', express.static(this.buildPath(assetsProperty, filePath)));
         }
 
-        if (staticProperty && staticProperty.path !== '') {
-            const staticPath = (staticProperty.full) ? staticProperty.path as string : filePath + staticProperty.path as string;
-            this.context.use('/static', express.static(staticPath));
+        if (staticProperty.enabled) {
+            this.context.use('/static', express.static(this.buildPath(staticProperty, filePath)));
         }
-        this.context.get('/*', (req: any, res: any, next: Function) => {
+
+        this.context.get('/*', (req: any, res: any, next: any) => {
             if (req.path === '/' || (fileProperties.fallback && !(req.path as string).includes(server.path as string))) {
-                (res.sendFile as Function)(filePath + '/index.html');
+                res.sendFile(filePath + '/index.html');
             } else {
                 next();
             }
@@ -100,22 +109,30 @@ export class ServerConfiguration extends AbstractConfiguration {
         });
         this.server.on('error', (error: any) => {
             if (error.code === 'EADDRINUSE') {
-                observer.error(new ApplicationException(MessagesEnum['server-couldnt-initialize'] + this.port, MessagesEnum['server-port-in-use'], ErrorCodeEnum['RU-007']));
+                observer.error(new ApplicationException(
+                    MessagesEnum['server-couldnt-initialize'] + this.port,
+                    MessagesEnum['server-port-in-use'],
+                    ErrorCodeEnum['RU-007']
+                ));
             } else {
                 observer.error(error);
             }
-        })
+        });
     }
     protected initializeSwagger(): void {
         const swaggerProperties = this.serverProperties.swagger;
         const swaggerDoc = readFileSync(swaggerProperties.filePath);
-        this.context.use(this.serverProperties.path + swaggerProperties.path, SwaggerUi.serve, SwaggerUi.setup(JSON.parse(swaggerDoc.toString())));
+        this.context.use(
+            this.serverProperties.path + swaggerProperties.path,
+            SwaggerUi.serve,
+            SwaggerUi.setup(JSON.parse(swaggerDoc.toString()))
+        );
     }
     protected isFileServerEnabled(): boolean {
-        return this.serverProperties.file && this.serverProperties.file.enabled
+        return this.serverProperties.file && this.serverProperties.file.enabled;
     }
     protected isSwaggerEnabled(): boolean {
-        return this.serverProperties.swagger && this.serverProperties.swagger.enabled
+        return this.serverProperties.swagger && this.serverProperties.swagger.enabled;
     }
     protected start(): Observable<boolean> {
         return new Observable<boolean>((observer: Subscriber<boolean>) => {
@@ -129,7 +146,7 @@ export class ServerConfiguration extends AbstractConfiguration {
             this.initializeServer(observer);
         });
     }
-    public registerPath(path: string, httpType: HttpType, executor: Function): void {
+    public registerPath(path: string, httpType: HttpType, executor: any): void {
         const finalPath = this.serverProperties.path + path;
         this.context[httpType](finalPath, executor);
     }

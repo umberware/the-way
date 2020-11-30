@@ -11,7 +11,7 @@ import { ApplicationException } from '../exeption/application.exception';
 import { ErrorCodeEnum } from '../exeption/error-code.enum';
 import { MessagesEnum } from '../model/messages.enum';
 
-/*eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any */
 @Configuration()
 export class PropertiesConfiguration extends AbstractConfiguration {
     static readonly PROPERTIES_NAME = 'application.properties.yml';
@@ -25,7 +25,7 @@ export class PropertiesConfiguration extends AbstractConfiguration {
     }
 
     public configure(): Observable<boolean> {
-        const args = process.argv
+        const args = process.argv;
         const propertiesFilePath = args.find((arg: string) => arg.includes('--properties=')) as string;
         return of(this.loadProperties(propertiesFilePath));
     }
@@ -59,7 +59,7 @@ export class PropertiesConfiguration extends AbstractConfiguration {
             return Yaml.parse(fs.readFileSync(path).toString());
         } catch (ex) {
             this.logService.info(MessagesEnum['properties-not-found']);
-            return {}
+            return {};
         }
     }
     protected sumCommandLineProperties(): void {
@@ -76,7 +76,7 @@ export class PropertiesConfiguration extends AbstractConfiguration {
                     property[propertyPath] = this.convertValue(propertyAndValue[1]);
                 } else if (property && pathSize > i + 1) {
                     if (property[propertyPath]) {
-                        property = property[propertyPath]
+                        property = property[propertyPath];
                     } else {
                         property = property[propertyPath] = {};
                     }

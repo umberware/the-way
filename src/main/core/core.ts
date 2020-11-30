@@ -46,15 +46,15 @@ export class CORE extends Destroyable{
     protected INSTANCES: Map<string, Object> = new Map();
 
     public buildApplication(): Observable<boolean> {
-        this.logInfo(MessagesEnum['building-core-instances'], true)
+        this.logInfo(MessagesEnum['building-core-instances'], true);
         this.buildCoreInstances();
-        this.logInfo(MessagesEnum['building-properties'], true)
+        this.logInfo(MessagesEnum['building-properties'], true);
         this.buildProperties();
-        this.logInfo(MessagesEnum['building-tree-instances'], true)
+        this.logInfo(MessagesEnum['building-tree-instances'], true);
         this.buildDependenciesTree();
-        this.logInfo(MessagesEnum['building-instances'], true)
+        this.logInfo(MessagesEnum['building-instances'], true);
         this.buildInstances(Object.keys(this.DEPENDENCIES_TREE), this.DEPENDENCIES_TREE, null);
-        this.logInfo(MessagesEnum['building-custom-instances'], true)
+        this.logInfo(MessagesEnum['building-custom-instances'], true);
         this.buildCustomInstances();
         this.buildHttpService();
 
@@ -89,7 +89,7 @@ export class CORE extends Destroyable{
             }
 
             if (childNodes.length > 0) {
-                this.buildDependencyTree(childNodes, treeNode)
+                this.buildDependencyTree(childNodes, treeNode);
             }
         }
     }
@@ -123,7 +123,11 @@ export class CORE extends Destroyable{
             this.handleInstance(instanceableName, instance, decorators);
             return instance;
         } else {
-            throw new ApplicationException(MessagesEnum['not-found'] + instanceableName, MessagesEnum['building-instance-error'], ErrorCodeEnum['RU-005']);
+            throw new ApplicationException(
+                MessagesEnum['not-found'] + instanceableName,
+                MessagesEnum['building-instance-error'],
+                ErrorCodeEnum['RU-005']
+            );
         }
     }
     protected buildInstances(treeNodesNames: Array<string>, node: any, parentName: string | null): void {
@@ -145,17 +149,23 @@ export class CORE extends Destroyable{
                 let found = 'Not found';
 
                 if (instance) {
-                    found = instance.constructor.name
+                    found = instance.constructor.name;
                 }
 
-                this.logInfo(MessagesEnum['injecting'] + target.constructor.name + MessagesEnum['injectable'] +dependencyInformation.constructor.name + MessagesEnum['injectable-found'] + found);
+                this.logInfo(
+                    MessagesEnum['injecting'] +
+                    target.constructor.name +
+                    MessagesEnum['injectable'] +
+                    dependencyInformation.constructor.name +
+                    MessagesEnum['injectable-found'] + found
+                );
             }
         }
     }
     protected buildHttpService(): void {
         const serverProperties = this.properties.server;
         if (serverProperties.enabled) {
-            this.logInfo(MessagesEnum['building-http-service'], true)
+            this.logInfo(MessagesEnum['building-http-service'], true);
             this.getInstance<SecurityService>(SecurityService.name, SecurityService);
             this.getInstance<ServerConfiguration>(ServerConfiguration.name, ServerConfiguration);
             this.getInstance<HttpService>(HttpService.name, HttpService);
@@ -169,7 +179,10 @@ export class CORE extends Destroyable{
         return new (Object.create(prototype)).constructor();
     }
     protected buildProperties(): void {
-        this.properties = this.getInstance<PropertiesConfiguration>(PropertiesConfiguration.name, PropertiesConfiguration).properties['the-way'];
+        this.properties = this.getInstance<PropertiesConfiguration>(
+            PropertiesConfiguration.name,
+            PropertiesConfiguration
+        ).properties['the-way'];
         CORE.CORE_LOG_ENABLED = this.properties.core.log;
     }
     public destroy(): Observable<boolean> {
@@ -205,7 +218,9 @@ export class CORE extends Destroyable{
         }
     }
     protected getInstance<T>(instanceableName: string, constructor: Function): T {
-        const {realInstanceableName, realConstructor} =  this.getRealInstanceNameAndConstructor(instanceableName, constructor);
+        const { realInstanceableName, realConstructor } = this.getRealInstanceNameAndConstructor(
+            instanceableName, constructor
+        );
         const instance = this.INSTANCES.get(realInstanceableName) as T;
         if (!instance) {
             return this.buildInstance(realInstanceableName, realConstructor);
@@ -224,7 +239,9 @@ export class CORE extends Destroyable{
     public getInstances(): Map<string, Object> {
         return this.INSTANCES;
     }
-    protected getRealInstanceNameAndConstructor(instanceableName: string, constructor?: Function): {realInstanceableName: string; realConstructor?: Function} {
+    protected getRealInstanceNameAndConstructor(
+        instanceableName: string, constructor?: Function
+    ): {realInstanceableName: string; realConstructor?: Function} {
         let realInstanceableName = instanceableName;
         let realConstructor = constructor;
         const overridden = this.OVERRIDDEN_DEPENDENCIES[instanceableName] as any;
@@ -232,7 +249,7 @@ export class CORE extends Destroyable{
             realInstanceableName = overridden.name as string;
             realConstructor = overridden.constructor;
         }
-        return {realInstanceableName, realConstructor};
+        return { realInstanceableName, realConstructor };
     }
     protected handleInstance<T>(instanceableName: string, instance: T, decorators: Array<string>): void {
         this.INSTANCES.set(instanceableName, instance as Object);
@@ -270,7 +287,7 @@ export class CORE extends Destroyable{
             constructor: constructor,
             target: target,
             key: key
-        }
+        };
     }
     /*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
     public registerPath(
@@ -334,7 +351,7 @@ export class CORE extends Destroyable{
             }),
             catchError((error: Error) => {
                 console.error(error);
-                console.log(MessagesEnum['let-me-go'])
+                console.log(MessagesEnum['let-me-go']);
                 throw error;
             })
         ).subscribe(

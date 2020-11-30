@@ -11,5 +11,5 @@ export function Service(over?: Function ) {
             Reflect.defineMetadata(ServiceMetaKey, over, constructor);
             coreInstance.overridenDependency(over.name, constructor);
         }
-    }
+    };
 }

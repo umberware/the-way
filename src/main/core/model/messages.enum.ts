@@ -1,4 +1,5 @@
 export enum MessagesEnum {
+    /* eslint-disable-next-line max-len */
     'no-http-service' = 'If you want to use the HttpService and the rest decorators, you should pass HttpService or and extended class of HttpService on Application decorator HttpService not found',
     'not-found' = 'Not Found',
     'bad-request' = 'Bad Request',

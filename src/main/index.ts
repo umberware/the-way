@@ -1,12 +1,12 @@
 export { CORE } from './core/core';
 export { Inject } from './core/decorator/inject.decorator';
 export { Application } from './core/decorator/application.decorator';
-export { Configuration} from './core/decorator/configuration.decorator';
-export { Service} from './core/decorator/service.decorator';
-export { PathParam} from './core/decorator/rest/param/path-param.decorator';
-export { BodyParam} from './core/decorator/rest/param/body-param.decorator';
-export { Claims} from './core/decorator/rest/param/claims.decorator';
-export { QueryParam} from './core/decorator/rest/param/query-param.decorator';
+export { Configuration } from './core/decorator/configuration.decorator';
+export { Service } from './core/decorator/service.decorator';
+export { PathParam } from './core/decorator/rest/param/path-param.decorator';
+export { BodyParam } from './core/decorator/rest/param/body-param.decorator';
+export { Claims } from './core/decorator/rest/param/claims.decorator';
+export { QueryParam } from './core/decorator/rest/param/query-param.decorator';
 export { Post } from './core/decorator/rest/method/post.decorator';
 export { Get } from './core/decorator/rest/method/get.decorator';
 export { Delete } from './core/decorator/rest/method/delete.decorator';
