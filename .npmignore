@@ -11,3 +11,4 @@ test
 .travis.yml
 application-test.properties.yml
 swagger.json
+dist/test
