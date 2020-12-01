@@ -8,11 +8,11 @@
     "homepage": "http://the-way.umberware.com",
     "private": false,
     "scripts": {
-        "test": "jest --silent --no-cache --properties=./src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
-        "test-no-silent": "jest --no-cache --properties=./src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
-        "test-with-log": "jest --no-cache --properties=./src/test/resources/application-test.properties.yml --i --verbose > test.log 2>&1",
+        "test": "jest --silent --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
+        "test-no-silent": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
+        "test-with-log": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose > test.log 2>&1",
         "lint": "eslint . --ext .ts",
-        "build": "yarn lint && tsc && yarn test && copyfiles ./src/main/core/configuration/application.properties.yml ./dist",
+        "build": "yarn lint && tsc && yarn test && copyfiles src/main/core/configuration/application.properties.yml ./dist",
         "publish-prod": "yarn build && npm publish --registry https://registry.npmjs.org/ --access public",
         "publish-beta": "yarn build && npm publish --tag beta --registry https://registry.npmjs.org/ --access public"
     },
