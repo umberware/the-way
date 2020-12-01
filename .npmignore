@@ -1,5 +1,4 @@
 tsconfig.json
-tsconfig-test.json
 yarn.lock
 yarn-error.log
 src
@@ -12,3 +11,6 @@ test
 application-test.properties.yml
 swagger.json
 dist/test
+test.log
+tsconfig.test.json
+.idea
