@@ -1,6 +1,6 @@
 import { Application, TheWayApplication, Inject } from '../main/index';
 import { EnvironmentTest } from './environment/environtment.test';
-import { ApplicationRestTest } from './application-test/rest/application.rest.test';
+import { ApplicationRestTest } from './application/rest/application.rest.test';
 import { LogService } from '../main/core/service/log/log.service';
 
 __dirname = '';
@@ -21,8 +21,8 @@ afterAll(done => {
     EnvironmentTest.whenCoreWasDestroyed(done);
 });
 
-describe('Main Without: Try to use Rest Decorators with server disabled', () => {
-    test('Main Without: The main must be initialized', done => {
+describe('The Way Tests - Simple Runnable', () => {
+    test('Custom properties', done => {
         process.argv.push('--the-way.server.port=3333');
         process.argv.push('--the-way.server.enabled=false');
         process.argv.push('--the-way.log.level=1');

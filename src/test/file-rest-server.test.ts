@@ -3,10 +3,10 @@ import { switchMap } from 'rxjs/operators';
 import { Application, TheWayApplication, Inject, ApplicationException, MessagesEnum, InternalException, ErrorCodeEnum, CORE } from '../main/index';
 import { EnvironmentTest } from './environment/environtment.test';
 import { LogService } from '../main/core/service/log/log.service';
-import { UserRestTest } from './application-test/rest/user.rest.test';
-import { CustomSecurityServiceTest } from './application-test/service/custom-security.service.test';
-import { CustomServerConfigurationTest } from './application-test/configuration/custom-server.configuration.test';
-import { SignInModel } from './application-test/rest/model/sign-in.model';
+import { UserRestTest } from './application/rest/user.rest.test';
+import { CustomSecurityServiceTest } from './application/service/custom-security.service.test';
+import { CustomServerConfigurationTest } from './application/configuration/custom-server.configuration.test';
+import { SignInModel } from './application/rest/model/sign-in.model';
 
 @Application({
     automatic: false,
@@ -32,11 +32,11 @@ beforeAll(done => {
     EnvironmentTest.whenCoreReady(done);
 });
 
-describe('multiples rest tests', () => {
+describe('The Way Tests - File & Rest', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     })
-    test('Post: Realize the sign in', done => {
+    test('Post: Sign in', done => {
         const signInModel = {
             username: 'batman',
             password: '1234567890'
@@ -87,7 +87,7 @@ describe('multiples rest tests', () => {
             }
         );
     })
-    test('Get and Post: Realize Sign in and get the user claims', done => {
+    test('Get and Post: Sign in and get the user claims', done => {
         const signInModel = {
             username: 'batman',
             password: '1234567890'
@@ -251,7 +251,7 @@ describe('multiples rest tests', () => {
             }
         );
     });
-    test('Get and Post: Realize Sign in and pass incorrect token on get user', done => {
+    test('Get and Post: Sign in and pass incorrect token on get user', done => {
         const signInModel = {
             username: 'batman',
             password: '1234567890'
@@ -271,7 +271,7 @@ describe('multiples rest tests', () => {
             }
         );
     });
-    test('Get and Post: Realize Sign in and pass incorrect token with bearer on get user', done => {
+    test('Get and Post: Sign in and pass incorrect token with bearer on get user', done => {
         EnvironmentTest.Get<any>('/api/user', {'Authorization': 'Bearer asasdadasd'}).subscribe(
             (result: any) => {
                 expect(result).toBeUndefined();

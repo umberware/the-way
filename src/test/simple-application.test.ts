@@ -18,8 +18,8 @@ beforeAll(done => {
     EnvironmentTest.whenCoreReady(done);
 });
 
-describe('Application: Main with default', () => {
-    test('Empty @Application', done => {
+describe('The Way Tests - Simple Application', () => {
+    test('Default application', done => {
         const core = CORE.getCoreInstance();
         const main = core.getApplicationInstance();
         expect(main).not.toBeUndefined();

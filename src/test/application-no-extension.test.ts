@@ -2,7 +2,7 @@ import { Application } from '../main/core/decorator/application.decorator';
 import { MessagesEnum } from '../main/core/model/messages.enum';
 
 
-it('Try to use the application without extends TheWayApplication', () => {
+it('The Way Tests - Application No Extension', () => {
     try {
         @Application()
         class Main {

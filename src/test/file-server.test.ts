@@ -1,11 +1,10 @@
-import { Application, TheWayApplication, Inject, CORE, ApplicationException, MessagesEnum, ErrorCodeEnum } from '../main/index';
+import { Application, TheWayApplication, Inject, CORE, ApplicationException } from '../main/index';
 import { EnvironmentTest } from './environment/environtment.test';
 import { LogService } from '../main/core/service/log/log.service';
-import { UserRestTest } from './application-test/rest/user.rest.test';
-import { CustomSecurityServiceTest } from './application-test/service/custom-security.service.test';
-import { CustomServerConfigurationTest } from './application-test/configuration/custom-server.configuration.test';
-
-import * as http from 'http';
+import { UserRestTest } from './application/rest/user.rest.test';
+import { CustomSecurityServiceTest } from './application/service/custom-security.service.test';
+import { CustomServerConfigurationTest } from './application/configuration/custom-server.configuration.test';
+import { Subscription } from 'rxjs';
 
 let defaultProcessArgv: any;
 
@@ -23,32 +22,47 @@ export class Main extends TheWayApplication {
 }
 beforeAll(done => {
     process.argv.push('--the-way.server.file.enabled=true');
+    process.argv.push('--the-way.server.file.path=src/test/resources');
     process.argv.push('--the-way.server.file.fallback=true');
     defaultProcessArgv = [...process.argv];
     done();
 });
-afterEach(done => {
-    EnvironmentTest.whenCoreWasDestroyed(done);
-    process.argv = defaultProcessArgv;
-});
-describe('Main With File Server: Enabling file server', () => {
+describe('The Way Tests - FileServer', () => {
+    let CORE_SUB:  Subscription;
+    afterEach(done => {
+        CORE_SUB.unsubscribe();
+        EnvironmentTest.whenCoreWasDestroyed(done);
+        process.argv = defaultProcessArgv;
+    });
     test('With assets', done => {
-        process.argv.push('--the-way.server.file.assets.path=/');
+        process.argv.push('--the-way.server.file.assets.enabled=true');
+        process.argv.push('--the-way.server.file.assets.path=/assets');
         new Main();
-        CORE.ready$.subscribe((ready: boolean) => {
+        CORE_SUB = CORE.ready$.subscribe((ready: boolean) => {
             if (ready) {
                 const core = CORE.getCoreInstance();
                 const main = core.getApplicationInstance();
                 expect(main).not.toBeUndefined();
                 expect(core.getInstances().size).toBeGreaterThan(0);
-                done();
+                console.log(process.argv)
+                EnvironmentTest.GetNoParse<string>('/assets/geo.json').subscribe(
+                    (jsonString: string) => {
+                        const json = JSON.parse(jsonString);
+                        expect(json.lon).toBe(12);
+                        expect(json.lat).toBe(9);
+                        done();
+                    }, (error: ApplicationException) => {
+                        expect(error).toBeUndefined();
+                    }
+                );
             }
         })
     });
     test('With no assets', done => {
-        process.argv.push('--the-way.server.file.asset=');
+        process.argv.push('--the-way.server.file.assets.enabled=true');
+        process.argv.push('--the-way.server.file.assets.path=');
         new Main();
-        CORE.ready$.subscribe((ready: boolean) => {
+        CORE_SUB = CORE.ready$.subscribe((ready: boolean) => {
             if (ready) {
                 const core = CORE.getCoreInstance();
                 const main = core.getApplicationInstance();
@@ -59,9 +73,8 @@ describe('Main With File Server: Enabling file server', () => {
         })
     });
     test('With fallback', done => {
-        process.argv.push('--the-way.server.file.path=/src/test');
         new Main();
-        CORE.ready$.subscribe((ready: boolean) => {
+        CORE_SUB = CORE.ready$.subscribe((ready: boolean) => {
             if (ready) {
                 const core = CORE.getCoreInstance();
                 const main = core.getApplicationInstance();
@@ -70,27 +83,30 @@ describe('Main With File Server: Enabling file server', () => {
                 EnvironmentTest.GetNoParse<string>('/user/conf').subscribe(
                     (page: string) => {
                         expect('' + page).toBe('banana');
-                        done();
+                        EnvironmentTest.whenCoreWasDestroyed(done);
                     }, (error: ApplicationException) => {
-                        expect('' + error).toBeUndefined();
+                        expect(error).toBeUndefined();
                     }
                 );
             }
         })
     });
-    test('With Static', done => {
-        process.argv.push('--the-way.server.file.static.path=/src/test');
+    test('With static', done => {
+        process.argv.push('--the-way.server.file.static.enabled=true');
+        process.argv.push('--the-way.server.file.static.path=/static');
         new Main();
-        CORE.ready$.subscribe((ready: boolean) => {
+        CORE_SUB = CORE.ready$.subscribe((ready: boolean) => {
             if (ready) {
                 const core = CORE.getCoreInstance();
                 const main = core.getApplicationInstance();
                 expect(main).not.toBeUndefined();
                 expect(core.getInstances().size).toBeGreaterThan(0);
-                EnvironmentTest.GetNoParse<string>('/user/conf').subscribe(
-                    (page: string) => {
-                        expect('' + page).toBe('banana');
-                        done();
+                EnvironmentTest.GetNoParse<string>('/static/test.json').subscribe(
+                    (jsonString: string) => {
+                        console.log(jsonString)
+                        const json = JSON.parse(jsonString);
+                        expect(json.name).toBe("banana");
+                        EnvironmentTest.whenCoreWasDestroyed(done);
                     }, (error: ApplicationException) => {
                         expect('' + error).toBeUndefined();
                     }
@@ -98,7 +114,7 @@ describe('Main With File Server: Enabling file server', () => {
             }
         })
     });
-    test('Server Configuration: Port in use', done => {
+    test('Port in use', done => {
         done();
         // new Main();
         // CORE.ready$.subscribe(

@@ -9,4 +9,4 @@ the-way:
     path: /api
     swagger:
       enabled: true
-      filePath: './src/test/swagger.json'
+      filePath: './src/test/resources/swagger.json'

@@ -3,9 +3,9 @@ import { TheWayApplication } from '../main';
 
 import { EnvironmentTest } from './environment/environtment.test';
 import { heroRestScenarioTest } from './scenario/hero.rest.scenario.test';
-import { ApplicationRestTest } from './application-test/rest/application.rest.test';
-import { CustomSecurityServiceTest } from './application-test/service/custom-security.service.test';
-import { CustomServerConfigurationTest } from './application-test/configuration/custom-server.configuration.test';
+import { ApplicationRestTest } from './application/rest/application.rest.test';
+import { CustomSecurityServiceTest } from './application/service/custom-security.service.test';
+import { CustomServerConfigurationTest } from './application/configuration/custom-server.configuration.test';
 import { coreScenarioTest } from './scenario/core.scenario.test';
 
 @Application({
@@ -27,7 +27,7 @@ beforeAll(done => {
     EnvironmentTest.whenCoreReady(done);
 });
 
-describe('Automatic: Framework: Test', () => {
+describe('The Way Tests - Application', () => {
     coreScenarioTest
     heroRestScenarioTest
 });

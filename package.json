@@ -7,7 +7,9 @@
     "site": "https://nihasoft.github.io/the-way/",
     "homepage": "https://nihasoft.github.io/the-way/",
     "scripts": {
-        "test": "jest --silent --no-cache --properties=./src/test/application-test.properties.yml --i --verbose --collectCoverage",
+        "test": "jest --silent --no-cache --properties=./src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
+        "test-no-silent": "jest --no-cache --properties=./src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
+        "test-with-log": "jest --no-cache --properties=./src/test/resources/application-test.properties.yml --i --verbose > test.log 2>&1",
         "lint": "eslint . --ext .ts",
         "build": "yarn lint && tsc && yarn test && copyfiles ./src/main/core/configuration/application.properties.yml ./dist",
         "publish-version": "yarn build && npm publish"
@@ -87,7 +89,8 @@
             "/src/main/",
             "/src/test/environment",
             "/src/test/scenario",
-            "/src/test/application-test"
+            "/src/test/application",
+            "/src/test/resources"
         ],
         "testRegex": ".test.ts",
         "moduleFileExtensions": [
@@ -119,7 +122,7 @@
         ],
         "globals": {
             "ts-jest": {
-                "tsConfig": "tsconfig.test.json"
+                "tsconfig": "tsconfig.test.json"
             }
         }
     }

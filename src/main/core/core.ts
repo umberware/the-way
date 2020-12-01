@@ -24,7 +24,7 @@ import { HttpType } from './service/http/http-type.enum';
 export class CORE extends Destroyable{
     public static CORE_LOG_ENABLED = false;
     public static CORE_CALLED = 0;
-    public static instance: CORE;
+    public static instance?: CORE;
 
     public static destroyed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     public static ready$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);

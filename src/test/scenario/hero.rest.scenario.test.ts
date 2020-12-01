@@ -1,7 +1,7 @@
 import { ErrorCodeEnum, ApplicationException } from '../../main';
 
 import { EnvironmentTest } from '../environment/environtment.test';
-import { HeroModel } from '../application-test/rest/model/hero.model';
+import { HeroModel } from '../application/rest/model/hero.model';
 
 export const heroRestScenarioTest = describe('multiples rest tests', () => {
     test('Head: Hero exists', done => {
