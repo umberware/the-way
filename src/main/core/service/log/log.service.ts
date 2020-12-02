@@ -32,6 +32,9 @@ export class LogService {
     public info(message: string): void {
         console.info('[INFO] ' + new Date().toUTCString() + ' - ' + message);
     }
+    public warn(message: string): void {
+        console.warn('[INFO] ' + new Date().toUTCString() + ' - ' + message);
+    }
     public debug(message: string): void {
         if (!this.logProperties.enabled || this.logProperties.level !== LogLevel.FULL) {
             return;

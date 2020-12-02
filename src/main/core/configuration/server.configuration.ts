@@ -110,8 +110,10 @@ export class ServerConfiguration extends AbstractConfiguration {
         const helmetProperties = this.serverProperties.helmet;
         const corsProperties = this.serverProperties.cors;
 
-        if (this.httpProperties.enabled) {
+        if (this.httpProperties.enabled && !helmetProperties.contentSecurityPolicy) {
             helmetProperties.contentSecurityPolicy = false;
+        } else if (this.serverProperties.file.enabled) {
+            this.logService.warn('Http enabled but with HELMET parameters. This can cause problems in file server.')
         }
 
         this.context = express();
