@@ -25,6 +25,7 @@ export enum MessagesEnum {
     'configuration-done' = 'All configurations are done.',
     'ready' = 'The application is fully loaded.',
     'not-configured' = 'Is not configured.',
+    'no-server' = 'You passed https and http disabled?',
     'properties-not-found' = 'Properties file not found. Will be used the default.',
     'properties-wrong-format' = 'Error on processing the properties file',
     'server-couldnt-initialize' = 'Couldn\'t initialize at the port: ',

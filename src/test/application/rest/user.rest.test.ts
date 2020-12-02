@@ -1,6 +1,6 @@
 import { NotFoundException, InternalException, Post, BodyParam, Inject,
     SecurityService, UnauthorizedException, Header, Claims, TokenClaims, Get,
-    BadRequestException, Request, Response, LogService, LogLevel
+    BadRequestException, Request, Response, LogService
 } from '../../../main';
 
 import { Observable, of } from 'rxjs';
@@ -21,8 +21,7 @@ export class UserRestTest {
             password: this.cryptoService.hash('1234567890', 'sha512'),
             hash: this.cryptoService.hash(this.cryptoService.randomHash(80), 'sha512', 'base64'),
             profiles: [0, 1]
-        })
-        this.logService.setLogLevel(LogLevel.FULL);
+        });
     }
 
     public users: Array<any> = [];

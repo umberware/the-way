@@ -21,6 +21,8 @@ export abstract class TheWayApplication {
             }
         );
     }
-
-    public abstract start(): void
+    public start(): void {
+        /* eslint-disable-next-line no-console */
+        console.log('[The Way] Has been started.');
+    }
 }

@@ -3,7 +3,7 @@
 [![npm version](https://badge.fury.io/js/%40umberware%2Fthe-way.svg)](https://badge.fury.io/js/%40umberware%2Fthe-way)
 [![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/umberware/the-way/master/LICENSE)
 [![EsLint](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://raw.githubusercontent.com/umberware/the-way/master/.eslintrc)
-[![Build Status](https://travis-ci.com/umberware/the-way.svg?branch=master)](https://travis-ci.com/umberware/the-way)
+[![Build Status](https://travis-ci.org/umberware/the-way.svg?branch=master)](https://travis-ci.org/umberware/the-way)
 [![codecov](https://codecov.io/gh/umberware/the-way/branch/master/graph/badge.svg)](https://codecov.io/gh/umberware/the-way)
 [![Donate](https://img.shields.io/badge/%24-Donate-blue.svg)](http://the-way.umberware.com/donate)
 
@@ -153,21 +153,35 @@ The current default properties are:
 
     the-way:
         core:
-            log: true
-        log:
-            level: 0
+            log:
+                enabled: true
+                level: 0
         server:
             enabled: true
-            port: 8081
-            path: /api
-            swagger:
+            operations-log: true
+            http:
+                port: 80
+                enabled: true
+            https:
+                port: 443
                 enabled: false
-                path: /swagger
-                filePath: './swagger.json'
-            security:
-                user-key: A2345678901234567890123456789012
-                token-key: B2345678901234567890123456789034
-                token-expiration: '3 days'
+                keyPath: ''
+                certPath: ''
+            helmet:
+                enabled: true
+            cors:
+                enabled: true
+                origin: true
+            rest:
+                path: /api
+                security:
+                    user-key: A2345678901234567890123456789012
+                    token-key: B2345678901234567890123456789034
+                    token-expiration: '3 days'
+                swagger:
+                    enabled: false
+                    path: /swagger
+                    filePath: './swagger.json'
             file:
                 enabled: false
                 fallback: false
@@ -181,11 +195,3 @@ The current default properties are:
                     path: ''
                     full: false
                     enabled: false
-
-# Issues
-
-If you have an idea, a bug, a feature or anything else, please help us to growth creating an issue for that [here](https://github.com/umberware/the-way/issues)
-
-# Documentation
-
-You can access the full documentation [here](http://the-way.umberware.com)

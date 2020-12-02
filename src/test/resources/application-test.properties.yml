@@ -1,12 +1,14 @@
 the-way:
-  core:
-    log: true
-  log:
-    level: 0
-  server:
-    enabled: true
-    port: 7072
-    path: /api
-    swagger:
-      enabled: true
-      filePath: './src/test/resources/swagger.json'
+    core:
+        log:
+            enabled: true
+            level: 0
+    server:
+        enabled: true
+        http:
+            port: 7072
+        rest:
+            path: /api
+            swagger:
+                enabled: true
+                filePath: './src/test/resources/swagger.json'

@@ -1,12 +1,25 @@
 import { ApplicationException } from '../../exeption/application.exception';
 import { LogLevel } from './log-level.enum';
+import { Service } from '../../decorator/service.decorator';
+import { CORE, PropertiesConfiguration } from '../../..';
 
-/*eslint-disable no-console*/
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+@Service()
 export class LogService {
 
-    protected level: LogLevel;
+    protected logProperties: any;
+
+    constructor() {
+        const core = CORE.getCoreInstance();
+        const propertiesConfiguration = core.getInstanceByName<PropertiesConfiguration>('PropertiesConfiguration');
+        this.logProperties = propertiesConfiguration.properties['the-way']['core']['log'];
+    }
 
     public error(error: Error): void {
+        if (!this.logProperties.enabled) {
+            return;
+        }
+
         if (error instanceof ApplicationException) {
             console.error(
                 '[Error] ' + new Date().toUTCString() + ' - ' + error.getCode() + ' ' + error.getDetail() + ' '
@@ -20,12 +33,9 @@ export class LogService {
         console.info('[INFO] ' + new Date().toUTCString() + ' - ' + message);
     }
     public debug(message: string): void {
-        if (this.level != undefined && this.level != null && this.level === LogLevel.FULL) {
-            console.info('[DEBUG] ' + new Date().toUTCString() + ' - ' + message);
+        if (!this.logProperties.enabled || this.logProperties.level !== LogLevel.FULL) {
+            return;
         }
-    }
-
-    public setLogLevel(level: LogLevel): void {
-        this.level = level;
+        console.info('[DEBUG] ' + new Date().toUTCString() + ' - ' + message);
     }
 }

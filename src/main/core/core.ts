@@ -17,10 +17,10 @@ import { MessagesEnum } from './model/messages.enum';
 import { SecurityService } from './service/security.service';
 import { HttpType } from './service/http/http-type.enum';
 
-/*eslint-disable @typescript-eslint/ban-types */
-/*eslint-disable @typescript-eslint/no-explicit-any*/
-/*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
-/*eslint-disable no-console*/
+/* eslint-disable @typescript-eslint/ban-types,
+@typescript-eslint/no-explicit-any,
+@typescript-eslint/explicit-module-boundary-types,
+no-console */
 export class CORE extends Destroyable{
     public static CORE_LOG_ENABLED = false;
     public static CORE_CALLED = 0;
@@ -57,14 +57,10 @@ export class CORE extends Destroyable{
         this.logInfo(MessagesEnum['building-custom-instances'], true);
         this.buildCustomInstances();
         this.buildHttpService();
-
-        (this.getInstanceByName('LogService') as LogService).setLogLevel(
-            this.properties.log.level
-        );
         return this.watchConfigurations();
     }
     protected buildCoreInstances(): void {
-        const coreInstances: Array<Function> = [LogService, CryptoService];
+        const coreInstances: Array<Function> = [CryptoService, PropertiesConfiguration, LogService];
 
         for (const coreInstance of coreInstances) {
             this.getInstance(coreInstance.name, coreInstance);
@@ -183,7 +179,7 @@ export class CORE extends Destroyable{
             PropertiesConfiguration.name,
             PropertiesConfiguration
         ).properties['the-way'];
-        CORE.CORE_LOG_ENABLED = this.properties.core.log;
+        CORE.CORE_LOG_ENABLED = this.properties.core.enabled;
     }
     public destroy(): Observable<boolean> {
         if (this.destroying) {

@@ -5,24 +5,15 @@ import { Observable, of } from 'rxjs';
 
 import { AbstractConfiguration } from './abstract.configuration';
 import { Configuration } from '../decorator/configuration.decorator';
-import { LogService } from '../service/log/log.service';
-import { CORE } from '../core';
 import { ApplicationException } from '../exeption/application.exception';
 import { ErrorCodeEnum } from '../exeption/error-code.enum';
 import { MessagesEnum } from '../model/messages.enum';
 
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any, no-console */
 @Configuration()
 export class PropertiesConfiguration extends AbstractConfiguration {
     static readonly PROPERTIES_NAME = 'application.properties.yml';
     properties: any;
-
-    logService: LogService;
-
-    constructor () {
-        super();
-        this.logService = CORE.getCoreInstance().getInstanceByName('LogService') as LogService;
-    }
 
     public configure(): Observable<boolean> {
         const args = process.argv;
@@ -58,7 +49,7 @@ export class PropertiesConfiguration extends AbstractConfiguration {
         try {
             return Yaml.parse(fs.readFileSync(path).toString());
         } catch (ex) {
-            this.logService.info(MessagesEnum['properties-not-found']);
+            console.warn(MessagesEnum['properties-not-found']);
             return {};
         }
     }
@@ -93,7 +84,6 @@ export class PropertiesConfiguration extends AbstractConfiguration {
             }
         }
     }
-    /*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
     protected sumProperties(properties: any, defaultProperties: any, keys: Array<string>): void {
         try {
             for(const defaultPropertyKey in defaultProperties) {

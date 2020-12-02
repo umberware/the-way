@@ -37,6 +37,7 @@ export class SecurityService {
     public getTokenClaims(token: string): TokenClaims | undefined {
         const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
         const claims = Jwt.verify(token, this.getTokenKey()) as {data: string};
+
         if (claims.data) {
             return JSON.parse(cryptoService.decipherIv(claims.data, 'aes-256-cbc', this.getUserKey()));
         } else {
@@ -45,18 +46,18 @@ export class SecurityService {
     }
     protected getUserKey(): string {
         const theWayProperties = this.propertiesConfiguration.properties['the-way'];
-        const serverProperties = theWayProperties['server'];
-        return serverProperties.security['user-key'] as string;
+        const restProperties = theWayProperties['server']['rest'];
+        return restProperties.security['user-key'] as string;
     }
     protected getTokenKey(): string {
         const theWayProperties = this.propertiesConfiguration.properties['the-way'];
-        const serverProperties = theWayProperties['server'];
-        return serverProperties.security['token-key'] as string;
+        const restProperties = theWayProperties['server']['rest'];
+        return restProperties.security['token-key'] as string;
     }
     protected getTokenExpiration(): string {
         const theWayProperties = this.propertiesConfiguration.properties['the-way'];
-        const serverProperties = theWayProperties['server'];
-        return serverProperties.security['token-expiration'] as string;
+        const restProperties = theWayProperties['server']['rest'];
+        return restProperties.security['token-expiration'] as string;
     }
     protected verifyProfile(token: TokenClaims | undefined, profiles: Array<any>): void{
         if (!token || !token.profiles || !(token.profiles instanceof Array)) {
