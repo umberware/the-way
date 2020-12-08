@@ -19,7 +19,7 @@ export class SecurityService {
     protected propertiesConfiguration: PropertiesConfiguration;
 
     constructor() {
-        const core = CORE.getCoreInstance();
+        const core = CORE.getCoreInstances();
         this.propertiesConfiguration = core.getInstanceByName<PropertiesConfiguration>('PropertiesConfiguration');
     }
 
@@ -31,11 +31,11 @@ export class SecurityService {
         if (!tokenClaims) {
             return null;
         }
-        const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
+        const cryptoService = CORE.getCoreInstances().getInstanceByName('CryptoService') as CryptoService;
         return cryptoService.cipherIv(JSON.stringify(tokenClaims), 'aes-256-cbc', this.getUserKey());
     }
     public getTokenClaims(token: string): TokenClaims | undefined {
-        const cryptoService = CORE.getCoreInstance().getInstanceByName('CryptoService') as CryptoService;
+        const cryptoService = CORE.getCoreInstances().getInstanceByName('CryptoService') as CryptoService;
         const claims = Jwt.verify(token, this.getTokenKey()) as {data: string};
 
         if (claims.data) {

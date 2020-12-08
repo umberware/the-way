@@ -1,23 +1,17 @@
 import { CORE } from './core';
-import { MessagesEnum } from './model/messages.enum';
+import { CoreStateEnum } from './model/core-state.enum';
 
 export abstract class TheWayApplication {
     constructor() {
-        const core = CORE.getCoreInstance();
-        CORE.CORE_CALLED += 1;
+        const core = CORE.getCoreInstances()[0];
 
-        if (CORE.CORE_CALLED > 1) {
-            throw new Error(MessagesEnum['application-multiples']);
+        if (core.getCoreState() === CoreStateEnum.INITIALIZED) {
+            core.execute(this);
         }
 
-        core.buildApplication().subscribe(
+        core.whenReady().subscribe(
             () => {
                 this.start();
-                core.setApplicationInstance(this);
-                CORE.ready$.next(true);
-            }, () => {
-                CORE.ready$.next(false);
-                core.destroy();
             }
         );
     }

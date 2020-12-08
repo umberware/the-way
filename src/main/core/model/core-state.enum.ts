@@ -1,0 +1,10 @@
+export enum CoreStateEnum {
+    INITIALIZING,
+    INITIALIZED,
+    BUILDING,
+    BUILDED,
+    CONFIGURING,
+    READY,
+    DESTROYING,
+    DESTROYED
+}

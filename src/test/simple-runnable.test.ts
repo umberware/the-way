@@ -1,7 +1,7 @@
 import { Application, TheWayApplication, Inject } from '../main/index';
 import { EnvironmentTest } from './environment/environtment.test';
 import { ApplicationRestTest } from './application/rest/application.rest.test';
-import { LogService } from '../main/core/service/log/log.service';
+import { Logger } from '../main/core/shared/logger';
 
 __dirname = '';
 
@@ -10,7 +10,7 @@ __dirname = '';
 })
 export class Main extends TheWayApplication {
     @Inject() applicationRest: ApplicationRestTest;
-    @Inject() logService: LogService;
+    @Inject() logService: Logger;
 
     public start(): void {
         this.logService.debug('Running...');

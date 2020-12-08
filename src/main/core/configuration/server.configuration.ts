@@ -11,7 +11,7 @@ import { readFileSync } from 'fs';
 import { Observable, of, Subscriber, zip } from 'rxjs';
 import{ map } from 'rxjs/operators';
 
-import { LogService } from '../service/log/log.service';
+import { Logger } from '../shared/logger';
 import { AbstractConfiguration } from './abstract.configuration';
 import { Configuration } from '../decorator/configuration.decorator';
 import { PropertiesConfiguration } from './properties.configuration';
@@ -24,7 +24,7 @@ import { MessagesEnum } from '../model/messages.enum';
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any */
 @Configuration()
 export class ServerConfiguration extends AbstractConfiguration {
-    protected logService: LogService;
+    protected logService: Logger;
     protected propertiesConfiguration: PropertiesConfiguration;
 
     public context: any;
@@ -37,8 +37,8 @@ export class ServerConfiguration extends AbstractConfiguration {
 
     constructor() {
         super();
-        const core = CORE.getCoreInstance();
-        this.logService = core.getInstanceByName<LogService>('LogService');
+        const core = CORE.getCoreInstances();
+        this.logService = core.getInstanceByName<Logger>('LogService');
         this.propertiesConfiguration = core.getInstanceByName<PropertiesConfiguration>('PropertiesConfiguration');
         this.theWayProperties = this.propertiesConfiguration.properties['the-way'];
         this.serverProperties = this.theWayProperties.server;

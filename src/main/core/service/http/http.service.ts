@@ -9,7 +9,7 @@ import { Service } from '../../decorator/service.decorator';
 import { ServerConfiguration } from '../../configuration/server.configuration';
 import { HttpType } from './http-type.enum';
 import { ApplicationException } from '../../exeption/application.exception';
-import { LogService } from '../log/log.service';
+import { Logger } from '../../shared/logger';
 import { BadRequestException } from '../../exeption/bad-request.exception';
 import { InternalException } from '../../exeption/internal.exception';
 import { SecurityService } from '../security.service';
@@ -26,12 +26,12 @@ import { MessagesEnum } from '../../model/messages.enum';
 export class HttpService {
     serverConfiguration: ServerConfiguration;
     securityService: SecurityService;
-    logService: LogService;
+    logService: Logger;
 
     constructor() {
-        this.serverConfiguration = CORE.getCoreInstance().getInstanceByName<ServerConfiguration>('ServerConfiguration');
-        this.securityService = CORE.getCoreInstance().getInstanceByName<SecurityService>('SecurityService');
-        this.logService = CORE.getCoreInstance().getInstanceByName<LogService>('LogService');
+        this.serverConfiguration = CORE.getCoreInstances().getInstanceByName<ServerConfiguration>('ServerConfiguration');
+        this.securityService = CORE.getCoreInstances().getInstanceByName<SecurityService>('SecurityService');
+        this.logService = CORE.getCoreInstances().getInstanceByName<Logger>('LogService');
     }
 
     protected buildPathParams(pathParams: Array<any>, req: any, functionArguments: Array<unknown>): void {
@@ -115,7 +115,7 @@ export class HttpService {
                 functionArguments[bodyParam] = req.body;
             }
         }
-        const instance = CORE.getCoreInstance().getInstanceByName(target.constructor.name);
+        const instance = CORE.getCoreInstances().getInstanceByName(target.constructor.name);
         return Reflect.apply(target[propertyKey], instance, functionArguments);
     }
     protected handleError(ex: Error, res: any): void {

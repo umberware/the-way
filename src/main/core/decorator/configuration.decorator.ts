@@ -6,7 +6,7 @@ export const ConfigurationMetaKey = 'Configuration';
 export function Configuration(over?: Function) {
     return (constructor: Function): void => {
         if (over) {
-            const coreInstance = CORE.getCoreInstance();
+            const coreInstance = CORE.getCoreInstances();
             coreInstance.overridenDependency(over.name, constructor);
         }
         Reflect.defineMetadata(ConfigurationMetaKey, over, constructor);

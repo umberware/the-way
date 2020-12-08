@@ -7,10 +7,8 @@ import { ErrorCodeEnum } from '../exeption/error-code.enum';
 import { MessagesEnum } from '../model/messages.enum';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any */
-export function Application(params?: {custom?: Array<any>; automatic?: boolean}) {
+export function Application(params?: {automatic?: boolean}) {
     return (constructor: any): void => {
-        const core = CORE.getCoreInstance();
-
         if (!(constructor.prototype instanceof TheWayApplication)) {
             throw new ApplicationException(
                 MessagesEnum['not-the-way'],
@@ -18,12 +16,10 @@ export function Application(params?: {custom?: Array<any>; automatic?: boolean})
                 ErrorCodeEnum['RU-001']);
         }
 
-        if (params?.custom) {
-            core.setCustomInstances(params.custom);
-        }
+        const core = new CORE();
 
         if (!params || params.automatic || params.automatic === undefined) {
-            core.buildMain(constructor);
+            core.execute(constructor);
         }
     };
 }

@@ -7,7 +7,7 @@ export const ServiceMetaKey = 'Service';
 export function Service(over?: Function ) {
     return (constructor: Function): void => {
         if (over) {
-            const coreInstance = CORE.getCoreInstance();
+            const coreInstance = CORE.getCoreInstances();
             Reflect.defineMetadata(ServiceMetaKey, over, constructor);
             coreInstance.overridenDependency(over.name, constructor);
         }

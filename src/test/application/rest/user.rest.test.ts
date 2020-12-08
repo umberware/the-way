@@ -1,6 +1,6 @@
 import { NotFoundException, InternalException, Post, BodyParam, Inject,
     SecurityService, UnauthorizedException, Header, Claims, TokenClaims, Get,
-    BadRequestException, Request, Response, LogService
+    BadRequestException, Request, Response, Logger
 } from '../../../main';
 
 import { Observable, of } from 'rxjs';
@@ -11,7 +11,7 @@ import { CryptoService } from '../../../main/core/service/crypto.service';
 export class UserRestTest {
     @Inject() securityService: SecurityService
     @Inject() cryptoService: CryptoService;
-    @Inject() logService: LogService;
+    @Inject() logService: Logger;
 
     constructor() {
         this.users.push({

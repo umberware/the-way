@@ -1,6 +1,6 @@
 import { Application, TheWayApplication, Inject, CORE, ApplicationException } from '../main/index';
 import { EnvironmentTest } from './environment/environtment.test';
-import { LogService } from '../main/core/service/log/log.service';
+import { Logger } from '../main/core/shared/logger';
 import { UserRestTest } from './application/rest/user.rest.test';
 import { CustomSecurityServiceTest } from './application/service/custom-security.service.test';
 import { CustomServerConfigurationTest } from './application/configuration/custom-server.configuration.test';
@@ -13,7 +13,7 @@ let defaultProcessArgv: any;
     custom: [CustomSecurityServiceTest, CustomServerConfigurationTest]
 })
 export class Main extends TheWayApplication {
-    @Inject() logService: LogService;
+    @Inject() logService: Logger;
     @Inject() userRest: UserRestTest
 
     public start(): void {
@@ -40,7 +40,7 @@ describe('The Way Tests - FileServer', () => {
         new Main();
         CORE_SUB = CORE.ready$.subscribe((ready: boolean) => {
             if (ready) {
-                const core = CORE.getCoreInstance();
+                const core = CORE.getCoreInstances();
                 const main = core.getApplicationInstance();
                 expect(main).not.toBeUndefined();
                 expect(core.getInstances().size).toBeGreaterThan(0);
@@ -64,7 +64,7 @@ describe('The Way Tests - FileServer', () => {
         new Main();
         CORE_SUB = CORE.ready$.subscribe((ready: boolean) => {
             if (ready) {
-                const core = CORE.getCoreInstance();
+                const core = CORE.getCoreInstances();
                 const main = core.getApplicationInstance();
                 expect(main).not.toBeUndefined();
                 expect(core.getInstances().size).toBeGreaterThan(0);
@@ -76,7 +76,7 @@ describe('The Way Tests - FileServer', () => {
         new Main();
         CORE_SUB = CORE.ready$.subscribe((ready: boolean) => {
             if (ready) {
-                const core = CORE.getCoreInstance();
+                const core = CORE.getCoreInstances();
                 const main = core.getApplicationInstance();
                 expect(main).not.toBeUndefined();
                 expect(core.getInstances().size).toBeGreaterThan(0);
@@ -97,7 +97,7 @@ describe('The Way Tests - FileServer', () => {
         new Main();
         CORE_SUB = CORE.ready$.subscribe((ready: boolean) => {
             if (ready) {
-                const core = CORE.getCoreInstance();
+                const core = CORE.getCoreInstances();
                 const main = core.getApplicationInstance();
                 expect(main).not.toBeUndefined();
                 expect(core.getInstances().size).toBeGreaterThan(0);
@@ -113,40 +113,5 @@ describe('The Way Tests - FileServer', () => {
                 );
             }
         })
-    });
-    test('Port in use', done => {
-        done();
-        // new Main();
-        // CORE.ready$.subscribe(
-        //     (ready: boolean) => {
-        //         if (ready) {
-        //             // expect(ready).toBeUndefined();
-        //             done();
-        //         }
-        //     },
-        //     (error) => {
-        //         // expect(error).toBeDefined();
-        //         // expect(error.description).toBe(MessagesEnum['server-port-in-use']);
-        //         // expect(error.code).toBe(ErrorCodeEnum['RU-007']);
-        //         done();
-        //     }
-        // );
-        // const server = http.createServer();
-        // server.listen(7070, () => {
-        //     new Main();
-        //     CORE.ready$.subscribe(
-        //         (ready: boolean) => {
-        //             if (ready) {
-        //                 expect(ready).toBeUndefined();
-        //             }
-        //         },
-        //         (error) => {
-        //             // expect(error).toBeDefined();
-        //             // expect(error.description).toBe(MessagesEnum['server-port-in-use']);
-        //             // expect(error.code).toBe(ErrorCodeEnum['RU-007']);
-        //             done();
-        //         }
-        //     );
-        // });
     });
 });

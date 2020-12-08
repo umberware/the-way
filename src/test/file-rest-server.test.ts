@@ -2,7 +2,7 @@ import { switchMap } from 'rxjs/operators';
 
 import { Application, TheWayApplication, Inject, ApplicationException, MessagesEnum, InternalException, ErrorCodeEnum, CORE } from '../main/index';
 import { EnvironmentTest } from './environment/environtment.test';
-import { LogService } from '../main/core/service/log/log.service';
+import { Logger } from '../main/core/shared/logger';
 import { UserRestTest } from './application/rest/user.rest.test';
 import { CustomSecurityServiceTest } from './application/service/custom-security.service.test';
 import { CustomServerConfigurationTest } from './application/configuration/custom-server.configuration.test';
@@ -13,7 +13,7 @@ import { SignInModel } from './application/rest/model/sign-in.model';
     custom: [CustomSecurityServiceTest, CustomServerConfigurationTest]
 })
 export class Main extends TheWayApplication {
-    @Inject() logService: LogService;
+    @Inject() logService: Logger;
     @Inject() userRest: UserRestTest
 
     public start(): void {

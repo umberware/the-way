@@ -1,5 +1,5 @@
 import { Observable, of } from 'rxjs';
-import { Destroyable } from '../destroyable';
+import { Destroyable } from '../shared/destroyable';
 
 export abstract class AbstractConfiguration extends Destroyable {
     public configure(): Observable<boolean> {

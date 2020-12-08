@@ -20,7 +20,7 @@ beforeAll(done => {
 
 describe('The Way Tests - Simple Application', () => {
     test('Default application', done => {
-        const core = CORE.getCoreInstance();
+        const core = CORE.getCoreInstances();
         const main = core.getApplicationInstance();
         expect(main).not.toBeUndefined();
         done();

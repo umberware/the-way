@@ -227,11 +227,11 @@ export class EnvironmentTest {
         return { hostname, port };
     }
     public static getInstance<T>(name: string): T {
-        const core: CORE = CORE.getCoreInstance();
+        const core: CORE = CORE.getCoreInstances();
         return core.getInstanceByName(name);
     }
     public static getMain<T>(): T {
-        const core: CORE = CORE.getCoreInstance();
+        const core: CORE = CORE.getCoreInstances();
         return core.getApplicationInstance();
     }
     public static getProperties(): any {
@@ -255,7 +255,7 @@ export class EnvironmentTest {
             if (ready) {
                 ready = true;
                 timer(2000).subscribe(() => {
-                    const core = CORE.getCoreInstance();
+                    const core = CORE.getCoreInstances();
                     expect(core.getApplicationInstance()).not.toBeUndefined();
                     whenReady();
                 })
@@ -263,7 +263,7 @@ export class EnvironmentTest {
         })
     }
     public static whenCoreWasDestroyed(whenDestroyed: Function): void {
-        CORE.getCoreInstance().destroy().subscribe(
+        CORE.getCoreInstances().destroy().subscribe(
             (destroyed: boolean) => {
                 if (destroyed) {
                     expect(CORE.instance).toBeUndefined();

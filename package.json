@@ -9,6 +9,7 @@
     "private": false,
     "scripts": {
         "test": "jest --silent --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
+        "test-watch": "jest --silent --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage --watchAll",
         "test-no-silent": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
         "test-with-log": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose > test.log 2>&1",
         "lint": "eslint . --ext .ts",
@@ -118,7 +119,7 @@
             ]
         ],
         "collectCoverage": true,
-        "coverageDirectory": "./dist/src/test/corevage/",
+        "coverageDirectory": "./dist/src/test/coverage/",
         "collectCoverageFrom": [
             "src/main/**/*.ts",
             "!src/*/filesToExclude.ts"
