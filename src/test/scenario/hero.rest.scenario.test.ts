@@ -1,4 +1,4 @@
-import { ErrorCodeEnum, ApplicationException } from '../../main';
+import { ErrorCodes, ApplicationException } from '../../main';
 
 import { EnvironmentTest } from '../environment/environtment.test';
 import { HeroModel } from '../application/rest/model/hero.model';
@@ -45,7 +45,7 @@ export const heroRestScenarioTest = describe('multiples rest tests', () => {
                 done();
             }, (error: ApplicationException) => {
                 expect(error).not.toBeUndefined();
-                expect(error.code).toBe(ErrorCodeEnum.NOT_FOUND);
+                expect(error.code).toBe(ErrorCodes.NOT_FOUND);
                 done();
             }
         );

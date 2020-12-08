@@ -17,7 +17,7 @@
 // import { PropertiesConfiguration } from './properties.configuration';
 // import { CORE } from '../core';
 // import { ApplicationException } from '../exeption/application.exception';
-// import { ErrorCodeEnum } from '../exeption/error-code.enum';
+// import { ErrorCodes } from '../exeption/error-code.enum';
 // import { HttpType } from '../service/http/http-type.enum';
 // import { MessagesEnum } from '../model/messages.enum';
 //
@@ -68,7 +68,7 @@
 //                 throw new ApplicationException(
 //                     MessagesEnum['no-server'],
 //                     MessagesEnum['bad-request'],
-//                     ErrorCodeEnum['RU-007']
+//                     ErrorCodes['RU-007']
 //                 );
 //             }
 //             return this.start();
@@ -183,7 +183,7 @@
 //                             new ApplicationException(
 //                                 MessagesEnum['server-couldnt-initialize'] + this.httpProperties.port,
 //                                 MessagesEnum['server-port-in-use'],
-//                                 ErrorCodeEnum['RU-007']
+//                                 ErrorCodes['RU-007']
 //                             )
 //                         );
 //                     } else {
@@ -210,7 +210,7 @@
 //                             new ApplicationException(
 //                                 MessagesEnum['server-couldnt-initialize'] + this.httpsProperties.port,
 //                                 MessagesEnum['server-port-in-use'],
-//                                 ErrorCodeEnum['RU-007']
+//                                 ErrorCodes['RU-007']
 //                             )
 //                         );
 //                     } else {

@@ -1,6 +1,6 @@
 import { switchMap } from 'rxjs/operators';
 
-import { Application, TheWayApplication, Inject, ApplicationException, Messages, InternalException, ErrorCodeEnum, CORE } from '../main/index';
+import { Application, TheWayApplication, Inject, ApplicationException, Messages, InternalException, ErrorCodes, CORE } from '../main/index';
 import { EnvironmentTest } from './environment/environtment.test';
 import { Logger } from '../main/core/shared/logger';
 import { UserRestTest } from './application/rest/user.rest.test';
@@ -65,7 +65,7 @@ describe('The Way Tests - File & Rest', () => {
                 done();
             }, (error: ApplicationException) => {
                 expect(error).not.toBeUndefined();
-                expect(error.code).toBe(ErrorCodeEnum.UNAUTHORIZED);
+                expect(error.code).toBe(ErrorCodes.UNAUTHORIZED);
                 done();
             }
         );
@@ -82,7 +82,7 @@ describe('The Way Tests - File & Rest', () => {
                 done();
             }, (error: ApplicationException) => {
                 expect(error).not.toBeUndefined();
-                expect(error.code).toBe(ErrorCodeEnum.UNAUTHORIZED);
+                expect(error.code).toBe(ErrorCodes.UNAUTHORIZED);
                 done();
             }
         );
@@ -115,7 +115,7 @@ describe('The Way Tests - File & Rest', () => {
                 done();
             }, (error: ApplicationException) => {
                 expect(error).not.toBeUndefined();
-                expect(error.code).toBe(ErrorCodeEnum.NOT_ALLOWED)
+                expect(error.code).toBe(ErrorCodes.NOT_ALLOWED)
                 done();
             }
         );
@@ -172,7 +172,7 @@ describe('The Way Tests - File & Rest', () => {
                 done();
             }, (error: ApplicationException) => {
                 expect(error).not.toBeUndefined();
-                expect(error.code).toBe(ErrorCodeEnum.NOT_ALLOWED);
+                expect(error.code).toBe(ErrorCodes.NOT_ALLOWED);
                 done();
             }
         );
@@ -200,7 +200,7 @@ describe('The Way Tests - File & Rest', () => {
                 done();
             }, (error: ApplicationException) => {
                 expect(error).not.toBeUndefined();
-                expect(error.code).toBe(ErrorCodeEnum.BAD_REQUEST)
+                expect(error.code).toBe(ErrorCodes.BAD_REQUEST)
                 done();
             }
         );

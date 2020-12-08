@@ -1,12 +1,15 @@
 import 'reflect-metadata';
 
-import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
 
-import { CoreStateEnum } from './model/core-state.enum';
+import { CoreStateEnum } from './shared/core-state.enum';
 import { DependencyHandler } from './handler/dependency.handler';
 import { InstanceHandler } from './handler/instance.handler';
-import { Messages } from './model/messages';
+import { Messages } from './shared/messages';
+import { FileHandler } from './handler/file.handler';
+import { PropertiesHandler } from './handler/properties.handler';
+import { PropertyModel } from './model/property.model';
 
 // import { PropertiesConfiguration } from './configuration/properties.configuration';
 // import { Logger } from './shared/logger';
@@ -28,12 +31,17 @@ import { Messages } from './model/messages';
     no-console
 */
 export class CORE {
+    protected INIT_TIME: Date;
+    protected END_TIME: Date;
+
     private static instances: Array<CORE> = [];
 
     protected state$: BehaviorSubject<CoreStateEnum>;
     protected application: Object;
     protected instanceHandler: InstanceHandler;
-    protected language = 'en';
+    protected dependencyHandler: DependencyHandler;
+    protected propertiesHandler: PropertiesHandler;
+    protected fileHandler: FileHandler;
 
     // protected dependencyHandler: DependencyHandler;
     // protected configurationHandler: ConfigurationHandler;
@@ -42,31 +50,41 @@ export class CORE {
     // protected propertiesConfiguration: PropertiesConfiguration;
 
     constructor() {
+        this.INIT_TIME = new Date();
         CORE.instances.push(this);
-        this.prepare();
+        this.beforeInitialization();
+        this.whenInitilizationIsDone().subscribe(() => this.afterInitialization());
     }
-    protected build(constructor: Function | Object): void {
-        this.logInfo(Messages[this.language].building);
-        this.state$.next(CoreStateEnum.BUILDING);
+    protected afterInitialization(): void {
+        this.END_TIME = new Date();
+        this.logInfo((Messages.getMessage('ready') as string).replace('$', this.calculateElapsedTime()));
+        this.state$.next(CoreStateEnum.READY);
+    }
+    protected build(constructor: Function | Object): Observable<boolean> {
+        this.logInfo(Messages.getMessage('building'));
 
+        if (constructor instanceof Function) {
+            this.instanceHandler.buildObject(constructor.prototype);
+        }
 
-        console.log(
-            this.instanceHandler.getConstructors(),
-            this.instanceHandler.getOverridden()
-        )
-        // this.buildMain(constructor);
-
-        this.state$.next(CoreStateEnum.BUILDED);
+        return of(true);
+        // console.log(
+        //     this.instanceHandler.getConstructors(),
+        //     this.instanceHandler.getOverridden(),
+        //     this.dependencyHandler.getDependecies()
+        // );
         // this.buildCoreInstances();
         // this.buildDependecyTree();
         // this.buildInstances();
         // this.buildHttpService();
     }
-    protected configure(): void {
-        this.logInfo(Messages[this.language].configuring);
-        this.state$.next(CoreStateEnum.CONFIGURING);
-        this.state$.next(CoreStateEnum.READY);
-        this.logInfo(Messages[this.language].ready);
+    protected calculateElapsedTime(): string {
+        return ((this.END_TIME.getTime() - this.INIT_TIME.getTime())/1000) + 's'
+    }
+
+    protected configure(): Observable<boolean> {
+        this.logInfo(Messages.getMessage('configuring'));
+        return of(true);
         // this.logInfo(MessagesEnum['configuring']);
         // this.configurationHandler.configure().subscribe(
         //     () => {
@@ -80,11 +98,11 @@ export class CORE {
         // );
     }
     public destroy(): void {
+        this.state$.next(CoreStateEnum.DESTRUCTION_STARTED);
         // if (this.state$.getValue() === CoreStateEnum.DESTROYING) {
         //     return;
         // }
         //
-        // this.state$.next(CoreStateEnum.DESTROYING);
         // this.logInfo(MessagesEnum['destroy-all']);
         // this.configurationHandler.destroyConfigurations().subscribe(
         //     () => {
@@ -95,41 +113,78 @@ export class CORE {
     public static getCoreInstance(): CORE {
         return CORE.instances[0];
     }
-    public static getCoreInstances(): Array<CORE> {
-        return CORE.instances;
-    }
     public initialize(constructor: Function | Object): void {
-        this.build(constructor);
-        this.configure();
+        this.whenBeforeInitializationIsDone().subscribe(
+            () => {
+                this.state$.next(CoreStateEnum.INITIALIZATION_STARTED);
+                this.build(constructor).pipe(
+                    switchMap(() => this.configure())
+                ).subscribe(
+                    () => {
+                        this.state$.next(CoreStateEnum.INITIALIZATION_DONE);
+                    }, () => {
+                        this.destroy();
+                    }
+                );
+            }
+        );
     }
-    protected prepare(): void {
-        this.logInfo(Messages[this.language]['initializing']);
-        this.state$ = new BehaviorSubject<CoreStateEnum>(CoreStateEnum.PREPARING);
+    protected beforeInitialization(): void {
+        this.state$ = new BehaviorSubject<CoreStateEnum>(CoreStateEnum.BEFORE_INITIALIZATION_STARTED);
+        this.logInfo(Messages.getMessage('initializing'));
 
+        this.propertiesHandler = new PropertiesHandler(this);
+        Messages.setLanguage(this.propertiesHandler.getProperties('the-way.core.language') as string);
         this.instanceHandler = new InstanceHandler(this);
-
-        this.state$.next(CoreStateEnum.PREPARED);
-        // this.buildPrimordial();
-        // this.configurationHandler = new ConfigurationHandler(this, this.logger);
-        // this.dependendyHandler = new DependencyHandler(this, this.logger);
-        // this.instanceHandler = new InstanceHandler(this, this.logger, this.dependendyHandler, this.configurationHandler);
-        // this.restHandler = new RestHandler(this, this.logger, this.propertiesConfiguration, this.instanceHandler);
+        this.dependencyHandler = new DependencyHandler(this);
+        this.fileHandler = new FileHandler(this, this.propertiesHandler.getProperties('the-way.scan') as PropertyModel);
+        this.fileHandler.initialize().subscribe(
+            () => {
+                this.state$.next(CoreStateEnum.BEFORE_INITIALIZATION_DONE);
+            }, error => {
+                this.destroy();
+            }
+        );
     }
     public getCoreState(): CoreStateEnum {
         return this.state$.getValue();
     }
+    public getDependecyHandler(): DependencyHandler {
+        return this.dependencyHandler;
+    }
+    public getPropertiesHandlder(): PropertiesHandler {
+        return this.propertiesHandler;
+    }
     public getInstanceHandler(): InstanceHandler {
         return this.instanceHandler;
     }
-    protected logInfo(message: string): void {
+    protected logInfo(message: string | number): void {
         console.log('[The Way]' + ' ' + message);
     }
-    protected logError(message: string, error: Error): void {
+    protected logError(message: string | number, error: Error): void {
         console.error('[The Way]' + ' ' + message, error);
     }
-    public whenDestroyed(): Observable<boolean> {
+    public whenBeforeInitializationIsStarted(): Observable<boolean> {
         return this.state$.pipe(
-            filter((state: CoreStateEnum) => state === CoreStateEnum.DESTROYED),
+            filter((state: CoreStateEnum) => state === CoreStateEnum.BEFORE_INITIALIZATION_STARTED),
+            map(() => true)
+        );
+    }
+    public whenBeforeInitializationIsDone(): Observable<boolean> {
+        return this.state$.pipe(
+            filter((state: CoreStateEnum) => state === CoreStateEnum.BEFORE_INITIALIZATION_DONE),
+            map(() => true)
+        );
+    }
+    public whenInitilizationIsDone(): Observable<boolean> {
+        return this.state$.pipe(
+            filter((state: CoreStateEnum) => state === CoreStateEnum.INITIALIZATION_DONE),
+            map(() => true)
+        );
+    }
+    public whenInitializationIsStarted(): Observable<boolean> {
+        return this.state$.pipe(
+            filter((state: CoreStateEnum) => state === CoreStateEnum.INITIALIZATION_STARTED),
             map(() => true)
         );
     }
@@ -142,73 +197,73 @@ export class CORE {
     public watchState(): Observable<CoreStateEnum> {
         return this.state$;
     }
-
-    // protected buildCoreInstances(): void {
-    //     this.logInfo(MessagesEnum['building-core-instances']);
-    //     const coreInstances: Array<Function> = [CryptoService];
-    //
-    //     for (const coreInstance of coreInstances) {
-    //         this.instanceHandler.buildInstance(coreInstance.name, coreInstance);
-    //     }
-    // }
-    // protected buildDependecyTree(): void {
-    //     this.logInfo(MessagesEnum['building-tree-instances']);
-    //     this.dependendyHandler.buildDependenciesTree();
-    // }
-    // protected buildHttpService(): void {
-    //     const serverProperties = this.propertiesConfiguration.properties.server;
-    //     if (serverProperties.enabled) {
-    //         this.logInfo(MessagesEnum['building-http-service']);
-    //         this.instanceHandler.buildInstance<SecurityService>(SecurityService.name, SecurityService);
-    //         this.instanceHandler.buildInstance<ServerConfiguration>(ServerConfiguration.name, ServerConfiguration);
-    //         this.instanceHandler.buildInstance<HttpService>(HttpService.name, HttpService);
-    //     }
-    // }
-    // protected buildInstances(): void {
-    //     this.logInfo(MessagesEnum['building-instances']);
-    //     this.instanceHandler.buildInstances();
-    // }
-    // protected buildMain(application: Function | Object): void {
-    //     this.logInfo(MessagesEnum['building-application']);
-    //     let instance = application;
-    //
-    //     if (application instanceof Function) {
-    //         instance = this.instanceHandler.buildInstance((application as Function).name, application);
-    //     }
-    //
-    //     this.setApplicationInstance(instance);
-    // }
-    // protected buildPrimordial(): void {
-    //     console.log('[The Way] ' + MessagesEnum['initializing-core']);
-    //     this.propertiesConfiguration = this.instanceHandler.buildInstance(PropertiesConfiguration.name, PropertiesConfiguration);
-    //     this.logger = this.instanceHandler.buildInstance(Logger.name, Logger);
-    // }
-    // public destroyCore(): void {
-    //     this.logInfo(MessagesEnum['time-has-come-army']);
-    //     const index = CORE.instances.findIndex((core: CORE) => core === this);
-    //     CORE.instances.splice(index, 1);
-    //     this.state$.next(CoreStateEnum.DESTROYED);
-    //     this.state$.complete();
-    // }
-    // public getApplicationInstance(): any {
-    //     return this.application;
-    // }
-    // public static getCoreInstance(application: TheWayApplication): CORE | undefined {
-    //     return CORE.instances.find((core: CORE) => core.getApplicationInstance() === application);
-    // }
-    // public getDependecyHandler(): DependencyHandler {
-    //     return this.dependendyHandler;
-    // }
-    // public getConfigurationHandlder(): ConfigurationHandler {
-    //     return this.configurationHandler;
-    // }
-    // public getInstanceHandler(): InstanceHandler {
-    //     return this.instanceHandler;
-    // }
-    // public getRestHandlder(): RestHandler {
-    //     return this.restHandler;
-    // }
-    // public setApplicationInstance(instance: any): void {
-    //     this.application = instance;
-    // }
 }
+
+// protected buildCoreInstances(): void {
+//     this.logInfo(MessagesEnum['building-core-instances']);
+//     const coreInstances: Array<Function> = [CryptoService];
+//
+//     for (const coreInstance of coreInstances) {
+//         this.instanceHandler.buildInstance(coreInstance.name, coreInstance);
+//     }
+// }
+// protected buildDependecyTree(): void {
+//     this.logInfo(MessagesEnum['building-tree-instances']);
+//     this.dependendyHandler.buildDependenciesTree();
+// }
+// protected buildHttpService(): void {
+//     const serverProperties = this.propertiesConfiguration.properties.server;
+//     if (serverProperties.enabled) {
+//         this.logInfo(MessagesEnum['building-http-service']);
+//         this.instanceHandler.buildInstance<SecurityService>(SecurityService.name, SecurityService);
+//         this.instanceHandler.buildInstance<ServerConfiguration>(ServerConfiguration.name, ServerConfiguration);
+//         this.instanceHandler.buildInstance<HttpService>(HttpService.name, HttpService);
+//     }
+// }
+// protected buildInstances(): void {
+//     this.logInfo(MessagesEnum['building-instances']);
+//     this.instanceHandler.buildInstances();
+// }
+// protected buildMain(application: Function | Object): void {
+//     this.logInfo(MessagesEnum['building-application']);
+//     let instance = application;
+//
+//     if (application instanceof Function) {
+//         instance = this.instanceHandler.buildInstance((application as Function).name, application);
+//     }
+//
+//     this.setApplicationInstance(instance);
+// }
+// protected buildPrimordial(): void {
+//     console.log('[The Way] ' + MessagesEnum['initializing-core']);
+//     this.propertiesConfiguration = this.instanceHandler.buildInstance(PropertiesConfiguration.name, PropertiesConfiguration);
+//     this.logger = this.instanceHandler.buildInstance(Logger.name, Logger);
+// }
+// public destroyCore(): void {
+//     this.logInfo(MessagesEnum['time-has-come-army']);
+//     const index = CORE.instances.findIndex((core: CORE) => core === this);
+//     CORE.instances.splice(index, 1);
+//     this.state$.next(CoreStateEnum.DESTROYED);
+//     this.state$.complete();
+// }
+// public getApplicationInstance(): any {
+//     return this.application;
+// }
+// public static getCoreInstance(application: TheWayApplication): CORE | undefined {
+//     return CORE.instances.find((core: CORE) => core.getApplicationInstance() === application);
+// }
+// public getDependecyHandler(): DependencyHandler {
+//     return this.dependendyHandler;
+// }
+// public getConfigurationHandlder(): ConfigurationHandler {
+//     return this.configurationHandler;
+// }
+// public getInstanceHandler(): InstanceHandler {
+//     return this.instanceHandler;
+// }
+// public getRestHandlder(): RestHandler {
+//     return this.restHandler;
+// }
+// public setApplicationInstance(instance: any): void {
+//     this.application = instance;
+// }

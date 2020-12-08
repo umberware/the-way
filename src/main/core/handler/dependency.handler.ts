@@ -1,5 +1,6 @@
 import { CORE } from '../core';
 import { Logger } from '../shared/logger';
+import { DependencyModel } from '../model/dependency.model';
 
 /*
     eslint-disable @typescript-eslint/no-explicit-any,
@@ -8,7 +9,7 @@ import { Logger } from '../shared/logger';
     @typescript-eslint/ban-types
 */
 export class DependencyHandler {
-    protected DEPENDENCIES: any;
+    protected DEPENDENCIES: DependencyModel;
     protected DEPENDENCIES_TREE: any;
 
     constructor(protected core: CORE) {
@@ -18,6 +19,23 @@ export class DependencyHandler {
     protected initialize() {
         this.DEPENDENCIES = {};
         this.DEPENDENCIES_TREE = {};
+    }
+    public getDependecies(): DependencyModel {
+        return this.DEPENDENCIES;
+    }
+    public registerDependency(constructor: Function, target: Function, key: string): void {
+        const dependentName: string = target.constructor.name;
+        const dependencyName: string = constructor.name;
+
+        if (!this.DEPENDENCIES[dependentName]) {
+            this.DEPENDENCIES[dependentName] = {};
+        }
+
+        (this.DEPENDENCIES[dependentName] as any)[dependencyName] = {
+            constructor: constructor,
+            target: target,
+            key: key
+        };
     }
 
     // protected buildDependencyTree(treeNodesNames: Array<string>, node: any): void {

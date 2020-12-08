@@ -1,9 +1,8 @@
 import { ApplicationException } from './application.exception';
-import { ErrorCodeEnum } from './error-code.enum';
-import { Messages } from '../model/messages';
+import { Messages } from '../shared/messages';
 
 export class NotAllowedException extends ApplicationException {
     constructor(message: string) {
-        super(message, Messages['not-allowed'], ErrorCodeEnum.NOT_ALLOWED);
+        super(message, Messages.getMessage('not-allowed') as string, Messages.getMessage('not-allowed-code'));
     }
 }

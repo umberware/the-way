@@ -18,7 +18,7 @@
 // import { RequestMetadataKey } from '../../decorator/rest/param/request.decorator';
 // import { CORE } from '../../core';
 // import { TokenClaims } from '../../model/token-claims.model';
-// import { ErrorCodeEnum } from '../../exeption/error-code.enum';
+// import { ErrorCodes } from '../../exeption/error-code.enum';
 // import { MessagesEnum } from '../../model/messages.enum';
 //
 // /* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any */
@@ -122,7 +122,7 @@
 //         if (ex instanceof ApplicationException) {
 //             res.status(ex.getCode()).send(ex);
 //         } else {
-//             res.status(ErrorCodeEnum.INTERNAL_SERVER_ERROR).send(ex);
+//             res.status(ErrorCodes.INTERNAL_SERVER_ERROR).send(ex);
 //         }
 //         this.logService.error(ex);
 //     }
@@ -136,7 +136,7 @@
 //             throw new ApplicationException(
 //                 MessagesEnum['rest-claims-without-token-verify'],
 //                 MessagesEnum['rest-without-authentication'],
-//                 ErrorCodeEnum['RU-004']
+//                 ErrorCodes['RU-004']
 //             );
 //         }
 //         this.serverConfiguration.registerPath(path, httpType,  (req: any, res: any) => {

@@ -1,9 +1,8 @@
 import { ApplicationException } from './application.exception';
-import { ErrorCodeEnum } from './error-code.enum';
-import { Messages } from '../model/messages';
+import { Messages } from '../shared/messages';
 
 export class InternalException extends ApplicationException {
     constructor(message: string) {
-        super(message, Messages['internal-server-error'], ErrorCodeEnum.INTERNAL_SERVER_ERROR);
+        super(message, Messages.getMessage('internal-server-error') as string, Messages.getMessage('internal-server-error-code') as string);
     }
 }

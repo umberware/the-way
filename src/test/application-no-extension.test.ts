@@ -1,5 +1,5 @@
 import { Application } from '../main/core/decorator/application.decorator';
-import { Messages } from '../main/core/model/messages';
+import { Messages } from '../main/core/shared/messages';
 
 
 it('The Way Tests - Application No Extension', () => {

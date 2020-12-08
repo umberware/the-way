@@ -1,9 +1,8 @@
 import { ApplicationException } from './application.exception';
-import { ErrorCodeEnum } from './error-code.enum';
-import { Messages } from '../model/messages';
+import { Messages } from '../shared/messages';
 
 export class BadRequestException extends ApplicationException {
     constructor(message: string) {
-        super(message, Messages['bad-request'], ErrorCodeEnum.BAD_REQUEST);
+        super(message, Messages.getMessage('bad-request') as string,  Messages.getMessage('bad-request-code'));
     }
 }

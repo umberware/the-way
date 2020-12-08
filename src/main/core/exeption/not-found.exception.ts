@@ -1,9 +1,8 @@
 import { ApplicationException } from './application.exception';
-import { ErrorCodeEnum } from './error-code.enum';
-import { Messages } from '../model/messages';
+import { Messages } from '../shared/messages';
 
 export class NotFoundException extends ApplicationException {
     constructor(message: string) {
-        super(message, Messages['not-found'], ErrorCodeEnum.NOT_FOUND);
+        super(message, Messages.getMessage('not-found') as string, Messages.getMessage('not-found-code'));
     }
 }

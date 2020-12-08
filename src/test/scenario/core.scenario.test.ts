@@ -1,6 +1,6 @@
 import { CORE, ServerConfiguration, SecurityService } from '../../main';
-import { ErrorCodeEnum } from '../../main/core/exeption/error-code.enum';
-import { Messages } from '../../main/core/model/messages';
+import { ErrorCodes } from '../../main/core/shared/error-codes';
+import { Messages } from '../../main/core/shared/messages';
 
 export const coreScenarioTest = describe('Verify core instances and behaviors', () => {
     test('The main must be initialized', () => {
@@ -21,7 +21,7 @@ export const coreScenarioTest = describe('Verify core instances and behaviors', 
             core.buildInstance('UnknowClass', undefined);
         } catch (error) {
             expect(error).not.toBeUndefined();
-            expect(error.code).toBe(ErrorCodeEnum['RU-005']);
+            expect(error.code).toBe(ErrorCodes['RU-005']);
             expect(error.description).toBe(Messages['building-instance-error']);
         }
     })

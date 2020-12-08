@@ -3,17 +3,16 @@ import 'reflect-metadata';
 import { CORE } from '../core';
 import { TheWayApplication } from '../../core/the-way-application';
 import { ApplicationException } from '../exeption/application.exception';
-import { ErrorCodeEnum } from '../exeption/error-code.enum';
-import { Messages } from '../model/messages';
+import { Messages } from '../shared/messages';
 
 /* eslint-disable @typescript-eslint/ban-types*/
 export const Application = (params?: { automatic?: boolean; }) => {
     return (constructor: Function): void => {
         if (!(constructor.prototype instanceof TheWayApplication)) {
             throw new ApplicationException(
-                Messages['not-the-way'],
-                Messages['internal-error'],
-                ErrorCodeEnum['RU-001']
+                Messages.getMessage('is-not-the-way') as string,
+                Messages.getMessage('internal-error') as string,
+                Messages.getMessage('RU-001')
             );
         }
 

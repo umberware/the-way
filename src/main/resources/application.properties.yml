@@ -1,8 +1,13 @@
 the-way:
+    scan:
+        path: 'src/main'
+        full: false
+        enabled: true
     core:
         log:
             enabled: true
             level: 0
+        language: 'en'
     server:
         enabled: true
         operations-log: true
