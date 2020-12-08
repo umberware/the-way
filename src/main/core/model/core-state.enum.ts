@@ -1,6 +1,6 @@
 export enum CoreStateEnum {
-    INITIALIZING,
-    INITIALIZED,
+    PREPARING,
+    PREPARED,
     BUILDING,
     BUILDED,
     CONFIGURING,

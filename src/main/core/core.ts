@@ -3,13 +3,16 @@ import 'reflect-metadata';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
-import { PropertiesConfiguration } from './configuration/properties.configuration';
-import { Logger } from './shared/logger';
 import { CoreStateEnum } from './model/core-state.enum';
 import { DependencyHandler } from './handler/dependency.handler';
 import { InstanceHandler } from './handler/instance.handler';
-import { ConfigurationHandler } from './handler/configuration.handler';
-import { RestHandler } from './handler/rest.handler';
+import { Messages } from './model/messages';
+
+// import { PropertiesConfiguration } from './configuration/properties.configuration';
+// import { Logger } from './shared/logger';
+// import { InstanceHandler } from './handler/instance.handler';
+// import { ConfigurationHandler } from './handler/configuration.handler';
+// import { RestHandler } from './handler/rest.handler';
 // import { CryptoService } from './service/crypto.service';
 // import { HttpService } from './service/http/http.service';
 // import { ServerConfiguration } from './configuration/server.configuration';
@@ -28,30 +31,42 @@ export class CORE {
     private static instances: Array<CORE> = [];
 
     protected state$: BehaviorSubject<CoreStateEnum>;
-
     protected application: Object;
+    protected instanceHandler: InstanceHandler;
+    protected language = 'en';
+
+    // protected dependencyHandler: DependencyHandler;
     // protected configurationHandler: ConfigurationHandler;
     // protected logger: Logger;
-    // protected dependendyHandler: DependencyHandler;
-    // protected instanceHandler: InstanceHandler;
     // protected restHandler: RestHandler;
     // protected propertiesConfiguration: PropertiesConfiguration;
 
     constructor() {
-        this.initialize();
+        CORE.instances.push(this);
+        this.prepare();
     }
     protected build(constructor: Function | Object): void {
+        this.logInfo(Messages[this.language].building);
         this.state$.next(CoreStateEnum.BUILDING);
 
-        this.state$.next(CoreStateEnum.BUILDED);
+
+        console.log(
+            this.instanceHandler.getConstructors(),
+            this.instanceHandler.getOverridden()
+        )
         // this.buildMain(constructor);
+
+        this.state$.next(CoreStateEnum.BUILDED);
         // this.buildCoreInstances();
         // this.buildDependecyTree();
         // this.buildInstances();
         // this.buildHttpService();
     }
     protected configure(): void {
+        this.logInfo(Messages[this.language].configuring);
         this.state$.next(CoreStateEnum.CONFIGURING);
+        this.state$.next(CoreStateEnum.READY);
+        this.logInfo(Messages[this.language].ready);
         // this.logInfo(MessagesEnum['configuring']);
         // this.configurationHandler.configure().subscribe(
         //     () => {
@@ -63,7 +78,6 @@ export class CORE {
         //         this.destroy();
         //     }
         // );
-        this.state$.next(CoreStateEnum.READY);
     }
     public destroy(): void {
         // if (this.state$.getValue() === CoreStateEnum.DESTROYING) {
@@ -78,21 +92,40 @@ export class CORE {
         //     }
         // );
     }
+    public static getCoreInstance(): CORE {
+        return CORE.instances[0];
+    }
     public static getCoreInstances(): Array<CORE> {
         return CORE.instances;
     }
-    public execute(constructor: Function | Object): void {
+    public initialize(constructor: Function | Object): void {
         this.build(constructor);
         this.configure();
     }
-    protected initialize(): void {
-        this.state$ = new BehaviorSubject<CoreStateEnum>(CoreStateEnum.INITIALIZING);
-        this.state$.next(CoreStateEnum.INITIALIZED);
+    protected prepare(): void {
+        this.logInfo(Messages[this.language]['initializing']);
+        this.state$ = new BehaviorSubject<CoreStateEnum>(CoreStateEnum.PREPARING);
+
+        this.instanceHandler = new InstanceHandler(this);
+
+        this.state$.next(CoreStateEnum.PREPARED);
         // this.buildPrimordial();
         // this.configurationHandler = new ConfigurationHandler(this, this.logger);
         // this.dependendyHandler = new DependencyHandler(this, this.logger);
         // this.instanceHandler = new InstanceHandler(this, this.logger, this.dependendyHandler, this.configurationHandler);
         // this.restHandler = new RestHandler(this, this.logger, this.propertiesConfiguration, this.instanceHandler);
+    }
+    public getCoreState(): CoreStateEnum {
+        return this.state$.getValue();
+    }
+    public getInstanceHandler(): InstanceHandler {
+        return this.instanceHandler;
+    }
+    protected logInfo(message: string): void {
+        console.log('[The Way]' + ' ' + message);
+    }
+    protected logError(message: string, error: Error): void {
+        console.error('[The Way]' + ' ' + message, error);
     }
     public whenDestroyed(): Observable<boolean> {
         return this.state$.pipe(
@@ -109,6 +142,7 @@ export class CORE {
     public watchState(): Observable<CoreStateEnum> {
         return this.state$;
     }
+
     // protected buildCoreInstances(): void {
     //     this.logInfo(MessagesEnum['building-core-instances']);
     //     const coreInstances: Array<Function> = [CryptoService];
@@ -173,15 +207,6 @@ export class CORE {
     // }
     // public getRestHandlder(): RestHandler {
     //     return this.restHandler;
-    // }
-    // public getCoreState(): CoreStateEnum {
-    //     return this.state$.getValue();
-    // }
-    // protected logInfo(message: string): void {
-    //     this.logger.info(message, '[The Way]');
-    // }
-    // protected logError(message: string, error: Error): void {
-    //     this.logger.errorWithMessage(message, error, '[The Way]');
     // }
     // public setApplicationInstance(instance: any): void {
     //     this.application = instance;

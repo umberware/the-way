@@ -1,8 +1,8 @@
-export enum HttpType {
-    POST = 'post',
-    GET = 'get',
-    DELETE = 'delete',
-    PUT = 'put',
-    PATCH = 'patch',
-    HEAD = 'head'
-}
+// export enum HttpType {
+//     POST = 'post',
+//     GET = 'get',
+//     DELETE = 'delete',
+//     PUT = 'put',
+//     PATCH = 'patch',
+//     HEAD = 'head'
+// }

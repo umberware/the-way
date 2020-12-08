@@ -2,14 +2,17 @@ import { CORE } from '../core';
 
 export const ServiceMetaKey = 'Service';
 
-/*eslint-disable @typescript-eslint/ban-types*/
-/*eslint-disable no-console*/
-export function Service(over?: Function ) {
+/* eslint-disable @typescript-eslint/ban-types, no-console */
+export const Service = (over?: Function ) => {
     return (constructor: Function): void => {
+        const coreInstance = CORE.getCoreInstance();
+        const instanceHandler = coreInstance.getInstanceHandler();
+
         if (over) {
-            const coreInstance = CORE.getCoreInstances();
-            Reflect.defineMetadata(ServiceMetaKey, over, constructor);
-            coreInstance.overridenDependency(over.name, constructor);
+            instanceHandler.registerOverridden(over.name, constructor);
         }
+
+        instanceHandler.registerConstructor(constructor);
+        Reflect.defineMetadata(ServiceMetaKey, over, constructor);
     };
-}
+};

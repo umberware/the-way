@@ -1,5 +1,5 @@
 import { Application } from '../main/core/decorator/application.decorator';
-import { MessagesEnum } from '../main/core/model/messages.enum';
+import { Messages } from '../main/core/model/messages';
 
 
 it('The Way Tests - Application No Extension', () => {
@@ -12,6 +12,6 @@ it('The Way Tests - Application No Extension', () => {
         }
     } catch (ex) {
         expect(ex).toBeDefined();
-        expect(ex.detail).toBe(MessagesEnum['not-the-way']);
+        expect(ex.detail).toBe(Messages['not-the-way']);
     }
 });

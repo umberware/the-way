@@ -1,6 +1,6 @@
 import { CORE, ServerConfiguration, SecurityService } from '../../main';
 import { ErrorCodeEnum } from '../../main/core/exeption/error-code.enum';
-import { MessagesEnum } from '../../main/core/model/messages.enum';
+import { Messages } from '../../main/core/model/messages';
 
 export const coreScenarioTest = describe('Verify core instances and behaviors', () => {
     test('The main must be initialized', () => {
@@ -22,7 +22,7 @@ export const coreScenarioTest = describe('Verify core instances and behaviors', 
         } catch (error) {
             expect(error).not.toBeUndefined();
             expect(error.code).toBe(ErrorCodeEnum['RU-005']);
-            expect(error.description).toBe(MessagesEnum['building-instance-error']);
+            expect(error.description).toBe(Messages['building-instance-error']);
         }
     })
 })

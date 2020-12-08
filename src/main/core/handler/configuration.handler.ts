@@ -4,7 +4,7 @@ import { catchError, map, take } from 'rxjs/operators';
 import { ConfigurationsModel } from '../model/configurations-model';
 import { Logger } from '../shared/logger';
 import { CORE } from '../core';
-import { MessagesEnum } from '../model/messages.enum';
+import { Messages } from '../model/messages';
 import { ApplicationException } from '../exeption/application.exception';
 import { ErrorCodeEnum } from '../exeption/error-code.enum';
 import { AbstractConfiguration } from '../configuration/abstract.configuration';
@@ -24,7 +24,7 @@ export  class ConfigurationHandler {
                 if (allConfigured) {
                     return true;
                 } else {
-                    throw new ApplicationException(MessagesEnum['not-configured'], MessagesEnum['internal-error'], ErrorCodeEnum['RU-007']);
+                    throw new ApplicationException(Messages['not-configured'], Messages['internal-error'], ErrorCodeEnum['RU-007']);
                 }
             })
         );
@@ -49,7 +49,7 @@ export  class ConfigurationHandler {
                     if (!allDestroyed) {
                         this.logger.errorWithMessage(
                             'Some configurations aren\'t destroyed',
-                            new ApplicationException(MessagesEnum['not-destroyed'], MessagesEnum['internal-error'], ErrorCodeEnum['RU-006'])
+                            new ApplicationException(Messages['not-destroyed'], Messages['internal-error'], ErrorCodeEnum['RU-006'])
                         );
                     }
                     return true;

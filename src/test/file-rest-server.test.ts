@@ -1,6 +1,6 @@
 import { switchMap } from 'rxjs/operators';
 
-import { Application, TheWayApplication, Inject, ApplicationException, MessagesEnum, InternalException, ErrorCodeEnum, CORE } from '../main/index';
+import { Application, TheWayApplication, Inject, ApplicationException, Messages, InternalException, ErrorCodeEnum, CORE } from '../main/index';
 import { EnvironmentTest } from './environment/environtment.test';
 import { Logger } from '../main/core/shared/logger';
 import { UserRestTest } from './application/rest/user.rest.test';
@@ -266,7 +266,7 @@ describe('The Way Tests - File & Rest', () => {
                 expect(result).toBeUndefined();
             }, (error: ApplicationException) => {
                 expect(error).toBeDefined();
-                expect(error.detail).toBe(MessagesEnum['rest-invalid-token']);
+                expect(error.detail).toBe(Messages['rest-invalid-token']);
                 done();
             }
         );
@@ -277,7 +277,7 @@ describe('The Way Tests - File & Rest', () => {
                 expect(result).toBeUndefined();
             }, (error: ApplicationException) => {
                 expect(error).toBeDefined();
-                expect(error.detail).toBe(MessagesEnum['rest-invalid-token']);
+                expect(error.detail).toBe(Messages['rest-invalid-token']);
                 done();
             }
         );
@@ -296,7 +296,7 @@ describe('The Way Tests - File & Rest', () => {
                 expect(result).toBeUndefined();
             }, (error: ApplicationException) => {
                 expect(error).toBeDefined();
-                expect(error.detail).toBe(MessagesEnum['rest-cannot-perform']);
+                expect(error.detail).toBe(Messages['rest-cannot-perform']);
                 done();
             }
         );

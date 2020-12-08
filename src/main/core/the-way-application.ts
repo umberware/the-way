@@ -5,8 +5,8 @@ export abstract class TheWayApplication {
     constructor() {
         const core = CORE.getCoreInstances()[0];
 
-        if (core.getCoreState() === CoreStateEnum.INITIALIZED) {
-            core.execute(this);
+        if (core.getCoreState() === CoreStateEnum.PREPARED) {
+            core.initialize(this);
         }
 
         core.whenReady().subscribe(
