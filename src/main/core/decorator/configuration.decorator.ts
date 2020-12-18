@@ -1,4 +1,5 @@
 import { CORE } from '../core';
+import { ClassTypeEnum } from '../..';
 
 export const ConfigurationMetaKey = 'Configuration';
 
@@ -9,10 +10,10 @@ export const Configuration = (over?: Function) => {
         const instanceHandler = coreInstance.getInstanceHandler();
 
         if (over) {
-            instanceHandler.registerOverridden(over.name, constructor);
+            instanceHandler.registerOverriddenClass(over.name, constructor);
         }
 
-        instanceHandler.registerConstructor(constructor);
+        instanceHandler.registerClass(constructor, ClassTypeEnum.CONFIGURATION);
         Reflect.defineMetadata(ConfigurationMetaKey, over, constructor);
     };
 };

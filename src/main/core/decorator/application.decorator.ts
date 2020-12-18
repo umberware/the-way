@@ -10,8 +10,8 @@ export const Application = (params?: { automatic?: boolean; }) => {
     return (constructor: Function): void => {
         if (!(constructor.prototype instanceof TheWayApplication)) {
             throw new ApplicationException(
-                Messages.getMessage('is-not-the-way') as string,
-                Messages.getMessage('internal-error') as string,
+                Messages.getMessage('is-not-the-way'),
+                Messages.getMessage('internal-error'),
                 Messages.getMessage('RU-001')
             );
         }

@@ -1,57 +1,54 @@
 import { ApplicationException } from '../exeption/application.exception';
-import { LogLevel } from '../model/log-level.enum';
+import { LogLevelEnum } from './log-level.enum';
+import { PropertyModel } from '../model/property.model';
 
-/* eslint-disable  @typescript-eslint/no-explicit-any, no-console */
+/* eslint-disable no-console */
 export class Logger {
 
-    // Todo achar uma forma de popular o CORE conforme o contexto do injetavél
-    // const core = CORE.getCoreInstances();
-    // const propertiesConfiguration = core.getInstanceByName<PropertiesConfiguration>('PropertiesConfiguration');
-    // @Inject() core: CORE;
-
-    protected logProperties: any;
+    protected logProperties: PropertyModel;
 
     constructor() {
-        this.logProperties = { enabled: true, level: 1 };
+        this.logProperties = { enabled: true, level: 1, withDate: false };
     }
 
-    public error(error: Error, prefix = '[Error]'): void {
+    protected buildMessage(prefix: string, message: string): string {
+        let final = prefix + ' ';
+        if (this.logProperties.withDate) {
+            final += new Date().toISOString() + ' - ';
+        }
+        return final + message;
+    }
+    public debug(message: string, prefix = '[DEBUG]'): void {
+        if (!this.logProperties.enabled || this.logProperties.level !== LogLevelEnum.FULL) {
+            return;
+        }
+        console.info(this.buildMessage(prefix, message));
+    }
+    public error(error: Error, prefix = '[Error]', message?: string): void {
         if (!this.logProperties.enabled) {
             return;
         }
 
-        if (error instanceof ApplicationException) {
-            console.error(
-                prefix + new Date().toUTCString() + ' - ' + error.getCode() + ' ' + error.getDetail() + ' '
-                + error.getDescription()
-            );
-        } else {
-            console.error('[Error] ' + new Date().toUTCString() + ' - ' + error.stack);
-        }
-    }
-    public errorWithMessage(message: string, error: Error, prefix = '[Error]'): void {
-        if (!this.logProperties.enabled) {
-            return;
+        if (message) {
+            console.error(this.buildMessage(prefix, message));
         }
         if (error instanceof ApplicationException) {
             console.error(
-                prefix + ' ' + new Date().toUTCString() + ' - ' + error.getCode() + ' ' + error.getDetail() + ' '
-                + error.getDescription()
+                this.buildMessage(
+                    prefix, error.getCode() + ' ' + error.getDetail() + ' '+ error.getDescription()
+                )
             );
-        } else {
-            console.error('[Error] ' + new Date().toUTCString() + ' - ' + error.stack);
+        } else if (error.stack) {
+            console.error(this.buildMessage(prefix, error.stack));
         }
     }
     public info(message: string, prefix = '[INFO]'): void {
-        console.info(prefix + ' ' + new Date().toUTCString() + ' - ' + message);
+        console.info(this.buildMessage(prefix, message));
+    }
+    public setProperties(properties: PropertyModel) {
+        this.logProperties = properties;
     }
     public warn(message: string, prefix = '[WARN]'): void {
-        console.warn(prefix + ' ' + new Date().toUTCString() + ' - ' + message);
-    }
-    public debug(message: string, prefix = '[DEBUG]'): void {
-        if (!this.logProperties.enabled || this.logProperties.level !== LogLevel.FULL) {
-            return;
-        }
-        console.info(prefix + ' ' + new Date().toUTCString() + ' - ' + message);
+        console.warn(this.buildMessage(prefix, message));
     }
 }

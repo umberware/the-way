@@ -10,6 +10,7 @@ import { Messages } from './shared/messages';
 import { FileHandler } from './handler/file.handler';
 import { PropertiesHandler } from './handler/properties.handler';
 import { PropertyModel } from './model/property.model';
+import { Logger } from './shared/logger';
 
 // import { PropertiesConfiguration } from './configuration/properties.configuration';
 // import { Logger } from './shared/logger';
@@ -31,23 +32,19 @@ import { PropertyModel } from './model/property.model';
     no-console
 */
 export class CORE {
-    protected INIT_TIME: Date;
-    protected END_TIME: Date;
-
     private static instances: Array<CORE> = [];
 
-    protected state$: BehaviorSubject<CoreStateEnum>;
-    protected application: Object;
-    protected instanceHandler: InstanceHandler;
-    protected dependencyHandler: DependencyHandler;
-    protected propertiesHandler: PropertiesHandler;
-    protected fileHandler: FileHandler;
+    protected INIT_TIME: Date;
+    protected END_TIME: Date;
+    protected STATE$: BehaviorSubject<CoreStateEnum>;
 
-    // protected dependencyHandler: DependencyHandler;
-    // protected configurationHandler: ConfigurationHandler;
-    // protected logger: Logger;
-    // protected restHandler: RestHandler;
-    // protected propertiesConfiguration: PropertiesConfiguration;
+    protected application: Object;
+    protected coreProperties: PropertyModel;
+    protected dependencyHandler: DependencyHandler;
+    protected fileHandler: FileHandler;
+    protected instanceHandler: InstanceHandler;
+    protected logger: Logger;
+    protected propertiesHandler: PropertiesHandler;
 
     constructor() {
         this.INIT_TIME = new Date();
@@ -57,14 +54,33 @@ export class CORE {
     }
     protected afterInitialization(): void {
         this.END_TIME = new Date();
-        this.logInfo((Messages.getMessage('ready') as string).replace('$', this.calculateElapsedTime()));
-        this.state$.next(CoreStateEnum.READY);
+        this.logInfo(Messages.getMessage('ready', [this.calculateElapsedTime()]));
+        this.STATE$.next(CoreStateEnum.READY);
+    }
+    protected beforeInitialization(): void {
+        this.STATE$ = new BehaviorSubject<CoreStateEnum>(CoreStateEnum.BEFORE_INITIALIZATION_STARTED);
+        this.logger = new Logger();
+        this.logInfo(Messages.getMessage('initializing'));
+
+        this.propertiesHandler = new PropertiesHandler(this, this.logger);
+        this.checkoutProperties();
+        this.instanceHandler = new InstanceHandler(this, this.logger);
+        this.dependencyHandler = new DependencyHandler(this,this.logger);
+        this.fileHandler = new FileHandler(this, this.coreProperties.scan as PropertyModel, this.logger);
+        this.fileHandler.initialize().subscribe(
+            () => {
+                this.STATE$.next(CoreStateEnum.BEFORE_INITIALIZATION_DONE);
+            }, error => {
+                this.logger.error(error);
+                this.destroy();
+            }
+        );
     }
     protected build(constructor: Function | Object): Observable<boolean> {
         this.logInfo(Messages.getMessage('building'));
 
         if (constructor instanceof Function) {
-            this.instanceHandler.buildObject(constructor.prototype);
+            this.instanceHandler.buildObject(constructor);
         }
 
         return of(true);
@@ -79,9 +95,17 @@ export class CORE {
         // this.buildHttpService();
     }
     protected calculateElapsedTime(): string {
-        return ((this.END_TIME.getTime() - this.INIT_TIME.getTime())/1000) + 's'
+        return ((this.END_TIME.getTime() - this.INIT_TIME.getTime())/1000) + 's';
     }
-
+    protected checkoutProperties(): void {
+        this.coreProperties = this.propertiesHandler.getProperties('the-way.core') as PropertyModel;
+        const logProperties = this.coreProperties.log as PropertyModel;
+        const languageProperty = this.coreProperties.language as string;
+        // For Core Only
+        logProperties.enabled = true;
+        Messages.setLanguage(languageProperty);
+        this.logger.setProperties(logProperties);
+    }
     protected configure(): Observable<boolean> {
         this.logInfo(Messages.getMessage('configuring'));
         return of(true);
@@ -98,7 +122,7 @@ export class CORE {
         // );
     }
     public destroy(): void {
-        this.state$.next(CoreStateEnum.DESTRUCTION_STARTED);
+        this.STATE$.next(CoreStateEnum.DESTRUCTION_STARTED);
         // if (this.state$.getValue() === CoreStateEnum.DESTROYING) {
         //     return;
         // }
@@ -113,15 +137,27 @@ export class CORE {
     public static getCoreInstance(): CORE {
         return CORE.instances[0];
     }
+    public getCoreState(): CoreStateEnum {
+        return this.STATE$.getValue();
+    }
+    public getDependencyHandler(): DependencyHandler {
+        return this.dependencyHandler;
+    }
+    public getInstanceHandler(): InstanceHandler {
+        return this.instanceHandler;
+    }
+    public getPropertiesHandlder(): PropertiesHandler {
+        return this.propertiesHandler;
+    }
     public initialize(constructor: Function | Object): void {
         this.whenBeforeInitializationIsDone().subscribe(
             () => {
-                this.state$.next(CoreStateEnum.INITIALIZATION_STARTED);
+                this.STATE$.next(CoreStateEnum.INITIALIZATION_STARTED);
                 this.build(constructor).pipe(
                     switchMap(() => this.configure())
                 ).subscribe(
                     () => {
-                        this.state$.next(CoreStateEnum.INITIALIZATION_DONE);
+                        this.STATE$.next(CoreStateEnum.INITIALIZATION_DONE);
                     }, () => {
                         this.destroy();
                     }
@@ -129,73 +165,44 @@ export class CORE {
             }
         );
     }
-    protected beforeInitialization(): void {
-        this.state$ = new BehaviorSubject<CoreStateEnum>(CoreStateEnum.BEFORE_INITIALIZATION_STARTED);
-        this.logInfo(Messages.getMessage('initializing'));
-
-        this.propertiesHandler = new PropertiesHandler(this);
-        Messages.setLanguage(this.propertiesHandler.getProperties('the-way.core.language') as string);
-        this.instanceHandler = new InstanceHandler(this);
-        this.dependencyHandler = new DependencyHandler(this);
-        this.fileHandler = new FileHandler(this, this.propertiesHandler.getProperties('the-way.scan') as PropertyModel);
-        this.fileHandler.initialize().subscribe(
-            () => {
-                this.state$.next(CoreStateEnum.BEFORE_INITIALIZATION_DONE);
-            }, error => {
-                this.destroy();
-            }
-        );
-    }
-    public getCoreState(): CoreStateEnum {
-        return this.state$.getValue();
-    }
-    public getDependecyHandler(): DependencyHandler {
-        return this.dependencyHandler;
-    }
-    public getPropertiesHandlder(): PropertiesHandler {
-        return this.propertiesHandler;
-    }
-    public getInstanceHandler(): InstanceHandler {
-        return this.instanceHandler;
-    }
     protected logInfo(message: string | number): void {
-        console.log('[The Way]' + ' ' + message);
+        this.logger.info(message.toString(), '[The Way]');
     }
     protected logError(message: string | number, error: Error): void {
-        console.error('[The Way]' + ' ' + message, error);
+        this.logger.error(error, '[The Way]', message.toString());
     }
     public whenBeforeInitializationIsStarted(): Observable<boolean> {
-        return this.state$.pipe(
+        return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.BEFORE_INITIALIZATION_STARTED),
             map(() => true)
         );
     }
     public whenBeforeInitializationIsDone(): Observable<boolean> {
-        return this.state$.pipe(
+        return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.BEFORE_INITIALIZATION_DONE),
             map(() => true)
         );
     }
     public whenInitilizationIsDone(): Observable<boolean> {
-        return this.state$.pipe(
+        return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.INITIALIZATION_DONE),
             map(() => true)
         );
     }
     public whenInitializationIsStarted(): Observable<boolean> {
-        return this.state$.pipe(
+        return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.INITIALIZATION_STARTED),
             map(() => true)
         );
     }
     public whenReady(): Observable<boolean> {
-        return this.state$.pipe(
+        return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.READY),
             map(() => true)
         );
     }
     public watchState(): Observable<CoreStateEnum> {
-        return this.state$;
+        return this.STATE$;
     }
 }
 

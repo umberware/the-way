@@ -1,31 +1,36 @@
 const messages: { [key: string]: { [key: string]: string | number; } } = {
     'en': {
-        'initializing': 'Initializing the application...',
-        'building': 'Building instances and dependecies...',
-        'scanning': 'Searching & Loading the resources...',
-        'configuring': 'Configuring some things...',
-        'ready': 'The application is running [elapsed time $].',
-        'properties-not-found': 'Not found the properties gived. Will be used the default properties.',
-        'properties-wrong-format': 'The properties gived is not acceptable.',
-        'internal-error': 'Internal Error',
-        'is-not-the-way': 'Your application does not extend the class TheWayApplication',
-        'not-found': 'Not Found',
-        'not-found-code': 404,
-        'internal-server-error': 'Internal Server Error',
-        'internal-server-error-code': 500,
-        'unauthorized': 'Not Authorized',
-        'unauthorized-code': 401,
-        'not-allowed-code': 403,
-        'not-allowed': 'Not Allowed',
         'bad-request': 'Bad Request',
         'bad-request-code': 400,
+        'building': 'Building instances and dependecies...',
+        'building-class': 'Building instance for $',
+        'configuring': 'Configuring some things...',
+        'found-class': 'Loading resources $',
+        'initializing': 'Initializing the application...',
+        'internal-error': 'Internal Error',
+        'internal-server-error': 'Internal Server Error',
+        'internal-server-error-code': 500,
+        'is-not-the-way': 'Your application does not extend the class TheWayApplication',
+        'not-allowed': 'Not Allowed',
+        'not-allowed-code': 403,
+        'not-found': 'Not Found',
+        'not-found-code': 404,
+        'properties-not-found': 'Not found the properties gived. Will be used the default properties.',
+        'properties-wrong-format': 'The properties gived is not acceptable.',
+        'ready': 'The application is running [elapsed time $].',
+        'registering-class': 'Registered: $ with type $',
+        'registering-dependency-class': 'Registered dependency between: $ -> $',
+        'registering-overridden-class': 'Registered overriden: $ -> $',
         'RU-001': 'Application not recognized',
         'RU-002': 'HttpServer is not found',
         'RU-003': 'File not found',
         'RU-004': 'Cannot inject',
         'RU-005': 'Instance not created',
         'RU-006': 'Not destroyed',
-        'RU-007': 'Not configured'
+        'RU-007': 'Not configured',
+        'scanning': 'Searching & Loading the resources...',
+        'unauthorized': 'Not Authorized',
+        'unauthorized-code': 401
     }
 };
 
@@ -34,13 +39,26 @@ export class Messages {
     static setLanguage(language: string): void {
         this.language = language;
     }
-    static getMessage(name: string): string | number {
+    private static get(name: string): string | number {
         const defaulMessages = messages.en;
         let languageMessages = messages[this.language];
         if (!languageMessages) {
             languageMessages = defaulMessages;
         }
-
         return (languageMessages[name]) ? languageMessages[name] : defaulMessages[name];
+    }
+    static getCodeMessage(name: string): number {
+        return this.get(name) as number;
+    }
+    static getMessage(name: string, replacements?: Array<string>): string {
+        let message = this.get(name) as string;
+
+        if (replacements && (typeof message === 'string')) {
+            for (const replace of replacements) {
+                message = (message as string).replace('$', replace);
+            }
+        }
+
+        return message;
     }
 }

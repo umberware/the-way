@@ -5,17 +5,18 @@ import { PropertyModel } from '../model/property.model';
 import { CORE } from '../core';
 import { Messages } from '../shared/messages';
 import { ApplicationException } from '../exeption/application.exception';
+import { Logger } from '../shared/logger';
 
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any, no-console */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 export class PropertiesHandler {
     static readonly PROPERTIES_NAME = 'application.properties.yml';
     protected properties: PropertyModel;
 
-    constructor(protected core: CORE) {
+    constructor(protected core: CORE, protected logger: Logger) {
         this.initialize();
     }
 
-    protected convertValue(value: string): any {
+    protected convertValue(value: string): PropertyModel | number | boolean | string {
         if (value === 'true' || value === 'false') {
             return (value === 'true') ? true : false;
         } else if (value.search(/^\d+(\.\d+){0,1}$/) > -1) {
@@ -51,11 +52,11 @@ export class PropertiesHandler {
         const propertiesFilePath = args.find((arg: string) => arg.includes('--properties=')) as string;
         this.loadProperties(propertiesFilePath);
     }
-    protected loadFile(path: string): any {
+    protected loadFile(path: string): PropertyModel {
         try {
             return Yaml.parse(fs.readFileSync(path).toString());
         } catch (ex) {
-            console.warn('[The Way] ' + Messages.getMessage('properties-not-found'));
+            this.logger.warn(Messages.getMessage('properties-not-found'), '[The Way]');
             return {};
         }
     }
@@ -68,6 +69,7 @@ export class PropertiesHandler {
         } else {
             this.properties = this.loadFile(propertiesFilePath.split('=')[1]);
         }
+
         this.sumProperties(this.properties, defaultProperties, []);
         this.sumCommandLineProperties();
     }
@@ -76,6 +78,7 @@ export class PropertiesHandler {
         for (const commandLineProperty of commandLineProperties) {
             const propertyAndValue = commandLineProperty.split('=');
             const propertyPaths = propertyAndValue[0].replace('--', '').split('.');
+            /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
             let property: any;
             const pathSize = propertyPaths.length;
             for (let i = 0; i < pathSize; i++) {
@@ -102,25 +105,25 @@ export class PropertiesHandler {
             }
         }
     }
-    protected sumProperties(properties: any, defaultProperties: any, keys: Array<string>): void {
+    protected sumProperties(properties: PropertyModel, defaultProperties: PropertyModel, keys: Array<string>): void {
         try {
             for(const defaultPropertyKey in defaultProperties) {
-                let property = properties;
+                let property: string | number | boolean | PropertyModel = properties;
                 if (keys.length > 0) {
                     for (const key of keys) {
-                        property = property[key];
+                        property = (property as PropertyModel)[key];
                     }
                 }
-                if (property[defaultPropertyKey] === undefined) {
-                    property[defaultPropertyKey] = defaultProperties[defaultPropertyKey];
+                if ((property as PropertyModel)[defaultPropertyKey] === undefined) {
+                    (property as PropertyModel)[defaultPropertyKey] = defaultProperties[defaultPropertyKey];
                 } else if (defaultProperties[defaultPropertyKey].constructor == Object) {
                     this.sumProperties(properties, defaultProperties[defaultPropertyKey] as any, [...keys, defaultPropertyKey]);
                 }
             }
         } catch(ex) {
             new ApplicationException(
-                Messages.getMessage('propertiesWrongFormat') as string,
-                Messages.getMessage('internalError') as string,
+                Messages.getMessage('propertiesWrongFormat'),
+                Messages.getMessage('internalError'),
                 Messages.getMessage('RU-003')
             );
         }

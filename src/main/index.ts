@@ -1,8 +1,17 @@
 export { CORE } from './core/core';
-export { Inject } from './core/decorator/inject.decorator';
 export { Application } from './core/decorator/application.decorator';
 export { Service } from './core/decorator/service.decorator';
+export { Rest } from './core/decorator/rest.decorator';
 export { TheWayApplication } from './core/the-way-application';
+export { Configuration } from './core/decorator/configuration.decorator';
+export { ClassTypeEnum } from './core/shared/class-type.enum';
+export { Messages } from './core/shared/messages';
+export { Inject } from './core/decorator/inject.decorator';
+export { CoreStateEnum } from './core/shared/core-state.enum';
+export { LogLevelEnum } from './core/shared/log-level.enum';
+export { Logger } from './core/shared/logger';
+export { PropertyModel } from './core/model/property.model';
+
 // export { Configuration } from './core/decorator/configuration.decorator';
 // export { PathParam } from './core/decorator/rest/param/path-param.decorator';
 // export { BodyParam } from './core/decorator/rest/param/body-param.decorator';

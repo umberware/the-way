@@ -3,6 +3,6 @@ import { Messages } from '../shared/messages';
 
 export class InternalException extends ApplicationException {
     constructor(message: string) {
-        super(message, Messages.getMessage('internal-server-error') as string, Messages.getMessage('internal-server-error-code') as string);
+        super(message, Messages.getMessage('internal-server-error'), Messages.getCodeMessage('internal-server-error-code'));
     }
 }

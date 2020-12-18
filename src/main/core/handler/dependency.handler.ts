@@ -1,6 +1,8 @@
 import { CORE } from '../core';
 import { Logger } from '../shared/logger';
+import { DependencyMapModel } from '../model/dependency-map.model';
 import { DependencyModel } from '../model/dependency.model';
+import { Messages } from '../..';
 
 /*
     eslint-disable @typescript-eslint/no-explicit-any,
@@ -9,10 +11,10 @@ import { DependencyModel } from '../model/dependency.model';
     @typescript-eslint/ban-types
 */
 export class DependencyHandler {
-    protected DEPENDENCIES: DependencyModel;
+    protected DEPENDENCIES: DependencyMapModel;
     protected DEPENDENCIES_TREE: any;
 
-    constructor(protected core: CORE) {
+    constructor(protected core: CORE, protected logger: Logger) {
         this.initialize();
     }
 
@@ -20,22 +22,30 @@ export class DependencyHandler {
         this.DEPENDENCIES = {};
         this.DEPENDENCIES_TREE = {};
     }
-    public getDependecies(): DependencyModel {
+    public getDependecies(): DependencyMapModel {
         return this.DEPENDENCIES;
     }
-    public registerDependency(constructor: Function, target: Function, key: string): void {
+    public registerDependency(constructor: Function, target: Function, key: string, singleton = true): void {
         const dependentName: string = target.constructor.name;
         const dependencyName: string = constructor.name;
+
+        this.logger.debug(
+            Messages.getMessage(
+                'registering-dependency-class',
+                [dependentName, dependencyName]
+            ), '[The Way]'
+        );
 
         if (!this.DEPENDENCIES[dependentName]) {
             this.DEPENDENCIES[dependentName] = {};
         }
 
-        (this.DEPENDENCIES[dependentName] as any)[dependencyName] = {
+        (this.DEPENDENCIES[dependentName])[dependencyName] = {
             constructor: constructor,
             target: target,
-            key: key
-        };
+            key: key,
+            singleton: singleton
+        } as DependencyModel;
     }
 
     // protected buildDependencyTree(treeNodesNames: Array<string>, node: any): void {

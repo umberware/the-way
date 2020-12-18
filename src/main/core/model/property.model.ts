@@ -1,3 +1,3 @@
 export interface PropertyModel {
-    [key: string]: string | number | PropertyModel | boolean;
+    [key: string]: string | number | boolean | PropertyModel;
 }

@@ -1,12 +1,13 @@
 the-way:
-    scan:
-        path: 'src/main'
-        full: false
-        enabled: true
     core:
+        scan:
+            path: 'src/main'
+            full: false
+            enabled: true
         log:
             enabled: true
-            level: 0
+            level: 1
+            date: true
         language: 'en'
     server:
         enabled: true

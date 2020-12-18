@@ -1,37 +1,59 @@
 import { CORE } from '../core';
 import { OverriddenModel } from '../model/overridden.model';
+import { Logger } from '../shared/logger';
+import { Messages } from '../shared/messages';
+import { ClassTypeEnum } from '../shared/class-type.enum';
+import { ConstructorModel } from '../model/constructor.model';
+import { InstancesMapModel } from '../model/instances-map.model';
+import { ConstructorMapModel } from '../model/constructor-map.model';
+import { OverridenMapModel } from '../model/overriden-map.model';
 
 /*
     eslint-disable @typescript-eslint/ban-types,
     @typescript-eslint/no-explicit-any
  */
 export class InstanceHandler {
-    protected INSTANCES: { [key: string]: any; };
-    protected CONSTRUCTORS: { [key: string]: Function; };
-    protected OVERRIDDEN: { [key: string]:  OverriddenModel; };
+    protected INSTANCES: InstancesMapModel;
+    protected CONSTRUCTORS: ConstructorMapModel;
+    protected OVERRIDDEN: OverridenMapModel;
 
-    constructor(protected core: CORE) {
+    constructor(protected core: CORE, protected logger: Logger) {
         this.initialize();
     }
 
-    public buildObject<T>(prototype: Function): T {
-        return new (Object.create(prototype)).constructor();
+    public buildObject<T>(constructor: Function): T {
+        this.logger.debug(Messages.getMessage('building-class', [constructor.name]), '[The Way]');
+        return new (Object.create(constructor.prototype)).constructor();
     }
     protected initialize(): void {
         this.INSTANCES = {};
         this.OVERRIDDEN = {};
         this.CONSTRUCTORS = {};
     }
-    public getConstructors(): { [key: string]: Function } {
+    public getConstructors(): ConstructorMapModel {
         return this.CONSTRUCTORS;
     }
-    public getOverridden(): { [key: string]:  OverriddenModel; } {
+    public getInstances(): InstancesMapModel {
+        return this.INSTANCES;
+    }
+    public getOverridden(): OverridenMapModel {
         return this.OVERRIDDEN;
     }
-    public registerConstructor(constructor: Function): void {
-        this.CONSTRUCTORS[constructor.name] = constructor;
+    public registerClass(constructor: Function, classType = ClassTypeEnum.COMMON): void {
+        this.logger.debug(Messages.getMessage('registering-class', [constructor.name, classType]), '[The Way]');
+        const registeredConstructor = this.CONSTRUCTORS[constructor.name];
+
+        if (!registeredConstructor) {
+            this.CONSTRUCTORS[constructor.name] = {
+                constructorFunction: constructor,
+                type: classType
+            };
+        } else if (classType !== ClassTypeEnum.COMMON) {
+            registeredConstructor.type = classType;
+        }
     }
-    public registerOverridden(name: string, constructor: Function): void {
+    public registerOverriddenClass(name: string, constructor: Function): void {
+        this.logger.debug(Messages.getMessage('registering-overridden-class', [name, constructor.name]), '[The Way]');
         this.OVERRIDDEN[name] = {
             name: constructor.name,
             overriddenName: name,
