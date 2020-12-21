@@ -125,7 +125,14 @@ export class CORE {
         const destructionMessage = (!error) ? Messages.getMessage('destroying') : Messages.getMessage('error-occured-destroying');
         this.STATE$.next(CoreStateEnum.DESTRUCTION_STARTED);
         this.logInfo(destructionMessage);
-        this.STATE$.next(CoreStateEnum.DESTRUCTION_DONE);
+        this.SUBSCRIPTIONS$.add(this.destroyTheArmy().subscribe(
+            () => {
+                this.STATE$.next(CoreStateEnum.DESTRUCTION_DONE);
+            }, (error: Error) => {
+                this.STATE$.next(CoreStateEnum.DESTRUCTION_DONE);
+                this.logError(Messages.getMessage('Destroyed with error'), error);
+            }
+        ));
 
         if (error !== undefined) {
             this.logError(Messages.getMessage('cannot-initialize'), error as Error);
@@ -134,6 +141,9 @@ export class CORE {
             process.exit(0);
         }
         this.SUBSCRIPTIONS$.unsubscribe();
+    }
+    protected destroyTheArmy(): Observable<boolean> {
+        return of(true);
     }
     protected executeScan(): void {
         this.SUBSCRIPTIONS$.add(this.fileHandler.initialize().subscribe(
