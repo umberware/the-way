@@ -5,6 +5,7 @@ import { DependencyModel } from '../model/dependency.model';
 import { Messages } from '../shared/messages';
 import { InstanceHandler } from './instance.handler';
 import { ApplicationException } from '../exeption/application.exception';
+import { LogLevelEnum } from '../shared/log-level.enum';
 
 /*
     eslint-disable @typescript-eslint/no-explicit-any,
@@ -51,7 +52,9 @@ export class DependencyHandler {
             const dependencies = this.DEPENDENCIES[dependentName];
             this.DEPENDENCIES_TREE[dependentName] = this.buildDependencyTree(dependentName, dependencies);
         }
-        this.printDependenciesTree();
+        if (this.logger.getLogLevel() === LogLevelEnum.FULL) {
+            this.printDependenciesTree();
+        }
     }
     protected initialize() {
         this.DEPENDENCIES = {};
@@ -72,7 +75,29 @@ export class DependencyHandler {
         }
     }
     protected printDependenciesTree(): void {
-        this.logger.debug(JSON.stringify(this.DEPENDENCIES_TREE), '[The Way]');
+        const jsonAsString = JSON.stringify(JSON.stringify(this.DEPENDENCIES_TREE, null,  2))
+            .replace(/\\n/g, '')
+            .replace(/\{/g, '\n')
+            .replace(/\},/g, '\n')
+            .replace(/((\\){0,1}")|(\})|(: true)/g, '')
+            .replace(/:/g, ' [+]')
+            .replace(/,/g, '\n')
+            .replace(/\n/, '');
+        let treeMessage = '';
+
+        for (let line of jsonAsString.split('\n')) {
+            line = line.trimEnd();
+            const matches = line.match(/\s{2}/g);
+            if (matches && matches.length === 1) {
+                treeMessage += line.replace(':', '').trim() + '\n';
+            } else if (matches) {
+                const endIndex = matches.length * 2;
+                treeMessage += '|' + '-'.repeat(endIndex - 1) + line.substr(endIndex) + '\n';
+            }
+        }
+
+        treeMessage = treeMessage.substr(0, treeMessage.length - 1);
+        this.logger.debug('Dependencies Tree:\n' + treeMessage, '[The Way]');
     }
     public registerDependency(constructor: Function, target: object, key: string): void {
         const dependentName: string = target.constructor.name;

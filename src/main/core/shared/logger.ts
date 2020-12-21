@@ -42,6 +42,9 @@ export class Logger {
             console.error(this.buildMessage(prefix, error.stack));
         }
     }
+    public getLogLevel(): number {
+        return this.logProperties.level as number;
+    }
     public info(message: string, prefix = '[INFO]'): void {
         console.info(this.buildMessage(prefix, message));
     }
