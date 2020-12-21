@@ -3,5 +3,4 @@ export interface DependencyModel {
     constructor: Function;
     target: Function;
     key: string;
-    singleton: boolean;
 }

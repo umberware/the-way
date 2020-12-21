@@ -66,12 +66,11 @@ export class FileHandler {
                 stream.on('data', (data) => {
                     if (data.toString().search(regex) > -1) {
                         this.FOUND_FILES.push(fullPath);
-                        this.logger.debug(Messages.getMessage('found-class', [fullPath]), '[The Way]');
+                        this.logger.debug(Messages.getMessage('found-resource', [fullPath]), '[The Way]');
                         import(fullPath).then(() => {
                             resolve();
                         }).catch((ex) => {
-                            console.error(ex);
-                            reject();
+                            reject(ex);
                         });
                         stream.close();
                     }
@@ -83,29 +82,29 @@ export class FileHandler {
         }
     }
     protected async loadApplicationFiles(dirPath: string): Promise<void> {
-        try {
-            const paths = readdirSync(dirPath);
-            for(const path of paths) {
-                const fullpath = dirPath + '/' + path;
-                const stat = statSync(fullpath);
-                if (stat.isDirectory()) {
-                    await this.loadApplicationFiles(fullpath);
-                } else {
-                    const extensions = this.EXTENSIONS.toString().replace(',', '|').replace(/\./g, '\\.');
+        const paths = readdirSync(dirPath);
+        for(const path of paths) {
+            if (this.core.isDestroyed()) {
+                break;
+            }
 
-                    if (path.search(extensions) > -1) {
-                        const fullpath = dirPath + '/' + path;
-                        const stat = statSync(fullpath);
-                        if (stat.isDirectory()) {
-                            await this.loadApplicationFiles(fullpath);
-                        } else {
-                            await this.importFile(fullpath);
-                        }
+            const fullpath = dirPath + '/' + path;
+            const stat = statSync(fullpath);
+            if (stat.isDirectory()) {
+                await this.loadApplicationFiles(fullpath);
+            } else {
+                const extensions = this.EXTENSIONS.toString().replace(',', '|').replace(/\./g, '\\.');
+
+                if (path.search(extensions) > -1) {
+                    const fullpath = dirPath + '/' + path;
+                    const stat = statSync(fullpath);
+                    if (stat.isDirectory()) {
+                        await this.loadApplicationFiles(fullpath);
+                    } else {
+                        await this.importFile(fullpath);
                     }
                 }
             }
-        } catch (ex) {
-            console.log('[The Way] ' + ex.message);
         }
     }
 }

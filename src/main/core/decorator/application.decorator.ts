@@ -1,5 +1,3 @@
-import 'reflect-metadata';
-
 import { CORE } from '../core';
 import { TheWayApplication } from '../../core/the-way-application';
 import { ApplicationException } from '../exeption/application.exception';
@@ -8,18 +6,19 @@ import { Messages } from '../shared/messages';
 /* eslint-disable @typescript-eslint/ban-types*/
 export const Application = (params?: { automatic?: boolean; }) => {
     return (constructor: Function): void => {
+        const coreInstance = CORE.getCoreInstance();
+
         if (!(constructor.prototype instanceof TheWayApplication)) {
-            throw new ApplicationException(
+            coreInstance.setError(new ApplicationException(
                 Messages.getMessage('is-not-the-way'),
                 Messages.getMessage('internal-error'),
                 Messages.getMessage('RU-001')
-            );
+            ));
+            return;
         }
 
-        const core = new CORE();
-
         if (!params || params.automatic || params.automatic === undefined) {
-            core.initialize(constructor);
+            coreInstance.initialize(constructor);
         }
     };
 };

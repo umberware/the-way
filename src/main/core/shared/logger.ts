@@ -35,7 +35,7 @@ export class Logger {
         if (error instanceof ApplicationException) {
             console.error(
                 this.buildMessage(
-                    prefix, error.getCode() + ' ' + error.getDetail() + ' '+ error.getDescription()
+                    prefix, error.getCode() + ': ' + error.getDescription() + ' -> ' + error.getDetail()
                 )
             );
         } else if (error.stack) {

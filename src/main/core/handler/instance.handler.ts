@@ -1,9 +1,7 @@
 import { CORE } from '../core';
-import { OverriddenModel } from '../model/overridden.model';
 import { Logger } from '../shared/logger';
 import { Messages } from '../shared/messages';
 import { ClassTypeEnum } from '../shared/class-type.enum';
-import { ConstructorModel } from '../model/constructor.model';
 import { InstancesMapModel } from '../model/instances-map.model';
 import { ConstructorMapModel } from '../model/constructor-map.model';
 import { OverridenMapModel } from '../model/overriden-map.model';
@@ -13,25 +11,18 @@ import { OverridenMapModel } from '../model/overriden-map.model';
     @typescript-eslint/no-explicit-any
  */
 export class InstanceHandler {
-    protected INSTANCES: InstancesMapModel;
     protected CONSTRUCTORS: ConstructorMapModel;
+    protected INSTANCES: InstancesMapModel;
     protected OVERRIDDEN: OverridenMapModel;
 
     constructor(protected core: CORE, protected logger: Logger) {
         this.initialize();
     }
 
-    public buildObject<T>(constructor: Function): T {
-        this.logger.debug(Messages.getMessage('building-class', [constructor.name]), '[The Way]');
-        return new (Object.create(constructor.prototype)).constructor();
-    }
     protected initialize(): void {
         this.INSTANCES = {};
         this.OVERRIDDEN = {};
         this.CONSTRUCTORS = {};
-    }
-    public getConstructors(): ConstructorMapModel {
-        return this.CONSTRUCTORS;
     }
     public getInstances(): InstancesMapModel {
         return this.INSTANCES;
@@ -39,14 +30,15 @@ export class InstanceHandler {
     public getOverridden(): OverridenMapModel {
         return this.OVERRIDDEN;
     }
-    public registerClass(constructor: Function, classType = ClassTypeEnum.COMMON): void {
+    public registerClass(constructor: Function, classType: ClassTypeEnum, singleton = true): void {
         this.logger.debug(Messages.getMessage('registering-class', [constructor.name, classType]), '[The Way]');
         const registeredConstructor = this.CONSTRUCTORS[constructor.name];
 
         if (!registeredConstructor) {
             this.CONSTRUCTORS[constructor.name] = {
                 constructorFunction: constructor,
-                type: classType
+                type: classType,
+                singleton
             };
         } else if (classType !== ClassTypeEnum.COMMON) {
             registeredConstructor.type = classType;
@@ -54,13 +46,41 @@ export class InstanceHandler {
     }
     public registerOverriddenClass(name: string, constructor: Function): void {
         this.logger.debug(Messages.getMessage('registering-overridden-class', [name, constructor.name]), '[The Way]');
-        this.OVERRIDDEN[name] = {
-            name: constructor.name,
-            overriddenName: name,
-            constructorFunction: constructor
-        };
+        this.OVERRIDDEN[name] = constructor.name;
     }
 }
+
+// public buildInstance<T>(constructor: Function): T | null {
+//     const { finalName, finalConstructor, isSingleton } = this.getFinalConstructorAndName(constructor);
+//     return null;
+//     // if (!isSingleton) {
+//     //
+//     // }
+//     // const { realInstanceableName, realConstructor } = this.getRealInstanceNameAndConstructor(
+//     //     instanceableName, constructor
+//     // );
+//     // const instance = this.INSTANCES.get(realInstanceableName) as T;
+//     //
+//     // if (instance) {
+//     //     this.logger.debug('Found instance for: ' + instanceableName, '[The Way]');
+//     //     return instance;
+//     // }
+//     //
+//     // this.logger.debug('Building instance for: ' + instanceableName, '[The Way]');
+//     //
+//     // if (realConstructor) {
+//     //     const instance = this.buildObject(realConstructor.prototype) as T;
+//     //     const decorators = Reflect.getMetadataKeys(realConstructor);
+//     //     this.handleInstance(realInstanceableName, instance, decorators);
+//     //     return instance;
+//     // } else {
+//     //     throw new ApplicationException(
+//     //         MessagesEnum['not-found'] + realInstanceableName,
+//     //         MessagesEnum['building-instance-error'],
+//     //         ErrorCodes['RU-005']
+//     //     );
+//     // }
+// }
 
 // import { Logger } from '../shared/logger';
 // import { DependencyHandler } from './dependency.handler';
@@ -72,32 +92,6 @@ export class InstanceHandler {
 // import { Destroyable } from '../shared/destroyable';
 // import { ConfigurationHandler } from './configuration.handler';
 
-// public buildInstance<T>(instanceableName: string, constructor: Function | undefined): T {
-//     const { realInstanceableName, realConstructor } = this.getRealInstanceNameAndConstructor(
-//         instanceableName, constructor
-//     );
-//     const instance = this.INSTANCES.get(realInstanceableName) as T;
-//
-//     if (instance) {
-//         this.logger.debug('Found instance for: ' + instanceableName, '[The Way]');
-//         return instance;
-//     }
-//
-//     this.logger.debug('Building instance for: ' + instanceableName, '[The Way]');
-//
-//     if (realConstructor) {
-//         const instance = this.buildObject(realConstructor.prototype) as T;
-//         const decorators = Reflect.getMetadataKeys(realConstructor);
-//         this.handleInstance(realInstanceableName, instance, decorators);
-//         return instance;
-//     } else {
-//         throw new ApplicationException(
-//             MessagesEnum['not-found'] + realInstanceableName,
-//             MessagesEnum['building-instance-error'],
-//             ErrorCodes['RU-005']
-//         );
-//     }
-// }
 // public buildInstances(): void {
 //     const dependecyTree = this.dependendyHandler.getDependecyTree();
 //     this.buildInstancesRec(Object.keys(dependecyTree), dependecyTree, null);
