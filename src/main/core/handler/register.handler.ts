@@ -38,8 +38,8 @@ export class RegisterHandler {
         if (!constructor) {
             this.core.setError(new ApplicationException(
                 Messages.getMessage('not-found-dependency-constructor', [propertyKey, target.constructor.name]),
-                Messages.getMessage('internal-error'),
-                Messages.getMessage('RU-004')
+                Messages.getMessage('TW-009'),
+                Messages.getMessage('TW-004')
             ));
             return;
         }

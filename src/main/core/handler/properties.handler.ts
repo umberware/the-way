@@ -124,7 +124,7 @@ export class PropertiesHandler {
             new ApplicationException(
                 Messages.getMessage('propertiesWrongFormat'),
                 Messages.getMessage('internalError'),
-                Messages.getMessage('RU-003')
+                Messages.getMessage('TW-003')
             );
         }
     }

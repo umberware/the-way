@@ -12,7 +12,7 @@ export const Application = (params?: { automatic?: boolean; }) => {
             coreInstance.setError(new ApplicationException(
                 Messages.getMessage('is-not-the-way'),
                 Messages.getMessage('internal-error'),
-                Messages.getMessage('RU-001')
+                Messages.getMessage('TW-001')
             ));
             return;
         }

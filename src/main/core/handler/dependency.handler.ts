@@ -29,9 +29,9 @@ export class DependencyHandler {
             const matches = found.match(regex);
             if (matches) {
                 throw new ApplicationException(
-                    Messages.getMessage('circular-dependency'),
-                    Messages.getMessage('internal-error'),
-                    Messages.getMessage('internal-server-error-code')
+                    Messages.getMessage('circular-dependency', [dependentName, dependency]),
+                    Messages.getMessage('TW-008'),
+                    Messages.getMessage('TW-004')
                 );
             }
 
