@@ -122,25 +122,30 @@ export class CORE {
         return of(true);
     }
     public destroy(error?: Error): void {
-        const destructionMessage = (!error) ? Messages.getMessage('destroying') : Messages.getMessage('error-occured-destroying');
+        if (this.isDestroyed()) {
+            return;
+        }
+
+        if (error) {
+            this.logError(Messages.getMessage('error-occured-destroying'), error as Error);
+        }
+
+        let exitCode = (!error) ? 0 : 1;
         this.STATE$.next(CoreStateEnum.DESTRUCTION_STARTED);
-        this.logInfo(destructionMessage);
+        this.logInfo(Messages.getMessage('destroying'));
         this.SUBSCRIPTIONS$.add(this.destroyTheArmy().subscribe(
             () => {
+                this.logInfo(Messages.getMessage('destroyed'));
                 this.STATE$.next(CoreStateEnum.DESTRUCTION_DONE);
-            }, (error: Error) => {
+            }, (destructionError: Error) => {
+                this.logError(Messages.getMessage('destroyed-with-error'), destructionError);
+                exitCode = 2;
                 this.STATE$.next(CoreStateEnum.DESTRUCTION_DONE);
-                this.logError(Messages.getMessage('Destroyed with error'), error);
+            }, () => {
+                this.SUBSCRIPTIONS$.unsubscribe();
+                process.exit(exitCode);
             }
         ));
-
-        if (error !== undefined) {
-            this.logError(Messages.getMessage('cannot-initialize'), error as Error);
-            process.exit(1);
-        } else {
-            process.exit(0);
-        }
-        this.SUBSCRIPTIONS$.unsubscribe();
     }
     protected destroyTheArmy(): Observable<boolean> {
         return of(true);
