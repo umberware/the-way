@@ -32,6 +32,7 @@ export class CORE {
     protected dependencyHandler: DependencyHandler;
     protected fileHandler: FileHandler;
     protected instanceHandler: InstanceHandler;
+    protected isInitializationCalled = false;
     protected logger: Logger;
     protected propertiesHandler: PropertiesHandler;
     protected registerHandler: RegisterHandler;
@@ -55,14 +56,18 @@ export class CORE {
         this.STATE$.next(CoreStateEnum.READY);
     }
     protected beforeInitialization(): void {
+        this.logger = new Logger();
+        this.logInfo(Messages.getMessage('initializing'));
+        this.ERROR$ = new BehaviorSubject<Error | undefined>(undefined);
+        this.SUBSCRIPTIONS$ = new Subscription();
+        this.STATE$ = new BehaviorSubject<CoreStateEnum>(CoreStateEnum.BEFORE_INITIALIZATION_STARTED);
+        this.SUBSCRIPTIONS$.add(this.watchError().pipe(filter((result: Error | undefined) => result !== undefined)).subscribe(
+            (error: Error | undefined) => {
+                this.destroy(error as Error);
+            }
+        ));
+
         try {
-            this.ERROR$ = new BehaviorSubject<Error | undefined>(undefined)
-            this.SUBSCRIPTIONS$ = new Subscription();
-            this.STATE$ = new BehaviorSubject<CoreStateEnum>(CoreStateEnum.BEFORE_INITIALIZATION_STARTED);
-
-            this.logger = new Logger();
-            this.logInfo(Messages.getMessage('initializing'));
-
             this.propertiesHandler = new PropertiesHandler(this, this.logger);
             this.checkoutProperties();
             this.instanceHandler = new InstanceHandler(this, this.logger);
@@ -70,11 +75,6 @@ export class CORE {
             this.fileHandler = new FileHandler(this, this.coreProperties.scan as PropertyModel, this.logger);
             this.registerHandler = new RegisterHandler(this, this.instanceHandler, this.dependencyHandler);
             this.executeScan();
-            this.SUBSCRIPTIONS$.add(this.watchError().pipe(filter((result: Error | undefined) => result !== undefined)).subscribe(
-                (error: Error | undefined) => {
-                    this.destroy(error as Error);
-                }
-            ));
             this.SUBSCRIPTIONS$.add(this.whenInitilizationIsDone().subscribe(() => this.afterInitialization()));
         } catch (error) {
             this.setError(error);
@@ -176,7 +176,14 @@ export class CORE {
     public getRegisterHandler(): RegisterHandler {
         return this.registerHandler;
     }
-    public initialize(constructor: Function | Object): void {
+    public initialize(constructor: Function | Object, isAutomatic = true): void {
+        if (this.isInitializationCalled) {
+            return;
+        } else if (!isAutomatic) {
+            this.logDebug(Messages.getMessage('manual-initialization'));
+        }
+
+        this.isInitializationCalled = true;
         this.SUBSCRIPTIONS$.add(this.whenBeforeInitializationIsDone().pipe(
             switchMap(() => {
                 this.STATE$.next(CoreStateEnum.INITIALIZATION_STARTED);
@@ -212,12 +219,6 @@ export class CORE {
     public watchError(): Observable<Error | undefined> {
         return this.ERROR$;
     }
-    public whenBeforeInitializationIsStarted(): Observable<boolean> {
-        return this.STATE$.pipe(
-            filter((state: CoreStateEnum) => state === CoreStateEnum.BEFORE_INITIALIZATION_STARTED),
-            map(() => true)
-        );
-    }
     public whenBeforeInitializationIsDone(): Observable<boolean> {
         return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.BEFORE_INITIALIZATION_DONE),
@@ -227,12 +228,6 @@ export class CORE {
     public whenInitilizationIsDone(): Observable<boolean> {
         return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.INITIALIZATION_DONE),
-            map(() => true)
-        );
-    }
-    public whenInitializationIsStarted(): Observable<boolean> {
-        return this.STATE$.pipe(
-            filter((state: CoreStateEnum) => state === CoreStateEnum.INITIALIZATION_STARTED),
             map(() => true)
         );
     }

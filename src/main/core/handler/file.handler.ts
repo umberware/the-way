@@ -58,7 +58,6 @@ export class FileHandler {
     }
     protected async importFile(fullPath: string): Promise<void> {
         const extensions = this.EXTENSIONS.toString().replace(',', '|').replace(/\./g, '\\.');
-
         if (fullPath.search(extensions) > -1) {
             return new Promise((resolve, reject) => {
                 const regex = new RegExp(this.buildRegex(this.getClassTypes()), 'g');

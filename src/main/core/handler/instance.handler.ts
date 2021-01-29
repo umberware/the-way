@@ -24,6 +24,9 @@ export class InstanceHandler {
         this.OVERRIDDEN = {};
         this.CONSTRUCTORS = {};
     }
+    public getConstructors(): ConstructorMapModel {
+        return this.CONSTRUCTORS;
+    }
     public getInstances(): InstancesMapModel {
         return this.INSTANCES;
     }

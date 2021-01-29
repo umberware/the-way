@@ -1,8 +1,5 @@
 import * as Crypto from 'crypto';
 
-import { Service } from '../decorator/service.decorator';
-
-@Service()
 export class CryptoService {
     public cipher(data: string, algorithmn: string, privateKey: string, type: 'hex'|'base64' = 'hex'): string {
         const cypher = Crypto.createCipheriv(algorithmn, privateKey, Buffer.from([]));

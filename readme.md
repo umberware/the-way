@@ -17,7 +17,6 @@ You also can customize some behaviors of this framework with decorators [@Config
 
 **Note**: By default, we start an express http server. To change this behavior you must provide an **application.properties.yml in the root path of your project** or with the command line argument: **--properties=/path/to/your/properties/application.properties.yml**
 
-
     the-way:
         server:
             enabled: false

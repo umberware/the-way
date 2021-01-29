@@ -1,14 +1,9 @@
 import { CORE } from './core';
-import { CoreStateEnum } from './shared/core-state.enum';
 
 export abstract class TheWayApplication {
     constructor() {
         const core = CORE.getCoreInstance();
-
-        if (core.getCoreState() === CoreStateEnum.BEFORE_INITIALIZATION_DONE) {
-            core.initialize(this);
-        }
-
+        core.initialize(this, false);
         core.whenReady().subscribe(
             () => {
                 this.start();

@@ -1,0 +1,5 @@
+the-way:
+    core:
+        scan:
+            path: 'src/test/resources/banana'
+            enabled: false

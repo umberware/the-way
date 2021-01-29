@@ -91,10 +91,9 @@
         "testPathIgnorePatterns": [
             "/node_modules/",
             "/src/main/",
-            "/src/test/environment",
-            "/src/test/scenario",
-            "/src/test/application",
-            "/src/test/resources"
+            "/src/test/core",
+            "/src/test/resources",
+            "/src/test/environment"
         ],
         "testRegex": ".test.ts",
         "moduleFileExtensions": [

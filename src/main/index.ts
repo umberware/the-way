@@ -11,6 +11,7 @@ export { CoreStateEnum } from './core/shared/core-state.enum';
 export { LogLevelEnum } from './core/shared/log-level.enum';
 export { Logger } from './core/shared/logger';
 export { PropertyModel } from './core/model/property.model';
+export { CryptoService } from './core/service/crypto.service';
 
 // export { Configuration } from './core/decorator/configuration.decorator';
 // export { PathParam } from './core/decorator/rest/param/path-param.decorator';
@@ -22,7 +23,6 @@ export { PropertyModel } from './core/model/property.model';
 // export { Delete } from './core/decorator/rest/method/delete.decorator';
 // export { Put } from './core/decorator/rest/method/put.decorator';
 // export { SecurityService } from './core/service/security.service';
-// export { CryptoService } from './core/service/crypto.service';
 // export { HttpType } from './core/service/http/http-type.enum';
 // export { HttpService } from './core/service/http/http.service';
 // export { LogLevel } from './core/model/log-level.enum';

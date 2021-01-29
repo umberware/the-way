@@ -53,21 +53,16 @@ export class PropertiesHandler {
         this.loadProperties(propertiesFilePath);
     }
     protected loadFile(path: string): PropertyModel {
-        try {
-            return Yaml.parse(fs.readFileSync(path).toString());
-        } catch (ex) {
-            this.logger.warn(Messages.getMessage('properties-not-found'), '[The Way]');
-            return {};
-        }
+        return Yaml.parse(fs.readFileSync(path).toString());
     }
     protected loadProperties(propertiesFilePath: string) {
         const path = (__dirname && __dirname !== '') ? __dirname.replace(/(core\\handler)|(core\/handler)$/, 'resources/') : '';
         const defaultProperties = this.loadFile(path + PropertiesHandler.PROPERTIES_NAME);
 
-        if (!propertiesFilePath) {
-            this.properties = this.loadFile(PropertiesHandler.PROPERTIES_NAME);
-        } else {
+        if (propertiesFilePath) {
             this.properties = this.loadFile(propertiesFilePath.split('=')[1]);
+        } else {
+            this.logger.warn(Messages.getMessage('properties-not-gived'), '[The Way]');
         }
 
         this.sumProperties(this.properties, defaultProperties, []);
