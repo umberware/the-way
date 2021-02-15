@@ -1,7 +1,7 @@
 import { Application, CORE, Logger, MESSAGES, TheWayApplication } from '../../../../main';
 
 const defaultArgs = [...process.argv];
-const scanPath = 'src/test/resources/dependency';
+const scanPath = 'src/test/resources/overriding-dependency';
 process.argv.push('--the-way.core.scan.path=' + scanPath);
 process.argv.push('--the-way.core.scan.enabled=true');
 process.argv.push('--the-way.core.language=br');
@@ -12,20 +12,18 @@ MESSAGES.br = {};
 export class Main extends TheWayApplication {}
 
 describe('Dependencies', () => {
-    test('Auto Inject', done => {
+    test('Overriding', done => {
         const core = CORE.getCoreInstance();
-        core.whenReady().subscribe(() => {
-            const tree = core.getDependencyHandler().getDependenciesTree();
-            const expectedTree = {
-                DependencyAServiceTest: { DependencyBServiceTest: true },
-                DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: true }, DependencyBServiceTest: true, Logger: true }
-            };
+        core.whenReady().subscribe(
+        () => {
             const instances = core.getInstanceHandler().getInstances();
+            const tree = core.getDependencyHandler().getDependenciesTree();
             const found = instances.filter((instance: any) => {
                 return !(instance instanceof Logger) && !(instance instanceof  Main);
             });
-            expect(JSON.stringify(tree)).toBe(JSON.stringify(expectedTree));
-            expect(found.length).toBe(3);
+            const dependencyTree = { DependentAxServiceTest: { DependencyAServiceTest: true, Logger: true}};
+            expect(JSON.stringify(tree)).toBe(JSON.stringify(dependencyTree));
+            expect(found.length).toBe(2);
             process.argv = defaultArgs;
             done();
         });

@@ -1,3 +1,6 @@
+const defaultArgs = [...process.argv];
+process.argv.push('--the-way.core.log.enabled=false');
+
 import { Application, CORE, Inject, Logger, TheWayApplication } from '../../../../main';
 import { DependentServiceTest } from '../../../resources/dependency/dependent.service.test';
 
@@ -12,9 +15,9 @@ describe('Dependencies', () => {
             const tree = core.getDependencyHandler().getDependenciesTree();
             const expectedTree = {
                 DependencyAServiceTest: { DependencyBServiceTest: true },
-                DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: true }, DependencyBServiceTest: true },
+                DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: true }, DependencyBServiceTest: true, Logger: true },
                 Main: {
-                    DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: true }, DependencyBServiceTest: true }
+                    DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: true }, DependencyBServiceTest: true, Logger: true }
                 }
             };
             const instances = core.getInstanceHandler().getInstances();
@@ -23,6 +26,7 @@ describe('Dependencies', () => {
             });
             expect(found.length).toBe(3);
             expect(JSON.stringify(tree)).toBe(JSON.stringify(expectedTree));
+            process.argv = defaultArgs;
             done();
         });
     });

@@ -23,7 +23,7 @@ export class CORE {
 
     protected INIT_TIME: Date;
     protected END_TIME: Date;
-    protected ERROR$: BehaviorSubject<Error | undefined>;
+    protected ERROR$: BehaviorSubject<any>;
     protected STATE$: BehaviorSubject<CoreStateEnum>;
     protected SUBSCRIPTIONS$: Subscription;
 
@@ -81,6 +81,7 @@ export class CORE {
         );
     }
     protected buildApplication(constructor: Function | Object): Observable<boolean> {
+        this.logInfo(Messages.getMessage('building-application-class'));
         if ((typeof constructor) === 'object') {
             this.instanceHandler.registerInstance(constructor);
         } else {
@@ -94,6 +95,8 @@ export class CORE {
         return of(true);
     }
     protected buildInstances(): Observable<boolean> {
+        this.logInfo(Messages.getMessage('building-instances'));
+        this.dependencyHandler.buildDependenciesInstances();
         this.instanceHandler.buildInstances();
         return of(true);
     }
@@ -104,7 +107,6 @@ export class CORE {
         this.coreProperties = this.propertiesHandler.getProperties('the-way.core') as PropertyModel;
         const logProperties = this.coreProperties.log as PropertyModel;
         const languageProperty = this.coreProperties.language as string;
-        logProperties.enabled = true;
         Messages.setLanguage(languageProperty);
         this.logger.setProperties(logProperties);
     }
@@ -218,7 +220,7 @@ export class CORE {
     public setError(error: Error): void {
         this.ERROR$.next(error);
     }
-    public watchError(): Observable<Error | undefined> {
+    public watchError(): Observable<any> {
         return this.ERROR$;
     }
     public whenBeforeInitializationIsDone(): Observable<boolean> {

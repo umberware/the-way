@@ -1,4 +1,4 @@
-import { Inject } from '../../../main';
+import { Inject } from '../../../../main';
 import { DependencyBServiceTest } from './dependency-b.service.test';
 
 export class DependencyAServiceTest {

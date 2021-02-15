@@ -3,3 +3,5 @@ the-way:
         scan:
             path: 'src/test/resources/banana'
             enabled: false
+        log:
+            level: 0

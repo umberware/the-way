@@ -60,6 +60,39 @@ export class DependencyHandler {
             this.printDependenciesTree();
         }
     }
+    public buildDependenciesInstances(): void {
+        this.logger.info(Messages.getMessage('resolving-tree'), '[The Way]');
+        this.buildDependenciesInstancesRec(Object.keys(this.DEPENDENCIES_TREE), this.DEPENDENCIES_TREE, null);
+    }
+    protected buildDependenciesInstancesRec(treeNodesNames: Array<string>, node: any, parentName: string | null): void {
+        for (const treeNodeName of treeNodesNames) {
+            const childNodes = Object.keys(node[treeNodeName] as any);
+
+            if (childNodes.length > 0) {
+                this.buildDependenciesInstancesRec(childNodes, node[treeNodeName] as any, treeNodeName);
+            }
+
+            if (parentName) {
+                const dependency = treeNodeName;
+                const dependentName = parentName;
+                const dependencyInformation = this.registerHandler.getDependency(parentName, dependency);
+                const instance = this.instanceHandler.buildInstance(dependencyInformation.constructor) as Object;
+                const target = dependencyInformation.target as Function;
+                const dependencyName = (instance.constructor.name !== dependencyInformation.constructor.name) ?
+                    instance.constructor.name + '( as ' + dependencyInformation.constructor.name + ' )' :
+                    dependencyInformation.constructor.name;
+
+                Reflect.set(target, dependencyInformation.key as string, instance);
+                this.logger.debug(
+                    Messages.getMessage(
+                        'injection',
+                        [dependencyName, dependentName, dependencyInformation.key]
+                    ),
+                    '[The Way]'
+                );
+            }
+        }
+    }
     protected initialize() {
         this.DEPENDENCIES_TREE = {};
     }

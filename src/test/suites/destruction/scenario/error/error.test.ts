@@ -15,7 +15,9 @@ describe('Destruction', () => {
                 const message = 'Luke, I\'m your father!!!';
                 spyOn(core as any, 'configure').and.returnValue(
                     new Observable((observer: Subscriber<boolean>) => {
-                        observer.error(new Error(message));
+                        observer.error({
+                            detail: message
+                        });
                         observer.next(true);
                         observer.complete();
                     })
@@ -25,7 +27,7 @@ describe('Destruction', () => {
                     (error) => {
                         if (error) {
                             expect(CORE.getCoreInstance().isDestroyed()).toBeTruthy();
-                            expect(error.message).toBe(message);
+                            expect(error.detail).toBe(message);
                             expect(core.isDestroyed()).toBe(true);
                             done();
                         }
@@ -35,6 +37,8 @@ describe('Destruction', () => {
         );
     });
     test('With Error', (done) => {
+        const defaultArgs = [ ...process.argv ];
+        process.argv.push('--the-way.core.log.enabled=false');
         import('../../../../environments/not-automatic-main.test').then(
             (value => {
                 const core = CORE.getCoreInstance();
@@ -53,6 +57,7 @@ describe('Destruction', () => {
                         expect(CORE.getCoreInstance().isDestroyed()).toBeTruthy();
                         expect(error.message).toBe(message);
                         expect(core.isDestroyed()).toBe(true);
+                        process.argv = defaultArgs;
                         done();
                     }
                 });

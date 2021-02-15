@@ -1,15 +1,14 @@
 import { Inject, Logger, Service } from '../../../main';
 
 import { DependencyAServiceTest } from './dependencies/dependency-a.service.test';
-import { DependencyBServiceTest } from './dependencies/dependency-b.service.test';
 
 @Service()
-export class DependentServiceTest {
+export class DependentAxServiceTest {
     @Inject dependencyA: DependencyAServiceTest;
-    @Inject dependencyB: DependencyBServiceTest;
     @Inject logger: Logger;
 
     constructor() {
-        this.logger.info('I\'m Here');
+        this.logger.debug('I always still in your heart!');
+        this.logger.warn('Are u seriously?')
     }
 }

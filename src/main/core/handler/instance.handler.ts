@@ -32,10 +32,11 @@ export class InstanceHandler {
             }
         );
     }
-    private buildInstance<T>(constructor: Function): T | null {
+    public buildInstance<T>(constructor: Function): T | null {
         const registeredConstructor = this.registerHandler.getConstructor(constructor.name);
         const registeredConstructorName = registeredConstructor.name;
         if (!this.INSTANCES[registeredConstructorName]) {
+            this.logger.info(Messages.getMessage('building-class', [ registeredConstructorName ]));
             const instance = this.buildObject(registeredConstructor.constructorFunction);
             const decorators = Reflect.getMetadataKeys(registeredConstructor.constructorFunction);
             this.registerInstance(instance);
@@ -51,9 +52,9 @@ export class InstanceHandler {
     protected initialize(): void {
         this.INSTANCES = {};
     }
-    public getInstanceByName<T>(name: string): T {
+    public getInstanceByName<T>(name: string): T{
         const registeredConstructor = this.registerHandler.getConstructor(name);
-        return this.INSTANCES.get(registeredConstructor.name) as T;
+        return this.INSTANCES.get(registeredConstructor.name);
     }
     public getInstances(): Array<any> {
         return Object.values(this.INSTANCES);
@@ -72,56 +73,3 @@ export class InstanceHandler {
         this.INSTANCES[instance.constructor.name] = instance;
     }
 }
-
-// import { Logger } from '../shared/logger'
-// import { DependencyHandler } from './dependency.handler';
-// import { ApplicationException } from '../exeption/application.exception';
-// import { Messages } from '../shared/messages';
-// import { ErrorCodes } from '../shared/error-codes';
-// import { ConfigurationMetaKey } from '../decorator/configuration.decorator';
-// import { AbstractConfiguration } from '../configuration/abstract.configuration';
-// import { Destroyable } from '../shared/destroyable';
-// import { ConfigurationHandler } from './configuration.handler';
-
-// public buildInstances(): void {
-//     const dependecyTree = this.dependendyHandler.getDependecyTree();
-//     this.buildInstancesRec(Object.keys(dependecyTree), dependecyTree, null);
-// }
-// protected buildInstancesRec(treeNodesNames: Array<string>, node: any, parentName: string | null): void {
-//     for (const treeNodeName of treeNodesNames) {
-//         const childNodes = Object.keys(node[treeNodeName] as any);
-//
-//         if (childNodes.length > 0) {
-//             this.buildInstancesRec(childNodes, node[treeNodeName] as any, treeNodeName);
-//         }
-//
-//         if (parentName) {
-//             const dependent = (parentName.includes(':')) ? parentName.split(':')[0] : parentName;
-//             const dependency = (treeNodeName.includes(':')) ? treeNodeName.split(':')[0] : treeNodeName;
-//             const dependencyInformation = this.dependendyHandler.getDependecy(dependency) as any;
-//             const instance = this.buildInstance(dependency, dependencyInformation.constructor) as Function;
-//             const target = dependencyInformation.target as Function;
-//             Reflect.set(target, dependencyInformation.key as string, instance);
-//
-//             let found = 'Not found';
-//
-//             if (instance) {
-//                 found = instance.constructor.name;
-//             }
-//
-//             this.logger.debug(
-//                 MessagesEnum['injecting'] +
-//                 target.constructor.name +
-//                 MessagesEnum['injectable'] +
-//                 dependencyInformation.constructor.name +
-//                 MessagesEnum['injectable-found'] + found,
-//                 '[The Way]'
-//             );
-//         }
-//     }
-// }
-
-// public getInstances(): Map<string, Object> {
-//     return this.INSTANCES;
-// }
-

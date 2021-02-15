@@ -85,10 +85,6 @@ export class FileHandler {
         try {
             const paths = readdirSync(dirPath);
             for (const path of paths) {
-                if (this.core.isDestroyed()) {
-                    break;
-                }
-
                 const fullpath = dirPath + '/' + path;
                 const stat = statSync(fullpath);
                 if (stat.isDirectory()) {

@@ -69,20 +69,24 @@ describe('Initialization Not Automatic', () => {
             (value => {
                 const core = CORE.getCoreInstance();
                 new value.NotAutomaticMainTest();
-                expect(core.isDestroyed()).toBeTruthy();
-                process.argv = defaultArgs;
-                core.destroy();
-                done();
+                core.watchError().subscribe(
+                    (error) => {
+                        if (error) {
+                            expect(core.isDestroyed()).toBeTruthy();
+                            process.argv = defaultArgs;
+                            core.destroy();
+                            done();
+                        }
+                    }
+                );
             })
         );
     });
     test('Wrong Scan Path', (done) => {
-
         const defaultArgs = [... process.argv.slice(0)]
         const scanPath = 'src/test/resources/x/t/z';
         process.argv.push('--the-way.core.scan.path=' + scanPath);
         process.argv.push('--the-way.core.scan.enabled=true')
-
         import('../../../../environments/not-automatic-main.test').then(
             (value => {
                 const core = CORE.getCoreInstance();

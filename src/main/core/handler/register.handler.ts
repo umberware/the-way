@@ -36,6 +36,9 @@ export class RegisterHandler {
     public getDependecies(): DependencyMapModel {
         return this.DEPENDENCIES;
     }
+    public getDependency(dependent: string, dependency: string): DependencyModel {
+        return this.DEPENDENCIES[dependent][dependency];
+    }
     public registerClass(name: string, constructor: Function, classType: ClassTypeEnum, singleton = true): void {
         this.logger.debug(Messages.getMessage('registering-class', [constructor.name, classType]), '[The Way]');
         const registeredConstructor = this.CONSTRUCTORS[name];
