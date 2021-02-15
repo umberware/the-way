@@ -2,6 +2,8 @@ import { CORE } from '../core';
 import { Logger } from '../shared/logger';
 import { InstancesMapModel } from '../model/instances-map.model';
 import { RegisterHandler } from './register.handler';
+import { ConstructorModel } from '../model/constructor.model';
+import { Messages } from '../shared/messages';
 
 /*
     eslint-disable @typescript-eslint/ban-types,
@@ -23,50 +25,55 @@ export class InstanceHandler {
         this.registerInstance(object);
         return object;
     }
+    public buildInstances(): void {
+        Object.values(this.registerHandler.getConstructors()).forEach(
+            (registeredConstructor: ConstructorModel) => {
+                this.buildInstance(registeredConstructor.constructorFunction);
+            }
+        );
+    }
+    private buildInstance<T>(constructor: Function): T | null {
+        const registeredConstructor = this.registerHandler.getConstructor(constructor.name);
+        const registeredConstructorName = registeredConstructor.name;
+        if (!this.INSTANCES[registeredConstructorName]) {
+            const instance = this.buildObject(registeredConstructor.constructorFunction);
+            const decorators = Reflect.getMetadataKeys(registeredConstructor.constructorFunction);
+            this.registerInstance(instance);
+            this.handleInstance(registeredConstructorName, instance, decorators);
+            return instance as T;
+        } else {
+            return this.INSTANCES[registeredConstructorName] as T;
+        }
+    }
     protected buildObject(constructor: Function): Object {
         return new constructor.prototype.constructor();
     }
     protected initialize(): void {
         this.INSTANCES = {};
     }
+    public getInstanceByName<T>(name: string): T {
+        const registeredConstructor = this.registerHandler.getConstructor(name);
+        return this.INSTANCES.get(registeredConstructor.name) as T;
+    }
+    public getInstances(): Array<any> {
+        return Object.values(this.INSTANCES);
+    }
+    protected handleInstance<T>(instanceableName: string, instance: T, decorators: Array<string>): void {
+        // this.INSTANCES.set(instanceableName, instance as Object);
+        // if (decorators.includes(ConfigurationMetaKey) && instance instanceof AbstractConfiguration) {
+        //     this.configurationHandler.configureInstance(instance);
+        // }
+        //
+        // if (instance instanceof Destroyable) {
+        //     this.configurationHandler.registerDestroyable(instance);
+        // }
+    }
     public registerInstance(instance: Object): void {
         this.INSTANCES[instance.constructor.name] = instance;
     }
 }
 
-// public buildInstance<T>(constructor: Function): T | null {
-//     const { finalName, finalConstructor, isSingleton } = this.getFinalConstructorAndName(constructor);
-//     return null;
-//     // if (!isSingleton) {
-//     //
-//     // }
-//     // const { realInstanceableName, realConstructor } = this.getRealInstanceNameAndConstructor(
-//     //     instanceableName, constructor
-//     // );
-//     // const instance = this.INSTANCES.get(realInstanceableName) as T;
-//     //
-//     // if (instance) {
-//     //     this.logger.debug('Found instance for: ' + instanceableName, '[The Way]');
-//     //     return instance;
-//     // }
-//     //
-//     // this.logger.debug('Building instance for: ' + instanceableName, '[The Way]');
-//     //
-//     // if (realConstructor) {
-//     //     const instance = this.buildObject(realConstructor.prototype) as T;
-//     //     const decorators = Reflect.getMetadataKeys(realConstructor);
-//     //     this.handleInstance(realInstanceableName, instance, decorators);
-//     //     return instance;
-//     // } else {
-//     //     throw new ApplicationException(
-//     //         MessagesEnum['not-found'] + realInstanceableName,
-//     //         MessagesEnum['building-instance-error'],
-//     //         ErrorCodes['RU-005']
-//     //     );
-//     // }
-// }
-
-// import { Logger } from '../shared/logger';
+// import { Logger } from '../shared/logger'
 // import { DependencyHandler } from './dependency.handler';
 // import { ApplicationException } from '../exeption/application.exception';
 // import { Messages } from '../shared/messages';
@@ -113,36 +120,8 @@ export class InstanceHandler {
 //         }
 //     }
 // }
-// public getInstanceByName<T>(name: string): T {
-//     const overridden = this.dependendyHandler.getOverridden(name);
-//
-//     if (overridden) {
-//         name = overridden.name as string;
-//     }
-//     return this.INSTANCES.get(name) as T;
-// }
+
 // public getInstances(): Map<string, Object> {
 //     return this.INSTANCES;
 // }
-// protected getRealInstanceNameAndConstructor(
-//     instanceableName: string, constructor?: Function
-// ): { realInstanceableName: string; realConstructor?: Function; } {
-//     let realInstanceableName = instanceableName;
-//     let realConstructor = constructor;
-//     const overridden = this.dependendyHandler.getOverridden(instanceableName);
-//     if (overridden) {
-//         realInstanceableName = overridden.name as string;
-//         realConstructor = overridden.constructor;
-//     }
-//     return { realInstanceableName, realConstructor };
-// }
-// protected handleInstance<T>(instanceableName: string, instance: T, decorators: Array<string>): void {
-//     this.INSTANCES.set(instanceableName, instance as Object);
-//     if (decorators.includes(ConfigurationMetaKey) && instance instanceof AbstractConfiguration) {
-//         this.configurationHandler.configureInstance(instance);
-//     }
-//
-//     if (instance instanceof Destroyable) {
-//         this.configurationHandler.registerDestroyable(instance);
-//     }
-// }
+

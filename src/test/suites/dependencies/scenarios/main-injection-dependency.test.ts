@@ -1,9 +1,9 @@
-import { Application, CORE, Inject, TheWayApplication } from '../../../../main';
+import { Application, CORE, Inject, Logger, TheWayApplication } from '../../../../main';
 import { DependentServiceTest } from '../../../resources/dependency/dependent.service.test';
 
 @Application()
 export class Main extends TheWayApplication {
-    @Inject() dependent: DependentServiceTest;
+    @Inject dependent: DependentServiceTest;
 }
 describe('Dependencies', () => {
     test('Injection into main', done => {
@@ -11,11 +11,17 @@ describe('Dependencies', () => {
         core.whenReady().subscribe(() => {
             const tree = core.getDependencyHandler().getDependenciesTree();
             const expectedTree = {
-                DependentServiceTest: { DependencyAServiceTest: true, DependencyBServiceTest: true },
+                DependencyAServiceTest: { DependencyBServiceTest: true },
+                DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: true }, DependencyBServiceTest: true },
                 Main: {
-                    DependentServiceTest: { DependencyAServiceTest: true, DependencyBServiceTest: true }
+                    DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: true }, DependencyBServiceTest: true }
                 }
             };
+            const instances = core.getInstanceHandler().getInstances();
+            const found = instances.filter((instance: any) => {
+                return !(instance instanceof Logger) && !(instance instanceof  Main);
+            });
+            expect(found.length).toBe(3);
             expect(JSON.stringify(tree)).toBe(JSON.stringify(expectedTree));
             done();
         });

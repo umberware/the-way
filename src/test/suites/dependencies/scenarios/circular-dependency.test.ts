@@ -7,14 +7,14 @@ describe('Dependencies', () => {
     afterAll(() => {
         process.argv = defaultArgs;
     });
-    test('Auto Inject', done => {
+    test('Circular Dependency', done => {
         const processExitSpy = spyOn(process, 'exit');
         processExitSpy.and.returnValue('banana');
         const scanPath = 'src/test/resources/circular-dependency';
         process.argv.push('--the-way.core.scan.path=' + scanPath);
         process.argv.push('--the-way.core.scan.enabled=true');
         process.argv.push('--the-way.core.language=br');
-        process.argv.push('--the-way.core.log.date=falsegi')
+        process.argv.push('--the-way.core.log.date=false')
 
         import('../../../environments/not-automatic-main.test').then((value) => {
             const core = CORE.getCoreInstance();

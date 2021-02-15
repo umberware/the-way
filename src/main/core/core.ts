@@ -74,6 +74,7 @@ export class CORE {
         this.logInfo(Messages.getMessage('building'));
         return forkJoin([
             this.buildDependenciesTree(),
+            this.buildInstances(),
             this.buildApplication(constructor)
         ]).pipe(
             map(() => true)
@@ -90,6 +91,10 @@ export class CORE {
     protected buildDependenciesTree(): Observable<boolean> {
         this.logInfo(Messages.getMessage('building-dependencies-tree'));
         this.dependencyHandler.buildDependenciesTree();
+        return of(true);
+    }
+    protected buildInstances(): Observable<boolean> {
+        this.instanceHandler.buildInstances();
         return of(true);
     }
     protected calculateElapsedTime(): string {
@@ -142,6 +147,9 @@ export class CORE {
     }
     public getDependencyHandler(): DependencyHandler {
         return this.dependencyHandler;
+    }
+    public getInstanceHandler(): InstanceHandler {
+        return this.instanceHandler;
     }
     public getPropertiesHandlder(): PropertiesHandler {
         return this.propertiesHandler;

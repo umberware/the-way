@@ -5,16 +5,15 @@ import { ClassTypeEnum, Logger, Messages } from '../..';
 import { ConfigurationMetaKey } from '../decorator/configuration.decorator';
 import { ApplicationException } from '../exeption/application.exception';
 import { ServiceMetaKey } from '../decorator/service.decorator';
-import { OverridenMapModel } from '../model/overriden-map.model';
 import { ConstructorMapModel } from '../model/constructor-map.model';
 import { DependencyModel } from '../model/dependency.model';
 import { DependencyMapModel } from '../model/dependency-map.model';
+import { ConstructorModel } from '../model/constructor.model';
 
 /* eslint-disable @typescript-eslint/ban-types */
 export class RegisterHandler {
     protected CONSTRUCTORS: ConstructorMapModel;
     protected DEPENDENCIES: DependencyMapModel;
-    protected OVERRIDDEN: OverridenMapModel;
 
     constructor(
         protected core: CORE,
@@ -25,28 +24,28 @@ export class RegisterHandler {
 
     private initialize(): void {
         this.DEPENDENCIES = {};
-        this.OVERRIDDEN = {};
         this.CONSTRUCTORS = {};
     }
 
     public getConstructors(): ConstructorMapModel {
         return this.CONSTRUCTORS;
     }
+    public getConstructor(name: string): ConstructorModel {
+        return this.CONSTRUCTORS[name];
+    }
     public getDependecies(): DependencyMapModel {
         return this.DEPENDENCIES;
     }
-    public getOverridden(): OverridenMapModel {
-        return this.OVERRIDDEN;
-    }
-    public registerClass(constructor: Function, classType: ClassTypeEnum, singleton = true): void {
+    public registerClass(name: string, constructor: Function, classType: ClassTypeEnum, singleton = true): void {
         this.logger.debug(Messages.getMessage('registering-class', [constructor.name, classType]), '[The Way]');
-        const registeredConstructor = this.CONSTRUCTORS[constructor.name];
+        const registeredConstructor = this.CONSTRUCTORS[name];
 
         if (!registeredConstructor) {
-            this.CONSTRUCTORS[constructor.name] = {
+            this.CONSTRUCTORS[name] = {
                 constructorFunction: constructor,
-                type: classType,
-                singleton
+                name,
+                singleton,
+                type: classType
             };
         } else if (classType !== ClassTypeEnum.COMMON) {
             registeredConstructor.type = classType;
@@ -58,12 +57,13 @@ export class RegisterHandler {
         }
 
         const finalConstructor = (!over) ? constructor : over;
+        const constructorName = constructor.name;
 
         if (over) {
-            this.registerOverriddenClass(over.name, constructor);
+            this.registerOverriddenClass(over.name, constructor, ClassTypeEnum.CONFIGURATION);
         }
 
-        this.registerClass(constructor, ClassTypeEnum.CONFIGURATION);
+        this.registerClass(constructorName, constructor, ClassTypeEnum.CONFIGURATION);
         Reflect.defineMetadata(ConfigurationMetaKey, finalConstructor, constructor);
     }
     public registerDependency(constructor: Function, target: object, key: string): void {
@@ -87,7 +87,7 @@ export class RegisterHandler {
             key: key
         } as DependencyModel;
     }
-    public registerInjection(constructor: Function, target: object, propertyKey: string, singleton?: boolean): void {
+    public registerInjection(constructor: Function, target: object, propertyKey: string): void {
         if (this.core.isDestroyed()) {
             return;
         }
@@ -102,18 +102,18 @@ export class RegisterHandler {
         }
 
         this.registerDependency(constructor, target, propertyKey);
-        this.registerClass(constructor, ClassTypeEnum.COMMON, singleton);
+        this.registerClass(constructor.name, constructor, ClassTypeEnum.COMMON);
     }
-    public registerOverriddenClass(name: string, constructor: Function): void {
+    protected registerOverriddenClass(name: string, constructor: Function, type: ClassTypeEnum): void {
         this.logger.debug(Messages.getMessage('registering-overridden-class', [name, constructor.name]), '[The Way]');
-        this.OVERRIDDEN[name] = constructor.name;
+        this.registerClass(name, constructor, type);
     }
     public registerRest(constructor: Function): void {
         if (this.core.isDestroyed()) {
             return;
         }
 
-        this.registerClass(constructor, ClassTypeEnum.REST);
+        this.registerClass(constructor.name, constructor, ClassTypeEnum.REST);
     }
     public registerService(constructor: Function, over?: Function): void {
         if (this.core.isDestroyed()) {
@@ -121,12 +121,13 @@ export class RegisterHandler {
         }
 
         const finalConstructor = (!over) ? constructor : over;
+        const constructorName = constructor.name;
 
         if (over) {
-            this.registerOverriddenClass(over.name, constructor);
+            this.registerOverriddenClass(over.name, constructor, ClassTypeEnum.SERVICE);
         }
 
-        this.registerClass(constructor, ClassTypeEnum.SERVICE);
+        this.registerClass(constructorName, constructor, ClassTypeEnum.SERVICE);
         Reflect.defineMetadata(ServiceMetaKey, finalConstructor, constructor);
     }
 }

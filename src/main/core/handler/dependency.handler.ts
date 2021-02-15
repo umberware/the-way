@@ -67,12 +67,8 @@ export class DependencyHandler {
         return this.DEPENDENCIES_TREE;
     }
     protected getDependencyNode(treeNodeName: string, node: any): any {
-        const registeredOverridden = this.registerHandler.getOverridden()[treeNodeName];
-        if (!registeredOverridden) {
-            return node[treeNodeName] = {};
-        } else {
-            return node[treeNodeName + ':' + registeredOverridden] = {};
-        }
+        const registeredConstructor = this.registerHandler.getConstructor(treeNodeName);
+        return node[registeredConstructor.name] = {};
     }
     protected printDependenciesTree(): void {
         const jsonAsString = JSON.stringify(JSON.stringify(this.DEPENDENCIES_TREE, null,  2))

@@ -5,8 +5,8 @@ import { DependencyBServiceTest } from './dependency-b.service.test';
 
 @Service()
 export class DependentServiceTest {
-    @Inject() dependencyA: DependencyAServiceTest;
-    @Inject() dependencyB: DependencyBServiceTest;
+    @Inject dependencyA: DependencyAServiceTest;
+    @Inject dependencyB: DependencyBServiceTest;
 
     constructor() {
         console.log('Dependent');

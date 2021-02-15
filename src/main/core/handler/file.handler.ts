@@ -108,8 +108,9 @@ export class FileHandler {
                 }
             }
         } catch (ex) {
+            this.logger.error(ex);
             throw new ApplicationException(
-                Messages.getMessage('cannot-scan', ex.message),
+                Messages.getMessage('cannot-scan', [ex.message]),
                 Messages.getMessage('not-found'),
                 Messages.getCodeMessage('not-found-code')
             );
