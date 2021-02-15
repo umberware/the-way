@@ -54,7 +54,7 @@ export class InstanceHandler {
     }
     public getInstanceByName<T>(name: string): T{
         const registeredConstructor = this.registerHandler.getConstructor(name);
-        return this.INSTANCES.get(registeredConstructor.name);
+        return this.INSTANCES[registeredConstructor.name];
     }
     public getInstances(): Array<any> {
         return Object.values(this.INSTANCES);

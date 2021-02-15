@@ -12,6 +12,7 @@ import { PropertiesHandler } from './handler/properties.handler';
 import { PropertyModel } from './model/property.model';
 import { Logger } from './shared/logger';
 import { RegisterHandler } from './handler/register.handler';
+import { CryptoService } from './service/crypto.service';
 
 /*
     eslint-disable @typescript-eslint/ban-types,
@@ -19,7 +20,7 @@ import { RegisterHandler } from './handler/register.handler';
     @typescript-eslint/explicit-module-boundary-types
 */
 export class CORE {
-    private static instances: Array<CORE> = [];
+    private static instance: CORE;
 
     protected INIT_TIME: Date;
     protected END_TIME: Date;
@@ -37,16 +38,18 @@ export class CORE {
     protected propertiesHandler: PropertiesHandler;
     protected registerHandler: RegisterHandler;
 
-    public static getCoreInstance(): CORE {
-        if (CORE.instances.length === 0) {
-            new CORE();
+    public static getCore(): CORE {
+        return this.instance;
+    }
+    public static getCoreOrCreate(): CORE {
+        if (!this.instance) {
+            this.instance = new CORE();
         }
-        return CORE.instances[0];
+        return this.instance;
     }
 
     constructor() {
         this.INIT_TIME = new Date();
-        CORE.instances.push(this);
         this.beforeInitialization();
     }
 
@@ -73,9 +76,10 @@ export class CORE {
     protected build(constructor: Function | Object): Observable<boolean> {
         this.logInfo(Messages.getMessage('building'));
         return forkJoin([
+            this.registerDefaults(),
             this.buildDependenciesTree(),
             this.buildInstances(),
-            this.buildApplication(constructor)
+            this.buildApplication(constructor),
         ]).pipe(
             map(() => true)
         );
@@ -216,6 +220,10 @@ export class CORE {
     }
     protected logError(message: string | number, error: Error): void {
         this.logger.error(error, '[The Way]', message.toString());
+    }
+    protected registerDefaults(): Observable<boolean> {
+        this.registerHandler.registerService(CryptoService);
+        return of(true);
     }
     public setError(error: Error): void {
         this.ERROR$.next(error);

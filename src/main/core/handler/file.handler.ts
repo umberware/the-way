@@ -58,33 +58,32 @@ export class FileHandler {
         );
     }
     protected async importFile(fullPath: string): Promise<void> {
-        const extensions = this.EXTENSIONS.toString().replace(',', '|').replace(/\./g, '\\.');
-        if (fullPath.search(extensions) > -1) {
-            return new Promise((resolve, reject) => {
-                const regex = new RegExp(this.buildRegex(this.getClassTypes()), 'g');
-                const stream = createReadStream(fullPath, { encoding: 'utf-8' });
-                stream.on('data', (data) => {
-                    if (data.toString().search(regex) > -1) {
-                        this.FOUND_FILES.push(fullPath);
-                        this.logger.debug(Messages.getMessage('found-resource', [fullPath]), '[The Way]');
-                        import(fullPath).then(() => {
-                            resolve();
-                        }).catch((ex) => {
-                            reject(ex);
-                        });
-                        stream.close();
-                    }
-                });
-                stream.on('close', () => {
-                    resolve();
-                });
+        return new Promise((resolve, reject) => {
+            const regex = new RegExp(this.buildRegex(this.getClassTypes()), 'g');
+            const stream = createReadStream(fullPath, { encoding: 'utf-8' });
+            stream.on('data', (data) => {
+                if (data.toString().search(regex) > -1) {
+                    this.FOUND_FILES.push(fullPath);
+                    this.logger.debug(Messages.getMessage('found-resource', [fullPath]), '[The Way]');
+                    import(fullPath).then(() => {
+                        resolve();
+                    });
+                    stream.close();
+                }
             });
-        }
+            stream.on('close', () => {
+                resolve();
+            });
+        });
     }
     protected async loadApplicationFiles(dirPath: string): Promise<void> {
         try {
             const paths = readdirSync(dirPath);
             for (const path of paths) {
+                if (this.core.isDestroyed()) {
+                    break;
+                }
+
                 const fullpath = dirPath + '/' + path;
                 const stat = statSync(fullpath);
                 if (stat.isDirectory()) {
@@ -93,13 +92,7 @@ export class FileHandler {
                     const extensions = this.EXTENSIONS.toString().replace(',', '|').replace(/\./g, '\\.');
 
                     if (path.search(extensions) > -1) {
-                        const fullpath = dirPath + '/' + path;
-                        const stat = statSync(fullpath);
-                        if (stat.isDirectory()) {
-                            await this.loadApplicationFiles(fullpath);
-                        } else {
-                            await this.importFile(fullpath);
-                        }
+                        await this.importFile(fullpath);
                     }
                 }
             }

@@ -5,8 +5,8 @@ export const Inject = (
     target: object,
     propertyKey: string
 ): void => {
-    const coreInstance = CORE.getCoreInstance();
-    const registerHandler = coreInstance.getRegisterHandler();
+    const core = CORE.getCoreOrCreate();
+    const registerHandler = core.getRegisterHandler();
     const constructor = Reflect.getMetadata('design:type', target, propertyKey);
     registerHandler.registerInjection(constructor, target, propertyKey);
 };

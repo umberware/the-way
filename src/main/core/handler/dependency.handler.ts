@@ -99,10 +99,6 @@ export class DependencyHandler {
     public getDependenciesTree(): any {
         return this.DEPENDENCIES_TREE;
     }
-    protected getDependencyNode(treeNodeName: string, node: any): any {
-        const registeredConstructor = this.registerHandler.getConstructor(treeNodeName);
-        return node[registeredConstructor.name] = {};
-    }
     protected printDependenciesTree(): void {
         const jsonAsString = JSON.stringify(JSON.stringify(this.DEPENDENCIES_TREE, null,  2))
             .replace(/\\n/g, '')

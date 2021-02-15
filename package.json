@@ -92,8 +92,7 @@
             "/node_modules/",
             "/src/main/",
             "/src/test/core",
-            "/src/test/resources",
-            "/src/test/environment"
+            "/src/test/resources"
         ],
         "testRegex": ".test.ts",
         "moduleFileExtensions": [

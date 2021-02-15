@@ -29,22 +29,18 @@ export class PropertiesHandler {
         if (!propertyName) {
             return this.properties;
         } else {
-            try {
-                const paths = propertyName.split('.');
-                let property: string | boolean | number | PropertyModel = this.properties;
+            const paths = propertyName.split('.');
+            let property: string | boolean | number | PropertyModel = this.properties;
 
-                for (const path of paths) {
-                    const foundProperty = property[path] as PropertyModel;
-                    if (foundProperty) {
-                        property = foundProperty;
-                    } else {
-                        return null;
-                    }
+            for (const path of paths) {
+                const foundProperty = property[path] as PropertyModel;
+                if (foundProperty) {
+                    property = foundProperty;
+                } else {
+                    return null;
                 }
-                return property;
-            } catch (ex) {
-                return null;
             }
+            return property;
         }
     }
     public initialize(): void {
@@ -53,19 +49,27 @@ export class PropertiesHandler {
         this.loadProperties(propertiesFilePath);
     }
     protected loadFile(path: string): PropertyModel {
-        return Yaml.parse(fs.readFileSync(path).toString());
+        try {
+            return Yaml.parse(fs.readFileSync(path).toString());
+        } catch(ex) {
+            throw new ApplicationException(
+                Messages.getMessage('properties-not-valid'),
+                Messages.getMessage('TW-011'),
+                'TW-011'
+            );
+        }
     }
     protected loadProperties(propertiesFilePath: string) {
-        const path = (__dirname && __dirname !== '') ? __dirname.replace(/(core\\handler)|(core\/handler)$/, 'resources/') : '';
+        const path = __dirname.replace(/(core\\handler)|(core\/handler)$/, 'resources/');
         const defaultProperties = this.loadFile(path + PropertiesHandler.PROPERTIES_NAME);
 
         if (propertiesFilePath) {
             this.properties = this.loadFile(propertiesFilePath.split('=')[1]);
+            this.sumProperties(this.properties, defaultProperties, []);
         } else {
             this.logger.warn(Messages.getMessage('properties-not-gived'), '[The Way]');
+            this.properties = defaultProperties;
         }
-
-        this.sumProperties(this.properties, defaultProperties, []);
         this.sumCommandLineProperties();
     }
     protected sumCommandLineProperties(): void {
@@ -93,34 +97,25 @@ export class PropertiesHandler {
                     } else {
                         property = this.properties[propertyPath] = {};
                     }
-                }
-                else if (!property && pathSize === 1) {
+                } else {
                     this.properties[propertyPath] = this.convertValue(propertyAndValue[1]);
                 }
             }
         }
     }
     protected sumProperties(properties: PropertyModel, defaultProperties: PropertyModel, keys: Array<string>): void {
-        try {
-            for(const defaultPropertyKey in defaultProperties) {
-                let property: string | number | boolean | PropertyModel = properties;
-                if (keys.length > 0) {
-                    for (const key of keys) {
-                        property = (property as PropertyModel)[key];
-                    }
-                }
-                if ((property as PropertyModel)[defaultPropertyKey] === undefined) {
-                    (property as PropertyModel)[defaultPropertyKey] = defaultProperties[defaultPropertyKey];
-                } else if (defaultProperties[defaultPropertyKey].constructor == Object) {
-                    this.sumProperties(properties, defaultProperties[defaultPropertyKey] as any, [...keys, defaultPropertyKey]);
+        for(const defaultPropertyKey in defaultProperties) {
+            let property: string | number | boolean | PropertyModel = properties;
+            if (keys.length > 0) {
+                for (const key of keys) {
+                    property = (property as PropertyModel)[key];
                 }
             }
-        } catch(ex) {
-            new ApplicationException(
-                Messages.getMessage('propertiesWrongFormat'),
-                Messages.getMessage('internalError'),
-                Messages.getMessage('TW-003')
-            );
+            if ((property as PropertyModel)[defaultPropertyKey] === undefined) {
+                (property as PropertyModel)[defaultPropertyKey] = defaultProperties[defaultPropertyKey];
+            } else if (defaultProperties[defaultPropertyKey].constructor == Object) {
+                this.sumProperties(properties, defaultProperties[defaultPropertyKey] as any, [...keys, defaultPropertyKey]);
+            }
         }
     }
 }

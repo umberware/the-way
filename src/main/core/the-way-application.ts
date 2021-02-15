@@ -2,12 +2,14 @@ import { CORE } from './core';
 
 export abstract class TheWayApplication {
     constructor() {
-        const core = CORE.getCoreInstance();
+        const core = CORE.getCore();
 
         core.initialize(this, false);
         core.whenReady().subscribe(
             () => {
-                this.start();
+                if (!core.isDestroyed()) {
+                    this.start();
+                }
             }
         );
     }

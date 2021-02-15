@@ -4,6 +4,5 @@ import { ClassTypeEnum } from '../shared/class-type.enum';
 export interface ConstructorModel {
     constructorFunction: Function;
     name: string;
-    singleton: boolean;
     type: ClassTypeEnum,
 }
