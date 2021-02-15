@@ -1,5 +1,5 @@
 import { Application, CORE, Inject, TheWayApplication } from '../../../../main';
-import { DependentServiceTest } from '../../../resources/dependent.service.test';
+import { DependentServiceTest } from '../../../resources/dependency/dependent.service.test';
 
 @Application()
 export class Main extends TheWayApplication {

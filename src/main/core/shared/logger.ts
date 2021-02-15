@@ -8,12 +8,12 @@ export class Logger {
     protected logProperties: PropertyModel;
 
     constructor() {
-        this.logProperties = { enabled: true, level: 1, withDate: false };
+        this.logProperties = { enabled: true, level: 1, date: true };
     }
 
     protected buildMessage(prefix: string, message: string): string {
         let final = prefix + ' ';
-        if (this.logProperties.withDate) {
+        if (this.logProperties.date) {
             final += new Date().toISOString() + ' - ';
         }
         return final + message;

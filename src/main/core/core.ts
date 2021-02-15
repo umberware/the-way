@@ -61,45 +61,31 @@ export class CORE {
         this.ERROR$ = new BehaviorSubject<Error | undefined>(undefined);
         this.SUBSCRIPTIONS$ = new Subscription();
         this.STATE$ = new BehaviorSubject<CoreStateEnum>(CoreStateEnum.BEFORE_INITIALIZATION_STARTED);
-        this.SUBSCRIPTIONS$.add(this.watchError().pipe(filter((result: Error | undefined) => result !== undefined)).subscribe(
+        this.SUBSCRIPTIONS$.add(this.watchError().pipe(
+            filter((result: Error | undefined) => result !== undefined)
+        ).subscribe(
             (error: Error | undefined) => {
                 this.destroy(error as Error);
             }
         ));
-
-        try {
-            this.propertiesHandler = new PropertiesHandler(this, this.logger);
-            this.checkoutProperties();
-            this.instanceHandler = new InstanceHandler(this, this.logger);
-            this.dependencyHandler = new DependencyHandler(this, this.logger, this.instanceHandler);
-            this.fileHandler = new FileHandler(this, this.coreProperties.scan as PropertyModel, this.logger);
-            this.registerHandler = new RegisterHandler(this, this.instanceHandler, this.dependencyHandler);
-            this.executeScan();
-            this.SUBSCRIPTIONS$.add(this.whenInitilizationIsDone().subscribe(() => this.afterInitialization()));
-        } catch (error) {
-            this.setError(error);
-        }
+        this.initializeHandlers();
     }
     protected build(constructor: Function | Object): Observable<boolean> {
         this.logInfo(Messages.getMessage('building'));
         return forkJoin([
             this.buildDependenciesTree(),
+            this.buildApplication(constructor)
         ]).pipe(
             map(() => true)
         );
-        // this.
-        // if (constructor instanceof Function) {
-        //     this.instanceHandler.buildObject(constructor);
-        // }
-        // console.log(
-        //     this.instanceHandler.getConstructors(),
-        //     this.instanceHandler.getOverridden(),
-        //     this.dependencyHandler.getDependecies()
-        // );
-        // this.buildCoreInstances();
-        // this.buildDependecyTree();
-        // this.buildInstances();
-        // this.buildHttpService();
+    }
+    protected buildApplication(constructor: Function | Object): Observable<boolean> {
+        if ((typeof constructor) === 'object') {
+            this.instanceHandler.registerInstance(constructor);
+        } else {
+            this.instanceHandler.buildApplication(constructor as Function);
+        }
+        return of(true);
     }
     protected buildDependenciesTree(): Observable<boolean> {
         this.logInfo(Messages.getMessage('building-dependencies-tree'));
@@ -139,6 +125,7 @@ export class CORE {
                 this.STATE$.next(CoreStateEnum.DESTRUCTION_DONE);
             }, (destructionError: Error) => {
                 this.logError(Messages.getMessage('destroyed-with-error'), destructionError);
+                this.setError(destructionError);
                 exitCode = 2;
                 this.STATE$.next(CoreStateEnum.DESTRUCTION_DONE);
             }, () => {
@@ -150,25 +137,11 @@ export class CORE {
     protected destroyTheArmy(): Observable<boolean> {
         return of(true);
     }
-    protected executeScan(): void {
-        this.SUBSCRIPTIONS$.add(this.fileHandler.initialize().subscribe(
-            () => {
-                if (this.STATE$.getValue() === CoreStateEnum.BEFORE_INITIALIZATION_STARTED) {
-                    this.STATE$.next(CoreStateEnum.BEFORE_INITIALIZATION_DONE);
-                }
-            }, (error: Error) => {
-                this.ERROR$.next(error);
-            }
-        ));
-    }
     public getCoreState(): CoreStateEnum {
         return this.STATE$.getValue();
     }
     public getDependencyHandler(): DependencyHandler {
         return this.dependencyHandler;
-    }
-    public getInstanceHandler(): InstanceHandler {
-        return this.instanceHandler;
     }
     public getPropertiesHandlder(): PropertiesHandler {
         return this.propertiesHandler;
@@ -200,6 +173,27 @@ export class CORE {
             }
         ));
     }
+    protected initializeHandlers(): void {
+        try {
+            this.propertiesHandler = new PropertiesHandler(this, this.logger);
+            this.checkoutProperties();
+            this.registerHandler = new RegisterHandler(this, this.logger);
+            this.instanceHandler = new InstanceHandler(this, this.logger, this.registerHandler);
+            this.dependencyHandler = new DependencyHandler(this, this.logger, this.instanceHandler, this.registerHandler);
+            this.fileHandler = new FileHandler(this, this.coreProperties.scan as PropertyModel, this.logger);
+            this.instanceHandler.registerInstance(this.logger);
+            this.SUBSCRIPTIONS$.add(this.whenInitilizationIsDone().subscribe(() => this.afterInitialization()));
+            this.SUBSCRIPTIONS$.add(this.fileHandler.initialize().subscribe(
+                () => {
+                    this.STATE$.next(CoreStateEnum.BEFORE_INITIALIZATION_DONE);
+                }, (error: Error) => {
+                    this.setError(error);
+                }
+            ));
+        } catch (error) {
+            this.setError(error);
+        }
+    }
     public isDestroyed(): boolean {
         const state: CoreStateEnum = this.STATE$.getValue();
         return state === CoreStateEnum.DESTRUCTION_STARTED || state == CoreStateEnum.DESTRUCTION_DONE;
@@ -211,7 +205,7 @@ export class CORE {
         this.logger.info(message.toString(), '[The Way]');
     }
     protected logError(message: string | number, error: Error): void {
-        this.logger.error(error, '[The Way]', message?.toString());
+        this.logger.error(error, '[The Way]', message.toString());
     }
     public setError(error: Error): void {
         this.ERROR$.next(error);
@@ -242,10 +236,6 @@ export class CORE {
     }
 }
 
-// protected buildDependecyTree(): void {
-//     this.logInfo(MessagesEnum['building-tree-instances']);
-//     this.dependendyHandler.buildDependenciesTree();
-// }
 // protected buildHttpService(): void {
 //     const serverProperties = this.propertiesConfiguration.properties.server;
 //     if (serverProperties.enabled) {
@@ -254,51 +244,4 @@ export class CORE {
 //         this.instanceHandler.buildInstance<ServerConfiguration>(ServerConfiguration.name, ServerConfiguration);
 //         this.instanceHandler.buildInstance<HttpService>(HttpService.name, HttpService);
 //     }
-// }
-// protected buildInstances(): void {
-//     this.logInfo(MessagesEnum['building-instances']);
-//     this.instanceHandler.buildInstances();
-// }
-// protected buildMain(application: Function | Object): void {
-//     this.logInfo(MessagesEnum['building-application']);
-//     let instance = application;
-//
-//     if (application instanceof Function) {
-//         instance = this.instanceHandler.buildInstance((application as Function).name, application);
-//     }
-//
-//     this.setApplicationInstance(instance);
-// }
-// protected buildPrimordial(): void {
-//     console.log('[The Way] ' + MessagesEnum['initializing-core']);
-//     this.propertiesConfiguration = this.instanceHandler.buildInstance(PropertiesConfiguration.name, PropertiesConfiguration);
-//     this.logger = this.instanceHandler.buildInstance(Logger.name, Logger);
-// }
-// public destroyCore(): void {
-//     this.logInfo(MessagesEnum['time-has-come-army']);
-//     const index = CORE.instances.findIndex((core: CORE) => core === this);
-//     CORE.instances.splice(index, 1);
-//     this.state$.next(CoreStateEnum.DESTROYED);
-//     this.state$.complete();
-// }
-// public getApplicationInstance(): any {
-//     return this.application;
-// }
-// public static getCoreInstance(application: TheWayApplication): CORE | undefined {
-//     return CORE.instances.find((core: CORE) => core.getApplicationInstance() === application);
-// }
-// public getDependecyHandler(): DependencyHandler {
-//     return this.dependendyHandler;
-// }
-// public getConfigurationHandlder(): ConfigurationHandler {
-//     return this.configurationHandler;
-// }
-// public getInstanceHandler(): InstanceHandler {
-//     return this.instanceHandler;
-// }
-// public getRestHandlder(): RestHandler {
-//     return this.restHandler;
-// }
-// public setApplicationInstance(instance: any): void {
-//     this.application = instance;
 // }

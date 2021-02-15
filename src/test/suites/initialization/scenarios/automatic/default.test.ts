@@ -6,9 +6,7 @@ describe('Initialization Test', () => {
             const core = CORE.getCoreInstance();
             core.whenReady().subscribe(
                 () => {
-                    console.log(core.getPropertiesHandlder().getProperties('the-way.core.scan'))
-                    const constructors = core.getInstanceHandler().getConstructors();
-                    console.log(constructors);
+                    const constructors = core.getRegisterHandler().getConstructors();
                     expect(Object.keys(constructors).length).toBe(0);
                     done();
                 }

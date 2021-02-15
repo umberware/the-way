@@ -9,6 +9,7 @@ import { PropertyModel } from '../model/property.model';
 import { Messages } from '../shared/messages';
 import { Logger } from '../shared/logger';
 import { ClassTypeEnum } from '../shared/class-type.enum';
+import { ApplicationException } from '../exeption/application.exception';
 
 /* eslint-disable  no-console */
 export class FileHandler {
@@ -81,29 +82,37 @@ export class FileHandler {
         }
     }
     protected async loadApplicationFiles(dirPath: string): Promise<void> {
-        const paths = readdirSync(dirPath);
-        for(const path of paths) {
-            if (this.core.isDestroyed()) {
-                break;
-            }
+        try {
+            const paths = readdirSync(dirPath);
+            for (const path of paths) {
+                if (this.core.isDestroyed()) {
+                    break;
+                }
 
-            const fullpath = dirPath + '/' + path;
-            const stat = statSync(fullpath);
-            if (stat.isDirectory()) {
-                await this.loadApplicationFiles(fullpath);
-            } else {
-                const extensions = this.EXTENSIONS.toString().replace(',', '|').replace(/\./g, '\\.');
+                const fullpath = dirPath + '/' + path;
+                const stat = statSync(fullpath);
+                if (stat.isDirectory()) {
+                    await this.loadApplicationFiles(fullpath);
+                } else {
+                    const extensions = this.EXTENSIONS.toString().replace(',', '|').replace(/\./g, '\\.');
 
-                if (path.search(extensions) > -1) {
-                    const fullpath = dirPath + '/' + path;
-                    const stat = statSync(fullpath);
-                    if (stat.isDirectory()) {
-                        await this.loadApplicationFiles(fullpath);
-                    } else {
-                        await this.importFile(fullpath);
+                    if (path.search(extensions) > -1) {
+                        const fullpath = dirPath + '/' + path;
+                        const stat = statSync(fullpath);
+                        if (stat.isDirectory()) {
+                            await this.loadApplicationFiles(fullpath);
+                        } else {
+                            await this.importFile(fullpath);
+                        }
                     }
                 }
             }
+        } catch (ex) {
+            throw new ApplicationException(
+                Messages.getMessage('cannot-scan', ex.message),
+                Messages.getMessage('not-found'),
+                Messages.getCodeMessage('not-found-code')
+            );
         }
     }
 }

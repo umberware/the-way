@@ -3,6 +3,7 @@ import { CORE } from './core';
 export abstract class TheWayApplication {
     constructor() {
         const core = CORE.getCoreInstance();
+
         core.initialize(this, false);
         core.whenReady().subscribe(
             () => {

@@ -1,10 +1,11 @@
-const messages: { [key: string]: { [key: string]: string | number; } } = {
+export const MESSAGES: { [key: string]: { [key: string]: string | number; } } = {
     'en': {
         'bad-request': 'Bad Request',
         'bad-request-code': 400,
         'building': 'Building instances and dependencies...',
         'building-class': 'Building instance for $',
         'building-dependencies-tree': 'Building dependencies tree...',
+        'cannot-scan': 'Cannot scan files with the provided path $',
         'circular-dependency': 'Found a circular dependency between $ -> $',
         'configuring': 'Configuring some things...',
         'destroying': 'Descruction process started...',
@@ -44,17 +45,18 @@ const messages: { [key: string]: { [key: string]: string | number; } } = {
 };
 
 export class Messages {
+    static messages = MESSAGES;
     static language = 'en'
     static setLanguage(language: string): void {
         this.language = language;
     }
     private static get(name: string): string | number {
-        const defaulMessages = messages.en;
-        let languageMessages = messages[this.language];
+        const defaultMessages = this.messages.en;
+        let languageMessages = this.messages[this.language];
         if (!languageMessages) {
-            languageMessages = defaulMessages;
+            languageMessages = defaultMessages;
         }
-        return (languageMessages[name]) ? languageMessages[name] : defaulMessages[name];
+        return (languageMessages[name]) ? languageMessages[name] : defaultMessages[name];
     }
     static getCodeMessage(name: string): number {
         return this.get(name) as number;

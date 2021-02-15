@@ -1,4 +1,4 @@
-import { Inject, Service } from '../../main';
+import { Inject, Service } from '../../../main';
 
 import { DependencyAServiceTest } from './dependency-a.service.test';
 import { DependencyBServiceTest } from './dependency-b.service.test';

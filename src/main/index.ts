@@ -1,11 +1,10 @@
 export { CORE } from './core/core';
 export { Application } from './core/decorator/application.decorator';
 export { Service } from './core/decorator/service.decorator';
-export { Rest } from './core/decorator/rest.decorator';
 export { TheWayApplication } from './core/the-way-application';
 export { Configuration } from './core/decorator/configuration.decorator';
 export { ClassTypeEnum } from './core/shared/class-type.enum';
-export { Messages } from './core/shared/messages';
+export { Messages, MESSAGES } from './core/shared/messages';
 export { Inject } from './core/decorator/inject.decorator';
 export { CoreStateEnum } from './core/shared/core-state.enum';
 export { LogLevelEnum } from './core/shared/log-level.enum';
