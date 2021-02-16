@@ -9,6 +9,7 @@ the-way:
             level: 1
             date: true
         language: 'en'
+        processExit: false
     server:
         enabled: true
         operations-log: true

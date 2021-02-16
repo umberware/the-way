@@ -7,6 +7,9 @@ import { Messages } from '../shared/messages';
 import { ConfigurationMetaKey } from '../decorator/configuration.decorator';
 import { Configurable } from '../shared/configurable';
 import { Destroyable } from '../shared/destroyable';
+import { forkJoin, Observable } from 'rxjs';
+import { defaultIfEmpty, map } from 'rxjs/operators';
+import { fromPromise } from 'rxjs/internal-compatibility';
 
 /*
     eslint-disable @typescript-eslint/ban-types,
@@ -51,6 +54,40 @@ export class InstanceHandler {
     }
     protected buildObject(constructor: Function): Object {
         return new constructor.prototype.constructor();
+    }
+    public configure(): Observable<boolean> {
+        const configurables: Array<Observable<void>> = [];
+
+        for (const configurable of this.registerHandler.getConfigurables()) {
+            const result = configurable.configure();
+            if (result instanceof Promise) {
+                configurables.push(fromPromise(result));
+            } else {
+                configurables.push(result);
+            }
+        }
+
+        return forkJoin(configurables).pipe(
+            map(() => true),
+            defaultIfEmpty(true)
+        );
+    }
+    public destroy(): Observable<boolean> {
+        const destroyables: Array<Observable<void>> = [];
+
+        for (const configurable of this.registerHandler.getDestroyable()) {
+            const result = configurable.destroy();
+            if (result instanceof Promise) {
+                destroyables.push(fromPromise(result));
+            } else {
+                destroyables.push(result);
+            }
+        }
+
+        return forkJoin(destroyables).pipe(
+            map(() => true),
+            defaultIfEmpty(true)
+        );
     }
     protected initialize(): void {
         this.INSTANCES = {};

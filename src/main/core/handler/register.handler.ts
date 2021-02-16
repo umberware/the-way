@@ -29,6 +29,9 @@ export class RegisterHandler {
     ) {
         this.initialize();
     }
+    public getConfigurables(): Array<Configurable> {
+        return this.CONFIGURABLE;
+    }
     public getConstructors(): ConstructorMapModel {
         return this.CONSTRUCTORS;
     }
@@ -50,6 +53,9 @@ export class RegisterHandler {
     }
     public getDependency(dependent: string, dependency: string): DependencyModel {
         return this.DEPENDENCIES[dependent][dependency];
+    }
+    public getDestroyable(): Array<Destroyable> {
+        return this.DESTROYABLE;
     }
     public getOverriden(): OverriddenMapModel {
         return this.OVERRIDEN;

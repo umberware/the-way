@@ -8,8 +8,9 @@ beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });
 test('Injection: Service And Configuration', done => {
-    const scanPath = 'src/test/resources/injection/service-and-configuration';
+    const scanPath = '/src/test/resources/injection/service-and-configuration';
     process.argv.push('--the-way.core.scan.path=' + scanPath);
+    process.argv.push('--the-way.core.processExit=' + true);
     process.argv.push('--the-way.core.scan.enabled=true');
 
     import('../../resources/environment/main/main.test').then((result) => {
@@ -17,10 +18,13 @@ test('Injection: Service And Configuration', done => {
         core.whenReady().subscribe(
             () => {
                 const instances = EnvironmentTest.getInstancesWithout(core, [result.Main]);
-                console.log(core.getInstanceHandler().getInstances())
                 expect(JSON.stringify(core.getDependencyHandler().getDependenciesTree())).toBe(JSON.stringify({}));
-                expect(JSON.stringify(instances)).toBe('[{},{}]');
-                done();
+                expect(JSON.stringify(instances)).toBe('[{},{},{}]');
+                core.destroy().subscribe(
+                    () => {
+                        done();
+                    }
+                );
             }
         );
     });

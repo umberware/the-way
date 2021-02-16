@@ -120,7 +120,7 @@
         "coverageDirectory": "./dist/src/test/coverage/",
         "collectCoverageFrom": [
             "src/main/**/*.ts",
-            "!src/*/filesToExclude.ts"
+            "!src/main/index.ts"
         ],
         "globals": {
             "ts-jest": {

@@ -5,7 +5,11 @@ import { AConfigurationTest } from './a.configuration.test';
 
 @Configuration(AConfigurationTest)
 export class BConfigurationTest extends Configurable {
-    public destroy(): Observable<boolean> {
-        return of(true);
+    public configure(): Observable<any> | Promise<any> {
+        return of('Rock U');
+    }
+
+    public destroy(): Observable<string> {
+        return of('=)');
     }
 }

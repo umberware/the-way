@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 
 @Service()
 export class DestructibleServiceTest extends Destroyable {
-    public destroy(): Observable<boolean> {
-        return of(true);
+    public destroy(): Observable<void> {
+        return of();
     }
 }

@@ -25,7 +25,7 @@ test('Override: Cascade Overriding', done => {
 
                 expect(JSON.stringify(tree)).toBe(JSON.stringify(expectedDependencyTree));
                 expect(JSON.stringify(overriden)).toBe(JSON.stringify(expectedOverriden));
-                expect(instances.length).toBe(2);
+                expect(instances.length).toBe(3);
                 done();
             }
         );

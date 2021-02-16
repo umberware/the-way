@@ -6,9 +6,7 @@ export const ConfigurationMetaKey = 'Configuration';
 export const Configuration = (over?: Function) => {
     return (constructor: Function): void => {
         const core = CORE.getCore();
-        if (!core.isDestroyed()) {
-            const registerHandler = core.getRegisterHandler();
-            registerHandler.registerConfiguration(constructor, over);
-        }
+        const registerHandler = core.getRegisterHandler();
+        registerHandler.registerConfiguration(constructor, over);
     };
 };

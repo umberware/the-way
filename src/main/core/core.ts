@@ -20,7 +20,7 @@ import { CryptoService } from './service/crypto.service';
     @typescript-eslint/explicit-module-boundary-types
 */
 export class CORE {
-    private static instance: CORE;
+    private static instance: CORE | undefined;
 
     protected INIT_TIME: Date;
     protected END_TIME: Date;
@@ -39,7 +39,7 @@ export class CORE {
     protected registerHandler: RegisterHandler;
 
     public static getCore(): CORE {
-        return this.instance;
+        return this.instance as CORE;
     }
     public static getCoreOrCreate(): CORE {
         if (!this.instance) {
@@ -76,36 +76,30 @@ export class CORE {
         ));
         this.initializeHandlers();
     }
-    protected build(): Observable<void> {
+    protected build(): Observable<boolean> {
         this.logInfo(Messages.getMessage('building'));
-        return forkJoin([
-            this.registerDefaults(),
-            this.buildDependenciesTree(),
-            this.buildInstances()
-        ]).pipe(
-            map(() => {}),
-            defaultIfEmpty()
-        );
+        this.registerDefaults();
+        this.buildDependenciesTree();
+        this.buildInstances();
+        return of(true);
     }
-    protected buildApplication(constructor: Function | Object): Observable<void> {
+    protected buildApplication(constructor: Function | Object): Observable<boolean> {
         this.logInfo(Messages.getMessage('building-application-class'));
         if ((typeof constructor) === 'object') {
             this.instanceHandler.registerInstance(constructor);
         } else {
             this.instanceHandler.buildApplication(constructor as Function);
         }
-        return of();
+        return of(true);
     }
-    protected buildDependenciesTree(): Observable<void> {
+    protected buildDependenciesTree(): void {
         this.logInfo(Messages.getMessage('building-dependencies-tree'));
         this.dependencyHandler.buildDependenciesTree();
-        return of();
     }
-    protected buildInstances(): Observable<void> {
+    protected buildInstances(): void {
         this.logInfo(Messages.getMessage('building-instances'));
         this.dependencyHandler.buildDependenciesInstances();
         this.instanceHandler.buildInstances();
-        return of();
     }
     protected calculateElapsedTime(): string {
         return ((this.END_TIME.getTime() - this.INIT_TIME.getTime())/1000) + 's';
@@ -117,20 +111,18 @@ export class CORE {
         Messages.setLanguage(languageProperty);
         this.logger.setProperties(logProperties);
     }
-    protected configure(): Observable<void> {
-        this.logInfo(Messages.getMessage('configuring'));
-        return of();
+    protected configure(): Observable<boolean> {
+        return this.instanceHandler.configure();
     }
-    public destroy(error?: Error): void {
+    public destroy(error?: Error): Observable<boolean> {
         if (this.isDestroyed()) {
-            return;
+            return this.whenDestroyed();
         }
 
         if (error) {
             this.logError(Messages.getMessage('error-occured-destroying'), error as Error);
         }
-
-        let exitCode = (!error) ? 0 : 1;
+        let code = (!error) ? 0 : 1;
         this.STATE$.next(CoreStateEnum.DESTRUCTION_STARTED);
         this.logInfo(Messages.getMessage('destroying'));
         this.SUBSCRIPTIONS$.add(this.destroyTheArmy().subscribe(
@@ -140,16 +132,26 @@ export class CORE {
             }, (destructionError: Error) => {
                 this.logError(Messages.getMessage('destroyed-with-error'), destructionError);
                 this.setError(destructionError);
-                exitCode = 2;
                 this.STATE$.next(CoreStateEnum.DESTRUCTION_DONE);
+                code = 2;
             }, () => {
+                // CORE.instance = undefined;
+                // this.STATE$.complete();
+                // this.ERROR$.complete();
                 this.SUBSCRIPTIONS$.unsubscribe();
-                process.exit(exitCode);
+                if (this.coreProperties && this.coreProperties['processExit'] as boolean) {
+                    process.exit(code)
+                }
             }
         ));
+        return this.whenDestroyed();
     }
     protected destroyTheArmy(): Observable<boolean> {
-        return of(true);
+        if (this.instanceHandler) {
+            return this.instanceHandler.destroy();
+        } else {
+            return of();
+        }
     }
     public getCoreState(): CoreStateEnum {
         return this.STATE$.getValue();
@@ -187,14 +189,13 @@ export class CORE {
             }
         ));
     }
-    protected initialize(constructor: Function | Object): Observable<void> {
+    protected initialize(constructor: Function | Object): Observable<boolean> {
         return forkJoin([
             this.build(),
             this.configure(),
             this.buildApplication(constructor)
         ]).pipe(
-            map(()  => {}),
-            defaultIfEmpty()
+            map(()  => true)
         );
     }
     protected initializeHandlers(): void {
@@ -230,9 +231,8 @@ export class CORE {
     protected logError(message: string | number, error: Error): void {
         this.logger.error(error, '[The Way]', message.toString());
     }
-    protected registerDefaults(): Observable<void> {
+    protected registerDefaults(): void {
         this.registerHandler.registerService(CryptoService);
-        return of();
     }
     public setError(error: Error): void {
         this.ERROR$.next(error);
@@ -244,6 +244,14 @@ export class CORE {
         return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.BEFORE_INITIALIZATION_DONE),
             map(() => true)
+        );
+    }
+    public whenDestroyed(): Observable<any> {
+        return this.STATE$.pipe(
+            filter((state: CoreStateEnum) => state === CoreStateEnum.DESTRUCTION_DONE),
+            map(() => {
+                return this.ERROR$.getValue();
+            })
         );
     }
     public whenInitilizationIsDone(): Observable<boolean> {
