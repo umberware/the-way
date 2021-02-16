@@ -31,13 +31,6 @@ export class InstanceHandler {
         this.registerInstance(object);
         return object;
     }
-    public buildInstances(): void {
-        Object.values(this.registerHandler.getConstructors()).forEach(
-            (registeredConstructor: ConstructorModel) => {
-                this.buildInstance(registeredConstructor.constructorFunction);
-            }
-        );
-    }
     public buildInstance<T>(constructor: Function): T | null {
         const registeredConstructor = this.registerHandler.getConstructor(constructor.name);
         const registeredConstructorName = registeredConstructor.name;
@@ -51,6 +44,13 @@ export class InstanceHandler {
         } else {
             return this.INSTANCES[registeredConstructorName] as T;
         }
+    }
+    public buildInstances(): void {
+        Object.values(this.registerHandler.getConstructors()).forEach(
+            (registeredConstructor: ConstructorModel) => {
+                this.buildInstance(registeredConstructor.constructorFunction);
+            }
+        );
     }
     protected buildObject(constructor: Function): Object {
         return new constructor.prototype.constructor();
@@ -89,9 +89,6 @@ export class InstanceHandler {
             defaultIfEmpty(true)
         );
     }
-    protected initialize(): void {
-        this.INSTANCES = {};
-    }
     public getInstanceByName<T>(name: string): T{
         const registeredConstructor = this.registerHandler.getConstructor(name);
         return this.INSTANCES[registeredConstructor.name];
@@ -107,6 +104,9 @@ export class InstanceHandler {
         if (instance instanceof Destroyable) {
             this.registerHandler.registerDestroyable(instance);
         }
+    }
+    protected initialize(): void {
+        this.INSTANCES = {};
     }
     public registerInstance(instance: Object): void {
         this.INSTANCES[instance.constructor.name] = instance;
