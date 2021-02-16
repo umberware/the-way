@@ -1,9 +1,9 @@
-'use  strict';
+// import { X } from './configuration/x';
 
 import 'reflect-metadata';
 
 import { BehaviorSubject, forkJoin, Observable, of, throwError } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { defaultIfEmpty, filter, map, switchMap } from 'rxjs/operators';
 
 import { CoreStateEnum } from './shared/core-state.enum';
 import { DependencyHandler } from './handler/dependency.handler';
@@ -14,10 +14,11 @@ import { PropertiesHandler } from './handler/properties.handler';
 import { PropertyModel } from './model/property.model';
 import { Logger } from './shared/logger';
 import { RegisterHandler } from './handler/register.handler';
-import { CryptoService } from './service/crypto.service';
 import { ApplicationException } from './exeption/application.exception';
 import { ConstructorMapModel } from './model/constructor-map.model';
 import { OverriddenMapModel } from './model/overridden-map.model';
+
+'use  strict';
 
 /*
     eslint-disable @typescript-eslint/ban-types,
@@ -30,37 +31,39 @@ export class CORE {
     protected static ERROR: ApplicationException;
     protected static INIT_TIME: Date;
     protected static INSTANCE$: BehaviorSubject<CORE | undefined> = new BehaviorSubject<CORE | undefined>(undefined);
-    protected static IS_INITIALIZATION_CALLED = false;
+    protected static REGISTERING: Array<any> = [];
     protected static STATE$: BehaviorSubject<CoreStateEnum> = new BehaviorSubject<CoreStateEnum>(CoreStateEnum.WAITING);
 
-    protected application: Object;
-    protected coreProperties: PropertyModel;
-    protected dependencyHandler: DependencyHandler;
-    protected fileHandler: FileHandler;
-    protected instanceHandler: InstanceHandler;
-    protected logger: Logger;
-    protected propertiesHandler: PropertiesHandler;
-    protected registerHandler: RegisterHandler;
-
     protected static afterInitialization(): void {
-        const instance = this.getCore();
+        const instance = this.getInstance();
         CORE.END_TIME = new Date();
         instance.afterInitialization();
     }
     protected static beforeInitialization(): void {
-        const instance = this.getCore();
+        const instance = this.getInstance();
         CORE.INIT_TIME = new Date();
         instance.beforeInitialization();
+        this.whenHasInstanceAndBeforeInitializationIsDone().subscribe(
+            () => {
+                this.REGISTERING.forEach((toRegister) => {
+                    const register = this.getInstance().getRegisterHandler();
+                    const method = Reflect.get(register, toRegister.methodName) as Function;
+                    Reflect.apply(method, register, toRegister.args);
+                });
+                this.STATE$.next(CoreStateEnum.INITIALIZATION_STARTED);
+            }
+        );
     }
-    public static createCore(): void {
+    public static createCore(application: Function | Object): void {
         if (!this.INSTANCE$.getValue()) {
             this.INSTANCE$.next(new CORE());
+            this.APPLICATION = application;
             CORE.STATE$.next(CoreStateEnum.BEFORE_INITIALIZATION_STARTED);
             this.watchState().subscribe(
                 (coreState: CoreStateEnum) => {
                     if (coreState === CoreStateEnum.BEFORE_INITIALIZATION_STARTED) {
                         CORE.beforeInitialization();
-                    } else if (coreState === CoreStateEnum.INITIALIZATION_DONE ) {
+                    } else if (coreState === CoreStateEnum.INITIALIZATION_DONE) {
                         CORE.afterInitialization();
                     } else if (coreState === CoreStateEnum.INITIALIZATION_STARTED ) {
                         CORE.initialization();
@@ -77,68 +80,63 @@ export class CORE {
         return CORE.whenDestroyed();
     }
     public static getConstructors(): ConstructorMapModel {
-        const instance = this.getCore();
-        return instance.getRegisterHandler().getConstructors();
-    }
-    protected static getCore(): CORE {
-        return this.INSTANCE$.getValue() as CORE;
+        const instance = this.getInstance();
+        return instance.getRegisterHandler().getComponents();
     }
     public static getCoreState(): CoreStateEnum {
         return CORE.STATE$.getValue();
     }
     public static getDependenciesTree(): any {
-        const instance = this.getCore();
+        const instance = this.getInstance();
         return instance.getDependencyHandler().getDependenciesTree();
     }
-    public static getInstanceByName<T>(name: string): T {
-        const instance = this.getCore();
+    public static getInstanceByName<T>(name: string): T | undefined {
+        const instance = this.getInstance();
         return instance.getInstanceHandler().getInstanceByName<T>(name);
     }
+    protected static getInstance(): CORE {
+        return this.INSTANCE$.getValue() as CORE;
+    }
     public static getInstances(): Array<any> {
-        const instance = this.getCore();
+        const instance = this.getInstance();
         return instance.getInstanceHandler().getInstances();
     }
     public static getOverriden(): OverriddenMapModel {
-        const instance = this.getCore();
+        const instance = this.getInstance();
         return instance.getRegisterHandler().getOverriden();
     }
     public static getPropertiesHandler(): PropertiesHandler {
-        const instance = this.getCore();
+        const instance = this.getInstance();
         return instance.getPropertiesHandlder();
     }
     public static initialization(): void {
-        const instance = this.getCore();
+        const instance = this.getInstance();
         instance.initialize(this.APPLICATION);
-    }
-    public static initialize(application: Function | Object): void {
-        if (this.IS_INITIALIZATION_CALLED) {
-            return;
-        }
-
-        this.APPLICATION = application;
-        this.IS_INITIALIZATION_CALLED = true;
-        CORE.whenBeforeInitializationIsDone().subscribe(
-            () => CORE.STATE$.next(CoreStateEnum.INITIALIZATION_STARTED)
-        );
     }
     public static isDestroyed(): boolean {
         const state: CoreStateEnum = CORE.getCoreState();
         return state === CoreStateEnum.DESTRUCTION_STARTED || state == CoreStateEnum.DESTRUCTION_DONE;
     }
+    protected static register(methodName: string, args: Array<any>): void {
+        this.REGISTERING.push({
+            methodName,
+            args
+        });
+    }
     public static registerConfiguration(configurationConstructor: Function, over?: Function): void {
-        const instance = this.getCore();
-        instance.getRegisterHandler().registerConfiguration(configurationConstructor, over);
+        this.register('registerConfiguration', [configurationConstructor, over]);
     }
     public static registerInjection(source: Function, injector: object, key: string): void {
-        const instance = this.getCore();
-        instance.getRegisterHandler().registerInjection(source, injector, key);
+        this.register('registerInjection', [source, injector, key]);
     }
     public static registerService(serviceConstructor: Function, over?: Function): void {
-        const instance = this.getCore();
-        instance.getRegisterHandler().registerService(serviceConstructor, over);
+        this.register('registerService', [serviceConstructor, over]);
+    }
+    public static registerCoreComponent(componenteConstructor: Function): void {
+        this.register('registerCoreComponent', [componenteConstructor]);
     }
     public static setError(error: ApplicationException): void {
-        const instance = this.INSTANCE$.getValue() as CORE;
+        const instance = this.getInstance();
         this.ERROR = error;
         if (!this.isDestroyed()) {
             instance.destroy(error as Error);
@@ -158,6 +156,14 @@ export class CORE {
             })
         );
     }
+    protected static whenHasInstanceAndBeforeInitializationIsDone(): Observable<boolean> {
+        return this.INSTANCE$.pipe(
+            filter((instance: CORE | undefined) => instance !== undefined),
+            switchMap(() => {
+                return this.whenBeforeInitializationIsDone();
+            })
+        )
+    }
     public static whenReady(): Observable<boolean> {
         return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.READY),
@@ -167,6 +173,15 @@ export class CORE {
     public static watchState(): Observable<CoreStateEnum> {
         return this.STATE$;
     }
+
+    protected application: Object;
+    protected coreProperties: PropertyModel;
+    protected dependencyHandler: DependencyHandler;
+    protected fileHandler: FileHandler;
+    protected instanceHandler: InstanceHandler;
+    protected logger: Logger;
+    protected propertiesHandler: PropertiesHandler;
+    protected registerHandler: RegisterHandler;
 
     protected afterInitialization(): void {
         this.logInfo(Messages.getMessage('ready', [this.calculateElapsedTime()]));
@@ -197,8 +212,8 @@ export class CORE {
     protected build(): Observable<boolean> {
         try {
             this.logInfo(Messages.getMessage('building'));
-            this.registerDefaults();
             this.buildDependenciesTree();
+            this.buildCoreInstances();
             this.buildInstances();
         } catch (ex) {
             return throwError(ex);
@@ -213,6 +228,10 @@ export class CORE {
             this.instanceHandler.buildApplication(constructor as Function);
         }
         return of(true);
+    }
+    protected buildCoreInstances(): void {
+        this.logInfo(Messages.getMessage('building-instances'));
+        this.instanceHandler.buildCoreInstances();
     }
     protected buildDependenciesTree(): void {
         this.logInfo(Messages.getMessage('building-dependencies-tree'));
@@ -308,8 +327,5 @@ export class CORE {
     }
     protected logError(message: string | number, error: Error): void {
         this.logger.error(error, '[The Way]', message.toString());
-    }
-    protected registerDefaults(): void {
-        this.registerHandler.registerService(CryptoService);
     }
 }

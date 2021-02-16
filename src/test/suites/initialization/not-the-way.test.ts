@@ -8,16 +8,12 @@ beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });
 test('Initialization: Main Not Extended The Way', done => {
-    import('../../resources/environment/main/not-extended.test').then(() => {
-        CORE.whenDestroyed().subscribe(
-            (error: ApplicationException | void) => {
-                if (error) {
-                    expect(error.getCode()).toBe(Messages.getMessage('TW-001'));
-                    expect(error.getDescription()).toBe(Messages.getMessage('internal-error'));
-                    expect(error.getDetail()).toBe(Messages.getMessage('is-not-the-way'))
-                    done();
-                }
-            }
-        );
-    })
+    import('../../resources/environment/main/not-extended.test').catch(
+        (error: ApplicationException) => {
+            expect(error.getCode()).toBe(Messages.getMessage('TW-001'));
+            expect(error.getDescription()).toBe(Messages.getMessage('internal-error'));
+            expect(error.getDetail()).toBe(Messages.getMessage('is-not-the-way'))
+            done();
+        }
+    );
 });

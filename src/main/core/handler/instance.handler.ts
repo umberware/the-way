@@ -1,3 +1,8 @@
+
+import { forkJoin, Observable, of } from 'rxjs';
+import { defaultIfEmpty, map } from 'rxjs/operators';
+import { fromPromise } from 'rxjs/internal-compatibility';
+
 import { CORE } from '../core';
 import { Logger } from '../shared/logger';
 import { InstancesMapModel } from '../model/instances-map.model';
@@ -7,9 +12,6 @@ import { Messages } from '../shared/messages';
 import { ConfigurationMetaKey } from '../decorator/configuration.decorator';
 import { Configurable } from '../shared/configurable';
 import { Destroyable } from '../shared/destroyable';
-import { forkJoin, Observable } from 'rxjs';
-import { defaultIfEmpty, map } from 'rxjs/operators';
-import { fromPromise } from 'rxjs/internal-compatibility';
 
 /*
     eslint-disable @typescript-eslint/ban-types,
@@ -45,8 +47,15 @@ export class InstanceHandler {
             return this.INSTANCES[registeredConstructorName] as T;
         }
     }
+    public buildCoreInstances(): void {
+        Object.values(this.registerHandler.getCoreComponents()).forEach(
+            (registeredConstructor: ConstructorModel) => {
+                this.buildInstance(registeredConstructor.constructorFunction);
+            }
+        );
+    }
     public buildInstances(): void {
-        Object.values(this.registerHandler.getConstructors()).forEach(
+        Object.values(this.registerHandler.getComponents()).forEach(
             (registeredConstructor: ConstructorModel) => {
                 this.buildInstance(registeredConstructor.constructorFunction);
             }
@@ -62,8 +71,10 @@ export class InstanceHandler {
             const result = configurable.configure();
             if (result instanceof Promise) {
                 configurables.push(fromPromise(result));
-            } else {
+            } else if (result instanceof Observable) {
                 configurables.push(result);
+            } else {
+                configurables.push(of(result));
             }
         }
 
@@ -79,8 +90,10 @@ export class InstanceHandler {
             const result = configurable.destroy();
             if (result instanceof Promise) {
                 destroyables.push(fromPromise(result));
-            } else {
+            } else if (result instanceof Observable) {
                 destroyables.push(result);
+            } else {
+                destroyables.push(of(result));
             }
         }
 
@@ -89,9 +102,13 @@ export class InstanceHandler {
             defaultIfEmpty(true)
         );
     }
-    public getInstanceByName<T>(name: string): T{
+    public getInstanceByName<T>(name: string): T | undefined {
         const registeredConstructor = this.registerHandler.getConstructor(name);
-        return this.INSTANCES[registeredConstructor.name];
+        if (registeredConstructor) {
+            return this.INSTANCES[registeredConstructor.name];
+        } else {
+            return undefined;
+        }
     }
     public getInstances(): Array<any> {
         return Object.values(this.INSTANCES);

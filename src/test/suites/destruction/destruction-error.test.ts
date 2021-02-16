@@ -1,3 +1,5 @@
+import { switchMap } from 'rxjs/operators';
+
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 import { ApplicationException, CORE, Messages } from '../../../main';
 
@@ -12,10 +14,14 @@ test('With Error', (done) => {
     import('../../resources/environment/main/not-automatic-main.test').then(
         (value => {
             const message = 'Wakeup Samurai, We have a city to explode!!';
-            EnvironmentTest.buildCoreDestructionArmySpy(message);
             new value.NotAutomaticMainTest();
-            CORE.whenDestroyed().subscribe(
-                (error: ApplicationException | undefined) => {
+            CORE.whenReady().pipe(
+                switchMap(() => {
+                    EnvironmentTest.buildCoreDestructionArmySpy(message);
+                    return CORE.destroy();
+                })
+            ).subscribe(
+                (error: ApplicationException | void) => {
                     if (error) {
                         expect(error.message).toBe(
                             Messages.getMessage('destroyed-with-error', [message]) +
@@ -28,7 +34,6 @@ test('With Error', (done) => {
                     }
                 }
             );
-            CORE.destroy();
         })
     );
 });

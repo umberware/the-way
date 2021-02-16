@@ -1,17 +1,17 @@
 import Spy = jasmine.Spy;
 import resetAllMocks = jest.resetAllMocks;
 import { Observable, Subscriber } from 'rxjs';
-import { CORE, CryptoService, Logger } from '../../../main';
+import { CORE, CryptoService, Logger, ServerConfiguration } from '../../../main';
 import { ConstructorMapModel } from '../../../main/core/model/constructor-map.model';
 
 export class EnvironmentTest {
     private static CORE_INSTANCES = ['CryptoService'];
-    private static CORE_TYPES = [ CryptoService, Logger ];
+    private static CORE_TYPES = [ CryptoService, Logger, ServerConfiguration ];
     private static processExitSpy: Spy
     private static processArgs: Array<string> = [ ...process.argv ];
 
     public static buildCoreConfigueSpy(message: string): void {
-        const core = (CORE as any).getCore();
+        const core = (CORE as any).getInstance();
         spyOn(core as any, 'configure').and.returnValue(
             new Observable((observer: Subscriber<boolean>) => {
                 observer.error({
@@ -23,7 +23,7 @@ export class EnvironmentTest {
         );
     }
     public static buildCoreDestructionArmySpy(message: string): void {
-        const core = (CORE as any).getCore();
+        const core = (CORE as any).getInstance();
         spyOn(core as any, 'destroyTheArmy').and.returnValue(
             new Observable((observer: Subscriber<boolean>) => {
                 observer.error(new Error(message));

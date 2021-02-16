@@ -3,7 +3,7 @@ import { CORE } from './core';
 /* eslint-disable @typescript-eslint/no-empty-function */
 export abstract class TheWayApplication {
     constructor() {
-        CORE.initialize(this);
+        CORE.createCore(this);
         CORE.whenReady().subscribe(
             () => {
                 if (!CORE.isDestroyed()) {

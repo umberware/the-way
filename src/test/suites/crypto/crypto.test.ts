@@ -19,7 +19,7 @@ describe('CryptoService: ', () => {
             () => {
                 CORE.whenReady().subscribe(
                     () => {
-                        cryptoService = CORE.getInstanceByName<CryptoService>('CryptoService');
+                        cryptoService = CORE.getInstanceByName<CryptoService>('CryptoService') as CryptoService;
                         done();
                     }
                 );

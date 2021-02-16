@@ -26,6 +26,7 @@ export { OverriddenModel } from './core/model/overridden.model';
 export { PropertiesHandler } from './core/handler/properties.handler';
 export { PropertyModel } from './core/model/property.model';
 export { RegisterHandler } from './core/handler/register.handler';
+export { ServerConfiguration } from './core/configuration/server.configuration';
 export { Service } from './core/decorator/service.decorator';
 export { TheWayApplication } from './core/the-way-application';
 

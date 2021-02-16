@@ -1,4 +1,4 @@
-import { CORE } from '../../../main';
+import { CORE, CoreStateEnum } from '../../../main';
 
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 
@@ -12,8 +12,13 @@ test('Initialization: Cannot Configure', (done) => {
     import('../../resources/environment/main/not-automatic-main.test').then(
         (value => {
             const message = 'Luke, I\'m your father!!!';
-            EnvironmentTest.buildCoreConfigueSpy(message);
-            new value.NotAutomaticMainTest();
+            CORE.watchState().subscribe(
+                (core: CoreStateEnum) => {
+                    if (core === CoreStateEnum.BEFORE_INITIALIZATION_STARTED) {
+                        EnvironmentTest.buildCoreConfigueSpy(message);
+                    }
+                }
+            );
             CORE.whenDestroyed().subscribe(
                 (error) => {
                     if (error) {
@@ -23,6 +28,7 @@ test('Initialization: Cannot Configure', (done) => {
                     }
                 }
             );
+            new value.NotAutomaticMainTest();
         })
     );
 });
