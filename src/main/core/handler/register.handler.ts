@@ -8,7 +8,6 @@ import { Logger } from '../shared/logger';
 import { Messages } from '../shared/messages';
 import { ConfigurationMetaKey } from '../decorator/configuration.decorator';
 import { ApplicationException } from '../exeption/application.exception';
-import { ServiceMetaKey } from '../decorator/service.decorator';
 import { ConstructorMapModel } from '../model/constructor-map.model';
 import { DependencyModel } from '../model/dependency.model';
 import { DependencyMapModel } from '../model/dependency-map.model';
@@ -48,7 +47,7 @@ export class RegisterHandler {
                 isOverrided = false;
             }
         } while(isOverrided);
-        let constructor = this.COMPONENTS[finalName];
+        const constructor = this.COMPONENTS[finalName];
         return (constructor) ? constructor : this.CORE_COMPONENTS[finalName];
     }
     public getCoreComponents(): ConstructorMapModel {

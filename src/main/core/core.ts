@@ -1,9 +1,9 @@
-// import { X } from './configuration/x';
+'use  strict';
 
 import 'reflect-metadata';
 
 import { BehaviorSubject, forkJoin, Observable, of, throwError } from 'rxjs';
-import { defaultIfEmpty, filter, map, switchMap } from 'rxjs/operators';
+import { filter, map, switchMap } from 'rxjs/operators';
 
 import { CoreStateEnum } from './shared/core-state.enum';
 import { DependencyHandler } from './handler/dependency.handler';
@@ -17,8 +17,6 @@ import { RegisterHandler } from './handler/register.handler';
 import { ApplicationException } from './exeption/application.exception';
 import { ConstructorMapModel } from './model/constructor-map.model';
 import { OverriddenMapModel } from './model/overridden-map.model';
-
-'use  strict';
 
 /*
     eslint-disable @typescript-eslint/ban-types,
@@ -162,7 +160,7 @@ export class CORE {
             switchMap(() => {
                 return this.whenBeforeInitializationIsDone();
             })
-        )
+        );
     }
     public static whenReady(): Observable<boolean> {
         return this.STATE$.pipe(

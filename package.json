@@ -94,6 +94,14 @@
             "/src/test/core",
             "/src/test/resources"
         ],
+        "coverageThreshold": {
+            "global": {
+                "branches": 100,
+                "functions": 100,
+                "lines": 100,
+                "statements": 100
+            }
+        },
         "testRegex": ".test.ts",
         "moduleFileExtensions": [
             "ts",
