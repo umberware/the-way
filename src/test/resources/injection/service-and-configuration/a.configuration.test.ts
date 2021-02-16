@@ -1,10 +1,9 @@
 import { Observable, of } from 'rxjs';
 
-import { Configuration,  } from '../../../../main';;
-import { AbstractConfiguration } from '../../../../main/core/configuration/abstract.configuration';
+import { Configuration, Configurable} from '../../../../main';
 
 @Configuration()
-export class AConfigurationTest extends AbstractConfiguration {
+export class AConfigurationTest extends Configurable {
     public destroy(): Observable<boolean> {
         return of(true);
     }

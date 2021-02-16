@@ -17,6 +17,7 @@ test('Injection: Service And Configuration', done => {
         core.whenReady().subscribe(
             () => {
                 const instances = EnvironmentTest.getInstancesWithout(core, [result.Main]);
+                console.log(core.getInstanceHandler().getInstances())
                 expect(JSON.stringify(core.getDependencyHandler().getDependenciesTree())).toBe(JSON.stringify({}));
                 expect(JSON.stringify(instances)).toBe('[{},{}]');
                 done();

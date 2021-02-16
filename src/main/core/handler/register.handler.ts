@@ -1,7 +1,11 @@
 import 'reflect-metadata';
 
 import { CORE } from '../core';
-import { ClassTypeEnum, Logger, Messages } from '../..';
+import { Configurable } from '../shared/configurable';
+import { ClassTypeEnum } from '../shared/class-type.enum';
+import { Destroyable } from '../shared/destroyable';
+import { Logger } from '../shared/logger';
+import { Messages } from '../shared/messages';
 import { ConfigurationMetaKey } from '../decorator/configuration.decorator';
 import { ApplicationException } from '../exeption/application.exception';
 import { ServiceMetaKey } from '../decorator/service.decorator';
@@ -13,8 +17,10 @@ import { OverriddenMapModel } from '../model/overridden-map.model';
 
 /* eslint-disable @typescript-eslint/ban-types */
 export class RegisterHandler {
+    protected CONFIGURABLE: Array<Configurable>;
     protected CONSTRUCTORS: ConstructorMapModel;
     protected DEPENDENCIES: DependencyMapModel;
+    protected DESTROYABLE: Array<Destroyable>
     protected OVERRIDEN: OverriddenMapModel;
 
     constructor(
@@ -23,13 +29,6 @@ export class RegisterHandler {
     ) {
         this.initialize();
     }
-
-    private initialize(): void {
-        this.DEPENDENCIES = {};
-        this.CONSTRUCTORS = {};
-        this.OVERRIDEN = {};
-    }
-
     public getConstructors(): ConstructorMapModel {
         return this.CONSTRUCTORS;
     }
@@ -55,6 +54,13 @@ export class RegisterHandler {
     public getOverriden(): OverriddenMapModel {
         return this.OVERRIDEN;
     }
+    private initialize(): void {
+        this.CONFIGURABLE = [];
+        this.CONSTRUCTORS = {};
+        this.DEPENDENCIES = {};
+        this.DESTROYABLE = [];
+        this.OVERRIDEN = {};
+    }
     public registerClass(name: string, constructor: Function, classType: ClassTypeEnum, forceUpdate?: boolean): void {
         this.logger.debug(Messages.getMessage('registering-class', [constructor.name, classType]), '[The Way]');
         const registeredConstructor = this.CONSTRUCTORS[name];
@@ -68,6 +74,9 @@ export class RegisterHandler {
         } else if (classType !== ClassTypeEnum.COMMON) {
             registeredConstructor.type = classType;
         }
+    }
+    public registerConfigurable(instance: Configurable): void {
+        this.CONFIGURABLE.push(instance);
     }
     public registerConfiguration(constructor: Function, over?: Function): void {
         const finalConstructor = (!over) ? constructor : over;
@@ -100,6 +109,9 @@ export class RegisterHandler {
             target: target,
             key: key
         } as DependencyModel;
+    }
+    public registerDestroyable(instance: Destroyable): void {
+        this.DESTROYABLE.push(instance);
     }
     public registerInjection(constructor: Function, target: object, propertyKey: string): void {
         if (this.core.isDestroyed()) {

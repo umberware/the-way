@@ -1,7 +1,7 @@
-export { AbstractConfiguration }  from './core/configuration/abstract.configuration';
 export { Application } from './core/decorator/application.decorator';
 export { ApplicationException } from './core/exeption/application.exception';
 export { ClassTypeEnum } from './core/shared/class-type.enum';
+export { Configurable }  from './core/shared/configurable';
 export { Configuration } from './core/decorator/configuration.decorator';
 export { ConfigurationsModel } from './core/model/configurations-model';
 export { ConstructorMapModel } from './core/model/constructor-map.model';

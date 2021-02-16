@@ -4,6 +4,9 @@ import { InstancesMapModel } from '../model/instances-map.model';
 import { RegisterHandler } from './register.handler';
 import { ConstructorModel } from '../model/constructor.model';
 import { Messages } from '../shared/messages';
+import { ConfigurationMetaKey } from '../decorator/configuration.decorator';
+import { Configurable } from '../shared/configurable';
+import { Destroyable } from '../shared/destroyable';
 
 /*
     eslint-disable @typescript-eslint/ban-types,
@@ -40,7 +43,7 @@ export class InstanceHandler {
             const instance = this.buildObject(registeredConstructor.constructorFunction);
             const decorators = Reflect.getMetadataKeys(registeredConstructor.constructorFunction);
             this.registerInstance(instance);
-            this.handleInstance(registeredConstructorName, instance, decorators);
+            this.handleInstance(instance, decorators);
             return instance as T;
         } else {
             return this.INSTANCES[registeredConstructorName] as T;
@@ -59,15 +62,14 @@ export class InstanceHandler {
     public getInstances(): Array<any> {
         return Object.values(this.INSTANCES);
     }
-    protected handleInstance<T>(instanceableName: string, instance: T, decorators: Array<string>): void {
-        // this.INSTANCES.set(instanceableName, instance as Object);
-        // if (decorators.includes(ConfigurationMetaKey) && instance instanceof AbstractConfiguration) {
-        //     this.configurationHandler.configureInstance(instance);
-        // }
-        //
-        // if (instance instanceof Destroyable) {
-        //     this.configurationHandler.registerDestroyable(instance);
-        // }
+    protected handleInstance<T>(instance: T, decorators: Array<string>): void {
+        if (decorators.includes(ConfigurationMetaKey) && instance instanceof Configurable) {
+            this.registerHandler.registerConfigurable(instance);
+        }
+
+        if (instance instanceof Destroyable) {
+            this.registerHandler.registerDestroyable(instance);
+        }
     }
     public registerInstance(instance: Object): void {
         this.INSTANCES[instance.constructor.name] = instance;

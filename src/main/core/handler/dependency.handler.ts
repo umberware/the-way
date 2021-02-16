@@ -93,11 +93,11 @@ export class DependencyHandler {
             }
         }
     }
-    protected initialize() {
-        this.DEPENDENCIES_TREE = {};
-    }
     public getDependenciesTree(): any {
         return this.DEPENDENCIES_TREE;
+    }
+    protected initialize() {
+        this.DEPENDENCIES_TREE = {};
     }
     protected printDependenciesTree(): void {
         const jsonAsString = JSON.stringify(JSON.stringify(this.DEPENDENCIES_TREE, null,  2))
