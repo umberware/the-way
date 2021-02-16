@@ -4,7 +4,7 @@ export abstract class TheWayApplication {
     constructor() {
         const core = CORE.getCore();
 
-        core.initialize(this, false);
+        core.initialization(this, false);
         core.whenReady().subscribe(
             () => {
                 if (!core.isDestroyed()) {

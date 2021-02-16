@@ -18,7 +18,7 @@ export const Application = (params?: { automatic?: boolean; }) => {
         }
 
         if (!params || params.automatic || params.automatic === undefined) {
-            core.initialize(constructor);
+            core.initialization(constructor);
         }
     };
 };

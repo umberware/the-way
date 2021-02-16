@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
 import { BehaviorSubject, forkJoin, Observable, of, Subscription } from 'rxjs';
-import { filter, map, switchMap } from 'rxjs/operators';
+import { defaultIfEmpty, filter, map, switchMap } from 'rxjs/operators';
 
 import { CoreStateEnum } from './shared/core-state.enum';
 import { DependencyHandler } from './handler/dependency.handler';
@@ -64,6 +64,9 @@ export class CORE {
         this.ERROR$ = new BehaviorSubject<Error | undefined>(undefined);
         this.SUBSCRIPTIONS$ = new Subscription();
         this.STATE$ = new BehaviorSubject<CoreStateEnum>(CoreStateEnum.BEFORE_INITIALIZATION_STARTED);
+        this.SUBSCRIPTIONS$.add(this.whenInitilizationIsDone().subscribe(
+            () => this.afterInitialization()
+        ));
         this.SUBSCRIPTIONS$.add(this.watchError().pipe(
             filter((result: Error | undefined) => result !== undefined)
         ).subscribe(
@@ -73,36 +76,36 @@ export class CORE {
         ));
         this.initializeHandlers();
     }
-    protected build(constructor: Function | Object): Observable<boolean> {
+    protected build(): Observable<void> {
         this.logInfo(Messages.getMessage('building'));
         return forkJoin([
             this.registerDefaults(),
             this.buildDependenciesTree(),
-            this.buildInstances(),
-            this.buildApplication(constructor),
+            this.buildInstances()
         ]).pipe(
-            map(() => true)
+            map(() => {}),
+            defaultIfEmpty()
         );
     }
-    protected buildApplication(constructor: Function | Object): Observable<boolean> {
+    protected buildApplication(constructor: Function | Object): Observable<void> {
         this.logInfo(Messages.getMessage('building-application-class'));
         if ((typeof constructor) === 'object') {
             this.instanceHandler.registerInstance(constructor);
         } else {
             this.instanceHandler.buildApplication(constructor as Function);
         }
-        return of(true);
+        return of();
     }
-    protected buildDependenciesTree(): Observable<boolean> {
+    protected buildDependenciesTree(): Observable<void> {
         this.logInfo(Messages.getMessage('building-dependencies-tree'));
         this.dependencyHandler.buildDependenciesTree();
-        return of(true);
+        return of();
     }
-    protected buildInstances(): Observable<boolean> {
+    protected buildInstances(): Observable<void> {
         this.logInfo(Messages.getMessage('building-instances'));
         this.dependencyHandler.buildDependenciesInstances();
         this.instanceHandler.buildInstances();
-        return of(true);
+        return of();
     }
     protected calculateElapsedTime(): string {
         return ((this.END_TIME.getTime() - this.INIT_TIME.getTime())/1000) + 's';
@@ -114,9 +117,9 @@ export class CORE {
         Messages.setLanguage(languageProperty);
         this.logger.setProperties(logProperties);
     }
-    protected configure(): Observable<boolean> {
+    protected configure(): Observable<void> {
         this.logInfo(Messages.getMessage('configuring'));
-        return of(true);
+        return of();
     }
     public destroy(error?: Error): void {
         if (this.isDestroyed()) {
@@ -163,7 +166,7 @@ export class CORE {
     public getRegisterHandler(): RegisterHandler {
         return this.registerHandler;
     }
-    public initialize(constructor: Function | Object, isAutomatic = true): void {
+    public initialization(constructor: Function | Object, isAutomatic = true): void {
         if (this.isInitializationCalled) {
             return;
         } else if (!isAutomatic) {
@@ -174,10 +177,7 @@ export class CORE {
         this.SUBSCRIPTIONS$.add(this.whenBeforeInitializationIsDone().pipe(
             switchMap(() => {
                 this.STATE$.next(CoreStateEnum.INITIALIZATION_STARTED);
-                return forkJoin([
-                    this.build(constructor),
-                    this.configure()
-                ]);
+                return this.initialize(constructor);
             })
         ).subscribe(
             () => {
@@ -186,6 +186,16 @@ export class CORE {
                 this.setError(error);
             }
         ));
+    }
+    protected initialize(constructor: Function | Object): Observable<void> {
+        return forkJoin([
+            this.build(),
+            this.configure(),
+            this.buildApplication(constructor)
+        ]).pipe(
+            map(()  => {}),
+            defaultIfEmpty()
+        );
     }
     protected initializeHandlers(): void {
         try {
@@ -196,7 +206,6 @@ export class CORE {
             this.dependencyHandler = new DependencyHandler(this, this.logger, this.instanceHandler, this.registerHandler);
             this.fileHandler = new FileHandler(this, this.coreProperties.scan as PropertyModel, this.logger);
             this.instanceHandler.registerInstance(this.logger);
-            this.SUBSCRIPTIONS$.add(this.whenInitilizationIsDone().subscribe(() => this.afterInitialization()));
             this.SUBSCRIPTIONS$.add(this.fileHandler.initialize().subscribe(
                 () => {
                     this.STATE$.next(CoreStateEnum.BEFORE_INITIALIZATION_DONE);
@@ -221,9 +230,9 @@ export class CORE {
     protected logError(message: string | number, error: Error): void {
         this.logger.error(error, '[The Way]', message.toString());
     }
-    protected registerDefaults(): Observable<boolean> {
+    protected registerDefaults(): Observable<void> {
         this.registerHandler.registerService(CryptoService);
-        return of(true);
+        return of();
     }
     public setError(error: Error): void {
         this.ERROR$.next(error);
