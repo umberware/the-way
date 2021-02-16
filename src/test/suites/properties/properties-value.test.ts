@@ -19,10 +19,9 @@ describe('Properties Handler: ', () => {
         process.argv.push('--customX=true');
         import('../../resources/environment/main/main.test').then(
             () => {
-                const core = CORE.getCore();
-                core.whenReady().subscribe(
+                CORE.whenReady().subscribe(
                     () => {
-                        propertiesHandler = core.getPropertiesHandlder();
+                        propertiesHandler = CORE.getPropertiesHandler();
                         done();
                     }
                 );

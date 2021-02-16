@@ -14,13 +14,12 @@ test('Injection: Service And Configuration', done => {
     process.argv.push('--the-way.core.scan.enabled=true');
 
     import('../../resources/environment/main/main.test').then((result) => {
-        const core = CORE.getCore();
-        core.whenReady().subscribe(
+        CORE.whenReady().subscribe(
             () => {
-                const instances = EnvironmentTest.getInstancesWithout(core, [result.Main]);
-                expect(JSON.stringify(core.getDependencyHandler().getDependenciesTree())).toBe(JSON.stringify({}));
+                const instances = EnvironmentTest.getInstancesWithout([result.Main]);
+                expect(JSON.stringify(CORE.getDependenciesTree())).toBe(JSON.stringify({}));
                 expect(JSON.stringify(instances)).toBe('[{},{},{}]');
-                core.destroy().subscribe(
+                CORE.destroy().subscribe(
                     () => {
                         done();
                     }

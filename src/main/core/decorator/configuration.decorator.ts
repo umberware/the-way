@@ -5,8 +5,7 @@ export const ConfigurationMetaKey = 'Configuration';
 /* eslint-disable @typescript-eslint/ban-types */
 export const Configuration = (over?: Function) => {
     return (constructor: Function): void => {
-        const core = CORE.getCore();
-        const registerHandler = core.getRegisterHandler();
-        registerHandler.registerConfiguration(constructor, over);
+        CORE.createCore();
+        CORE.registerConfiguration(constructor, over);
     };
 };

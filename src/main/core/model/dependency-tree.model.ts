@@ -1,3 +1,3 @@
 export interface DependencyTreeModel {
-    // [ke]
+    [key: string]: DependencyTreeModel | true
 }

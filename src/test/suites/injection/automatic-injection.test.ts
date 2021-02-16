@@ -16,14 +16,13 @@ test('Injection: Auto Inject', done => {
 
     import('../../resources/environment/main/main.test').then(
        (result) => {
-           const core = CORE.getCore();
-           core.whenReady().subscribe(() => {
-               const tree = core.getDependencyHandler().getDependenciesTree();
+           CORE.whenReady().subscribe(() => {
+               const tree = CORE.getDependenciesTree();
                const expectedTree = {
                    DependencyAServiceTest: { DependencyBServiceTest: true },
                    DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: true }, DependencyBServiceTest: true, Logger: true }
                };
-               const instances = EnvironmentTest.getInstancesWithout(core, [ result.Main ]);
+               const instances = EnvironmentTest.getInstancesWithout([ result.Main ]);
                expect(JSON.stringify(tree)).toBe(JSON.stringify(expectedTree));
                expect(instances.length).toBe(3);
                done();

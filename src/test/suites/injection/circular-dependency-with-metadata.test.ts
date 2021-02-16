@@ -15,15 +15,9 @@ test('Injection: Circular Dependency With Metadata', done => {
     process.argv.push('--the-way.core.log.date=false')
 
     import('../../resources/environment/main/not-automatic-main.test').then((value) => {
-        const core = CORE.getCore();
         new value.NotAutomaticMainTest();
-        core.whenReady().subscribe(
-            () => {
-                console.log(core.getDependencyHandler().getDependenciesTree());
-            }
-        );
-        core.watchError().subscribe(
-            (error: Error | undefined) => {
+        CORE.whenDestroyed().subscribe(
+            (error: ApplicationException | undefined) => {
                 if (error) {
                     const applicationException = error as ApplicationException;
                     expect(applicationException.getCode()).toBe(Messages.getMessage('TW-004'));

@@ -14,11 +14,10 @@ describe('Properties Handler: ', () => {
         process.argv = [...process.argv.slice(0, index), ...process.argv.slice(index + 1)];
         import('../../resources/environment/main/main.test').then(
             () => {
-                const core = CORE.getCore();
-                core.whenReady().subscribe(
+                CORE.whenReady().subscribe(
                     () => {
-                        properties = core.getPropertiesHandlder().getProperties() as PropertyModel;
-                        core.destroy();
+                        properties = CORE.getPropertiesHandler().getProperties() as PropertyModel;
+                        CORE.destroy();
                         done();
                     }
                 );

@@ -11,7 +11,7 @@ export class EnvironmentTest {
     private static processArgs: Array<string> = [ ...process.argv ];
 
     public static buildCoreConfigueSpy(message: string): void {
-        const core = CORE.getCore();
+        const core = (CORE as any).getCore();
         spyOn(core as any, 'configure').and.returnValue(
             new Observable((observer: Subscriber<boolean>) => {
                 observer.error({
@@ -23,7 +23,7 @@ export class EnvironmentTest {
         );
     }
     public static buildCoreDestructionArmySpy(message: string): void {
-        const core = CORE.getCore();
+        const core = (CORE as any).getCore();
         spyOn(core as any, 'destroyTheArmy').and.returnValue(
             new Observable((observer: Subscriber<boolean>) => {
                 observer.error(new Error(message));
@@ -39,9 +39,9 @@ export class EnvironmentTest {
     public static clearProcessVariables(): void {
         process.argv = [ ...this.processArgs ];
     }
-    public static getConstructorsWithoutCore(core: CORE): ConstructorMapModel {
+    public static getConstructorsWithoutCore(): ConstructorMapModel {
         const filtered = {} as ConstructorMapModel;
-        const constructors = core.getRegisterHandler().getConstructors();
+        const constructors = CORE.getConstructors();
         for (const constructor in constructors) {
             if (!this.CORE_INSTANCES.includes(constructor)) {
                 filtered[constructor] = constructors[constructor];
@@ -50,8 +50,8 @@ export class EnvironmentTest {
 
         return filtered;
     }
-    public static getInstancesWithout(core: CORE, exclude: Array<any>): Array<any> {
-        return core.getInstanceHandler().getInstances().filter((instance: any) => {
+    public static getInstancesWithout(exclude: Array<any>): Array<any> {
+        return CORE.getInstances().filter((instance: any) => {
             for (const type of [...this.CORE_TYPES, ...exclude]) {
                 if (instance instanceof type) {
                     return false;

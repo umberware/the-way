@@ -120,12 +120,8 @@ export class RegisterHandler {
         this.DESTROYABLE.push(instance);
     }
     public registerInjection(constructor: Function, target: object, propertyKey: string): void {
-        if (this.core.isDestroyed()) {
-            return;
-        }
-
         if (!constructor) {
-            this.core.setError(new ApplicationException(
+            CORE.setError(new ApplicationException(
                 Messages.getMessage('not-found-dependency-constructor', [propertyKey, target.constructor.name]),
                 Messages.getMessage('TW-009'),
                 Messages.getMessage('TW-004')
@@ -138,7 +134,7 @@ export class RegisterHandler {
     }
     protected registerOverriddenClass(name: string, constructor: Function): void {
         if (this.OVERRIDEN[name]) {
-            this.core.setError(new ApplicationException(
+            CORE.setError(new ApplicationException(
                 Messages.getMessage('cannot-override-twice', [ name,  this.OVERRIDEN[name], constructor.name]),
                 Messages.getMessage('TW-010'),
                 'TW-010'

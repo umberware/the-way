@@ -1,8 +1,14 @@
-export class ApplicationException implements Error {
+export class ApplicationException extends Error {
     public message: string;
     public name: string;
 
-    constructor(public detail: string, public description: string, public code: string | number) {
+    constructor(public detail: string, public description: string, public code: string | number, ex?: Error) {
+        super();
+        if (ex) {
+            this.stack = ex.stack;
+        } else {
+            Error.captureStackTrace(this, this.constructor);
+        }
         this.message = detail + ' -> ' + description;
     }
 

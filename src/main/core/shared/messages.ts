@@ -13,7 +13,7 @@ export const MESSAGES: { [key: string]: { [key: string]: string | number; } } = 
         'configuring': 'Configuring some things...',
         'destroying': 'Descruction process started...',
         'destroyed': 'I\'m inevitable! Was destroyed every thing. CYA!',
-        'destroyed-with-error': 'I tried to destroy but occurred an error in the destruction step.',
+        'destroyed-with-error': 'An error ocurred in the destruction step. Error $',
         'error-occured-destroying': 'An error ocurred in the initialization step.',
         'found-resource': 'Loading resources $',
         'initializing': 'Initializing the application...',
@@ -27,7 +27,8 @@ export const MESSAGES: { [key: string]: { [key: string]: string | number; } } = 
         'not-allowed-code': 403,
         'not-found': 'Not Found',
         'not-found-code': 404,
-        'not-found-dependency-constructor': 'Cannot inject property: $ in class $. Cannot acquire the metadata from property. Probably a circular dependency',
+        'not-found-dependency-constructor': 'Cannot inject property: $ in class $. ' +
+            'Cannot acquire the metadata from property. Probably a circular dependency',
         'properties-not-gived': 'Not gived a file properties. Will be used the default properties.',
         'properties-not-valid': 'The provided application properties is not valid.',
         'ready': 'The application is running [elapsed time $].',
@@ -46,6 +47,7 @@ export const MESSAGES: { [key: string]: { [key: string]: string | number; } } = 
         'TW-009': 'Metadata not found',
         'TW-010': 'Cannot Override',
         'TW-011': 'Not Valid',
+        'TW-012': 'Error',
         'scanning': 'Searching & Loading the resources...',
         'unauthorized': 'Not Authorized',
         'unauthorized-code': 401

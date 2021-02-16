@@ -11,15 +11,14 @@ beforeAll(() => {
 test('Initialization: Cannot Configure', (done) => {
     import('../../resources/environment/main/not-automatic-main.test').then(
         (value => {
-            const core = CORE.getCore();
             const message = 'Luke, I\'m your father!!!';
             EnvironmentTest.buildCoreConfigueSpy(message);
             new value.NotAutomaticMainTest();
-            core.watchError().subscribe(
+            CORE.whenDestroyed().subscribe(
                 (error) => {
                     if (error) {
                         expect(error.detail).toBe(message);
-                        expect(core.isDestroyed()).toBe(true);
+                        expect(CORE.isDestroyed()).toBe(true);
                         done();
                     }
                 }

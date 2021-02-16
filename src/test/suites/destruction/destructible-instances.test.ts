@@ -1,5 +1,6 @@
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 import { CORE, CoreStateEnum } from '../../../main';
+import { switchMap } from 'rxjs/operators';
 
 afterAll(() => {
     EnvironmentTest.clear();
@@ -14,17 +15,13 @@ test('Destruction: Service & Configuration', done => {
 
     import('../../resources/environment/main/main.test').then(
         () => {
-            const core = CORE.getCore();
-            core.whenReady().subscribe(
+            CORE.whenReady().pipe(
+                switchMap(() => {
+                    return CORE.destroy();
+                })
+            ).subscribe(
                 () => {
-                    core.watchState().subscribe(
-                        (state: CoreStateEnum) => {
-                            if (state === CoreStateEnum.DESTRUCTION_DONE) {
-                                done();
-                            }
-                        }
-                    );
-                    core.destroy();
+                    done();
                 }
             );
         }

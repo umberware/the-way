@@ -6,6 +6,7 @@ import { InstanceHandler } from './instance.handler';
 import { ApplicationException } from '../exeption/application.exception';
 import { LogLevelEnum } from '../shared/log-level.enum';
 import { RegisterHandler } from './register.handler';
+import { DependencyTreeModel } from '../model/dependency-tree.model';
 
 /*
     eslint-disable @typescript-eslint/no-explicit-any,
@@ -14,7 +15,7 @@ import { RegisterHandler } from './register.handler';
     @typescript-eslint/ban-types
 */
 export class DependencyHandler {
-    protected DEPENDENCIES_TREE: any;
+    protected DEPENDENCIES_TREE: DependencyTreeModel;
 
     constructor(
         protected core: CORE,
@@ -26,7 +27,7 @@ export class DependencyHandler {
     }
 
     protected buildDependencyTree(dependentName: string, dependencies: { [key: string]: DependencyModel }, found = ''): any {
-        const dependentTree: any = {};
+        const dependentTree: DependencyTreeModel = {};
 
         for (const dependency in dependencies) {
             const regex = new RegExp('\\|' + dependency + '\\|', 'g');

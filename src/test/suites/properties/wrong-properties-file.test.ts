@@ -13,9 +13,8 @@ describe('Properties Handler: ', () => {
         process.argv[index] = '--properties=src/test/resources/application-wrong-test.properties.lala';
         import('../../resources/environment/main/main.test').then(
             () => {
-                const core = CORE.getCore();
-                core.watchError().subscribe(
-                    (error: ApplicationException) => {
+                CORE.whenDestroyed().subscribe(
+                    (error: ApplicationException | undefined) => {
                         if (error) {
                             expect(error.getDetail()).toBe(Messages.getMessage('properties-not-valid'));
                             expect(error.getDescription()).toBe(Messages.getMessage('TW-011'));

@@ -1,6 +1,5 @@
 import { EnvironmentTest } from '../../resources/environment/environment.test';
-import { CORE } from '../../../main';
-import { Observable, Subscriber } from 'rxjs';
+import { ApplicationException, CORE, Messages } from '../../../main';
 
 afterAll(() => {
     EnvironmentTest.clear();
@@ -10,24 +9,26 @@ beforeAll(() => {
 });
 test('With Error', (done) => {
     const defaultArgs = [ ...process.argv ];
-    process.argv.push('--the-way.core.log.enabled=false');
     import('../../resources/environment/main/not-automatic-main.test').then(
         (value => {
-            const core = CORE.getCore();
             const message = 'Wakeup Samurai, We have a city to explode!!';
             EnvironmentTest.buildCoreDestructionArmySpy(message);
             new value.NotAutomaticMainTest();
-            core.watchError().subscribe(
-                (error) => {
+            CORE.whenDestroyed().subscribe(
+                (error: ApplicationException | undefined) => {
                     if (error) {
-                        expect(error.message).toBe(message);
-                        expect(core.isDestroyed()).toBe(true);
+                        expect(error.message).toBe(
+                            Messages.getMessage('destroyed-with-error', [message]) +
+                            ' -> ' +
+                            Messages.getMessage('TW-012')
+                        );
+                        expect(CORE.isDestroyed()).toBe(true);
                         process.argv = defaultArgs;
                         done();
                     }
                 }
             );
-            core.destroy();
+            CORE.destroy();
         })
     );
 });

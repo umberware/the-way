@@ -9,9 +9,8 @@ beforeAll(() => {
 });
 test('Initialization: Main Not Extended The Way', done => {
     import('../../resources/environment/main/not-extended.test').then(() => {
-        const core = CORE.getCore();
-        core.watchError().subscribe(
-            (error: ApplicationException) => {
+        CORE.whenDestroyed().subscribe(
+            (error: ApplicationException | void) => {
                 if (error) {
                     expect(error.getCode()).toBe(Messages.getMessage('TW-001'));
                     expect(error.getDescription()).toBe(Messages.getMessage('internal-error'));

@@ -14,9 +14,8 @@ test('Initialization: Wrong Scan Path', (done) => {
     process.argv.push('--the-way.core.scan.enabled=true')
     import('../../resources/environment/main/not-automatic-main.test').then(
         (value => {
-            const core = CORE.getCore();
             new value.NotAutomaticMainTest();
-            core.watchError().subscribe(
+            CORE.whenDestroyed().subscribe(
                 (error: Error | undefined) => {
                     if (error) {
                         expect((error as any).code).toBe(Messages.getCodeMessage('not-found-code'));

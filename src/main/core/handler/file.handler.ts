@@ -58,7 +58,7 @@ export class FileHandler {
         );
     }
     protected async importFile(fullPath: string): Promise<void> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             const regex = new RegExp(this.buildRegex(this.getClassTypes()), 'g');
             const stream = createReadStream(fullPath, { encoding: 'utf-8' });
             stream.on('data', (data) => {
@@ -80,7 +80,7 @@ export class FileHandler {
         try {
             const paths = readdirSync(dirPath);
             for (const path of paths) {
-                if (this.core.isDestroyed()) {
+                if (CORE.isDestroyed()) {
                     break;
                 }
 

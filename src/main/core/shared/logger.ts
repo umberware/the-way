@@ -8,7 +8,7 @@ export class Logger {
     protected logProperties: PropertyModel;
 
     constructor() {
-        this.logProperties = { enabled: true, level: 1, date: true };
+        this.logProperties = { level: 1, date: true };
     }
 
     protected buildMessage(prefix: string, message: string): string {
@@ -19,16 +19,12 @@ export class Logger {
         return final + message;
     }
     public debug(message: string, prefix = '[DEBUG]'): void {
-        if (!this.logProperties.enabled || this.logProperties.level !== LogLevelEnum.FULL) {
+        if (this.logProperties.level !== LogLevelEnum.FULL) {
             return;
         }
         console.info(this.buildMessage(prefix, message));
     }
     public error(error: Error, prefix = '[Error]', message?: string): void {
-        if (!this.logProperties.enabled) {
-            return;
-        }
-
         if (message) {
             console.error(this.buildMessage(prefix, message));
         }
@@ -38,7 +34,9 @@ export class Logger {
                     prefix, error.getCode() + ': ' + error.getDescription() + ' -> ' + error.getDetail()
                 )
             );
-        } else if (error.stack) {
+
+        }
+        if (error.stack) {
             console.error(this.buildMessage(prefix, error.stack));
         }
     }
@@ -48,7 +46,7 @@ export class Logger {
     public info(message: string, prefix = '[INFO]'): void {
         console.info(this.buildMessage(prefix, message));
     }
-    public setProperties(properties: PropertyModel) {
+    public setProperties(properties: PropertyModel): void {
         this.logProperties = properties;
     }
     public warn(message: string, prefix = '[WARN]'): void {

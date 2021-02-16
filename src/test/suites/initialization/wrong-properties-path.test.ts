@@ -14,14 +14,13 @@ test('Initialization: Wrong Properties Path', (done) => {
 
     import('../../resources/environment/main/not-automatic-main.test').then(
         (value => {
-            const core = CORE.getCore();
             new value.NotAutomaticMainTest();
-            core.watchError().subscribe(
+            CORE.whenDestroyed().subscribe(
                 (error) => {
                     if (error) {
-                        expect(core.isDestroyed()).toBeTruthy();
+                        expect(CORE.isDestroyed()).toBeTruthy();
                         process.argv = defaultArgs;
-                        core.destroy();
+                        CORE.destroy();
                         done();
                     }
                 }

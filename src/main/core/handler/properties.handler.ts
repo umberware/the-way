@@ -114,7 +114,7 @@ export class PropertiesHandler {
             if ((property as PropertyModel)[defaultPropertyKey] === undefined) {
                 (property as PropertyModel)[defaultPropertyKey] = defaultProperties[defaultPropertyKey];
             } else if (defaultProperties[defaultPropertyKey].constructor == Object) {
-                this.sumProperties(properties, defaultProperties[defaultPropertyKey] as any, [...keys, defaultPropertyKey]);
+                this.sumProperties(properties, defaultProperties[defaultPropertyKey] as PropertyModel, [...keys, defaultPropertyKey]);
             }
         }
     }

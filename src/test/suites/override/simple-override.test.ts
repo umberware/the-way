@@ -16,12 +16,11 @@ test('Override: Simple', done => {
     process.argv.push('--the-way.core.scan.full=true');
     process.argv.push('--the-way.core.language=br');
     import('../../resources/environment/main/main.test').then((result) => {
-        const core = CORE.getCore();
-        core.whenReady().subscribe(
+        CORE.whenReady().subscribe(
             () => {
-                const instances = EnvironmentTest.getInstancesWithout(core, [ result.Main ]);
-                const overriden = core.getRegisterHandler().getOverriden();
-                const tree = core.getDependencyHandler().getDependenciesTree();
+                const instances = EnvironmentTest.getInstancesWithout([ result.Main ]);
+                const overriden = CORE.getOverriden();
+                const tree = CORE.getDependenciesTree();
                 const expectedDependencyTree = { DependentAxServiceTest: { DependencyAServiceTest: true, Logger: true}};
                 const expectedOverriden = { DependencyAServiceTest: 'DependencyBServiceTest' };
 

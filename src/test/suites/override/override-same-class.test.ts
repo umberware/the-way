@@ -14,9 +14,8 @@ test('Override: Twice Same Class', done => {
     process.argv.push('--the-way.core.language=br');
     console.log(process.argv)
     import('../../resources/environment/main/main.test').then(() => {
-        const core = CORE.getCore();
-        core.watchError().subscribe(
-            (error: ApplicationException) => {
+        CORE.whenDestroyed().subscribe(
+            (error: ApplicationException | undefined) => {
                 if (error) {
                     expect(error.detail).toBe(Messages.getMessage('cannot-override-twice', [ 'DependencyAServiceTest', 'DependencyBServiceTest', 'DependencyCServiceTest' ]))
                     expect(error.description).toBe(Messages.getMessage('TW-010'))

@@ -6,10 +6,10 @@ import { Messages } from '../shared/messages';
 /* eslint-disable @typescript-eslint/ban-types*/
 export const Application = (params?: { automatic?: boolean; }) => {
     return (constructor: Function): void => {
-        const core = CORE.getCoreOrCreate();
+        CORE.createCore();
 
         if (!(constructor.prototype instanceof TheWayApplication)) {
-            core.setError(new ApplicationException(
+            CORE.setError(new ApplicationException(
                 Messages.getMessage('is-not-the-way'),
                 Messages.getMessage('internal-error'),
                 Messages.getMessage('TW-001')
@@ -18,7 +18,7 @@ export const Application = (params?: { automatic?: boolean; }) => {
         }
 
         if (!params || params.automatic || params.automatic === undefined) {
-            core.initialization(constructor);
+            CORE.initialize(constructor);
         }
     };
 };

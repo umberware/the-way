@@ -1,20 +1,17 @@
 import { CORE } from './core';
 
+/* eslint-disable @typescript-eslint/no-empty-function */
 export abstract class TheWayApplication {
     constructor() {
-        const core = CORE.getCore();
-
-        core.initialization(this, false);
-        core.whenReady().subscribe(
+        CORE.initialize(this);
+        CORE.whenReady().subscribe(
             () => {
-                if (!core.isDestroyed()) {
+                if (!CORE.isDestroyed()) {
                     this.start();
                 }
             }
         );
     }
-    public start(): void {
-        /* eslint-disable-next-line no-console */
-        console.log('[The Way] Has been started.');
-    }
+
+    public start(): void {}
 }

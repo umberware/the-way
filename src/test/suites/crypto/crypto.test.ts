@@ -17,10 +17,9 @@ describe('CryptoService: ', () => {
         process.argv.push('--the-way.core.scan.enabled=false');
         import('../../resources/environment/main/main.test').then(
             () => {
-                const core = CORE.getCore();
-                core.whenReady().subscribe(
+                CORE.whenReady().subscribe(
                     () => {
-                        cryptoService = core.getInstanceHandler().getInstanceByName<CryptoService>('CryptoService');
+                        cryptoService = CORE.getInstanceByName<CryptoService>('CryptoService');
                         done();
                     }
                 );

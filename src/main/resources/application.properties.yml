@@ -5,7 +5,6 @@ the-way:
             full: false
             enabled: true
         log:
-            enabled: true
             level: 1
             date: true
         language: 'en'
