@@ -17,8 +17,12 @@ test('Injection: Service And Configuration', done => {
         CORE.whenReady().subscribe(
             () => {
                 const instances = EnvironmentTest.getInstancesWithout([result.Main]);
-
-                expect(JSON.stringify(CORE.getDependenciesTree())).toBe(JSON.stringify({}));
+                const dependenciesTree = {
+                    ServerConfiguration: {
+                        PropertiesHandler: true
+                    }
+                };
+                expect(JSON.stringify(CORE.getDependenciesTree())).toBe(JSON.stringify(dependenciesTree));
                 expect(JSON.stringify(instances)).toBe('[{},{},{},{},{}]');
                 CORE.destroy().subscribe(
                     () => {

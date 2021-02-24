@@ -12,14 +12,12 @@ test('Override: Twice Same Class', done => {
     process.argv.push('--the-way.core.scan.path=' + scanPath);
     process.argv.push('--the-way.core.scan.enabled=true');
     process.argv.push('--the-way.core.language=br');
-    console.log(process.argv)
     import('../../resources/environment/main/main.test').then(() => {
         CORE.whenDestroyed().subscribe(
             (error: ApplicationException | undefined) => {
                 if (error) {
-                    expect(error.detail).toBe(Messages.getMessage('cannot-override-twice', [ 'DependencyAServiceTest', 'DependencyBServiceTest', 'DependencyCServiceTest' ]))
+                    expect(error.detail).toBe(Messages.getMessage('before-initialization-cannot-override-twice', [ 'DependencyAServiceTest', 'DependencyBServiceTest', 'DependencyCServiceTest' ]))
                     expect(error.description).toBe(Messages.getMessage('TW-010'))
-                    expect(error.code).toBe('TW-010');
                     done();
                 }
             }

@@ -20,9 +20,8 @@ test('Injection: Circular Dependency With Metadata', done => {
             (error: ApplicationException | undefined) => {
                 if (error) {
                     const applicationException = error as ApplicationException;
-                    expect(applicationException.getCode()).toBe(Messages.getMessage('TW-004'));
                     expect(applicationException.getDescription()).toBe(Messages.getMessage('TW-008'));
-                    expect(applicationException.getDetail()).toBe(Messages.getMessage('circular-dependency', ['DependencyDServiceTest', 'DependencyDServiceTest']));
+                    expect(applicationException.getDetail()).toBe(Messages.getMessage('before-initialization-circular-dependency', ['DependencyDServiceTest', 'DependencyDServiceTest']));
                     done();
                 }
             }

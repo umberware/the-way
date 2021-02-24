@@ -12,7 +12,7 @@ beforeAll(() => {
 });
 test('Injection: Manual scan', done => {
     CORE.whenReady().subscribe(() => {
-        const tree = CORE.getDependenciesTree();
+        const tree = EnvironmentTest.getDependenciesTree();
         const expectedTree = {
             DependencyAServiceTest: { DependencyBServiceTest: true },
             DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: true }, DependencyBServiceTest: true, Logger: true },

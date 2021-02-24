@@ -1,6 +1,6 @@
 
-import { forkJoin, Observable, of } from 'rxjs';
-import { defaultIfEmpty, map } from 'rxjs/operators';
+import { forkJoin, Observable, of, Subscriber, throwError } from 'rxjs';
+import { catchError, defaultIfEmpty, map } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
 
 import { CORE } from '../core';
@@ -21,7 +21,6 @@ export class InstanceHandler {
     protected INSTANCES: InstancesMapModel;
 
     constructor(
-        protected core: CORE,
         protected logger: Logger,
         protected registerHandler: RegisterHandler
     )   {
@@ -37,7 +36,7 @@ export class InstanceHandler {
         const registeredConstructor = this.registerHandler.getConstructor(constructor.name);
         const registeredConstructorName = registeredConstructor.name;
         if (!this.INSTANCES[registeredConstructorName]) {
-            this.logger.info(Messages.getMessage('building-class', [ registeredConstructorName ]));
+            this.logger.info(Messages.getMessage('initialization-building-instance', [ registeredConstructorName ]));
             const instance = this.buildObject(registeredConstructor.constructorFunction);
             const decorators = Reflect.getMetadataKeys(registeredConstructor.constructorFunction);
             this.registerInstance(instance);
@@ -64,43 +63,50 @@ export class InstanceHandler {
     protected buildObject(constructor: Function): Object {
         return new constructor.prototype.constructor();
     }
-    public configure(): Observable<boolean> {
-        const configurables: Array<Observable<void>> = [];
+    public caller(methodName: string, instances: Array<any>): Observable<boolean> {
+        const results: Array<Observable<any>> = [];
 
-        for (const configurable of this.registerHandler.getConfigurables()) {
-            const result = configurable.configure();
-            if (result instanceof Promise) {
-                configurables.push(fromPromise(result));
-            } else if (result instanceof Observable) {
-                configurables.push(result);
-            } else {
-                configurables.push(of(result));
-            }
+        for (const instance of instances) {
+            const observable: Observable<any> = new Observable((observer: Subscriber<any>) => {
+                try {
+                    const method = Reflect.get(instance, methodName) as Function;
+                    const result = Reflect.apply(method, instance, []);
+
+                    if (result instanceof Promise) {
+                        fromPromise(result).subscribe(observer);
+                    } else if (result instanceof Observable) {
+                        result.subscribe(observer);
+                    } else {
+                        observer.next(result);
+                        observer.complete();
+                    }
+                } catch (ex) {
+                    observer.next(ex);
+                    observer.complete();
+                }
+            }).pipe(
+                catchError((error: Error) => of(error)),
+                defaultIfEmpty(true)
+            );
+            results.push(observable);
         }
-
-        return forkJoin(configurables).pipe(
-            map(() => true),
+        return forkJoin(results).pipe(
+            map((values: Array<any>) => {
+                const errors = values.filter((value => value instanceof Error));
+                if (errors.length > 0) {
+                    throw (values[0]);
+                } else {
+                    return true;
+                }
+            }),
             defaultIfEmpty(true)
         );
     }
+    public configure(): Observable<boolean> {
+        return this.caller('configure', this.registerHandler.getConfigurables());
+    }
     public destroy(): Observable<boolean> {
-        const destroyables: Array<Observable<void>> = [];
-
-        for (const configurable of this.registerHandler.getDestroyable()) {
-            const result = configurable.destroy();
-            if (result instanceof Promise) {
-                destroyables.push(fromPromise(result));
-            } else if (result instanceof Observable) {
-                destroyables.push(result);
-            } else {
-                destroyables.push(of(result));
-            }
-        }
-
-        return forkJoin(destroyables).pipe(
-            map(() => true),
-            defaultIfEmpty(true)
-        );
+        return this.caller('destroy', this.registerHandler.getDestroyable());
     }
     public getInstanceByName<T>(name: string): T | undefined {
         const registeredConstructor = this.registerHandler.getConstructor(name);

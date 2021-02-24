@@ -17,7 +17,7 @@ test('Injection: Auto Inject', done => {
     import('../../resources/environment/main/main.test').then(
        (result) => {
            CORE.whenReady().subscribe(() => {
-               const tree = CORE.getDependenciesTree();
+               const tree = EnvironmentTest.getDependenciesTree();
                const expectedTree = {
                    DependencyAServiceTest: { DependencyBServiceTest: true },
                    DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: true }, DependencyBServiceTest: true, Logger: true }

@@ -16,7 +16,7 @@ describe('Properties Handler: ', () => {
                 CORE.whenDestroyed().subscribe(
                     (error: ApplicationException | undefined) => {
                         if (error) {
-                            expect(error.getDetail()).toBe(Messages.getMessage('properties-not-valid'));
+                            expect(error.getDetail()).toBe(Messages.getMessage('before-initialization-properties-not-valid'));
                             expect(error.getDescription()).toBe(Messages.getMessage('TW-011'));
                             expect(error.getCode()).toBe('TW-011');
                             done();

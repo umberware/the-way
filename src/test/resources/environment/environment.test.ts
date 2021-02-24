@@ -1,12 +1,14 @@
 import Spy = jasmine.Spy;
 import resetAllMocks = jest.resetAllMocks;
+
 import { Observable, Subscriber } from 'rxjs';
-import { CORE, CryptoService, Logger, ServerConfiguration } from '../../../main';
+
+import { CORE, CryptoService, Logger, PropertiesHandler, ServerConfiguration } from '../../../main';
 import { ConstructorMapModel } from '../../../main/core/model/constructor-map.model';
 
 export class EnvironmentTest {
-    private static CORE_INSTANCES = ['CryptoService'];
-    private static CORE_TYPES = [ CryptoService, Logger, ServerConfiguration ];
+    private static CORE_INSTANCES = [ 'CryptoService', 'PropertiesHandler' ];
+    private static CORE_TYPES = [ CryptoService, Logger, ServerConfiguration, PropertiesHandler ];
     private static processExitSpy: Spy
     private static processArgs: Array<string> = [ ...process.argv ];
 
@@ -49,6 +51,15 @@ export class EnvironmentTest {
         }
 
         return filtered;
+    }
+    public static getDependenciesTree(): any {
+        const dependenciesTree = { ...CORE.getDependenciesTree() };
+
+        for (const type of this.CORE_TYPES) {
+            delete dependenciesTree[ type.name ];
+        }
+
+        return dependenciesTree;
     }
     public static getInstancesWithout(exclude: Array<any>): Array<any> {
         return CORE.getInstances().filter((instance: any) => {

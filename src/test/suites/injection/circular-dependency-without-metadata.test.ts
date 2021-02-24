@@ -20,9 +20,9 @@ test('Injection: Circular Dependency Without Metadata', done => {
             (error: ApplicationException | undefined) => {
                 if (error) {
                     const applicationException = error as ApplicationException;
-                    expect(applicationException.getCode()).toBe(Messages.getMessage('TW-004'));
+                    console.log(error)
                     expect(applicationException.getDescription()).toBe(Messages.getMessage('TW-009'));
-                    expect(applicationException.getDetail()).toBe(Messages.getMessage('not-found-dependency-constructor', ['dependencyA', 'DependencyBServiceTest']));
+                    expect(applicationException.getDetail()).toBe(Messages.getMessage('before-initialization-not-found-dependency-constructor', ['dependencyA', 'DependencyBServiceTest']));
                     done();
                 }
             }

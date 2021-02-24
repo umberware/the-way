@@ -12,7 +12,7 @@ export class PropertiesHandler {
     static readonly PROPERTIES_NAME = 'application.properties.yml';
     protected properties: PropertyModel;
 
-    constructor(protected core: CORE, protected logger: Logger) {
+    constructor(protected logger: Logger) {
         this.initialize();
     }
 
@@ -53,7 +53,7 @@ export class PropertiesHandler {
             return Yaml.parse(fs.readFileSync(path).toString());
         } catch(ex) {
             throw new ApplicationException(
-                Messages.getMessage('properties-not-valid'),
+                Messages.getMessage('before-initialization-properties-not-valid'),
                 Messages.getMessage('TW-011'),
                 'TW-011'
             );
@@ -67,7 +67,7 @@ export class PropertiesHandler {
             this.properties = this.loadFile(propertiesFilePath.split('=')[1]);
             this.sumProperties(this.properties, defaultProperties, []);
         } else {
-            this.logger.warn(Messages.getMessage('properties-not-gived'), '[The Way]');
+            this.logger.warn(Messages.getMessage('before-initialization-properties-not-gived'), '[The Way]');
             this.properties = defaultProperties;
         }
         this.sumCommandLineProperties();

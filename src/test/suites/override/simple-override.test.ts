@@ -20,7 +20,7 @@ test('Override: Simple', done => {
             () => {
                 const instances = EnvironmentTest.getInstancesWithout([ result.Main ]);
                 const overriden = CORE.getOverriden();
-                const tree = CORE.getDependenciesTree();
+                const tree = EnvironmentTest.getDependenciesTree();
                 const expectedDependencyTree = { DependentAxServiceTest: { DependencyAServiceTest: true, Logger: true}};
                 const expectedOverriden = { DependencyAServiceTest: 'DependencyBServiceTest' };
 

@@ -17,8 +17,10 @@ export class FileHandler {
     EXTENSIONS = ['.ts', '.js'];
     FOUND_FILES: Array<string> = [];
 
-    constructor(protected core: CORE, protected scanProperties: PropertyModel, protected logger: Logger) {
-    }
+    constructor(
+        protected scanProperties: PropertyModel,
+        protected logger: Logger
+    ) {}
 
     protected buildPath(): string {
         let path = process.cwd();
@@ -48,7 +50,7 @@ export class FileHandler {
         if (!this.scanProperties.enabled) {
             return of(true);
         }
-        this.logger.info(Messages.getMessage('scanning'), '[The Way]');
+        this.logger.info(Messages.getMessage('before-initialization-scanning'), '[The Way]');
 
         const path = this.buildPath();
         return fromPromise(this.loadApplicationFiles(path)).pipe(
@@ -64,7 +66,7 @@ export class FileHandler {
             stream.on('data', (data) => {
                 if (data.toString().search(regex) > -1) {
                     this.FOUND_FILES.push(fullPath);
-                    this.logger.debug(Messages.getMessage('found-resource', [fullPath]), '[The Way]');
+                    this.logger.debug(Messages.getMessage('before-initialization-found-resource', [fullPath]), '[The Way]');
                     import(fullPath).then(() => {
                         resolve();
                     });
@@ -95,9 +97,8 @@ export class FileHandler {
         } catch (ex) {
             this.logger.error(ex);
             throw new ApplicationException(
-                Messages.getMessage('cannot-scan', [ex.message]),
-                Messages.getMessage('not-found'),
-                Messages.getCodeMessage('not-found-code')
+                Messages.getMessage('before-initialization-cannot-scan', [ex.message]),
+                Messages.getMessage('TW-003')
             );
         }
     }
