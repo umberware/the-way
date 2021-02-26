@@ -9,6 +9,10 @@ import { PropertiesHandler } from '../handler/properties.handler';
 export class ServerConfiguration extends Configurable {
     @Inject propertiesHandler: PropertiesHandler;
 
-    public configure(): void {}
-    public destroy(): any {}
+    public configure(): void {
+        return;
+    }
+    public destroy(): void {
+        return;
+    }
 }

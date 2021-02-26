@@ -2,8 +2,8 @@
 
 import 'reflect-metadata';
 
-import { BehaviorSubject, concat, forkJoin, Observable, of, throwError } from 'rxjs';
-import { catchError, concatAll, filter, map, switchMap, tap, toArray } from 'rxjs/operators';
+import { BehaviorSubject, concat, Observable, of } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
 
 import { CoreStateEnum } from './shared/core-state.enum';
 import { DependencyHandler } from './handler/dependency.handler';
@@ -337,6 +337,7 @@ export class CORE {
             this.build(),
             this.configure(constructor),
         ).subscribe(
+            /* eslint-disable-next-line @typescript-eslint/no-empty-function */
             () => {},
             (error: Error) => {
                 CORE.setError(error);

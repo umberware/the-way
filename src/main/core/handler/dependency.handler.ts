@@ -1,4 +1,3 @@
-import { CORE } from '../core';
 import { Logger } from '../shared/logger';
 import { DependencyModel } from '../model/dependency.model';
 import { Messages } from '../shared/messages';

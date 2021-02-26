@@ -2,7 +2,6 @@ import * as Yaml from 'yaml';
 import * as fs from 'fs';
 
 import { PropertyModel } from '../model/property.model';
-import { CORE } from '../core';
 import { Messages } from '../shared/messages';
 import { ApplicationException } from '../exeption/application.exception';
 import { Logger } from '../shared/logger';

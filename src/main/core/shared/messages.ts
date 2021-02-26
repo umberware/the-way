@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 export const MESSAGES: { [key: string]: { [key: string]: string | number; } } = {
     'en': {
         'step-after-initialization': 'Running: The application is running [elapsed time $].',

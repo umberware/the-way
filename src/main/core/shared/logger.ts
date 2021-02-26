@@ -30,7 +30,7 @@ export class Logger {
         }
         if (error instanceof ApplicationException) {
             let message = (error.getCode()) ? error.getCode() + ': ' : '';
-            message += error.getDescription() + ' -> ' + error.getDetail()
+            message += error.getDescription() + ' -> ' + error.getDetail();
             console.error(
                 this.buildMessage(prefix, message)
             );

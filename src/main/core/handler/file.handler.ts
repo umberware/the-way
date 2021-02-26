@@ -4,7 +4,6 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
 
-import { CORE } from '../core';
 import { PropertyModel } from '../model/property.model';
 import { Messages } from '../shared/messages';
 import { Logger } from '../shared/logger';
