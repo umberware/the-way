@@ -7,7 +7,7 @@ afterAll(() => {
 beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });
-test('Override: Cascade Overriding', done => {
+test('Overridde: Cascade Overriding', done => {
     const scanPath = __dirname.replace(/(suites\\override)|(suites\/override)/, '') + '/resources/injection/overriding-dependency/cascade';
     process.argv.push('--the-way.core.scan.path=' + scanPath);
     process.argv.push('--the-way.core.scan.enabled=true');

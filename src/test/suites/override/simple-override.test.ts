@@ -9,7 +9,7 @@ afterAll(() => {
 beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });
-test('Override: Simple', done => {
+test('Overridde: Simple', done => {
     const scanPath = __dirname.replace(/(suites\\override)|(suites\/override)/, '') + '/resources/injection/overriding-dependency/normal';
     process.argv.push('--the-way.core.scan.path=' + scanPath);
     process.argv.push('--the-way.core.scan.enabled=true');
