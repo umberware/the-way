@@ -112,15 +112,17 @@ export class DependencyHandler {
         for (let line of jsonAsString.split('\n')) {
             line = line.trimEnd();
             const matches = line.match(/\s{2}/g);
-            if (matches && matches.length === 1) {
+            const size = (!matches || matches.length === 1) ? 1 : matches.length;
+
+            if (size === 1) {
                 treeMessage += line.replace(':', '').trim() + '\n';
-            } else if (matches) {
-                const endIndex = matches.length * 2;
+            } else {
+                const endIndex = size * 2;
                 treeMessage += '|' + '-'.repeat(endIndex - 1) + line.substr(endIndex) + '\n';
             }
         }
 
         treeMessage = treeMessage.substr(0, treeMessage.length - 1);
-        this.logger.debug(Messages.getMessage('initialization-dependencies-tree', [treeMessage]), '[The Way]');
+        this.logger.debug(Messages.getMessage('initialization-building-dependencies-tree-done', [treeMessage]), '[The Way]');
     }
 }

@@ -1,5 +1,5 @@
 import { EnvironmentTest } from '../../resources/environment/environment.test';
-import { CORE, CryptoService, Logger } from '../../../main';
+import { CORE } from '../../../main';
 
 afterAll(() => {
     EnvironmentTest.clear();
@@ -19,12 +19,13 @@ test('Injection: Auto Inject', done => {
            CORE.whenReady().subscribe(() => {
                const tree = EnvironmentTest.getDependenciesTree();
                const expectedTree = {
-                   DependencyAServiceTest: { DependencyBServiceTest: true },
-                   DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: true }, DependencyBServiceTest: true, Logger: true }
+                   DependencyAServiceTest: { DependencyBServiceTest: { DependencyCServiceTest: true } },
+                   DependencyBServiceTest: { DependencyCServiceTest: true },
+                   DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: { DependencyCServiceTest: true } }, DependencyBServiceTest: { DependencyCServiceTest: true }, Logger: true }
                };
                const instances = EnvironmentTest.getInstancesWithout([ result.Main ]);
                expect(JSON.stringify(tree)).toBe(JSON.stringify(expectedTree));
-               expect(instances.length).toBe(3);
+               expect(instances.length).toBe(4);
                done();
            });
        }

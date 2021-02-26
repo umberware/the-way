@@ -1,4 +1,4 @@
-import { CORE, CoreStateEnum } from '../../../main';
+import { ApplicationException, CORE, CoreStateEnum } from '../../../main';
 
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 
@@ -20,7 +20,7 @@ test('Initialization: Cannot Configure', (done) => {
                 }
             );
             CORE.whenDestroyed().subscribe(
-                (error) => {
+                (error: any) => {
                     if (error) {
                         expect(error.detail).toBe(message);
                         expect(CORE.isDestroyed()).toBe(true);

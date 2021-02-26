@@ -1,9 +1,7 @@
-
-import { forkJoin, Observable, of, Subscriber, throwError } from 'rxjs';
-import { catchError, defaultIfEmpty, map } from 'rxjs/operators';
+import { forkJoin, Observable, of } from 'rxjs';
+import { defaultIfEmpty, map } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
 
-import { CORE } from '../core';
 import { Logger } from '../shared/logger';
 import { InstancesMapModel } from '../model/instances-map.model';
 import { RegisterHandler } from './register.handler';
@@ -63,38 +61,36 @@ export class InstanceHandler {
     protected buildObject(constructor: Function): Object {
         return new constructor.prototype.constructor();
     }
-    public caller(methodName: string, instances: Array<any>): Observable<boolean> {
+    public caller(methodName: string, instances: Array<any>, messageKey: string): Observable<boolean> {
         const results: Array<Observable<any>> = [];
 
         for (const instance of instances) {
-            const observable: Observable<any> = new Observable((observer: Subscriber<any>) => {
-                try {
-                    const method = Reflect.get(instance, methodName) as Function;
-                    const result = Reflect.apply(method, instance, []);
+            let observable: Observable<any>;
+            try {
+                this.logger.debug(Messages.getMessage(messageKey, [ instance.constructor.name ]), '[The Way]');
+                const method = Reflect.get(instance, methodName) as Function;
+                const result = Reflect.apply(method, instance, []);
 
-                    if (result instanceof Promise) {
-                        fromPromise(result).subscribe(observer);
-                    } else if (result instanceof Observable) {
-                        result.subscribe(observer);
-                    } else {
-                        observer.next(result);
-                        observer.complete();
-                    }
-                } catch (ex) {
-                    observer.next(ex);
-                    observer.complete();
+                if (result instanceof Promise) {
+                    observable = fromPromise(result);
+                } else if (result instanceof Observable) {
+                    observable = result;
+                } else {
+                    observable = of(result);
                 }
-            }).pipe(
-                catchError((error: Error) => of(error)),
-                defaultIfEmpty(true)
-            );
+                observable.pipe(
+                    defaultIfEmpty(true)
+                );
+            } catch (ex) {
+                observable =  of(ex);
+            }
             results.push(observable);
         }
         return forkJoin(results).pipe(
             map((values: Array<any>) => {
                 const errors = values.filter((value => value instanceof Error));
                 if (errors.length > 0) {
-                    throw (values[0]);
+                    throw (errors[0]);
                 } else {
                     return true;
                 }
@@ -103,10 +99,10 @@ export class InstanceHandler {
         );
     }
     public configure(): Observable<boolean> {
-        return this.caller('configure', this.registerHandler.getConfigurables());
+        return this.caller('configure', this.registerHandler.getConfigurables(), 'initialization-configuring-instance');
     }
     public destroy(): Observable<boolean> {
-        return this.caller('destroy', this.registerHandler.getDestroyable());
+        return this.caller('destroy', this.registerHandler.getDestroyable(), 'destruction-destroying-instance',);
     }
     public getInstanceByName<T>(name: string): T | undefined {
         const registeredConstructor = this.registerHandler.getConstructor(name);

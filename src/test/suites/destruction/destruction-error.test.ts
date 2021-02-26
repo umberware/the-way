@@ -21,7 +21,7 @@ test('With Error', (done) => {
                     return CORE.destroy();
                 })
             ).subscribe(
-                (error: ApplicationException | void) => {
+                (error: Error | void) => {
                     if (error) {
                         expect(error.message).toBe(
                             Messages.getMessage('destroyed-with-error', [message]) +

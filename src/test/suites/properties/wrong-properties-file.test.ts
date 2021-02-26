@@ -14,8 +14,8 @@ describe('Properties Handler: ', () => {
         import('../../resources/environment/main/main.test').then(
             () => {
                 CORE.whenDestroyed().subscribe(
-                    (error: ApplicationException | undefined) => {
-                        if (error) {
+                    (error: Error | undefined) => {
+                        if (error && error instanceof ApplicationException) {
                             expect(error.getDetail()).toBe(Messages.getMessage('before-initialization-properties-not-valid'));
                             expect(error.getDescription()).toBe(Messages.getMessage('TW-011'));
                             expect(error.getCode()).toBe('TW-011');

@@ -3,7 +3,7 @@
 import 'reflect-metadata';
 
 import { BehaviorSubject, concat, forkJoin, Observable, of, throwError } from 'rxjs';
-import { filter, map, switchMap } from 'rxjs/operators';
+import { catchError, concatAll, filter, map, switchMap, tap, toArray } from 'rxjs/operators';
 
 import { CoreStateEnum } from './shared/core-state.enum';
 import { DependencyHandler } from './handler/dependency.handler';
@@ -26,7 +26,7 @@ import { OverriddenMapModel } from './model/overridden-map.model';
 export class CORE {
     protected static APPLICATION: Function | Object;
     protected static END_TIME: Date;
-    protected static ERROR: ApplicationException;
+    protected static ERROR: Error;
     protected static INIT_TIME: Date;
     protected static INSTANCE$: BehaviorSubject<CORE | undefined> = new BehaviorSubject<CORE | undefined>(undefined);
     protected static REGISTERING: Array<{ methodName: string; args: Array<any> }> = [];
@@ -75,7 +75,7 @@ export class CORE {
             );
         }
     }
-    public static destroy(): Observable<void | ApplicationException> {
+    public static destroy(): Observable<void | Error> {
         const instance = this.INSTANCE$.getValue() as CORE;
         if (!this.isDestroyed()) {
             instance.destroy();
@@ -138,11 +138,11 @@ export class CORE {
     public static registerCoreComponent(componenteConstructor: Function): void {
         this.register('registerCoreComponent', [componenteConstructor]);
     }
-    public static setError(error: ApplicationException): void {
+    public static setError(error: Error): void {
         const instance = this.getInstance();
         this.ERROR = error;
         if (!this.isDestroyed()) {
-            instance.destroy(error as Error);
+            instance.destroy(error);
         }
     }
     protected static whenBeforeInitializationIsDone(): Observable<boolean> {
@@ -151,7 +151,7 @@ export class CORE {
             map(() => true)
         );
     }
-    public static whenDestroyed(): Observable<undefined | ApplicationException> {
+    public static whenDestroyed(): Observable<undefined | Error> {
         return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.DESTRUCTION_DONE),
             map(() => {
@@ -187,7 +187,7 @@ export class CORE {
     protected registerHandler: RegisterHandler;
 
     protected afterInitialization(): void {
-        this.logInfo(Messages.getMessage('initialization-done', [this.calculateElapsedTime()]));
+        this.logInfo(Messages.getMessage('after-initialization', [this.calculateElapsedTime()]));
         CORE.STATE$.next(CoreStateEnum.READY);
     }
     protected beforeInitialization(): void {
@@ -204,6 +204,7 @@ export class CORE {
             this.instanceHandler.registerInstance(this.propertiesHandler);
             this.fileHandler.initialize().subscribe(
                 () => {
+                    this.logInfo(Messages.getMessage('before-initialization-done'));
                     CORE.STATE$.next(CoreStateEnum.BEFORE_INITIALIZATION_DONE);
                 }, (error: ApplicationException) => {
                     CORE.setError(error);
@@ -214,23 +215,31 @@ export class CORE {
         }
     }
     protected build(): Observable<boolean> {
-        try {
-            this.buildDependenciesTree();
-            this.buildCoreInstances();
-            this.buildInstances();
-        } catch (ex) {
-            return throwError(ex);
-        }
-        return of(true);
+        return new Observable<boolean>(
+            (observer) => {
+                this.logInfo(Messages.getMessage('initialization-building'));
+                this.buildDependenciesTree();
+                this.buildCoreInstances();
+                this.buildInstances();
+                observer.next(true);
+                this.logInfo(Messages.getMessage('initialization-building-done'));
+                observer.complete();
+            }
+        );
     }
     protected buildApplication(constructor: Function | Object): Observable<boolean> {
-        this.logInfo(Messages.getMessage('initialization-building-application-class'));
-        if ((typeof constructor) === 'object') {
-            this.instanceHandler.registerInstance(constructor);
-        } else {
-            this.instanceHandler.buildApplication(constructor as Function);
-        }
-        return of(true);
+        return new Observable<boolean>(
+            (observer) => {
+                this.logInfo(Messages.getMessage('initialization-building-application-class'));
+                if ((typeof constructor) === 'object') {
+                    this.instanceHandler.registerInstance(constructor);
+                } else {
+                    this.instanceHandler.buildApplication(constructor as Function);
+                }
+                observer.next(true);
+                observer.complete();
+            }
+        );
     }
     protected buildCoreInstances(): void {
         this.logInfo(Messages.getMessage('initialization-building-core-instances'));
@@ -256,8 +265,10 @@ export class CORE {
         this.logger.setProperties(logProperties);
     }
     protected configure(): Observable<boolean> {
-        this.logInfo(Messages.getMessage('initialization-configuration'));
-        return this.instanceHandler.configure();
+        return new Observable((observer) => {
+            this.logInfo(Messages.getMessage('initialization-configuring'));
+            this.instanceHandler.configure().subscribe(observer);
+        });
     }
     protected destroy(error?: Error): void {
         let code = 0;
@@ -265,7 +276,7 @@ export class CORE {
             this.logError(Messages.getMessage('destruction-error-occured'), error as Error);
             code = 1;
         }
-        this.logInfo(Messages.getMessage('destruction-destroying'));
+        this.logInfo(Messages.getMessage('destruction'));
         CORE.STATE$.next(CoreStateEnum.DESTRUCTION_STARTED);
 
         this.destroyTheArmy().subscribe(
@@ -284,6 +295,7 @@ export class CORE {
                 this.destroyed(code);
             }, () => {
                 this.destroyed(code);
+                this.logInfo(Messages.getMessage('destruction-done'));
             }
         );
     }
@@ -320,10 +332,13 @@ export class CORE {
             this.configure(),
             this.buildApplication(constructor)
         ).subscribe(
-            () => {
-                CORE.STATE$.next(CoreStateEnum.INITIALIZATION_DONE);
-            }, (error: ApplicationException) => {
+            () => {},
+            (error: Error) => {
                 CORE.setError(error);
+            },
+            () => {
+                this.logInfo(Messages.getMessage('initialization-done'));
+                CORE.STATE$.next(CoreStateEnum.INITIALIZATION_DONE);
             }
         );
     }

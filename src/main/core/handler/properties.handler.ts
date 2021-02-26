@@ -10,6 +10,7 @@ import { Logger } from '../shared/logger';
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 export class PropertiesHandler {
     static readonly PROPERTIES_NAME = 'application.properties.yml';
+    private defaultProperties: PropertyModel;
     protected properties: PropertyModel;
 
     constructor(protected logger: Logger) {
@@ -46,7 +47,14 @@ export class PropertiesHandler {
     public initialize(): void {
         const args = process.argv;
         const propertiesFilePath = args.find((arg: string) => arg.includes('--properties=')) as string;
+        this.loadDefaultFileProperties();
         this.loadProperties(propertiesFilePath);
+        this.sumProperties(this.properties, this.defaultProperties, []);
+        this.sumCommandLineProperties();
+    }
+    protected loadDefaultFileProperties(): void {
+        const path = __dirname.replace(/(core\\handler)|(core\/handler)$/, 'resources/');
+        this.defaultProperties = this.loadFile(path + PropertiesHandler.PROPERTIES_NAME);
     }
     protected loadFile(path: string): PropertyModel {
         try {
@@ -59,18 +67,20 @@ export class PropertiesHandler {
             );
         }
     }
+    protected loadLocalFile(): void {
+        this.properties = this.loadFile(PropertiesHandler.PROPERTIES_NAME);
+    }
     protected loadProperties(propertiesFilePath: string) {
-        const path = __dirname.replace(/(core\\handler)|(core\/handler)$/, 'resources/');
-        const defaultProperties = this.loadFile(path + PropertiesHandler.PROPERTIES_NAME);
-
         if (propertiesFilePath) {
             this.properties = this.loadFile(propertiesFilePath.split('=')[1]);
-            this.sumProperties(this.properties, defaultProperties, []);
         } else {
-            this.logger.warn(Messages.getMessage('before-initialization-properties-not-gived'), '[The Way]');
-            this.properties = defaultProperties;
+            try {
+                this.loadLocalFile();
+            } catch (ex) {
+                this.logger.warn(Messages.getMessage('before-initialization-properties-not-gived'), '[The Way]');
+                this.properties = this.defaultProperties;
+            }
         }
-        this.sumCommandLineProperties();
     }
     protected sumCommandLineProperties(): void {
         const commandLineProperties =  process.argv.filter((arg: string) => arg.search(/^--.*=.*/) > -1);
