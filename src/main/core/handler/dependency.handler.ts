@@ -33,7 +33,7 @@ export class DependencyHandler {
             const matches = found.match(regex);
             if (matches) {
                 throw new ApplicationException(
-                    Messages.getMessage('before-initialization-circular-dependency', [dependentName, dependency]),
+                    Messages.getMessage('error-circular-dependency', [dependentName, dependency]),
                     Messages.getMessage('TW-008')
                 );
             }
@@ -60,7 +60,7 @@ export class DependencyHandler {
         }
     }
     public buildDependenciesInstances(): void {
-        this.logger.info(Messages.getMessage('initialization-resolving-tree'), '[The Way]');
+        this.logger.debug(Messages.getMessage('building-dependencies-instances'), '[The Way]');
         this.buildDependenciesInstancesRec(Object.keys(this.DEPENDENCIES_TREE), this.DEPENDENCIES_TREE, null);
     }
     protected buildDependenciesInstancesRec(treeNodesNames: Array<string>, node: any, parentName: string | null): void {
@@ -84,7 +84,7 @@ export class DependencyHandler {
                 Reflect.set(target, dependencyInformation.key as string, instance);
                 this.logger.debug(
                     Messages.getMessage(
-                        'initialization-injection',
+                        'injection-injected',
                         [dependencyName, dependentName, dependencyInformation.key]
                     ),
                     '[The Way]'
@@ -123,6 +123,6 @@ export class DependencyHandler {
         }
 
         treeMessage = treeMessage.substr(0, treeMessage.length - 1);
-        this.logger.debug(Messages.getMessage('initialization-building-dependencies-tree-done', [treeMessage]), '[The Way]');
+        this.logger.debug(Messages.getMessage('building-dependencies-tree-done', [treeMessage]), '[The Way]');
     }
 }

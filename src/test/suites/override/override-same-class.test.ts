@@ -16,7 +16,7 @@ test('Override: Twice Same Class', done => {
         CORE.whenDestroyed().subscribe(
             (error: Error | undefined) => {
                 if (error && error instanceof ApplicationException) {
-                    expect(error.detail).toBe(Messages.getMessage('before-initialization-cannot-override-twice', [ 'DependencyAServiceTest', 'DependencyBServiceTest', 'DependencyCServiceTest' ]))
+                    expect(error.detail).toBe(Messages.getMessage('error-cannot-overridden-twice', [ 'DependencyAServiceTest', 'DependencyBServiceTest', 'DependencyCServiceTest' ]))
                     expect(error.description).toBe(Messages.getMessage('TW-010'))
                     done();
                 }

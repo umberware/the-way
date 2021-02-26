@@ -8,7 +8,7 @@ export const Application = (params?: { automatic?: boolean; }) => {
     return (constructor: Function): void => {
         if (!(constructor.prototype instanceof TheWayApplication)) {
             throw new ApplicationException(
-                Messages.getMessage('before-initialization-is-not-the-way'),
+                Messages.getMessage('error-is-not-the-way'),
                 Messages.getMessage('TW-001')
             );
         }

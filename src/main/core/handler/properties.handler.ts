@@ -61,7 +61,7 @@ export class PropertiesHandler {
             return Yaml.parse(fs.readFileSync(path).toString());
         } catch(ex) {
             throw new ApplicationException(
-                Messages.getMessage('before-initialization-properties-not-valid'),
+                Messages.getMessage('error-properties-not-valid'),
                 Messages.getMessage('TW-011'),
                 'TW-011'
             );
@@ -77,7 +77,7 @@ export class PropertiesHandler {
             try {
                 this.loadLocalFile();
             } catch (ex) {
-                this.logger.warn(Messages.getMessage('before-initialization-properties-not-gived'), '[The Way]');
+                this.logger.warn(Messages.getMessage('warning-properties-not-gived'), '[The Way]');
                 this.properties = this.defaultProperties;
             }
         }

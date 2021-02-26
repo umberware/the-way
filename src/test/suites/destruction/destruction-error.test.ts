@@ -24,7 +24,7 @@ test('With Error', (done) => {
                 (error: Error | void) => {
                     if (error) {
                         expect(error.message).toBe(
-                            Messages.getMessage('destroyed-with-error', [message]) +
+                            Messages.getMessage('error-in-destruction', [message]) +
                             ' -> ' +
                             Messages.getMessage('TW-012')
                         );

@@ -34,7 +34,10 @@ export class InstanceHandler {
         const registeredConstructor = this.registerHandler.getConstructor(constructor.name);
         const registeredConstructorName = registeredConstructor.name;
         if (!this.INSTANCES[registeredConstructorName]) {
-            this.logger.info(Messages.getMessage('initialization-building-instance', [ registeredConstructorName ]));
+            this.logger.debug(
+                Messages.getMessage('building-instance', [ registeredConstructorName ]),
+                '[The Way]'
+            );
             const instance = this.buildObject(registeredConstructor.constructorFunction);
             const decorators = Reflect.getMetadataKeys(registeredConstructor.constructorFunction);
             this.registerInstance(instance);
@@ -45,6 +48,7 @@ export class InstanceHandler {
         }
     }
     public buildCoreInstances(): void {
+        this.logger.debug(Messages.getMessage('building-core-instances'), '[The Way]');
         Object.values(this.registerHandler.getCoreComponents()).forEach(
             (registeredConstructor: ConstructorModel) => {
                 this.buildInstance(registeredConstructor.constructorFunction);
@@ -52,6 +56,7 @@ export class InstanceHandler {
         );
     }
     public buildInstances(): void {
+        this.logger.debug(Messages.getMessage('building-instances'), '[The Way]');
         Object.values(this.registerHandler.getComponents()).forEach(
             (registeredConstructor: ConstructorModel) => {
                 this.buildInstance(registeredConstructor.constructorFunction);
@@ -99,10 +104,10 @@ export class InstanceHandler {
         );
     }
     public configure(): Observable<boolean> {
-        return this.caller('configure', this.registerHandler.getConfigurables(), 'initialization-configuring-instance');
+        return this.caller('configure', this.registerHandler.getConfigurables(), 'configuring-instance');
     }
     public destroy(): Observable<boolean> {
-        return this.caller('destroy', this.registerHandler.getDestroyable(), 'destruction-destroying-instance',);
+        return this.caller('destroy', this.registerHandler.getDestroyable(), 'destruction-instance',);
     }
     public getInstanceByName<T>(name: string): T | undefined {
         const registeredConstructor = this.registerHandler.getConstructor(name);

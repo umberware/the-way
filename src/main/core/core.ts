@@ -187,12 +187,12 @@ export class CORE {
     protected registerHandler: RegisterHandler;
 
     protected afterInitialization(): void {
-        this.logInfo(Messages.getMessage('after-initialization', [this.calculateElapsedTime()]));
+        this.logInfo(Messages.getMessage('step-after-initialization', [this.calculateElapsedTime()]));
         CORE.STATE$.next(CoreStateEnum.READY);
     }
     protected beforeInitialization(): void {
         this.logger = new Logger();
-        this.logInfo(Messages.getMessage('before-initialization'));
+        this.logInfo(Messages.getMessage('step-before-initialization-started'));
         try {
             this.propertiesHandler = new PropertiesHandler(this.logger);
             this.checkoutProperties();
@@ -204,7 +204,7 @@ export class CORE {
             this.instanceHandler.registerInstance(this.propertiesHandler);
             this.fileHandler.initialize().subscribe(
                 () => {
-                    this.logInfo(Messages.getMessage('before-initialization-done'));
+                    this.logInfo(Messages.getMessage('step-before-initialization-done'));
                     CORE.STATE$.next(CoreStateEnum.BEFORE_INITIALIZATION_DONE);
                 }, (error: ApplicationException) => {
                     CORE.setError(error);
@@ -217,40 +217,23 @@ export class CORE {
     protected build(): Observable<boolean> {
         return new Observable<boolean>(
             (observer) => {
-                this.logInfo(Messages.getMessage('initialization-building'));
+                this.logDebug(Messages.getMessage('building'));
                 this.buildDependenciesTree();
                 this.buildCoreInstances();
                 this.buildInstances();
                 observer.next(true);
-                this.logInfo(Messages.getMessage('initialization-building-done'));
-                observer.complete();
-            }
-        );
-    }
-    protected buildApplication(constructor: Function | Object): Observable<boolean> {
-        return new Observable<boolean>(
-            (observer) => {
-                this.logInfo(Messages.getMessage('initialization-building-application-class'));
-                if ((typeof constructor) === 'object') {
-                    this.instanceHandler.registerInstance(constructor);
-                } else {
-                    this.instanceHandler.buildApplication(constructor as Function);
-                }
-                observer.next(true);
+                this.logDebug(Messages.getMessage('building-done'));
                 observer.complete();
             }
         );
     }
     protected buildCoreInstances(): void {
-        this.logInfo(Messages.getMessage('initialization-building-core-instances'));
         this.instanceHandler.buildCoreInstances();
     }
     protected buildDependenciesTree(): void {
-        this.logInfo(Messages.getMessage('initialization-building-dependencies-tree'));
         this.dependencyHandler.buildDependenciesTree();
     }
     protected buildInstances(): void {
-        this.logInfo(Messages.getMessage('initialization-building-instances'));
         this.dependencyHandler.buildDependenciesInstances();
         this.instanceHandler.buildInstances();
     }
@@ -264,19 +247,42 @@ export class CORE {
         Messages.setLanguage(languageProperty);
         this.logger.setProperties(logProperties);
     }
-    protected configure(): Observable<boolean> {
+    protected configure(constructor: Object | Function): Observable<boolean> {
         return new Observable((observer) => {
-            this.logInfo(Messages.getMessage('initialization-configuring'));
-            this.instanceHandler.configure().subscribe(observer);
-        });
+            this.logDebug(Messages.getMessage('configuring-started'));
+            this.instanceHandler.configure().subscribe(
+                (next) => observer.next(next),
+                (error => observer.error(error)),
+                () => {
+                    this.logDebug(Messages.getMessage('configuring-done'));
+                    observer.complete();
+                }
+            );
+        }).pipe(
+            switchMap(() => this.configureApplication(constructor))
+        );
+    }
+    protected configureApplication(constructor: Function | Object): Observable<boolean> {
+        return new Observable<boolean>(
+            (observer) => {
+                this.logInfo(Messages.getMessage('configuring-application-class'));
+                if ((typeof constructor) === 'object') {
+                    this.instanceHandler.registerInstance(constructor);
+                } else {
+                    this.instanceHandler.buildApplication(constructor as Function);
+                }
+                observer.next(true);
+                observer.complete();
+            }
+        );
     }
     protected destroy(error?: Error): void {
         let code = 0;
         if (error) {
-            this.logError(Messages.getMessage('destruction-error-occured'), error as Error);
+            this.logError(Messages.getMessage('error'), error as Error);
             code = 1;
         }
-        this.logInfo(Messages.getMessage('destruction'));
+        this.logInfo(Messages.getMessage('step-destruction-started'));
         CORE.STATE$.next(CoreStateEnum.DESTRUCTION_STARTED);
 
         this.destroyTheArmy().subscribe(
@@ -284,7 +290,7 @@ export class CORE {
                 this.logInfo(Messages.getMessage('destruction-destroyed'));
             }, (destructionError: Error) => {
                 const error = new ApplicationException(
-                    Messages.getMessage('desctruction-destroyed-with-error', [destructionError.message]),
+                    Messages.getMessage('error-in-destruction', [destructionError.message]),
                     Messages.getMessage('TW-012'),
                     undefined,
                     destructionError
@@ -295,7 +301,7 @@ export class CORE {
                 this.destroyed(code);
             }, () => {
                 this.destroyed(code);
-                this.logInfo(Messages.getMessage('destruction-done'));
+                this.logInfo(Messages.getMessage('step-destruction-done'));
             }
         );
     }
@@ -326,21 +332,23 @@ export class CORE {
         return this.registerHandler;
     }
     protected initialize(constructor: Function | Object): void {
-        this.logInfo(Messages.getMessage('initialization'));
+        this.logInfo(Messages.getMessage('step-initialization-started'));
         concat(
             this.build(),
-            this.configure(),
-            this.buildApplication(constructor)
+            this.configure(constructor),
         ).subscribe(
             () => {},
             (error: Error) => {
                 CORE.setError(error);
             },
             () => {
-                this.logInfo(Messages.getMessage('initialization-done'));
+                this.logInfo(Messages.getMessage('step-initialization-done'));
                 CORE.STATE$.next(CoreStateEnum.INITIALIZATION_DONE);
             }
         );
+    }
+    protected logDebug(message: string | number): void {
+        this.logger.debug(message.toString(), '[The Way]');
     }
     protected logInfo(message: string | number): void {
         this.logger.info(message.toString(), '[The Way]');

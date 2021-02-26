@@ -99,7 +99,7 @@ export class RegisterHandler {
     protected registerComponent(constructor: Function, type: ClassTypeEnum, over?: Function): void {
         if (this.isCoreConstructor(constructor, over)) {
             CORE.setError(new ApplicationException(
-                Messages.getMessage('before-initialization-cannot-register', [constructor.name]),
+                Messages.getMessage('error-cannot-overridden-core-classes', [constructor.name]),
                 Messages.getMessage('TW-014'),
                 Messages.getMessage('TW-013')
             ));
@@ -113,7 +113,7 @@ export class RegisterHandler {
             coreComponent.type = type;
             return;
         } else {
-            this.logger.debug(Messages.getMessage('before-initialization-registering-class', [constructor.name, type]), '[The Way]');
+            this.logger.debug(Messages.getMessage('register-class', [constructor.name, type]), '[The Way]');
 
             if (over) {
                 this.registerOverriddenClass(over.name, constructor);
@@ -140,7 +140,7 @@ export class RegisterHandler {
             delete this.COMPONENTS[constructorName];
         } else {
             type = ClassTypeEnum.COMMON;
-            this.logger.debug(Messages.getMessage('before-initialization-registering-class', [constructor.name, type]), '[The Way]');
+            this.logger.debug(Messages.getMessage('register-class', [constructor.name, type]), '[The Way]');
         }
 
         this.registerClass(constructorName, constructor, type, true);
@@ -151,7 +151,7 @@ export class RegisterHandler {
 
         this.logger.debug(
             Messages.getMessage(
-                'before-initialization-registering-dependency-class',
+                'register-dependency',
                 [dependencyName, dependentName]
             ), '[The Way]'
         );
@@ -172,7 +172,7 @@ export class RegisterHandler {
     public registerInjection(constructor: Function, target: object, propertyKey: string): void {
         if (!constructor) {
             CORE.setError(new ApplicationException(
-                Messages.getMessage('before-initialization-not-found-dependency-constructor', [propertyKey, target.constructor.name]),
+                Messages.getMessage('error-not-found-dependency-constructor', [propertyKey, target.constructor.name]),
                 Messages.getMessage('TW-009')
             ));
             return;
@@ -181,7 +181,7 @@ export class RegisterHandler {
         this.registerDependency(constructor, target, propertyKey);
         if (this.isCoreConstructor(constructor) && constructor !== PropertiesHandler) {
             CORE.setError(new ApplicationException(
-                Messages.getMessage('before-initialization-cannot-inject', [constructor.name]),
+                Messages.getMessage('error-cannot-inject', [constructor.name]),
                 Messages.getMessage('TW-015')
             ));
             return;
@@ -192,7 +192,7 @@ export class RegisterHandler {
     protected registerOverriddenClass(name: string, constructor: Function): void {
         if (this.OVERRIDEN[name]) {
             CORE.setError(new ApplicationException(
-                Messages.getMessage('before-initialization-cannot-override-twice', [ name,  this.OVERRIDEN[name], constructor.name]),
+                Messages.getMessage('error-cannot-overridden-twice', [ name,  this.OVERRIDEN[name], constructor.name]),
                 Messages.getMessage('TW-010')
             ));
             return;
@@ -200,7 +200,7 @@ export class RegisterHandler {
 
         const overridenName = constructor.name;
         this.OVERRIDEN[name] = overridenName;
-        this.logger.debug(Messages.getMessage('before-initialization-registering-overridden-class', [name, overridenName]), '[The Way]');
+        this.logger.debug(Messages.getMessage('register-overridden', [name, overridenName]), '[The Way]');
     }
     public registerService(constructor: Function, over?: Function): void {
         this.registerComponent(constructor, ClassTypeEnum.SERVICE, over);

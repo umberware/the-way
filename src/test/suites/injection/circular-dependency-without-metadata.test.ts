@@ -22,7 +22,7 @@ test('Injection: Circular Dependency Without Metadata', done => {
                     const applicationException = error as ApplicationException;
                     console.log(error)
                     expect(applicationException.getDescription()).toBe(Messages.getMessage('TW-009'));
-                    expect(applicationException.getDetail()).toBe(Messages.getMessage('before-initialization-not-found-dependency-constructor', ['dependencyA', 'DependencyBServiceTest']));
+                    expect(applicationException.getDetail()).toBe(Messages.getMessage('error-not-found-dependency-constructor', ['dependencyA', 'DependencyBServiceTest']));
                     done();
                 }
             }
