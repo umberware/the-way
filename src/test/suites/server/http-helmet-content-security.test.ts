@@ -10,10 +10,12 @@ beforeEach(() => {
     EnvironmentTest.spyProcessExit();
 })
 describe('Server Configuration: ', () => {
-    test('Http Disabled', done => {
+    test('Http With Helmet Content Security', done => {
         process.argv.push('--the-way.core.scan.enabled=false');
-        process.argv.push('--the-way.server.http.enabled=false');
         process.argv.push('--the-way.core.log.level=0');
+        process.argv.push('--the-way.server.helmet.contentSecurityPolicy=true');
+        process.argv.push('--the-way.server.file.enabled=true');
+
         import('../../resources/environment/main/not-automatic-main.test').then(
             (result) => {
                 new result.NotAutomaticMainTest();
@@ -25,7 +27,7 @@ describe('Server Configuration: ', () => {
                     (body) => {
                         expect(body).toBeUndefined();
                     }, (error => {
-                        expect(error.code).toBe('ECONNREFUSED');
+                        expect((error + '').includes('Cannot GET /s')).toBeTruthy();
                         done()
                     })
                 );

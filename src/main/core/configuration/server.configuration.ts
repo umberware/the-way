@@ -87,10 +87,8 @@ export class ServerConfiguration extends Configurable {
             return
         }
 
-        if (httpProperties.enabled && !helmetProperties.contentSecurityPolicy) {
+        if (httpProperties.enabled && (this.serverProperties.file as PropertyModel).enabled) {
             helmetProperties.contentSecurityPolicy = false;
-        } else if ((this.serverProperties.file as PropertyModel).enabled) {
-            this.logger.warn(Messages.getMessage('warning-http-file-with-helmet'), '[The Way]');
         }
 
         this.serverContext = express();
@@ -132,16 +130,13 @@ export class ServerConfiguration extends Configurable {
                     observer.next();
                 });
                 this.httpServer.on('error', (error: any) => {
-                    if (error.code === 'EADDRINUSE') {
-                        observer.error(
-                            new ApplicationException(
-                                Messages.getMessage('error-port-in-use', [ httpProperties.port as string]),
-                                Messages.getMessage('TW-012')
-                            )
-                        );
-                    } else {
-                        observer.error(error);
-                    }
+                    observer.error(
+                        new ApplicationException(
+                            Messages.getMessage('error-server-error', [ error.code ]),
+                            Messages.getMessage('TW-012'),
+                            error
+                        )
+                    );
                 });
             }
         });
@@ -159,16 +154,13 @@ export class ServerConfiguration extends Configurable {
                     observer.next();
                 });
                 this.httpsServer.on('error', (error: any) => {
-                    if (error.code === 'EADDRINUSE') {
-                        observer.error(
-                            new ApplicationException(
-                                Messages.getMessage('error-port-in-use', [ httpsProperties.port as string]),
-                                Messages.getMessage('TW-012')
-                            )
-                        );
-                    } else {
-                        observer.error(error);
-                    }
+                    observer.error(
+                        new ApplicationException(
+                            Messages.getMessage('error-server-error', [ error.code ]),
+                            Messages.getMessage('TW-012'),
+                            error
+                        )
+                    );
                 });
             }
         });
