@@ -77,6 +77,26 @@ export class ServerConfiguration extends Configurable {
             map(() => {})
         );
     }
+    protected handleServer(
+        observer: Subscriber<void>,
+        server: Http.Server | Https.Server,
+        properties: PropertyModel
+    ): void {
+        const messageKey = (server instanceof Http.Server) ? 'http-server-running' : 'https-server-running';
+        server.listen(properties.port, () => {
+            this.logger.info(Messages.getMessage(messageKey, [ properties.port as string ]));
+            observer.next();
+        });
+        server.on('error', (error: any) => {
+            observer.error(
+                new ApplicationException(
+                    Messages.getMessage('error-server-error', [ error.code ]),
+                    Messages.getMessage('TW-012'),
+                    error
+                )
+            );
+        });
+    }
     protected initializeExpress(): void {
         const helmetProperties = this.serverProperties.helmet as PropertyModel;
         const corsProperties = this.serverProperties.cors as PropertyModel;
@@ -125,19 +145,7 @@ export class ServerConfiguration extends Configurable {
                 observer.next();
             } else {
                 this.httpServer = Http.createServer(this.serverContext);
-                this.httpServer.listen(httpProperties.port, () => {
-                    this.logger.info(Messages.getMessage('http-server-running', [ httpProperties.port as string ]));
-                    observer.next();
-                });
-                this.httpServer.on('error', (error: any) => {
-                    observer.error(
-                        new ApplicationException(
-                            Messages.getMessage('error-server-error', [ error.code ]),
-                            Messages.getMessage('TW-012'),
-                            error
-                        )
-                    );
-                });
+                this.handleServer(observer, this.httpServer, httpProperties);
             }
         });
     }
@@ -149,19 +157,7 @@ export class ServerConfiguration extends Configurable {
             } else {
                 const credentials = this.buildCredentialsOptions(httpsProperties);
                 this.httpsServer = Https.createServer(credentials, this.serverContext);
-                this.httpsServer.listen(httpsProperties.port, () => {
-                    this.logger.info(Messages.getMessage('https-server-running', [ httpsProperties.port as string ]));
-                    observer.next();
-                });
-                this.httpsServer.on('error', (error: any) => {
-                    observer.error(
-                        new ApplicationException(
-                            Messages.getMessage('error-server-error', [ error.code ]),
-                            Messages.getMessage('TW-012'),
-                            error
-                        )
-                    );
-                });
+                this.handleServer(observer, this.httpsServer, httpsProperties);
             }
         });
     }
