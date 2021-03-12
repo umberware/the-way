@@ -2,7 +2,7 @@ export class ApplicationException extends Error {
     public message: string;
     public name: string;
 
-    constructor(public detail: string, public description: string, public code?: string | number, ex?: Error) {
+    constructor(public detail: string, public description: string, ex?: Error) {
         super();
         if (ex) {
             this.stack = ex.stack;
@@ -17,8 +17,5 @@ export class ApplicationException extends Error {
     }
     public getDescription(): string {
         return this.description;
-    }
-    public getCode(): string | number | undefined {
-        return this.code;
     }
 }

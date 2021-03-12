@@ -1,10 +1,10 @@
 import { EnvironmentTest } from '../../resources/environment/environment.test';
-import { CORE, CryptoService, Logger, MESSAGES } from '../../../main';
+import { CORE, MESSAGES } from '../../../main';
 
 MESSAGES.br = {};
 
-afterAll(() => {
-    EnvironmentTest.clear();
+afterAll(done => {
+    EnvironmentTest.clear(done);
 });
 beforeAll(() => {
     EnvironmentTest.spyProcessExit();

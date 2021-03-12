@@ -17,8 +17,8 @@ class Main extends TheWayApplication {
     @Inject fileHandler: FileHandler;
 }
 
-afterAll(() => {
-    EnvironmentTest.clear();
+afterAll(done => {
+    EnvironmentTest.clear(done);
 });
 beforeAll(() => {
     EnvironmentTest.spyProcessExit();

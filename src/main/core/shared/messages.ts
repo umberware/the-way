@@ -15,12 +15,14 @@ export const MESSAGES: { [key: string]: { [key: string]: string | number; } } = 
         'error-cannot-overridden-twice': 'Register: Is not possible to overwrite more than once. Was registered the overridden $ as $. The current is $.',
         'error-cannot-scan': 'Register: Cannot scan files with the provided path $.',
         'error-circular-dependency': 'Register: Found a circular dependency between $ -> $.',
+        'error-port-in-use': 'The port $ is in use.',
         'error-in-destruction': 'Destruction: An error ocurred in the destruction step. Error $.',
         'error-is-not-the-way': 'Preparing: Your application does not extend the class TheWayApplication',
         'error-not-found-dependency-constructor': 'Register: Cannot inject $ in class $. Cannot acquire the metadata from property. Probably a circular dependency',
         'error-properties-not-valid': 'Preparing: The provided application properties is not valid.',
 
         'warning-properties-not-gived': 'Preparing: Not gived a file properties. Will be used the default properties.',
+        'warning-http-file-with-helmet': 'Http enabled but with HELMET parameters. This can cause problems in file server.',
 
         'register-class': 'Register: $ with type $',
         'register-dependency': 'Register: Dependency between -> $ into $',
@@ -45,6 +47,10 @@ export const MESSAGES: { [key: string]: { [key: string]: string | number; } } = 
         'configuring-started': 'Configuring: Started',
 
         'injection-injected': 'Injection: Injected $ into $.$.',
+
+        'http-server-initialization': 'Configuring the Http & Https server.',
+        'http-server-running': 'HttpServer started on port $',
+        'https-server-running': 'HttpsServer started on port $',
 
         'TW-001': 'Application not recognized',
         'TW-002': 'HttpServer is not found',

@@ -1,8 +1,8 @@
 import { CORE, PropertyModel } from '../../../main';
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 
-afterAll(() => {
-    EnvironmentTest.clear();
+afterAll(done => {
+    EnvironmentTest.clear(done);
 });
 beforeAll(() => {
     EnvironmentTest.spyProcessExit();

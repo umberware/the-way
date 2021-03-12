@@ -1,9 +1,6 @@
 import { ApplicationException, CORE, Messages } from '../../../main';
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 
-afterAll(() => {
-    EnvironmentTest.clear();
-});
 beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });

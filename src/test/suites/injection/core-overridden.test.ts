@@ -1,9 +1,9 @@
 import { EnvironmentTest } from '../../resources/environment/environment.test';
-import { CORE, CryptoService, Logger, ServerConfiguration } from '../../../main';
+import { CORE, ServerConfiguration } from '../../../main';
 import { CustomCoreConfiguration } from '../../resources/injection/core-overridden/custom-core.configuration';
 
-afterAll(() => {
-    EnvironmentTest.clear();
+afterAll(done => {
+    EnvironmentTest.clear(done);
 });
 beforeAll(() => {
     EnvironmentTest.spyProcessExit();

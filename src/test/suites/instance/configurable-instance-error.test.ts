@@ -1,8 +1,8 @@
 import { EnvironmentTest } from '../../resources/environment/environment.test';
-import { ApplicationException, CORE } from '../../../main';
+import { CORE } from '../../../main';
 
-afterAll(() => {
-    EnvironmentTest.clear();
+afterAll(done => {
+    EnvironmentTest.clear(done);
 });
 beforeAll(() => {
     EnvironmentTest.spyProcessExit();

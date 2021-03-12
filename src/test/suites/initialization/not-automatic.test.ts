@@ -3,8 +3,8 @@ import { switchMap } from 'rxjs/operators';
 import { CORE, CoreStateEnum } from '../../../main';
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 
-afterAll(() => {
-    EnvironmentTest.clear();
+afterAll(done => {
+    EnvironmentTest.clear(done);
 });
 beforeAll(() => {
     EnvironmentTest.spyProcessExit();
@@ -22,6 +22,7 @@ test('Initialization: Manual', (done) => {
                 })
             ).subscribe(
                 () => {
+                    console.log('?')
                     done();
                 }
             );

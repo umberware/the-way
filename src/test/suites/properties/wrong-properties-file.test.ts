@@ -1,8 +1,8 @@
 import { ApplicationException, CORE, Messages, PropertyModel } from '../../../main';
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 
-afterAll(() => {
-    EnvironmentTest.clear();
+afterAll(done => {
+    EnvironmentTest.clear(done);
 });
 beforeAll(() => {
     EnvironmentTest.spyProcessExit();
@@ -18,7 +18,6 @@ describe('Properties Handler: ', () => {
                         if (error && error instanceof ApplicationException) {
                             expect(error.getDetail()).toBe(Messages.getMessage('error-properties-not-valid'));
                             expect(error.getDescription()).toBe(Messages.getMessage('TW-011'));
-                            expect(error.getCode()).toBe('TW-011');
                             done();
                         }
                     }

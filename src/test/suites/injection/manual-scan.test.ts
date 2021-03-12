@@ -4,8 +4,8 @@ import { EnvironmentTest } from '../../resources/environment/environment.test';
 import { Application, CORE, Inject, PropertyModel, TheWayApplication } from '../../../main';
 import { DependentServiceTest } from '../../resources/injection/normal-dependency/dependent.service.test';
 
-afterAll(() => {
-    EnvironmentTest.clear();
+afterAll(done => {
+    EnvironmentTest.clear(done);
 });
 beforeAll(() => {
     EnvironmentTest.spyProcessExit();

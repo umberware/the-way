@@ -7,7 +7,7 @@ import { CORE, CryptoService, Logger, PropertiesHandler, ServerConfiguration } f
 import { ConstructorMapModel } from '../../../main/core/model/constructor-map.model';
 
 export class EnvironmentTest {
-    private static CORE_INSTANCES = [ 'CryptoService', 'PropertiesHandler' ];
+    private static CORE_INSTANCES = [ 'CryptoService', 'PropertiesHandler', 'Logger'];
     private static CORE_TYPES = [ CryptoService, Logger, ServerConfiguration, PropertiesHandler ];
     private static processExitSpy: Spy
     private static processArgs: Array<string> = [ ...process.argv ];
@@ -24,19 +24,18 @@ export class EnvironmentTest {
             })
         );
     }
-    public static buildCoreDestructionArmySpy(message: string): void {
-        const core = (CORE as any).getInstance();
-        spyOn(core as any, 'destroyTheArmy').and.returnValue(
-            new Observable((observer: Subscriber<boolean>) => {
-                observer.error(new Error(message));
-                observer.next(true);
-                observer.complete();
-            })
-        );
-    }
-    public static clear(): void {
+    public static clear(done: Function): void {
         this.clearProcessVariables();
         resetAllMocks();
+        if (!CORE.isDestroyed()) {
+            CORE.destroy().subscribe(
+                () => {
+                    done();
+                }
+            );
+        } else {
+            done();
+        }
     }
     public static clearProcessVariables(): void {
         process.argv = [ ...this.processArgs ];

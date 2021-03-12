@@ -1,8 +1,8 @@
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 import { CORE } from '../../../main';
 
-afterAll(() => {
-    EnvironmentTest.clear();
+afterAll(done => {
+    EnvironmentTest.clear(done);
 });
 beforeAll(() => {
     EnvironmentTest.spyProcessExit();
@@ -17,12 +17,9 @@ test('Injection: Service And Configuration', done => {
         CORE.whenReady().subscribe(
             () => {
                 const instances = EnvironmentTest.getInstancesWithout([result.Main]);
-                const dependenciesTree = {
-                    ServerConfiguration: {
-                        PropertiesHandler: true
-                    }
-                };
-                expect(JSON.stringify(CORE.getDependenciesTree())).toBe(JSON.stringify(dependenciesTree));
+                const dependenciesTree = {};
+
+                expect(JSON.stringify(EnvironmentTest.getDependenciesTree())).toBe(JSON.stringify(dependenciesTree));
                 expect(JSON.stringify(instances)).toBe('[{},{},{},{},{}]');
                 CORE.destroy().subscribe(
                     () => {

@@ -97,7 +97,8 @@ export class FileHandler {
             this.logger.error(ex);
             throw new ApplicationException(
                 Messages.getMessage('error-cannot-scan', [ex.message]),
-                Messages.getMessage('TW-003')
+                Messages.getMessage('TW-003'),
+                ex
             );
         }
     }

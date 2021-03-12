@@ -9,7 +9,6 @@ import {
     TheWayApplication
 } from '../../../main';
 
-
 @Configuration(FileHandler)
 class CustomFileHanlder {}
 
@@ -20,8 +19,8 @@ class Main extends TheWayApplication {
     @Inject fileHandler: CustomFileHanlder;
 }
 
-afterAll(() => {
-    EnvironmentTest.clear();
+afterAll(done => {
+    EnvironmentTest.clear(done);
 });
 beforeAll(() => {
     EnvironmentTest.spyProcessExit();

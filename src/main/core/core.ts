@@ -155,6 +155,7 @@ export class CORE {
         return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.DESTRUCTION_DONE),
             map(() => {
+                this.INSTANCE$.next(undefined);
                 return this.ERROR;
             })
         );
@@ -292,7 +293,6 @@ export class CORE {
                 const error = new ApplicationException(
                     Messages.getMessage('error-in-destruction', [destructionError.message]),
                     Messages.getMessage('TW-012'),
-                    undefined,
                     destructionError
                 );
                 this.logger.error(error, '[The Way]');

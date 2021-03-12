@@ -5,8 +5,8 @@ const privateRSAKey = '-----BEGIN RSA PRIVATE KEY-----\nMIICXAIBAAKBgQC4GEgLgVyc
 const publicRSAKey = '-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC4GEgLgVycVGytveBsSd2ytUdR\naV0pJS9MszQzIcXV5buUoFD7pynQnFWQXZek3MdWCellKF2LSLyaPKLc/6VPJj+m\nfmYxGsOZ0S/mJ9a3XE0Y7c0QL/EkGzCk8gux4YM3xXf5qvb99jMYxpvAkAWG/BrG\nGP86qlj58SpvN3EtCQIDAQAB\n-----END PUBLIC KEY-----';
 const ivKey = 'A2345678901234567890123456789012';
 
-afterAll(() => {
-    EnvironmentTest.clear();
+afterAll(done => {
+    EnvironmentTest.clear(done);
 });
 beforeAll(() => {
     EnvironmentTest.spyProcessExit();

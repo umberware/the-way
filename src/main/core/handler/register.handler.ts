@@ -101,7 +101,6 @@ export class RegisterHandler {
             CORE.setError(new ApplicationException(
                 Messages.getMessage('error-cannot-overridden-core-classes', [constructor.name]),
                 Messages.getMessage('TW-014'),
-                Messages.getMessage('TW-013')
             ));
             return;
         }

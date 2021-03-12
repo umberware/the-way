@@ -1,5 +1,5 @@
-import { Destroyable } from '../../../main/core/shared/destroyable';
-import { Service } from '../../../main';
+import { Destroyable } from '../../../../main/core/shared/destroyable';
+import { Service } from '../../../../main';
 
 import { Observable, of } from 'rxjs';
 

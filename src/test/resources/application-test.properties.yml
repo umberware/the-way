@@ -5,3 +5,6 @@ the-way:
             enabled: false
         log:
             level: 0
+    server:
+        http:
+            port: 8080
