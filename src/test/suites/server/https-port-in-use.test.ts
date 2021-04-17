@@ -1,7 +1,5 @@
 import { ApplicationException, CORE } from '../../../main';
 import { EnvironmentTest } from '../../resources/environment/environment.test';
-import { switchMap } from 'rxjs/operators';
-import { HttpRequestorEnvironment } from '../../resources/environment/http-requestor.environment.test';
 import * as http from 'http';
 
 afterAll(done => {

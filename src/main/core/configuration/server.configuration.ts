@@ -1,6 +1,7 @@
 import * as Http from 'http';
 import * as Https from 'https';
 import { readFileSync } from 'fs';
+import * as SwaggerUi from 'swagger-ui-express';
 
 import { Observable, Subscriber, zip } from 'rxjs';
 import { map, take } from 'rxjs/operators';
@@ -34,11 +35,12 @@ export class ServerConfiguration extends Configurable {
     public httpsServer: Https.Server;
 
     protected buildCredentialsOptions(httpsProperties: PropertyModel): { key: string; cert: string } {
-        const privateKey  = readFileSync(httpsProperties.keyPath as string, 'utf8');
+        const privateKey = readFileSync(httpsProperties.keyPath as string, 'utf8');
         const certificate = readFileSync(httpsProperties.certPath as string, 'utf8');
 
         return { key: privateKey, cert: certificate };
     }
+
     public configure(): void | Observable<void> {
         this.serverProperties = this.propertiesHandler.getProperties('the-way.server') as PropertyModel;
         if (!this.serverProperties.enabled) {
@@ -47,6 +49,7 @@ export class ServerConfiguration extends Configurable {
             return this.start();
         }
     }
+
     protected destroyHttpServer(): Observable<void> {
         return new Observable<void>((observer: Subscriber<void>) => {
             if (this.httpServer) {
@@ -58,6 +61,7 @@ export class ServerConfiguration extends Configurable {
             }
         });
     }
+
     protected destroyHttpsServer(): Observable<void> {
         return new Observable<void>((observer: Subscriber<void>) => {
             if (this.httpsServer) {
@@ -69,14 +73,17 @@ export class ServerConfiguration extends Configurable {
             }
         });
     }
+
     public destroy(): Observable<void> {
         return zip(
             this.destroyHttpServer().pipe(take(1)),
             this.destroyHttpsServer().pipe(take(1)),
         ).pipe(
-            map(() => {})
+            map(() => {
+            })
         );
     }
+
     protected handleServer(
         observer: Subscriber<void>,
         server: Http.Server | Https.Server,
@@ -84,19 +91,20 @@ export class ServerConfiguration extends Configurable {
     ): void {
         const messageKey = (server instanceof Http.Server) ? 'http-server-running' : 'https-server-running';
         server.listen(properties.port, () => {
-            this.logger.info(Messages.getMessage(messageKey, [ properties.port as string ]));
+            this.logger.info(Messages.getMessage(messageKey, [properties.port as string]));
             observer.next();
         });
         server.on('error', (error: any) => {
             observer.error(
                 new ApplicationException(
-                    Messages.getMessage('error-server-error', [ error.code ]),
+                    Messages.getMessage('error-server-error', [error.code]),
                     Messages.getMessage('TW-012'),
                     error
                 )
             );
         });
     }
+
     protected initializeExpress(): void {
         const helmetProperties = this.serverProperties.helmet as PropertyModel;
         const corsProperties = this.serverProperties.cors as PropertyModel;
@@ -127,17 +135,21 @@ export class ServerConfiguration extends Configurable {
             .use(bodyParser.json())
             .use(bodyParser.urlencoded({ extended: false }));
     }
+
     protected initializeExpressHelmet(helmetProperties: any): void {
         delete helmetProperties.enabled;
         this.serverContext.use(helmet(helmetProperties));
     }
+
     protected initializeExpressCors(corsProperties: any): any {
         delete corsProperties.enabled;
         this.serverContext.use(cors(corsProperties));
     }
+
     protected initializeExpressOperationsLog(): any {
         this.serverContext.use(morgan('dev'));
     }
+
     protected initializeHttpServer(): Observable<void> {
         return new Observable<void>((observer: Subscriber<void>) => {
             const httpProperties = this.serverProperties.http as PropertyModel;
@@ -149,6 +161,7 @@ export class ServerConfiguration extends Configurable {
             }
         });
     }
+
     protected initializeHttpsServer(): Observable<void> {
         return new Observable<void>((observer: Subscriber<void>) => {
             const httpsProperties = this.serverProperties.https as PropertyModel;
@@ -161,21 +174,44 @@ export class ServerConfiguration extends Configurable {
             }
         });
     }
+
     protected initializeServer(): Observable<void> {
         return zip(
             this.initializeHttpServer().pipe(take(1)),
             this.initializeHttpsServer().pipe(take(1))
-        ).pipe(map(() => {}));
+        ).pipe(map(() => {
+        }));
     }
+
+    protected initializeSwagger(): void {
+        this.logger.debug(Messages.getMessage('http-swagger-enabled'), '[The Way]');
+        const restProperties = this.serverProperties.rest as any;
+        const swaggerProperties = restProperties.swagger;
+        const swaggerDoc = readFileSync(swaggerProperties.filePath);
+        this.serverContext.use(
+            restProperties.path + swaggerProperties.path,
+            SwaggerUi.serve,
+            SwaggerUi.setup(JSON.parse(swaggerDoc.toString()))
+        );
+    }
+
+    protected isSwaggerEnabled(): boolean {
+        const swagger = (this.serverProperties.rest as PropertyModel).swagger as PropertyModel;
+        return swagger !== undefined &&
+            (swagger as PropertyModel).enabled as boolean;
+    }
+
     protected start(): Observable<void> {
         this.logger.info(Messages.getMessage('http-server-initialization'));
         this.initializeExpress();
+
+        if (this.isSwaggerEnabled()) {
+            this.initializeSwagger();
+        }
+
         return this.initializeServer();
         // if (this.isFileServerEnabled())   {
         //     this.initializeFileServer();
-        // }
-        // if (this.isSwaggerEnabled())   {
-        //     this.initializeSwagger();
         // }
     }
 }

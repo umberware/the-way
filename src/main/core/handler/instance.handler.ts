@@ -87,13 +87,19 @@ export class InstanceHandler {
                     defaultIfEmpty(true)
                 );
             } catch (ex) {
-                observable =  of(ex);
+                observable = of(ex);
             }
+
             results.push(observable);
         }
         return forkJoin(results).pipe(
             map((values: Array<any>) => {
-                const errors = values.filter((value => value instanceof Error));
+                const errors = values.filter((value => {
+                    return value !== undefined && (
+                        value instanceof Error || value.code !== undefined
+                    );
+                }));
+
                 if (errors.length > 0) {
                     throw (errors[0]);
                 } else {

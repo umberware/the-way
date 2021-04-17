@@ -51,6 +51,7 @@ export const MESSAGES: { [key: string]: { [key: string]: string | number; } } = 
         'http-server-initialization': 'Configuring the Http & Https server.',
         'http-server-running': 'HttpServer started on port $',
         'https-server-running': 'HttpsServer started on port $',
+        'http-swagger-enabled': 'Configuring the Swagger UI...',
 
         'TW-001': 'Application not recognized',
         'TW-002': 'HttpServer is not found',
