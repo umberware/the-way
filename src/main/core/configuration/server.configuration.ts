@@ -40,7 +40,16 @@ export class ServerConfiguration extends Configurable {
 
         return { key: privateKey, cert: certificate };
     }
-
+    private buildPath(fileProperty: any, beginPath: string): string {
+        let path = fileProperty.path as string;
+        if (!fileProperty.full) {
+            if (path.charAt(0) !== '/') {
+                path = '/' + path;
+            }
+            path = beginPath + path;
+        }
+        return path;
+    }
     public configure(): void | Observable<void> {
         this.serverProperties = this.propertiesHandler.getProperties('the-way.server') as PropertyModel;
         if (!this.serverProperties.enabled) {
@@ -49,7 +58,6 @@ export class ServerConfiguration extends Configurable {
             return this.start();
         }
     }
-
     protected destroyHttpServer(): Observable<void> {
         return new Observable<void>((observer: Subscriber<void>) => {
             if (this.httpServer) {
@@ -61,7 +69,6 @@ export class ServerConfiguration extends Configurable {
             }
         });
     }
-
     protected destroyHttpsServer(): Observable<void> {
         return new Observable<void>((observer: Subscriber<void>) => {
             if (this.httpsServer) {
@@ -73,17 +80,14 @@ export class ServerConfiguration extends Configurable {
             }
         });
     }
-
     public destroy(): Observable<void> {
         return zip(
             this.destroyHttpServer().pipe(take(1)),
             this.destroyHttpsServer().pipe(take(1)),
         ).pipe(
-            map(() => {
-            })
+            map(() => {})
         );
     }
-
     protected handleServer(
         observer: Subscriber<void>,
         server: Http.Server | Https.Server,
@@ -104,7 +108,6 @@ export class ServerConfiguration extends Configurable {
             );
         });
     }
-
     protected initializeExpress(): void {
         const helmetProperties = this.serverProperties.helmet as PropertyModel;
         const corsProperties = this.serverProperties.cors as PropertyModel;
@@ -112,7 +115,7 @@ export class ServerConfiguration extends Configurable {
         const httpsProperties = this.serverProperties.https as PropertyModel;
 
         if (!httpProperties.enabled && !httpsProperties.enabled) {
-            return
+            return;
         }
 
         if (httpProperties.enabled && (this.serverProperties.file as PropertyModel).enabled) {
@@ -135,21 +138,41 @@ export class ServerConfiguration extends Configurable {
             .use(bodyParser.json())
             .use(bodyParser.urlencoded({ extended: false }));
     }
-
     protected initializeExpressHelmet(helmetProperties: any): void {
         delete helmetProperties.enabled;
         this.serverContext.use(helmet(helmetProperties));
     }
-
     protected initializeExpressCors(corsProperties: any): any {
         delete corsProperties.enabled;
         this.serverContext.use(cors(corsProperties));
     }
-
     protected initializeExpressOperationsLog(): any {
         this.serverContext.use(morgan('dev'));
     }
+    public initializeFileServer(): void {
+        this.logger.debug(Messages.getMessage('http-file-enabled'), '[The Way]');
+        const fileProperties = this.serverProperties.file as any;
+        const filePath: string = this.buildPath(fileProperties, process.cwd());
 
+        const assetsProperty = fileProperties.assets as any;
+        const staticProperty = fileProperties.static as any;
+
+        if (assetsProperty.enabled) {
+            this.serverContext.use('/assets', express.static(this.buildPath(assetsProperty, filePath)));
+        }
+
+        if (staticProperty.enabled) {
+            this.serverContext.use('/static', express.static(this.buildPath(staticProperty, filePath)));
+        }
+
+        this.serverContext.get('/*', (req: any, res: any, next: any) => {
+            if (req.path === '/' || (fileProperties.fallback && !this.isApiPath(req.path))) {
+                res.sendFile(filePath + '/index.html');
+            } else {
+                next();
+            }
+        });
+    }
     protected initializeHttpServer(): Observable<void> {
         return new Observable<void>((observer: Subscriber<void>) => {
             const httpProperties = this.serverProperties.http as PropertyModel;
@@ -174,15 +197,12 @@ export class ServerConfiguration extends Configurable {
             }
         });
     }
-
     protected initializeServer(): Observable<void> {
         return zip(
             this.initializeHttpServer().pipe(take(1)),
             this.initializeHttpsServer().pipe(take(1))
-        ).pipe(map(() => {
-        }));
+        ).pipe(map(() => {}));
     }
-
     protected initializeSwagger(): void {
         this.logger.debug(Messages.getMessage('http-swagger-enabled'), '[The Way]');
         const restProperties = this.serverProperties.rest as any;
@@ -194,13 +214,21 @@ export class ServerConfiguration extends Configurable {
             SwaggerUi.setup(JSON.parse(swaggerDoc.toString()))
         );
     }
-
+    protected isApiPath(req: any): boolean {
+        const rest = (this.serverProperties.rest as PropertyModel) as PropertyModel;
+        const path = req.path as string;
+        return path.includes(rest.path as string);
+    }
+    protected isFileServerEnabled(): boolean {
+        const fileProperties = this.serverProperties.file  as PropertyModel;
+        return fileProperties &&
+            fileProperties.enabled as boolean;
+    }
     protected isSwaggerEnabled(): boolean {
         const swagger = (this.serverProperties.rest as PropertyModel).swagger as PropertyModel;
         return swagger !== undefined &&
             (swagger as PropertyModel).enabled as boolean;
     }
-
     protected start(): Observable<void> {
         this.logger.info(Messages.getMessage('http-server-initialization'));
         this.initializeExpress();
@@ -209,9 +237,10 @@ export class ServerConfiguration extends Configurable {
             this.initializeSwagger();
         }
 
+        if (this.isFileServerEnabled())   {
+            this.initializeFileServer();
+        }
+
         return this.initializeServer();
-        // if (this.isFileServerEnabled())   {
-        //     this.initializeFileServer();
-        // }
     }
 }
