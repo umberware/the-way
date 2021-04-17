@@ -131,35 +131,6 @@ export class HttpsRequestorEnvironment {
             req.end();
         }).pipe(take(1));
     }
-    public static GetNoParse<T>(path: string, headers: any = {}): Observable<T> {
-        return new Observable<T>((observer) => {
-            const { hostname, port } = this.getHostnameAndPort();
-            const options = {
-                hostname: hostname,
-                port: port,
-                path: path,
-                method: 'GET',
-                rejectUnauthorized: false,
-                headers: {
-                    ...headers,
-                    'Content-Type': 'application/json'
-                }
-            }
-            const req = Https.request(options, (res) => {
-                res.on('data', (d) => {
-                    if (res.statusCode !== 200 && res.statusCode !== 302) {
-                        observer.error(d);
-                    } else {
-                        observer.next(d);
-                    }
-                })
-            })
-            req.on('error', (error: Error) => {
-                observer.error(error);
-            })
-            req.end();
-        }).pipe(take(1));
-    }
     public static Head<T>(path: string, headers: any = {}): Observable<T> {
         return new Observable<T>((observer) => {
             const {hostname, port} = this.getHostnameAndPort();
@@ -189,6 +160,38 @@ export class HttpsRequestorEnvironment {
             })
             req.on('error', (error: Error) => {
                 observer.error(error);
+            })
+            req.end();
+        }).pipe(take(1));
+    }
+    public static GetNoParse<T>(path: string, headers: any = {}): Observable<T> {
+        return new Observable<T>((observer) => {
+            const { hostname, port } = this.getHostnameAndPort();
+            const options = {
+                hostname: hostname,
+                port: port,
+                path: path,
+                method: 'GET',
+                rejectUnauthorized: false,
+                headers: {
+                    ...headers,
+                    'Content-Type': 'application/json'
+                }
+            }
+            const req = Https.request(options, (res) => {
+                res.on('data', (d) => {
+                    if (res.statusCode !== 200 && res.statusCode !== 302) {
+                        observer.error(d);
+                        observer.complete();
+                    } else {
+                        observer.next(d);
+                        observer.complete();
+                    }
+                })
+            })
+            req.on('error', (error: Error) => {
+                observer.error(error);
+                observer.complete();
             })
             req.end();
         }).pipe(take(1));

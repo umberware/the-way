@@ -214,9 +214,8 @@ export class ServerConfiguration extends Configurable {
             SwaggerUi.setup(JSON.parse(swaggerDoc.toString()))
         );
     }
-    protected isApiPath(req: any): boolean {
+    protected isApiPath(path: string): boolean {
         const rest = (this.serverProperties.rest as PropertyModel) as PropertyModel;
-        const path = req.path as string;
         return path.includes(rest.path as string);
     }
     protected isFileServerEnabled(): boolean {
