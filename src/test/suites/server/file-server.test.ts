@@ -1,7 +1,6 @@
-import {EnvironmentTest} from "../../resources/environment/environment.test";
-import {CORE} from "../../../main";
-import {HttpRequestorEnvironment} from "../../resources/environment/http-requestor.environment.test";
-import {HttpsRequestorEnvironment} from "../../resources/environment/https-requestor.environment.test";
+import { EnvironmentTest } from '../../resources/environment/environment.test';
+import { CORE } from '../../../main';
+import { HttpsRequestorEnvironment } from '../../resources/environment/https-requestor.environment.test';
 
 afterAll(done => {
     EnvironmentTest.clear(done);

@@ -1,7 +1,7 @@
 import {EnvironmentTest} from "../../resources/environment/environment.test";
 import {CORE} from "../../../main";
-import {HttpRequestorEnvironment} from "../../resources/environment/http-requestor.environment.test";
 import {HttpsRequestorEnvironment} from "../../resources/environment/https-requestor.environment.test";
+
 import {forkJoin} from "rxjs";
 
 afterAll(done => {
@@ -26,6 +26,8 @@ describe('Server Configuration: ', () => {
         process.argv.push('--the-way.server.file.path=' + path);
         process.argv.push('--the-way.server.file.assets.enabled=true');
         process.argv.push('--the-way.server.file.assets.path=/assets');
+        process.argv.push('--the-way.server.file.static.enabled=true');
+        process.argv.push('--the-way.server.file.static.path=/static');
         import('../../resources/environment/main/not-automatic-main.test').then(
             (result) => {
                 new result.NotAutomaticMainTest();
@@ -38,13 +40,16 @@ describe('Server Configuration: ', () => {
             () => {
                 forkJoin([
                     HttpsRequestorEnvironment.GetNoParse(''),
-                    HttpsRequestorEnvironment.GetNoParse('/assets/test.css')
+                    HttpsRequestorEnvironment.GetNoParse('/assets/test.css'),
+                    HttpsRequestorEnvironment.Get('/static/x.json')
                 ]).subscribe(
                   (result: any) => {
                       const html = result[0].toString();
                       const scss = result[1].toString();
+                      const json = result[2];
                       expect(html).toContain('Luke, I`m your father!');
                       expect(scss).toContain('body');
+                      expect(json.x).toBe(1000);
                       done();
                   }
               );
