@@ -6,7 +6,6 @@ import { ClassTypeEnum } from '../shared/class-type.enum';
 import { Destroyable } from '../shared/destroyable';
 import { Logger } from '../shared/logger';
 import { Messages } from '../shared/messages';
-import { ConfigurationMetaKey } from '../decorator/configuration.decorator';
 import { ApplicationException } from '../exeption/application.exception';
 import { ConstructorMapModel } from '../model/constructor-map.model';
 import { DependencyModel } from '../model/dependency.model';
@@ -113,7 +112,6 @@ export class RegisterHandler {
             ));
             return;
         }
-        const overConstructor = (!over) ? constructor : over;
         const constructorName = constructor.name;
         const coreComponent = this.CORE_COMPONENTS[constructorName];
 
@@ -125,10 +123,6 @@ export class RegisterHandler {
 
             if (over) {
                 this.registerOverriddenClass(over.name, constructor);
-            }
-
-            if (type === ClassTypeEnum.CONFIGURATION) {
-                Reflect.defineMetadata(ConfigurationMetaKey, overConstructor, constructor);
             }
             this.registerClass(constructorName, constructor, type);
         }

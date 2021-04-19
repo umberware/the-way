@@ -1,9 +1,10 @@
 import { CORE } from '../core';
 
-export const ServiceMetaKey = 'Service';
 /* eslint-disable @typescript-eslint/ban-types */
+export const ServiceMetaKey = 'Service';
 export const Service = (over?: Function ) => {
     return (constructor: Function): void => {
+        Reflect.defineMetadata(ServiceMetaKey, Service, constructor);
         CORE.registerService(constructor, over);
     };
 };

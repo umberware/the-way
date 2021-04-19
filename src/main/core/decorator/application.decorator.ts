@@ -4,6 +4,7 @@ import { ApplicationException } from '../exeption/application.exception';
 import { Messages } from '../shared/messages';
 
 /* eslint-disable @typescript-eslint/ban-types*/
+export const ApplicationMetaKey = 'Application';
 export const Application = (params?: { automatic?: boolean; }) => {
     return (constructor: Function): void => {
         if (!(constructor.prototype instanceof TheWayApplication)) {
@@ -16,5 +17,6 @@ export const Application = (params?: { automatic?: boolean; }) => {
         if (!params || params.automatic || params.automatic === undefined) {
             CORE.createCore(constructor);
         }
+        Reflect.defineMetadata(ApplicationMetaKey, Application, constructor);
     };
 };

@@ -48,12 +48,10 @@ export class CORE {
     }
     protected static applyRegisteredClass(registerHandler: RegisterHandler): void {
         this.REGISTERING = this.REGISTERING.sort((a, b) => {
-            if (a.methodName === 'registerRest') {
+            if (a.methodName === 'registerRest' && b.methodName === 'registerRestPath') {
                 return -1;
-            } else if (a.methodName !== 'registerRest' && a.methodName !== 'registerRestPath') {
-                return -2;
             } else {
-                return 0;
+                return 1;
             }
         });
         for (const register of this.REGISTERING) {
