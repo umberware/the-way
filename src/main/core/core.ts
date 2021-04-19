@@ -14,6 +14,7 @@ import { PropertiesHandler } from './handler/properties.handler';
 import { PropertyModel } from './model/property.model';
 import { Logger } from './shared/logger';
 import { RegisterHandler } from './handler/register.handler';
+import { HttpType } from './enum/http-type.enum';
 import { ApplicationException } from './exeption/application.exception';
 import { ConstructorMapModel } from './model/constructor-map.model';
 import { OverriddenMapModel } from './model/overridden-map.model';
@@ -30,6 +31,7 @@ export class CORE {
     protected static INIT_TIME: Date;
     protected static INSTANCE$: BehaviorSubject<CORE | undefined> = new BehaviorSubject<CORE | undefined>(undefined);
     protected static REGISTERING: Array<{ methodName: string; args: Array<any> }> = [];
+
     protected static STATE$: BehaviorSubject<CoreStateEnum> = new BehaviorSubject<CoreStateEnum>(CoreStateEnum.WAITING);
 
     protected static afterInitialization(): void {
@@ -37,24 +39,37 @@ export class CORE {
         CORE.END_TIME = new Date();
         instance.afterInitialization();
     }
+    protected static applyRegistered(): void {
+        const core = this.getInstance();
+        this.applyRegisteredClass(core.getRegisterHandler());
+        if (!this.isDestroyed()) {
+            this.STATE$.next(CoreStateEnum.INITIALIZATION_STARTED);
+        }
+    }
+    protected static applyRegisteredClass(registerHandler: RegisterHandler): void {
+        this.REGISTERING = this.REGISTERING.sort((a, b) => {
+            if (a.methodName === 'registerRest') {
+                return -1;
+            } else if (a.methodName !== 'registerRest' && a.methodName !== 'registerRestPath') {
+                return -2;
+            } else {
+                return 0;
+            }
+        });
+        for (const register of this.REGISTERING) {
+            if (this.isDestroyed()) {
+                break;
+            }
+            const method = Reflect.get(registerHandler, register.methodName) as Function;
+            Reflect.apply(method, registerHandler, register.args);
+        }
+    }
     protected static beforeInitialization(): void {
         const instance = this.getInstance();
         CORE.INIT_TIME = new Date();
         instance.beforeInitialization();
         this.whenHasInstanceAndBeforeInitializationIsDone().subscribe(
-            () => {
-                for (const register of this.REGISTERING) {
-                    if (this.isDestroyed()) {
-                        break;
-                    }
-                    const registerHandler = this.getInstance().getRegisterHandler();
-                    const method = Reflect.get(registerHandler, register.methodName) as Function;
-                    Reflect.apply(method, registerHandler, register.args);
-                }
-                if (!this.isDestroyed()) {
-                    this.STATE$.next(CoreStateEnum.INITIALIZATION_STARTED);
-                }
-            }
+            () => this.applyRegistered()
         );
     }
     public static createCore(application: Function | Object): void {
@@ -129,14 +144,26 @@ export class CORE {
     public static registerConfiguration(configurationConstructor: Function, over?: Function): void {
         this.register('registerConfiguration', [configurationConstructor, over]);
     }
+    public static registerCoreComponent(componenteConstructor: Function): void {
+        this.register('registerCoreComponent', [componenteConstructor]);
+    }
     public static registerInjection(source: Function, injector: object, key: string): void {
         this.register('registerInjection', [source, injector, key]);
     }
+    public static registerRest(
+        restConstructor: Function, path?: string, isAthenticated?: boolean,
+        allowedProfiles?: Array<any>
+    ): void {
+        this.register('registerRest', [restConstructor, path, isAthenticated, allowedProfiles]);
+    }
+    public static registerRestPath(
+        httpType: HttpType, path: string, target: any, propertyKey: string,
+        isAuthenticated?: boolean, allowedProfiles?: Array<any>
+    ): void {
+        this.register('registerRestPath',[ httpType, path, target, propertyKey, isAuthenticated, allowedProfiles ]);
+    }
     public static registerService(serviceConstructor: Function, over?: Function): void {
         this.register('registerService', [serviceConstructor, over]);
-    }
-    public static registerCoreComponent(componenteConstructor: Function): void {
-        this.register('registerCoreComponent', [componenteConstructor]);
     }
     public static setError(error: Error): void {
         const instance = this.getInstance();
@@ -197,7 +224,7 @@ export class CORE {
         try {
             this.propertiesHandler = new PropertiesHandler(this.logger);
             this.checkoutProperties();
-            this.registerHandler = new RegisterHandler( this.logger);
+            this.registerHandler = new RegisterHandler( this.propertiesHandler.getProperties('the-way.server') as PropertyModel,  this.logger);
             this.instanceHandler = new InstanceHandler(this.logger, this.registerHandler);
             this.dependencyHandler = new DependencyHandler(this.logger, this.instanceHandler, this.registerHandler);
             this.fileHandler = new FileHandler(this.coreProperties.scan as PropertyModel, this.logger);
@@ -214,6 +241,9 @@ export class CORE {
         } catch (error) {
             CORE.setError(error);
         }
+    }
+    protected bindPaths(): Observable<boolean> {
+        return of(this.registerHandler.bindPaths());
     }
     protected build(): Observable<boolean> {
         return new Observable<boolean>(
@@ -336,6 +366,7 @@ export class CORE {
         concat(
             this.build(),
             this.configure(constructor),
+            this.bindPaths()
         ).subscribe(
             /* eslint-disable-next-line @typescript-eslint/no-empty-function */
             () => {},

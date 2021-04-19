@@ -4,7 +4,7 @@ import { Service } from '../decorator/service.decorator';
 
 @Service()
 @System
-export class CryptoService {
+export class CoreCryptoService {
     public cipher(data: string, algorithmn: string, privateKey: string, type: 'hex'|'base64' = 'hex'): string {
         const cypher = Crypto.createCipheriv(algorithmn, privateKey, Buffer.from([]));
         const encrypted = Buffer.concat([cypher.update(data, 'utf8'), cypher.final()]);

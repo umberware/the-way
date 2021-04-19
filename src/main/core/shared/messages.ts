@@ -19,7 +19,11 @@ export const MESSAGES: { [key: string]: { [key: string]: string | number; } } = 
         'error-is-not-the-way': 'Preparing: Your application does not extend the class TheWayApplication',
         'error-not-found-dependency-constructor': 'Register: Cannot inject $ in class $. Cannot acquire the metadata from property. Probably a circular dependency',
         'error-properties-not-valid': 'Preparing: The provided application properties is not valid.',
-        'error-server-error': 'Cannot initialize server -> $',
+        'error-rest-claims-without-token-verify': 'Trying to inject claims in a not authenticated path',
+        'error-rest-path-parameter': 'The path parameter $ is not present or not equal in method.',
+        'error-server': 'Cannot initialize server -> $',
+        'error-server-cannot-map-path': 'Cannot map a REST path without server.',
+        'error-server-not-enabled': 'Cannot use Server Without Http or Https.',
 
         'warning-properties-not-gived': 'Preparing: Not gived a file properties. Will be used the default properties.',
         'warning-http-file-with-helmet': 'Http enabled but with HELMET parameters. This can cause problems in file server.',
@@ -28,6 +32,8 @@ export const MESSAGES: { [key: string]: { [key: string]: string | number; } } = 
         'register-dependency': 'Register: Dependency between -> $ into $',
         'register-found-resource': 'Register: Loading resources $',
         'register-overridden': 'Register: Overridden -> $ as $',
+        'register-path': 'Register: [$] $ -> $',
+        'register-father-path': 'Register: $ -> $',
         'register-scanning': 'Register: Searching & Loading the resources...',
 
         'destruction-instance': 'Desctruction: Destroying $',

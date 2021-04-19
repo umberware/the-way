@@ -18,23 +18,31 @@ import { PropertiesHandler } from './properties.handler';
 import { FileHandler } from './file.handler';
 import { InstanceHandler } from './instance.handler';
 import { DependencyHandler } from './dependency.handler';
+import { HttpType } from '../enum/http-type.enum';
+import { PathMapModel } from '../model/path-map.model';
+import { PropertyModel } from '../model/property.model';
 
 /* eslint-disable @typescript-eslint/ban-types */
 export class RegisterHandler {
     protected COMPONENTS: ConstructorMapModel;
     protected CONFIGURABLE: Array<Configurable>;
     protected CORE_COMPONENTS: ConstructorMapModel;
-    protected CORE_CONSTRUCTOS: Array<Function> = [ PropertiesHandler, FileHandler, InstanceHandler, DependencyHandler ]
+    protected CORE_CONSTRUCTORS: Array<Function> = [ PropertiesHandler, FileHandler, InstanceHandler, DependencyHandler ]
     protected DEPENDENCIES: DependencyMapModel;
     protected DESTROYABLE: Array<Destroyable>
     protected OVERRIDEN: OverriddenMapModel;
+    protected PATHS: PathMapModel;
 
     constructor(
+        protected serverProperties: PropertyModel,
         protected logger: Logger
     ) {
         this.initialize();
     }
 
+    public bindPaths(): true {
+        return true;
+    }
     public getComponents(): ConstructorMapModel {
         return this.COMPONENTS;
     }
@@ -77,10 +85,11 @@ export class RegisterHandler {
         this.DEPENDENCIES = {};
         this.DESTROYABLE = [];
         this.OVERRIDEN = {};
+        this.PATHS = {};
     }
     protected isCoreConstructor(constructor: Function, overConstructor?: Function, ...exclude: Array<Function>): boolean {
-        return (this.CORE_CONSTRUCTOS.includes(constructor) && exclude && !exclude.includes(constructor)) ||
-            (overConstructor !== undefined && this.CORE_CONSTRUCTOS.includes(overConstructor as Function));
+        return (this.CORE_CONSTRUCTORS.includes(constructor) && exclude && !exclude.includes(constructor)) ||
+            (overConstructor !== undefined && this.CORE_CONSTRUCTORS.includes(overConstructor as Function));
     }
     protected registerClass(name: string, constructor: Function, classType: ClassTypeEnum, isCore = false): void {
         const constructorMap = (!isCore) ? this.COMPONENTS : this.CORE_COMPONENTS;
@@ -118,8 +127,10 @@ export class RegisterHandler {
                 this.registerOverriddenClass(over.name, constructor);
             }
 
-            Reflect.defineMetadata(ConfigurationMetaKey, overConstructor, constructor);
-            this.registerClass(constructorName, constructor, ClassTypeEnum.CONFIGURATION);
+            if (type === ClassTypeEnum.CONFIGURATION) {
+                Reflect.defineMetadata(ConfigurationMetaKey, overConstructor, constructor);
+            }
+            this.registerClass(constructorName, constructor, type);
         }
     }
     public registerConfigurable(instance: Configurable): void {
@@ -185,7 +196,9 @@ export class RegisterHandler {
             ));
             return;
         } else {
-            this.registerClass(constructor.name, constructor, ClassTypeEnum.COMMON);
+            if (!this.CORE_COMPONENTS[constructor.name] && !this.COMPONENTS[constructor.name]) {
+                this.registerClass(constructor.name, constructor, ClassTypeEnum.COMMON);
+            }
         }
     }
     protected registerOverriddenClass(name: string, constructor: Function): void {
@@ -200,6 +213,61 @@ export class RegisterHandler {
         const overridenName = constructor.name;
         this.OVERRIDEN[name] = overridenName;
         this.logger.debug(Messages.getMessage('register-overridden', [name, overridenName]), '[The Way]');
+    }
+    public registerRest(constructor: Function, path?: string, isAuthenticed?: boolean, allowedProfiles?: Array<any>): void {
+        const name = constructor.name;
+
+        this.registerComponent(constructor, ClassTypeEnum.REST);
+
+        if (path) {
+            let mapper = this.PATHS[name];
+
+            if (!path.startsWith('/')) {
+                path = '/' + path;
+            }
+            if (!mapper) {
+                mapper = this.PATHS[name] = { childrensPath: [], fatherPath: '' };
+            }
+
+            mapper.fatherPath = path;
+            mapper.isAuthenticed = isAuthenticed;
+            mapper.allowedProfiles = allowedProfiles;
+            this.logger.debug(Messages.getMessage('register-father-path', [path, constructor.name]), '[The Way]');
+        }
+    }
+    public registerRestPath(
+        type: HttpType, path: string, target: any, propertyKey: string,
+        isAuthenticated?: boolean, allowedProfiles?: Array<any>
+    ): void {
+        const isHttpEnabled = this.serverProperties.enabled as boolean;
+
+        if (!isHttpEnabled) {
+            throw new ApplicationException(
+                Messages.getMessage('error-server-cannot-map-path'),
+                Messages.getMessage('TW-011')
+            );
+        }
+        const fatherName = target.constructor.name;
+        let mapper = this.PATHS[fatherName];
+        if (!mapper) {
+            mapper = this.PATHS[fatherName] = { childrensPath: [], fatherPath: '' };
+        }
+
+        if (!path.startsWith('/')) {
+            path = '/' + path;
+        }
+
+        mapper.childrensPath.push({
+            type,
+            path,
+            target,
+            propertyKey,
+            isAuthenticated,
+            allowedProfiles
+        });
+        this.logger.info(
+            Messages.getMessage('register-path', [type.toUpperCase(), path, fatherName])
+        );
     }
     public registerService(constructor: Function, over?: Function): void {
         this.registerComponent(constructor, ClassTypeEnum.SERVICE, over);

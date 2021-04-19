@@ -22,6 +22,7 @@ import { Configurable } from '../shared/configurable';
 import { Logger } from '../shared/logger';
 import { Messages } from '../shared/messages';
 import { ApplicationException } from '../exeption/application.exception';
+import { HttpType } from '../enum/http-type.enum';
 
 @System
 @Configuration()
@@ -29,10 +30,12 @@ export class ServerConfiguration extends Configurable {
     @Inject logger: Logger;
     @Inject propertiesHandler: PropertiesHandler;
 
+    protected httpProperties: PropertyModel;
+    public httpServer: Http.Server;
+    protected httpsProperties: PropertyModel;
+    public httpsServer: Https.Server;
     protected serverProperties: PropertyModel;
     protected serverContext: Express;
-    public httpServer: Http.Server;
-    public httpsServer: Https.Server;
 
     protected buildCredentialsOptions(httpsProperties: PropertyModel): { key: string; cert: string } {
         const privateKey = readFileSync(httpsProperties.keyPath as string, 'utf8');
@@ -52,6 +55,8 @@ export class ServerConfiguration extends Configurable {
     }
     public configure(): void | Observable<void> {
         this.serverProperties = this.propertiesHandler.getProperties('the-way.server') as PropertyModel;
+        this.httpProperties = this.serverProperties.http as PropertyModel;
+        this.httpsProperties = this.serverProperties.https as PropertyModel;
         if (!this.serverProperties.enabled) {
             return;
         } else {
@@ -101,7 +106,7 @@ export class ServerConfiguration extends Configurable {
         server.on('error', (error: any) => {
             observer.error(
                 new ApplicationException(
-                    Messages.getMessage('error-server-error', [error.code]),
+                    Messages.getMessage('error-server', [error.code]),
                     Messages.getMessage('TW-012'),
                     error
                 )
@@ -111,14 +116,8 @@ export class ServerConfiguration extends Configurable {
     protected initializeExpress(): void {
         const helmetProperties = this.serverProperties.helmet as PropertyModel;
         const corsProperties = this.serverProperties.cors as PropertyModel;
-        const httpProperties = this.serverProperties.http as PropertyModel;
-        const httpsProperties = this.serverProperties.https as PropertyModel;
 
-        if (!httpProperties.enabled && !httpsProperties.enabled) {
-            return;
-        }
-
-        if (httpProperties.enabled && (this.serverProperties.file as PropertyModel).enabled) {
+        if (this.httpProperties.enabled && (this.serverProperties.file as PropertyModel).enabled) {
             helmetProperties.contentSecurityPolicy = false;
         }
 
@@ -175,25 +174,23 @@ export class ServerConfiguration extends Configurable {
     }
     protected initializeHttpServer(): Observable<void> {
         return new Observable<void>((observer: Subscriber<void>) => {
-            const httpProperties = this.serverProperties.http as PropertyModel;
-            if (!httpProperties.enabled) {
+            if (!this.httpProperties.enabled) {
                 observer.next();
             } else {
                 this.httpServer = Http.createServer(this.serverContext);
-                this.handleServer(observer, this.httpServer, httpProperties);
+                this.handleServer(observer, this.httpServer, this.httpProperties);
             }
         });
     }
 
     protected initializeHttpsServer(): Observable<void> {
         return new Observable<void>((observer: Subscriber<void>) => {
-            const httpsProperties = this.serverProperties.https as PropertyModel;
-            if (!httpsProperties.enabled) {
+            if (!this.httpsProperties.enabled) {
                 observer.next();
             } else {
-                const credentials = this.buildCredentialsOptions(httpsProperties);
+                const credentials = this.buildCredentialsOptions(this.httpsProperties);
                 this.httpsServer = Https.createServer(credentials, this.serverContext);
-                this.handleServer(observer, this.httpsServer, httpsProperties);
+                this.handleServer(observer, this.httpsServer, this.httpsProperties);
             }
         });
     }
@@ -228,8 +225,23 @@ export class ServerConfiguration extends Configurable {
         return swagger !== undefined &&
             (swagger as PropertyModel).enabled as boolean;
     }
+    public registerPath(path: string, httpType: HttpType, executor: any): void {
+        const restProperties = this.serverProperties.rest as any;
+        const finalPath = restProperties.path + path;
+
+        this.logger.debug('Registered - ' + httpType.toUpperCase() + ' ' + finalPath);
+        this.serverContext[httpType](finalPath, executor);
+    }
     protected start(): Observable<void> {
         this.logger.info(Messages.getMessage('http-server-initialization'));
+
+        if (!this.httpProperties.enabled && !this.httpsProperties.enabled) {
+            throw new ApplicationException(
+                Messages.getMessage('error-server-not-enabled'),
+                Messages.getMessage('TW-011')
+            );
+        }
+
         this.initializeExpress();
 
         if (this.isSwaggerEnabled()) {
@@ -239,7 +251,6 @@ export class ServerConfiguration extends Configurable {
         if (this.isFileServerEnabled())   {
             this.initializeFileServer();
         }
-
         return this.initializeServer();
     }
 }

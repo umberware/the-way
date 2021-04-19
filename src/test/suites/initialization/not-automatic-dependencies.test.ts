@@ -23,6 +23,7 @@ test('Initialization: Not Automatic With Dependencies', (done) => {
                 };
                 const scanProperties = CORE.getPropertiesHandler().getProperties('the-way.core.scan');
                 const constructors = EnvironmentTest.getConstructorsWithoutCore();
+                console.log(constructors)
                 expect(JSON.stringify(mustBe)).toBe(JSON.stringify(scanProperties));
                 expect(Object.keys(constructors).length).toBe(1);
                 expect(Object.keys(constructors).includes('SimpleServiceTest')).toBeTruthy();
