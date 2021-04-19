@@ -10,6 +10,7 @@ import { Messages } from '../shared/messages';
 import { ConfigurationMetaKey } from '../decorator/configuration.decorator';
 import { Configurable } from '../shared/configurable';
 import { Destroyable } from '../shared/destroyable';
+import { ApplicationException } from '../exeption/application.exception';
 
 /*
     eslint-disable @typescript-eslint/ban-types,
@@ -115,12 +116,15 @@ export class InstanceHandler {
     public destroy(): Observable<boolean> {
         return this.caller('destroy', this.registerHandler.getDestroyable(), 'destruction-instance',);
     }
-    public getInstanceByName<T>(name: string): T | undefined {
+    public getInstanceByName<T>(name: string): T {
         const registeredConstructor = this.registerHandler.getConstructor(name);
         if (registeredConstructor) {
             return this.INSTANCES[registeredConstructor.name];
         } else {
-            return undefined;
+            throw new ApplicationException(
+                Messages.getMessage('error-not-found-instance', [name]),
+                Messages.getMessage('TW-012')
+            );
         }
     }
     public getInstances(): Array<any> {

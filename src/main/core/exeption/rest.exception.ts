@@ -1,11 +1,7 @@
 import { ApplicationException } from './application.exception';
 
 export class RestException extends ApplicationException {
-    constructor(detail: string, protected code: number, description = 'Erro interno') {
+    constructor(public detail: string, public code: number, public description: string) {
         super(detail, description);
-    }
-
-    public getCode(): number {
-        return this.code;
     }
 }

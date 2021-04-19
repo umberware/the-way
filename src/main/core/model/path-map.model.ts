@@ -1,10 +1,9 @@
 import { PathModel } from './path.model';
 
 export interface PathMapModel {
-    [key: string]: {
-        allowedProfiles?: Array<any>;
-        childrensPath: Array<PathModel>
-        fatherPath: string;
-        isAuthenticed?: boolean;
-    };
+    allowedProfiles?: Array<any>;
+    childrensPath: Array<PathModel>
+    fatherPath: string;
+    inContext: boolean;
+    isAuthenticed?: boolean;
 }

@@ -1,12 +1,10 @@
+import { Get, Service } from '../../../../main';
 import { Observable, of } from 'rxjs';
 
-import { Rest, Get } from '../../../main/index';
-
-@Rest('heroe')
-export class HeroRest {
+@Service()
+export class NotInRestContextRest {
     @Get('heroes')
     public getAllHeroes(): Observable<any> {
-        console.log('ok');
         return of([]);
     }
 }

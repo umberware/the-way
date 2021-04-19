@@ -12,7 +12,6 @@ import { DependencyModel } from '../model/dependency.model';
 import { DependencyMapModel } from '../model/dependency-map.model';
 import { ConstructorModel } from '../model/constructor.model';
 import { OverriddenMapModel } from '../model/overridden-map.model';
-import { SystemMetaKey } from '../decorator/system.decorator';
 import { PropertiesHandler } from './properties.handler';
 import { FileHandler } from './file.handler';
 import { InstanceHandler } from './instance.handler';
@@ -20,6 +19,7 @@ import { DependencyHandler } from './dependency.handler';
 import { HttpType } from '../enum/http-type.enum';
 import { PathMapModel } from '../model/path-map.model';
 import { PropertyModel } from '../model/property.model';
+import { CoreRestService } from '../service/core-rest.service';
 
 /* eslint-disable @typescript-eslint/ban-types */
 export class RegisterHandler {
@@ -30,7 +30,7 @@ export class RegisterHandler {
     protected DEPENDENCIES: DependencyMapModel;
     protected DESTROYABLE: Array<Destroyable>
     protected OVERRIDEN: OverriddenMapModel;
-    protected PATHS: PathMapModel;
+    protected PATHS: {[key: string] : PathMapModel};
 
     constructor(
         protected serverProperties: PropertyModel,
@@ -40,6 +40,34 @@ export class RegisterHandler {
     }
 
     public bindPaths(): true {
+        const coreRestService = CORE.getInstanceByName<CoreRestService>('CoreRestService');
+        const isHttpEnabled = this.serverProperties.enabled as boolean;
+        const paths = Object.values(this.PATHS);
+
+        if (!isHttpEnabled && paths.length > 0) {
+            throw new ApplicationException(
+                Messages.getMessage('error-server-cannot-map-path'),
+                Messages.getMessage('TW-011')
+            );
+        }
+
+        for (const fatherPath of paths) {
+            if (!fatherPath.inContext) {
+                throw new ApplicationException(
+                    Messages.getMessage('error-rest-operation-not-in-rest'),
+                    Messages.getMessage('TW-011')
+                );
+            }
+
+            for (const path of fatherPath.childrensPath) {
+                const childrenPath = fatherPath.fatherPath + path.path;
+                coreRestService.registerPath(
+                    path.type, childrenPath, path.target, path.propertyKey,
+                    path.isAuthenticated, path.allowedProfiles
+                );
+            }
+        }
+
         return true;
     }
     public getComponents(): ConstructorMapModel {
@@ -77,6 +105,13 @@ export class RegisterHandler {
     public getOverriden(): OverriddenMapModel {
         return this.OVERRIDEN;
     }
+    protected getRestMap(name: string): PathMapModel {
+        let mapper = this.PATHS[name];
+        if (!mapper) {
+            mapper = this.PATHS[name] = { childrensPath: [], fatherPath: '', inContext: false};
+        }
+        return mapper;
+    }
     private initialize(): void {
         this.CONFIGURABLE = [];
         this.COMPONENTS = {};
@@ -100,7 +135,7 @@ export class RegisterHandler {
                 name,
                 type: classType
             };
-        } else if (classType !== ClassTypeEnum.COMMON) {
+        } else {
             registeredConstructor.type = classType;
         }
     }
@@ -137,7 +172,6 @@ export class RegisterHandler {
         const constructorName = constructor.name;
         const mapedConstructor: ConstructorModel = this.COMPONENTS[constructorName];
         let type: ClassTypeEnum;
-        Reflect.defineMetadata(SystemMetaKey, constructor, constructor);
 
         if (mapedConstructor) {
             type = mapedConstructor.type;
@@ -210,22 +244,21 @@ export class RegisterHandler {
     }
     public registerRest(constructor: Function, path?: string, isAuthenticed?: boolean, allowedProfiles?: Array<any>): void {
         const name = constructor.name;
-
+        const mapper = this.getRestMap(name);
         this.registerComponent(constructor, ClassTypeEnum.REST);
 
+        mapper.inContext = true;
+
         if (path) {
-            let mapper = this.PATHS[name];
 
             if (!path.startsWith('/')) {
                 path = '/' + path;
             }
-            if (!mapper) {
-                mapper = this.PATHS[name] = { childrensPath: [], fatherPath: '' };
-            }
 
+            mapper.allowedProfiles = allowedProfiles;
             mapper.fatherPath = path;
             mapper.isAuthenticed = isAuthenticed;
-            mapper.allowedProfiles = allowedProfiles;
+
             this.logger.debug(Messages.getMessage('register-father-path', [path, constructor.name]), '[The Way]');
         }
     }
@@ -233,19 +266,8 @@ export class RegisterHandler {
         type: HttpType, path: string, target: any, propertyKey: string,
         isAuthenticated?: boolean, allowedProfiles?: Array<any>
     ): void {
-        const isHttpEnabled = this.serverProperties.enabled as boolean;
-
-        if (!isHttpEnabled) {
-            throw new ApplicationException(
-                Messages.getMessage('error-server-cannot-map-path'),
-                Messages.getMessage('TW-011')
-            );
-        }
         const fatherName = target.constructor.name;
-        let mapper = this.PATHS[fatherName];
-        if (!mapper) {
-            mapper = this.PATHS[fatherName] = { childrensPath: [], fatherPath: '' };
-        }
+        const mapper = this.getRestMap(fatherName);
 
         if (!path.startsWith('/')) {
             path = '/' + path;

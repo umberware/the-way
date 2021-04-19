@@ -2,8 +2,8 @@
 
 import 'reflect-metadata';
 
-import { BehaviorSubject, concat, Observable, of } from 'rxjs';
-import { filter, map, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, concat, forkJoin, Observable, of, Subscriber } from 'rxjs';
+import { filter, map, switchMap, tap } from 'rxjs/operators';
 
 import { CoreStateEnum } from './shared/core-state.enum';
 import { DependencyHandler } from './handler/dependency.handler';
@@ -106,9 +106,9 @@ export class CORE {
         const instance = this.getInstance();
         return instance.getDependencyHandler().getDependenciesTree();
     }
-    public static getInstanceByName<T>(name: string): T | undefined {
-        const instance = this.getInstance();
-        return instance.getInstanceHandler().getInstanceByName<T>(name);
+    public static getInstanceByName<T>(name: string): T {
+        const coreInstance = this.getInstance();
+        return coreInstance.getInstanceHandler().getInstanceByName<T>(name);
     }
     protected static getInstance(): CORE {
         return this.INSTANCE$.getValue() as CORE;
@@ -222,7 +222,10 @@ export class CORE {
         try {
             this.propertiesHandler = new PropertiesHandler(this.logger);
             this.checkoutProperties();
-            this.registerHandler = new RegisterHandler( this.propertiesHandler.getProperties('the-way.server') as PropertyModel,  this.logger);
+            this.registerHandler = new RegisterHandler(
+                this.propertiesHandler.getProperties('the-way.server') as PropertyModel,
+                this.logger
+            );
             this.instanceHandler = new InstanceHandler(this.logger, this.registerHandler);
             this.dependencyHandler = new DependencyHandler(this.logger, this.instanceHandler, this.registerHandler);
             this.fileHandler = new FileHandler(this.coreProperties.scan as PropertyModel, this.logger);
@@ -241,7 +244,13 @@ export class CORE {
         }
     }
     protected bindPaths(): Observable<boolean> {
-        return of(this.registerHandler.bindPaths());
+        return new Observable<boolean>(
+            (observer: Subscriber<boolean>) => {
+                this.registerHandler.bindPaths();
+                observer.next(true);
+                observer.complete();
+            }
+        );
     }
     protected build(): Observable<boolean> {
         return new Observable<boolean>(
@@ -361,11 +370,11 @@ export class CORE {
     }
     protected initialize(constructor: Function | Object): void {
         this.logInfo(Messages.getMessage('step-initialization-started'));
-        concat(
+        forkJoin([
             this.build(),
             this.configure(constructor),
             this.bindPaths()
-        ).subscribe(
+        ]).subscribe(
             /* eslint-disable-next-line @typescript-eslint/no-empty-function */
             () => {},
             (error: Error) => {

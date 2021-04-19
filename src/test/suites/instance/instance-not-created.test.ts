@@ -1,5 +1,5 @@
 import { EnvironmentTest } from '../../resources/environment/environment.test';
-import { CORE } from '../../../main';
+import { CORE, Messages } from '../../../main';
 
 afterAll(done => {
     EnvironmentTest.clear(done);
@@ -13,9 +13,15 @@ test('Instance: Not Created', done => {
     import('../../resources/environment/main/main.test').then((result) => {
         CORE.whenReady().subscribe(
             () => {
-                const instance = CORE.getInstanceByName('MarvelGreatherThanDCFake');
-                expect(instance).toBeUndefined();
-                done();
+                try {
+                    CORE.getInstanceByName('MarvelGreatherThanDCFake');
+                } catch (ex) {
+                    expect(ex.detail).toBe(Messages.getMessage(
+                        'error-not-found-instance', ['MarvelGreatherThanDCFake']
+                    ));
+                    expect(ex.description).toBe(Messages.getMessage('TW-012'));
+                    done();
+                }
             }
         );
     });

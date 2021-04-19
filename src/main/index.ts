@@ -1,3 +1,5 @@
+import { PathParamMetadataKey } from './core/decorator/rest/param/path-param.decorator';
+
 export { Application } from './core/decorator/application.decorator';
 export { ApplicationException } from './core/exeption/application.exception';
 export { ClassTypeEnum } from './core/shared/class-type.enum';
@@ -38,6 +40,7 @@ export { Claims, ClaimsMetaKey } from './core/decorator/rest/param/claims.decora
 export { TokenClaims } from './core/model/token-claims.model';
 export { Get } from './core/decorator/rest/get.decorator';
 export { Rest } from './core/decorator/rest.decorator';
+export { PathParam, PathParamMetadataKey } from './core/decorator/rest/param/path-param.decorator';
 export { PathModel } from './core/model/path.model';
 export { PathMapModel } from './core/model/path-map.model';
 

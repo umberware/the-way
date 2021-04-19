@@ -1,44 +1,6 @@
 /* eslint-disable max-len */
 export const MESSAGES: { [key: string]: { [key: string]: string | number; } } = {
     'en': {
-        'step-after-initialization': 'Running: The application is running [elapsed time $].',
-        'step-before-initialization-started': 'Register Step: Started',
-        'step-before-initialization-done': 'Register Step: Done.',
-        'step-destruction-started': 'Desctruction Step: Started',
-        'step-destruction-done': 'Desctruction Step: Done.',
-        'step-initialization-started': 'Building & Configuration Step: Started',
-        'step-initialization-done': 'Building & Configuration Step: Done.',
-
-        'error': 'An error ocurred',
-        'error-cannot-inject': 'Register: The class $ cannot be injected. Only The Core PropertiesHandler can be injected.',
-        'error-cannot-overridden-core-classes': 'Register: Core class cannot be overriden $.',
-        'error-cannot-overridden-twice': 'Register: Is not possible to overwrite more than once. Was registered the overridden $ as $. The current is $.',
-        'error-cannot-scan': 'Register: Cannot scan files with the provided path $.',
-        'error-circular-dependency': 'Register: Found a circular dependency between $ -> $.',
-        'error-in-destruction': 'Destruction: An error ocurred in the destruction step. Error $.',
-        'error-is-not-the-way': 'Preparing: Your application does not extend the class TheWayApplication',
-        'error-not-found-dependency-constructor': 'Register: Cannot inject $ in class $. Cannot acquire the metadata from property. Probably a circular dependency',
-        'error-properties-not-valid': 'Preparing: The provided application properties is not valid.',
-        'error-rest-claims-without-token-verify': 'Trying to inject claims in a not authenticated path',
-        'error-rest-path-parameter': 'The path parameter $ is not present or not equal in method.',
-        'error-server': 'Cannot initialize server -> $',
-        'error-server-cannot-map-path': 'Cannot map a REST path without server.',
-        'error-server-not-enabled': 'Cannot use Server Without Http or Https.',
-
-        'warning-properties-not-gived': 'Preparing: Not gived a file properties. Will be used the default properties.',
-        'warning-http-file-with-helmet': 'Http enabled but with HELMET parameters. This can cause problems in file server.',
-
-        'register-class': 'Register: $ with type $',
-        'register-dependency': 'Register: Dependency between -> $ into $',
-        'register-found-resource': 'Register: Loading resources $',
-        'register-overridden': 'Register: Overridden -> $ as $',
-        'register-path': 'Register: [$] $ -> $',
-        'register-father-path': 'Register: $ -> $',
-        'register-scanning': 'Register: Searching & Loading the resources...',
-
-        'destruction-instance': 'Desctruction: Destroying $',
-        'destruction-destroyed': 'Desctruction: I\'m inevitable! Was destroyed every thing. CYA!',
-
         'building': 'Building: Started',
         'building-core-instances': 'Building: Core instances...',
         'building-dependencies-tree-done': 'Building: Dependencies tree\n \n$\n',
@@ -52,13 +14,51 @@ export const MESSAGES: { [key: string]: { [key: string]: string | number; } } = 
         'configuring-instance': 'Configuring: $',
         'configuring-started': 'Configuring: Started',
 
-        'injection-injected': 'Injection: Injected $ into $.$.',
+        'destruction-instance': 'Desctruction: Destroying $',
+        'destruction-destroyed': 'Desctruction: I\'m inevitable! Was destroyed every thing. CYA!',
 
+        'error': 'An error ocurred',
+        'error-cannot-inject': 'Register: The class $ cannot be injected. Only The Core PropertiesHandler can be injected.',
+        'error-cannot-overridden-core-classes': 'Register: Core class cannot be overriden $.',
+        'error-cannot-overridden-twice': 'Register: Is not possible to overwrite more than once. Was registered the overridden $ as $. The current is $.',
+        'error-cannot-scan': 'Register: Cannot scan files with the provided path $.',
+        'error-circular-dependency': 'Register: Found a circular dependency between $ -> $.',
+        'error-in-destruction': 'Destruction: An error ocurred in the destruction step. Error $.',
+        'error-is-not-the-way': 'Preparing: Your application does not extend the class TheWayApplication',
+        'error-not-found-dependency-constructor': 'Register: Cannot inject $ in class $. Cannot acquire the metadata from property. Probably a circular dependency',
+        'error-not-found-instance': 'The $ instance not found',
+        'error-properties-not-valid': 'Preparing: The provided application properties is not valid.',
+        'error-rest-claims-without-token-verify': 'Trying to inject claims in a not authenticated path',
+        'error-rest-operation-not-in-rest': 'The Operation [$] $ must be in a Rest context. Decorate the $ class with @Rest',
+        'error-rest-path-parameter': 'The path parameter $ is not present or not equal in method.',
+        'error-server': 'Cannot initialize server -> $',
+        'error-server-cannot-map-path': 'Cannot map a REST path without server.',
+        'error-server-not-enabled': 'Cannot use Server Without Http or Https.',
+
+        'http-internal-server-error': 'Internal Server Error',
         'http-server-initialization': 'Configuring the Http & Https server.',
         'http-server-running': 'HttpServer started on port $',
         'https-server-running': 'HttpsServer started on port $',
         'http-swagger-enabled': 'Configuring the Swagger UI...',
         'http-file-enabled': 'Configuring the File Server...',
+
+        'injection-injected': 'Injection: Injected $ into $.$.',
+
+        'register-class': 'Register: $ with type $',
+        'register-dependency': 'Register: Dependency between -> $ into $',
+        'register-found-resource': 'Register: Loading resources $',
+        'register-overridden': 'Register: Overridden -> $ as $',
+        'register-path': 'Register: [$] $ -> $',
+        'register-father-path': 'Register: $ -> $',
+        'register-scanning': 'Register: Searching & Loading the resources...',
+
+        'step-after-initialization': 'Running: The application is running [elapsed time $].',
+        'step-before-initialization-started': 'Register Step: Started',
+        'step-before-initialization-done': 'Register Step: Done.',
+        'step-destruction-started': 'Desctruction Step: Started',
+        'step-destruction-done': 'Desctruction Step: Done.',
+        'step-initialization-started': 'Building & Configuration Step: Started',
+        'step-initialization-done': 'Building & Configuration Step: Done.',
 
         'TW-001': 'Application not recognized',
         'TW-002': 'HttpServer is not found',
@@ -74,7 +74,10 @@ export const MESSAGES: { [key: string]: { [key: string]: string | number; } } = 
         'TW-012': 'Error',
         'TW-013': 'Cannnot register',
         'TW-014': 'Core Constructor',
-        'TW-015': 'Core Class Injection'
+        'TW-015': 'Core Class Injection',
+
+        'warning-properties-not-gived': 'Preparing: Not gived a file properties. Will be used the default properties.',
+        'warning-http-file-with-helmet': 'Http enabled but with HELMET parameters. This can cause problems in file server.',
     }
 };
 
