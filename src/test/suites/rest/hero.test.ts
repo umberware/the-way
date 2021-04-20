@@ -1,3 +1,5 @@
+import { map, switchMap } from 'rxjs/operators';
+
 import { CORE, Messages, RestException } from '../../../main';
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 import { HttpsRequestorEnvironment } from '../../resources/environment/https-requestor.environment.test';
@@ -28,8 +30,8 @@ describe('Rest', () => {
             }
         );
     });
-    test('Heroes: Get Heroes', done => {
-        HttpsRequestorEnvironment.Get('/api/heroes/hero/1').subscribe(
+    test('Heroes: Get Hero', done => {
+        HttpsRequestorEnvironment.Get('/api/heroes/hero/0').subscribe(
             (hero: any) => {
                 expect(hero.name).toBe('batman');
                 expect(hero.power).toBe(10000);
@@ -91,10 +93,105 @@ describe('Rest', () => {
             }
         );
     });
+    test('Heroes: Empty Imparcial', done => {
+        HttpsRequestorEnvironment.Post(undefined,'/api/imparcials').subscribe(
+            () => {},
+            (error: any) => {
+                expect(error).toBeDefined();
+                expect(error.description).toBe(Messages.getMessage('http-bad-request'));
+                expect(error.detail).toBe(Messages.getMessage('error-rest-empty-request'));
+                done();
+            }
+        );
+    });
+    test('Heroes: Create Imparcial', done => {
+        HttpsRequestorEnvironment.Post({ x: 0 },'/api/imparcials').subscribe(
+            () => {},
+            (error: any) => {
+                expect(error).toBeDefined();
+                expect(error.description).toBe(Messages.getMessage('http-internal-server-error'));
+                expect(error.detail).toBe(Messages.getMessage('error-rest-empty-response'));
+                done();
+            }
+        );
+    });
+    test('Heroes: Update Imparcial', done => {
+        HttpsRequestorEnvironment.Patch({ x: 0 },'/api/imparcials').subscribe(
+            () => {},
+            (error: any) => {
+                expect(error).toBeDefined();
+                expect(error.description).toBe(Messages.getMessage('http-internal-server-error'));
+                expect(error.detail).toBe(Messages.getMessage('error-rest-empty-response'));
+                done();
+            }
+        );
+    });
     test('Heroes: Hero By Power', done => {
         HttpsRequestorEnvironment.Get('/api/heroes/power?power=8500').subscribe(
             (heroes: any) => {
                 expect(heroes.length).toBe(2);
+                done();
+            }
+        );
+    });
+    test('Heroes: New Hero & Rebalancing', done => {
+        const hero = {
+            name: 'aquaman',
+            power: 8530
+        }
+        HttpsRequestorEnvironment.Post(hero, '/api/heroes').pipe(
+            switchMap((newHero: any) => {
+                expect(newHero.name).toBe('aquaman');
+                expect(newHero.power).toBe(8530);
+                hero.power = 9720;
+                return HttpsRequestorEnvironment.Put(hero, '/api/heroes/byName').pipe(
+                    switchMap((updatedHero: any) => {
+                        expect(updatedHero.name).toBe('aquaman');
+                        expect(updatedHero.power).toBe(9720);
+
+                        return HttpsRequestorEnvironment.Get('/api/heroes').pipe(
+                            map((heroes: any) => {
+                                expect(heroes.length).toBe(4);
+                                return heroes.find((resultedHero: any) =>
+                                    resultedHero.name === 'aquaman')
+                            })
+                        );
+                    })
+                )
+            })
+        ).subscribe(
+            (hero: any) => {
+                expect(hero.name).toBe('aquaman');
+                expect(hero.power).toBe(9720);
+                done();
+            }
+        );
+    });
+    test('Heroes: Delete Hero', done => {
+        let chosenHero: any;
+        let beforeSize: number;
+        HttpsRequestorEnvironment.Get('/api/heroes').pipe(
+            switchMap((heroes: any) => {
+                chosenHero = heroes[1]
+                beforeSize = heroes.length;
+                return HttpsRequestorEnvironment.Delete('/api/heroes/hero/' + chosenHero.id).pipe(
+                    switchMap(() => {
+                        return HttpsRequestorEnvironment.Get('/api/heroes');
+                    })
+                );
+            })
+        ).subscribe(
+            (heroes: any) => {
+                expect(heroes.length).toBe(beforeSize - 1);
+                expect(heroes.find((resultedHero: any) =>
+                    resultedHero.name === chosenHero.name)).toBeUndefined();
+                done();
+            }
+        );
+    });
+    test('Heroes: is Online Hero', done => {
+        HttpsRequestorEnvironment.Head('/api/heroes').subscribe(
+            () => {
                 done();
             }
         );

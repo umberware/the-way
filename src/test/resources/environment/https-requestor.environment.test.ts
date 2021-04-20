@@ -15,6 +15,7 @@ export class HttpsRequestorEnvironment {
                 port: port,
                 path: path,
                 method: 'POST',
+                rejectUnauthorized: false,
                 headers: {
                     ...headers,
                     'Content-Type': 'application/json'
@@ -47,6 +48,7 @@ export class HttpsRequestorEnvironment {
                 port: port,
                 path: path,
                 method: 'PUT',
+                rejectUnauthorized: false,
                 headers: {
                     ...headers,
                     'Content-Type': 'application/json'
@@ -79,6 +81,7 @@ export class HttpsRequestorEnvironment {
                 port: port,
                 path: path,
                 method: 'PATCH',
+                rejectUnauthorized: false,
                 headers: {
                     ...headers,
                     'Content-Type': 'application/json'
@@ -139,6 +142,7 @@ export class HttpsRequestorEnvironment {
                 port: port,
                 path: path,
                 method: 'HEAD',
+                rejectUnauthorized: false,
                 headers: {
                     ...headers,
                     'Content-Type': 'application/json'
@@ -204,11 +208,11 @@ export class HttpsRequestorEnvironment {
                 port: port,
                 path: path,
                 method: 'DELETE',
+                rejectUnauthorized: false,
                 headers: {
                     ...headers,
                     'Content-Type': 'application/json'
                 },
-                rejectUnauthorized: false
             }
             const req = Https.request(options, (res) => {
                 res.on('data', (d) => {

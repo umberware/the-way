@@ -1,4 +1,4 @@
-import { Get, PathParam, Rest } from '../../../../main';
+import { BodyParam, Get, Patch, PathParam, Post, Rest } from '../../../../main';
 
 @Rest()
 export class ImparcialRest {
@@ -10,4 +10,8 @@ export class ImparcialRest {
     public getImparcials(): void {
         throw Error('What is this?')
     }
+    @Post('imparcials')
+    public createImparcial(@BodyParam param: any): any {}
+    @Patch('imparcials')
+    public updateImparcial(): any {}
 }

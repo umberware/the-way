@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { Observable, of } from 'rxjs';
+import { empty, Observable, of } from 'rxjs';
 import { fromPromise } from 'rxjs/internal-compatibility';
 
 import { Inject } from '../decorator/inject.decorator';
@@ -22,6 +22,8 @@ import { ResponseMetadataKey } from '../decorator/rest/param/response.decorator'
 import { HeaderMetadataKey } from '../decorator/rest/param/header.decorator';
 import { RequestMetadataKey } from '../decorator/rest/param/request.decorator';
 import { BodyParamMetadataKey } from '../decorator/rest/param/body-param.decorator';
+import { BadRequestException } from '../exeption/bad-request.exception';
+import { defaultIfEmpty } from 'rxjs/operators';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any */
 @System
@@ -51,11 +53,17 @@ export class CoreRestService {
             //     switchMap((tokenClaims: TokenClaims | undefined) => {
             this.executeMethod(httpType, target, propertyKey, req, res).subscribe(
                 (response: any) => {
-                    if (!res.headersSent) {
+                    if (!res.headersSent && response) {
                         res.send(response);
                     }
                 }, (error: Error) => {
                     this.handleError(error, res);
+                }, () => {
+                    if (!res.headersSent) {
+                        res.status(500).send(new InternalException(
+                            Messages.getMessage('error-rest-empty-response')
+                        ));
+                    }
                 }
             );
         } catch (error) {
@@ -92,33 +100,36 @@ export class CoreRestService {
             this.buildPathParams(pathParams, req, functionArguments);
         }
 
-        // // Todo: Verify if post, put, patch can have query params and body.
-        // || httpType === HttpType.DELETE || httpType === HttpType.HEAD
-        if (httpType === HttpType.GET) {
+        // Todo: Verify if post, put, patch can have query params and body.
+        if (httpType === HttpType.GET || httpType === HttpType.DELETE || httpType === HttpType.HEAD) {
             const queryParam: number = Reflect.getOwnMetadata(QueryParamMetadataKey, target, propertyKey);
             if (queryParam !== undefined && queryParam !== null) {
                 functionArguments[queryParam] = req.query;
             }
+        } else {
+            const bodyParam: number = Reflect.getOwnMetadata(BodyParamMetadataKey, target, propertyKey);
+            if (bodyParam !== undefined && bodyParam !== null) {
+                if (Object.keys(req.body).length === 0) {
+                    throw new BadRequestException(Messages.getMessage('error-rest-empty-request'));
+                }
+                functionArguments[bodyParam] = req.body;
+            }
         }
-        // else {
-        //     const bodyParam: number = Reflect.getOwnMetadata(BodyParamMetadataKey, target, propertyKey);
-        //     if (bodyParam !== undefined && bodyParam !== null) {
-        //         if (Object.keys(req.body).length === 0) {
-        //             throw new BadRequestException(MessagesEnum['rest-empty-request']);
-        //         }
-        //         functionArguments[bodyParam] = req.body;
-        //     }
-        // }
         const instance = CORE.getInstanceByName(target.constructor.name);
         const executionResult = Reflect.apply(target[propertyKey], instance, functionArguments);
-
+        let executionResultObservable;
         if (executionResult instanceof Promise) {
-            return fromPromise(executionResult);
+            executionResultObservable = fromPromise(executionResult);
         } else if (executionResult instanceof Observable) {
-            return executionResult;
+            executionResultObservable = executionResult;
+        } else if (executionResult) {
+            executionResultObservable = of(executionResult);
         } else {
-            return of(executionResult);
+            executionResultObservable = of();
         }
+        return executionResultObservable.pipe(
+            defaultIfEmpty()
+        );
     }
     protected handleError(ex: Error, res: any): void {
         if (ex instanceof RestException) {
