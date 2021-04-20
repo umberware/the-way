@@ -1,3 +1,5 @@
+import { Request, Response } from 'express';
+
 import { Observable, of } from 'rxjs';
 import { fromPromise } from 'rxjs/internal-compatibility';
 
@@ -15,6 +17,11 @@ import { CORE } from '../core';
 import { TokenClaims } from '../model/token-claims.model';
 import { System } from '../decorator/system.decorator';
 import { PathParamMetadataKey } from '../decorator/rest/param/path-param.decorator';
+import { QueryParamMetadataKey } from '../decorator/rest/param/query-param.decorator';
+import { ResponseMetadataKey } from '../decorator/rest/param/response.decorator';
+import { HeaderMetadataKey } from '../decorator/rest/param/header.decorator';
+import { RequestMetadataKey } from '../decorator/rest/param/request.decorator';
+import { BodyParamMetadataKey } from '../decorator/rest/param/body-param.decorator';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any */
 @System
@@ -36,7 +43,7 @@ export class CoreRestService {
     }
     protected execute(
         httpType: HttpType, authenticated: boolean | undefined, allowedProfiles: Array<any> | undefined,
-        target: any, propertyKey: string,  req: any, res: any
+        target: any, propertyKey: string,  req: Request, res: Response
     ): void {
         try {
 
@@ -56,46 +63,44 @@ export class CoreRestService {
         }
     }
     protected executeMethod(
-        httpType: HttpType, target: any, propertyKey: string, req: any,
-        res: any, tokenClaims?: TokenClaims
+        httpType: HttpType, target: any, propertyKey: string, req: Request,
+        res: Response, tokenClaims?: TokenClaims
     ): Observable<unknown> {
         const method = target[propertyKey];
         const functionArgumentsLength = method.length;
         const functionArguments = new Array<any>().fill(undefined, 0, functionArgumentsLength);
-
         const pathParams: Array<any> = Reflect.getOwnMetadata(PathParamMetadataKey, target, propertyKey);
-        // const tokenClaimsIndex: number = Reflect.getOwnMetadata(ClaimsMetaKey, target, propertyKey);
-        // const headerIndex: number = Reflect.getOwnMetadata(HeaderMetadataKey, target, propertyKey);
-        // const responseIndex: number = Reflect.getOwnMetadata(ResponseMetadataKey, target, propertyKey);
-        // const requestIndex: number = Reflect.getOwnMetadata(RequestMetadataKey, target, propertyKey);
-        //
-        // if (headerIndex !== undefined) {
-        //     functionArguments[headerIndex] = req.headers;
-        // }
-        //
-        // if (responseIndex !== undefined) {
-        //     functionArguments[responseIndex] = res;
-        // }
-        //
-        // if (requestIndex !== undefined) {
-        //     functionArguments[requestIndex] = req;
-        // }
-        //
+        const tokenClaimsIndex: number = Reflect.getOwnMetadata(ClaimsMetaKey, target, propertyKey);
+        const headerIndex: number = Reflect.getOwnMetadata(HeaderMetadataKey, target, propertyKey);
+        const responseIndex: number = Reflect.getOwnMetadata(ResponseMetadataKey, target, propertyKey);
+        const requestIndex: number = Reflect.getOwnMetadata(RequestMetadataKey, target, propertyKey);
+
+        if (headerIndex !== undefined) {
+            functionArguments[headerIndex] = req.headers;
+        }
+        if (responseIndex !== undefined) {
+            functionArguments[responseIndex] = res;
+        }
+        if (requestIndex !== undefined) {
+            functionArguments[requestIndex] = req;
+        }
+
         // if (tokenClaimsIndex !== undefined) {
         //     functionArguments[tokenClaimsIndex] = tokenClaims;
         // }
-        //
         if (pathParams) {
             this.buildPathParams(pathParams, req, functionArguments);
         }
 
         // // Todo: Verify if post, put, patch can have query params and body.
-        // if (httpType === HttpType.GET || httpType === HttpType.DELETE || httpType === HttpType.HEAD) {
-        //     const queryParam: number = Reflect.getOwnMetadata(QueryParamMetadataKey, target, propertyKey);
-        //     if (queryParam !== undefined && queryParam !== null) {
-        //         functionArguments[queryParam] = req.query;
-        //     }
-        // } else {
+        // || httpType === HttpType.DELETE || httpType === HttpType.HEAD
+        if (httpType === HttpType.GET) {
+            const queryParam: number = Reflect.getOwnMetadata(QueryParamMetadataKey, target, propertyKey);
+            if (queryParam !== undefined && queryParam !== null) {
+                functionArguments[queryParam] = req.query;
+            }
+        }
+        // else {
         //     const bodyParam: number = Reflect.getOwnMetadata(BodyParamMetadataKey, target, propertyKey);
         //     if (bodyParam !== undefined && bodyParam !== null) {
         //         if (Object.keys(req.body).length === 0) {
@@ -135,7 +140,7 @@ export class CoreRestService {
                 Messages.getMessage('TW-011')
             );
         }
-        this.serverConfiguration.registerPath(path, httpType,  (req: any, res: any) => {
+        this.serverConfiguration.registerPath(path, httpType,  (req: Request, res: Response) => {
             this.execute(httpType, authenticated, allowedProfiles, target, propertyKey, req, res);
         });
     }

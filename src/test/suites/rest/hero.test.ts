@@ -43,7 +43,7 @@ describe('Rest', () => {
                 const hero = heroes[0];
                 expect(hero.name).toBe('batman');
                 expect(hero.power).toBe(10000);
-                expect(heroes.length).toBe(1);
+                expect(heroes.length).toBe(3);
                 done();
             }
         );
@@ -87,6 +87,14 @@ describe('Rest', () => {
             (error: any) => {
                 expect(error).toBeDefined();
                 expect(error.message).toBe('What is this?');
+                done();
+            }
+        );
+    });
+    test('Heroes: Hero By Power', done => {
+        HttpsRequestorEnvironment.Get('/api/heroes/power?power=8500').subscribe(
+            (heroes: any) => {
+                expect(heroes.length).toBe(2);
                 done();
             }
         );
