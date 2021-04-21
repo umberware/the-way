@@ -1,5 +1,3 @@
-import { PathParamMetadataKey } from './core/decorator/rest/param/path-param.decorator';
-
 export { Application } from './core/decorator/application.decorator';
 export { ApplicationException } from './core/exeption/application.exception';
 export { ClassTypeEnum } from './core/shared/class-type.enum';

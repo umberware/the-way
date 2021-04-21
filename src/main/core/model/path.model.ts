@@ -1,5 +1,6 @@
 import { HttpType } from '../enum/http-type.enum';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface PathModel {
     allowedProfiles?: Array<any>;
     isAuthenticated?: boolean;

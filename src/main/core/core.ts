@@ -2,8 +2,8 @@
 
 import 'reflect-metadata';
 
-import { BehaviorSubject, concat, forkJoin, Observable, of, Subscriber } from 'rxjs';
-import { filter, map, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, forkJoin, Observable, of, Subscriber } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
 
 import { CoreStateEnum } from './shared/core-state.enum';
 import { DependencyHandler } from './handler/dependency.handler';

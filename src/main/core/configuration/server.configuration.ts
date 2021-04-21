@@ -24,6 +24,11 @@ import { Messages } from '../shared/messages';
 import { ApplicationException } from '../exeption/application.exception';
 import { HttpType } from '../enum/http-type.enum';
 
+/*
+    eslint-disable @typescript-eslint/ban-types,
+    @typescript-eslint/no-explicit-any,
+    @typescript-eslint/explicit-module-boundary-types
+*/
 @System
 @Configuration()
 export class ServerConfiguration extends Configurable {
@@ -85,12 +90,12 @@ export class ServerConfiguration extends Configurable {
             }
         });
     }
-    public destroy(): Observable<void> {
+    public destroy(): Observable<undefined> {
         return zip(
             this.destroyHttpServer().pipe(take(1)),
-            this.destroyHttpsServer().pipe(take(1)),
+            this.destroyHttpsServer().pipe(take(1))
         ).pipe(
-            map(() => {})
+            map(() => undefined)
         );
     }
     protected handleServer(
@@ -194,11 +199,11 @@ export class ServerConfiguration extends Configurable {
             }
         });
     }
-    protected initializeServer(): Observable<void> {
+    protected initializeServer(): Observable<undefined> {
         return zip(
             this.initializeHttpServer().pipe(take(1)),
             this.initializeHttpsServer().pipe(take(1))
-        ).pipe(map(() => {}));
+        ).pipe(map(() => undefined));
     }
     protected initializeSwagger(): void {
         this.logger.debug(Messages.getMessage('http-swagger-enabled'), '[The Way]');

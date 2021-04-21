@@ -21,7 +21,11 @@ import { PathMapModel } from '../model/path-map.model';
 import { PropertyModel } from '../model/property.model';
 import { CoreRestService } from '../service/core-rest.service';
 
-/* eslint-disable @typescript-eslint/ban-types */
+/*
+    eslint-disable @typescript-eslint/ban-types,
+    @typescript-eslint/no-explicit-any,
+    @typescript-eslint/explicit-module-boundary-types
+*/
 export class RegisterHandler {
     protected COMPONENTS: ConstructorMapModel;
     protected CONFIGURABLE: Array<Configurable>;
@@ -108,7 +112,7 @@ export class RegisterHandler {
     protected getRestMap(name: string): PathMapModel {
         let mapper = this.PATHS[name];
         if (!mapper) {
-            mapper = this.PATHS[name] = { childrensPath: [], fatherPath: '', inContext: false};
+            mapper = this.PATHS[name] = { childrensPath: [], fatherPath: '', inContext: false };
         }
         return mapper;
     }
