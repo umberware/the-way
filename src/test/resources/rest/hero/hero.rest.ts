@@ -9,7 +9,7 @@ import {
     ResponseContext,
     RequestContext,
     HeaderContext,
-    Post, BodyParam, Delete, Head, Put
+    Post, BodyParam, Delete, Head, Put, Inject, CoreSecurityService, Claims, TokenClaims
 } from '../../../../main';
 
 @Rest('heroes')
@@ -29,15 +29,21 @@ export class HeroRest {
             power: 5000
         }
     ]
+
     @Get('')
     public getAllHeroes(): Observable<any> {
         return of(this.heroes);
     }
-    @Post('')
-    public createHero(@BodyParam hero: any): any {
+    @Post('', true, ['justice-league-master'])
+    public createHero(@BodyParam hero: any, @Claims tokenClaims: TokenClaims): any {
         const lastId = this.heroes.length;
         hero.id = lastId;
         this.heroes.push(hero);
+
+        if (!tokenClaims) {
+            throw new Error('Some Injections is Empty.');
+        }
+
         return this.heroes[lastId];
     }
     @Get('hero/:id')
@@ -74,7 +80,7 @@ export class HeroRest {
     @Head('')
     public isOnline(): any {}
 
-    @Put('/byName')
+    @Put('/byName', true)
     public updateByName(@BodyParam updateHero: any): any {
         const index = this.heroes.findIndex((hero: any) => hero.name === updateHero.name)
         updateHero.id = this.heroes[index];

@@ -67,11 +67,10 @@ export class CoreRestService {
         try {
             const token = req.headers.authorization as string;
             this.verifyToken(fatherPath, token, allowedProfiles, authenticated).pipe(
-                switchMap(() => {
-                    return this.executeMethod(httpType, target, propertyKey, req, res);
+                switchMap((tokenClaims: TokenClaims | undefined) => {
+                    return this.executeMethod(httpType, target, propertyKey, req, res, tokenClaims);
                 })
             ).subscribe(
-            // this.executeMethod(httpType, target, propertyKey, req, res).subscribe(
                 (response: any) => {
                     if (!res.headersSent && response) {
                         res.send(response);

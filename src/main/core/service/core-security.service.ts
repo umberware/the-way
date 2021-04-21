@@ -1,15 +1,5 @@
 import * as Jwt from 'jsonwebtoken';
 
-import { Observable, of } from 'rxjs';
-//
-// import { UnauthorizedException } from '../exeption/unauthorized.exception';
-// import { NotAllowedException } from '../exeption/not-allowed.exception';
-// import { ApplicationException } from '../exeption/application.exception';
-import { CORE } from '../core';
-// import { CryptoService } from './crypto.service';
-// import { PropertiesConfiguration } from '../configuration/properties.configuration';
-// import { TokenClaims } from '../model/token-claims.model';
-// import { MessagesEnum } from '../model/messages.enum';
 import { Service } from '../decorator/service.decorator';
 import { System } from '../decorator/system.decorator';
 import { Inject } from '../decorator/inject.decorator';
@@ -22,7 +12,6 @@ import { Messages } from '../shared/messages';
 import { UnauthorizedException } from '../exeption/unauthorized.exception';
 import { RestException } from '../exeption/rest.exception';
 import { PathMapModel } from '../model/path-map.model';
-import has = Reflect.has;
 
 /*eslint-disable @typescript-eslint/no-explicit-any*/
 @System
@@ -32,24 +21,24 @@ export class CoreSecurityService {
     @Inject protected propertiesHandler: PropertiesHandler;
     @Inject protected cryptoService: CoreCryptoService;
 
-    public generateToken(tokenClaims: TokenClaims | null): string {
-        const cryptedClaims: string | null = this.generateTokenClaims(tokenClaims);
+    public generateToken(tokenClaims: TokenClaims | undefined): string {
+        const cryptedClaims: string | undefined = this.generateTokenClaims(tokenClaims);
         return Jwt.sign({ data: cryptedClaims }, this.getTokenKey(), { expiresIn: this.getTokenExpiration() });
     }
-    protected generateTokenClaims(tokenClaims: TokenClaims | null): string | null {
+    protected generateTokenClaims(tokenClaims: TokenClaims | undefined): string | undefined {
         if (!tokenClaims) {
-            return null;
+            return undefined;
         }
 
         return this.cryptoService.cipherIv(JSON.stringify(tokenClaims), 'aes-256-cbc', this.getUserKey());
     }
-    public getTokenClaims(token: string): TokenClaims {
+    public getTokenClaims(token: string): TokenClaims | undefined {
         const claims = Jwt.verify(token, this.getTokenKey()) as {data: string};
 
         if (claims.data) {
             return JSON.parse(this.cryptoService.decipherIv(claims.data, 'aes-256-cbc', this.getUserKey()));
         } else {
-            throw new UnauthorizedException(Messages.getMessage('error-rest-invalid-token'));
+            return undefined;
         }
     }
     protected getUserKey(): string {
@@ -71,10 +60,10 @@ export class CoreSecurityService {
         return restSecurityProperties['token-expiration'] as string;
     }
     protected hasFatherProfile(tokenProfiles: Array<any>, fatherProfiles: Array<any>): boolean {
-        return this.hasProfile(tokenProfiles, fatherProfiles);
+        return (fatherProfiles) ? this.hasProfile(tokenProfiles, fatherProfiles) : true;
     }
     protected hasPathProfile(tokenProfiles: Array<any>, profiles: Array<any>): boolean {
-        return this.hasProfile(tokenProfiles, profiles);
+        return (profiles) ? this.hasProfile(tokenProfiles, profiles) : true;
     }
     protected hasProfile(profiles: Array<any>, allowedProfiles: Array<any>,): boolean {
         for (const allowedProfile of allowedProfiles) {
@@ -90,7 +79,7 @@ export class CoreSecurityService {
         return (profiles !== undefined && profiles.length > 0) ||
             (fatherProfiles !== undefined && fatherProfiles.length > 0);
     }
-    protected verifyProfile(token: TokenClaims, profiles: Array<any>, fatherProfiles: Array<any>): void{
+    protected verifyProfile(token: TokenClaims | undefined, profiles: Array<any>, fatherProfiles: Array<any>): void{
         if (!token || !token.profiles || !(token.profiles instanceof Array)) {
             throw new NotAllowedException(Messages.getMessage('error-rest-cannot-perform-action'));
         }
@@ -103,7 +92,7 @@ export class CoreSecurityService {
     public verifyToken(
         fatherPath: PathMapModel, token?: string,
         profiles?: Array<any>
-    ): TokenClaims {
+    ): TokenClaims | undefined {
         try {
             if (!token) {
                 throw new NotAllowedException(Messages.getMessage('error-rest-no-token'));
@@ -111,9 +100,9 @@ export class CoreSecurityService {
                 throw new UnauthorizedException(Messages.getMessage('error-rest-invalid-token'));
             }
 
-            const tokenClaims: TokenClaims = this.getTokenClaims(token.replace('Bearer ', ''));
+            const tokenClaims: TokenClaims | undefined = this.getTokenClaims(token.replace('Bearer ', ''));
 
-            if (this.isPathRestrictedToProfiles(fatherPath.allowedProfiles, profiles)) {
+            if (this.isPathRestrictedToProfiles(profiles, fatherPath.allowedProfiles)) {
                 this.verifyProfile(tokenClaims, profiles as Array<any>, fatherPath.allowedProfiles as Array<any>);
             }
 

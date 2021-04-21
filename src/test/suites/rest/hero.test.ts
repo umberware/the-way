@@ -139,23 +139,29 @@ describe('Rest', () => {
             name: 'aquaman',
             power: 8530
         }
-        HttpsRequestorEnvironment.Post(hero, '/api/heroes').pipe(
-            switchMap((newHero: any) => {
-                expect(newHero.name).toBe('aquaman');
-                expect(newHero.power).toBe(8530);
-                hero.power = 9720;
-                return HttpsRequestorEnvironment.Put(hero, '/api/heroes/byName').pipe(
-                    switchMap((updatedHero: any) => {
-                        expect(updatedHero.name).toBe('aquaman');
-                        expect(updatedHero.power).toBe(9720);
+        let token: string;
+        HttpsRequestorEnvironment.Post({ username: 'wayne' }, '/api/sign/in').pipe(
+            switchMap((tokenResult: any) => {
+                token = tokenResult.token;
+                return HttpsRequestorEnvironment.Post(hero, '/api/heroes', {Authorization: 'Bearer ' + token}).pipe(
+                    switchMap((newHero: any) => {
+                        expect(newHero.name).toBe('aquaman');
+                        expect(newHero.power).toBe(8530);
+                        hero.power = 9720;
+                        return HttpsRequestorEnvironment.Put(hero, '/api/heroes/byName', {Authorization: 'Bearer ' + token}).pipe(
+                            switchMap((updatedHero: any) => {
+                                expect(updatedHero.name).toBe('aquaman');
+                                expect(updatedHero.power).toBe(9720);
 
-                        return HttpsRequestorEnvironment.Get('/api/heroes').pipe(
-                            map((heroes: any) => {
-                                expect(heroes.length).toBe(4);
-                                return heroes.find((resultedHero: any) =>
-                                    resultedHero.name === 'aquaman')
+                                return HttpsRequestorEnvironment.Get('/api/heroes').pipe(
+                                    map((heroes: any) => {
+                                        expect(heroes.length).toBe(4);
+                                        return heroes.find((resultedHero: any) =>
+                                            resultedHero.name === 'aquaman')
+                                    })
+                                );
                             })
-                        );
+                        )
                     })
                 )
             })
@@ -189,9 +195,120 @@ describe('Rest', () => {
             }
         );
     });
-    test('Heroes: is Online Hero', done => {
-        HttpsRequestorEnvironment.Head('/api/heroes').subscribe(
+    test('Heroes: Not Provied Token', done => {
+        HttpsRequestorEnvironment.Post(undefined, '/api/heroes').subscribe(
             () => {
+            }, (error => {
+                expect(error).toBeDefined();
+                expect(error.code).toBe(403);
+                expect(error.description).toBe(Messages.getMessage('http-not-allowed'));
+                expect(error.detail).toBe(Messages.getMessage('error-rest-no-token'));
+                done();
+            })
+        );
+    });
+    test('Heroes: Not Bearer Token', done => {
+        HttpsRequestorEnvironment.Post(undefined, '/api/heroes', { Authorization: 'das'}).subscribe(
+            () => {
+            }, (error => {
+                expect(error).toBeDefined();
+                expect(error.code).toBe(401);
+                expect(error.description).toBe(Messages.getMessage('http-not-authorized'));
+                expect(error.detail).toBe(Messages.getMessage('error-rest-invalid-token'));
+                done();
+            })
+        );
+    });
+    test('Heroes: Invalid Token', done => {
+        HttpsRequestorEnvironment.Post(undefined, '/api/heroes', { Authorization: 'Bearer asad'}).subscribe(
+            () => {
+            }, (error => {
+                expect(error).toBeDefined();
+                expect(error.code).toBe(401);
+                expect(error.description).toBe(Messages.getMessage('http-not-authorized'));
+                expect(error.detail).toBe(Messages.getMessage('error-rest-invalid-token'));
+                done();
+            })
+        );
+    });
+    test('Heroes: No Claims', done => {
+        let token;
+        HttpsRequestorEnvironment.Post({ username: 'wayne' }, '/api/sign/in/2').pipe(
+            switchMap((tokenResult: any) => {
+                token = tokenResult.token;
+                const hero = {
+                    name: 'aquaman',
+                    power: 9420
+                }
+                return HttpsRequestorEnvironment.Put(hero, '/api/heroes/byName', { Authorization: 'Bearer ' + token})
+            })
+        ).subscribe(
+            (hero: any) => {
+                expect(hero.name).toBe('aquaman');
+                expect(hero.power).toBe(9420);
+                done();
+            }
+        );
+    });
+    test('Heroes: Wrong Profile', done => {
+        let token;
+        const hero = {
+            name: 'happy-batman',
+            power: 8490
+        }
+        HttpsRequestorEnvironment.Post({ username: 'xas' }, '/api/sign/in').pipe(
+            switchMap((tokenResult: any) => {
+                token = tokenResult.token;
+                return HttpsRequestorEnvironment.Post(hero, '/api/heroes', { Authorization: 'Bearer ' + token})
+            })
+        ).subscribe(
+            () => {},
+            error => {
+                expect(error.code).toBe(403);
+                expect(error.description).toBe(Messages.getMessage('http-not-allowed'));
+                expect(error.detail).toBe(Messages.getMessage('error-rest-cannot-perform-action'));
+                done();
+            }
+        );
+    });
+    test('Heroes: Claims With no Profile', done => {
+        let token;
+        const hero = {
+            name: 'happy-batman',
+            power: 8490
+        }
+        HttpsRequestorEnvironment.Post({ username: 'xas' }, '/api/sign/in/3').pipe(
+            switchMap((tokenResult: any) => {
+                token = tokenResult.token;
+                return HttpsRequestorEnvironment.Post(hero, '/api/heroes', { Authorization: 'Bearer ' + token})
+            })
+        ).subscribe(
+            () => {},
+            error => {
+                expect(error.code).toBe(403);
+                expect(error.description).toBe(Messages.getMessage('http-not-allowed'));
+                expect(error.detail).toBe(Messages.getMessage('error-rest-cannot-perform-action'));
+                done();
+            }
+        );
+    });
+    test('Heroes: Claims With non Array of Profiles', done => {
+        let token;
+        const hero = {
+            name: 'happy-batman',
+            power: 8490
+        }
+        HttpsRequestorEnvironment.Post({ username: 'xas' }, '/api/sign/in/4').pipe(
+            switchMap((tokenResult: any) => {
+                token = tokenResult.token;
+                return HttpsRequestorEnvironment.Post(hero, '/api/heroes', { Authorization: 'Bearer ' + token})
+            })
+        ).subscribe(
+            () => {},
+            error => {
+                expect(error.code).toBe(403);
+                expect(error.description).toBe(Messages.getMessage('http-not-allowed'));
+                expect(error.detail).toBe(Messages.getMessage('error-rest-cannot-perform-action'));
                 done();
             }
         );
