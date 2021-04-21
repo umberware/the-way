@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 
-import { empty, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { defaultIfEmpty, switchMap } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
 
 import { Inject } from '../decorator/inject.decorator';
@@ -23,7 +24,8 @@ import { HeaderMetadataKey } from '../decorator/rest/param/header.decorator';
 import { RequestMetadataKey } from '../decorator/rest/param/request.decorator';
 import { BodyParamMetadataKey } from '../decorator/rest/param/body-param.decorator';
 import { BadRequestException } from '../exeption/bad-request.exception';
-import { defaultIfEmpty } from 'rxjs/operators';
+import { CoreSecurityService } from './core-security.service';
+import { PathMapModel } from '../model/path-map.model';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any */
 @System
@@ -31,7 +33,7 @@ import { defaultIfEmpty } from 'rxjs/operators';
 export class CoreRestService {
     @Inject logService: Logger;
     @Inject serverConfiguration: ServerConfiguration;
-    // securityService: SecurityService;
+    @Inject securityService: CoreSecurityService;
 
     protected buildPathParams(pathParams: Array<any>, req: any, functionArguments: Array<unknown>): void {
         for (const param of pathParams) {
@@ -43,15 +45,33 @@ export class CoreRestService {
             }
         }
     }
+    protected buildObservableFromResponse(result: any): Observable<any> {
+        let executionResultObservable;
+        if (result instanceof Promise) {
+            executionResultObservable = fromPromise(result);
+        } else if (result instanceof Observable) {
+            executionResultObservable = result;
+        } else if (result) {
+            executionResultObservable = of(result);
+        } else {
+            executionResultObservable = of(undefined);
+        }
+        return executionResultObservable.pipe(
+            defaultIfEmpty()
+        );
+    }
     protected execute(
-        httpType: HttpType, authenticated: boolean | undefined, allowedProfiles: Array<any> | undefined,
-        target: any, propertyKey: string,  req: Request, res: Response
+        httpType: HttpType, target: any, propertyKey: string,  req: Request, res: Response,
+        fatherPath: PathMapModel, authenticated?: boolean, allowedProfiles?: Array<any>
     ): void {
         try {
-
-            // this.securityService.verifyToken(req.headers.authorization, allowedProfiles, authenticated).pipe(
-            //     switchMap((tokenClaims: TokenClaims | undefined) => {
-            this.executeMethod(httpType, target, propertyKey, req, res).subscribe(
+            const token = req.headers.authorization as string;
+            this.verifyToken(fatherPath, token, allowedProfiles, authenticated).pipe(
+                switchMap(() => {
+                    return this.executeMethod(httpType, target, propertyKey, req, res);
+                })
+            ).subscribe(
+            // this.executeMethod(httpType, target, propertyKey, req, res).subscribe(
                 (response: any) => {
                     if (!res.headersSent && response) {
                         res.send(response);
@@ -93,9 +113,9 @@ export class CoreRestService {
             functionArguments[requestIndex] = req;
         }
 
-        // if (tokenClaimsIndex !== undefined) {
-        //     functionArguments[tokenClaimsIndex] = tokenClaims;
-        // }
+        if (tokenClaimsIndex !== undefined) {
+            functionArguments[tokenClaimsIndex] = tokenClaims;
+        }
         if (pathParams) {
             this.buildPathParams(pathParams, req, functionArguments);
         }
@@ -117,19 +137,7 @@ export class CoreRestService {
         }
         const instance = CORE.getInstanceByName(target.constructor.name);
         const executionResult = Reflect.apply(target[propertyKey], instance, functionArguments);
-        let executionResultObservable;
-        if (executionResult instanceof Promise) {
-            executionResultObservable = fromPromise(executionResult);
-        } else if (executionResult instanceof Observable) {
-            executionResultObservable = executionResult;
-        } else if (executionResult) {
-            executionResultObservable = of(executionResult);
-        } else {
-            executionResultObservable = of();
-        }
-        return executionResultObservable.pipe(
-            defaultIfEmpty()
-        );
+        return this.buildObservableFromResponse(executionResult);
     }
     protected handleError(ex: Error, res: any): void {
         if (ex instanceof RestException) {
@@ -141,7 +149,7 @@ export class CoreRestService {
     }
     public registerPath(
         httpType: HttpType, path: string, target: any, propertyKey: string,
-        authenticated?: boolean, allowedProfiles?: Array<any>
+        fatherPath: PathMapModel, authenticated?: boolean, allowedProfiles?: Array<any>
     ): void {
         const claims: number = Reflect.getOwnMetadata(ClaimsMetaKey, target, propertyKey);
 
@@ -152,7 +160,20 @@ export class CoreRestService {
             );
         }
         this.serverConfiguration.registerPath(path, httpType,  (req: Request, res: Response) => {
-            this.execute(httpType, authenticated, allowedProfiles, target, propertyKey, req, res);
+            this.execute(httpType, target, propertyKey, req, res, fatherPath, authenticated, allowedProfiles);
         });
+    }
+    protected verifyToken(
+        fatherPath: PathMapModel, token?: string,
+        profiles?: Array<any>, authenticated?: boolean
+    ): Observable<TokenClaims | undefined> {
+        if (!authenticated && !fatherPath.isAuthenticed) {
+            return of(undefined);
+        } else {
+            const verificationResult = this.securityService.verifyToken(
+                fatherPath, token, profiles
+            );
+            return this.buildObservableFromResponse(verificationResult);
+        }
     }
 }

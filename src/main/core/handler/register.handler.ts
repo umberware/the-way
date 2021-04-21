@@ -62,7 +62,7 @@ export class RegisterHandler {
             for (const path of fatherPath.childrensPath) {
                 const childrenPath = fatherPath.fatherPath + path.path;
                 coreRestService.registerPath(
-                    path.type, childrenPath, path.target, path.propertyKey,
+                    path.type, childrenPath, path.target, path.propertyKey, fatherPath,
                     path.isAuthenticated, path.allowedProfiles
                 );
             }

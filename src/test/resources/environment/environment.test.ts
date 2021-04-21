@@ -4,18 +4,13 @@ import resetAllMocks = jest.resetAllMocks;
 import { Observable, Subscriber } from 'rxjs';
 
 import {
-    CORE,
-    CoreCryptoService,
-    CoreRestService,
-    Logger,
-    PropertiesHandler,
-    ServerConfiguration
+    CORE, CoreCryptoService, CoreRestService, Logger,
+    PropertiesHandler, ServerConfiguration, ConstructorMapModel, CoreSecurityService
 } from '../../../main';
-import { ConstructorMapModel } from '../../../main/core/model/constructor-map.model';
 
 export class EnvironmentTest {
-    private static CORE_INSTANCES = [ 'CoreCryptoService', 'PropertiesHandler', 'Logger', 'CoreRestService'];
-    private static CORE_TYPES = [ CoreCryptoService, Logger, ServerConfiguration, PropertiesHandler, CoreRestService ];
+    private static CORE_INSTANCES = [ 'CoreSecurityService', 'CoreCryptoService', 'PropertiesHandler', 'Logger', 'CoreRestService'];
+    private static CORE_TYPES = [ CoreSecurityService, CoreCryptoService, Logger, ServerConfiguration, PropertiesHandler, CoreRestService ];
     private static processExitSpy: Spy
     private static processArgs: Array<string> = [ ...process.argv ];
 
