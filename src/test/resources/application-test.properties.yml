@@ -7,4 +7,6 @@ the-way:
             level: 0
     server:
         http:
-            port: 8080
+            port: 9797
+        https:
+            port: 4430

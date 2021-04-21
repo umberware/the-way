@@ -1,8 +1,8 @@
 import { ApplicationException, CORE } from '../../../main';
 import { EnvironmentTest } from '../../resources/environment/environment.test';
-import { switchMap } from 'rxjs/operators';
-import { HttpRequestorEnvironment } from '../../resources/environment/http-requestor.environment.test';
 import * as http from 'http';
+import * as Yaml from 'yaml';
+import { readFileSync } from 'fs';
 
 afterAll(done => {
     EnvironmentTest.clear(done);
@@ -12,12 +12,14 @@ beforeEach(() => {
 })
 describe('Server Configuration: ', () => {
     const server = http.createServer();
+    const properties = Yaml.parse(readFileSync('src/test/resources/application-test.properties.yml').toString());
     beforeAll(done => {
         process.argv.push('--the-way.core.scan.enabled=false');
         process.argv.push('--the-way.core.log.level=0');
         process.argv.push('--the-way.server.enabled=true');
+        const port = properties['the-way'].server.http.port;
 
-        server.listen(8080, () => {
+        server.listen(port, () => {
             done();
         });
     });

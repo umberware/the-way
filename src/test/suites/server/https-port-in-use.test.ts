@@ -1,6 +1,8 @@
 import { ApplicationException, CORE } from '../../../main';
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 import * as http from 'http';
+import * as Yaml from 'yaml';
+import { readFileSync } from 'fs';
 
 afterAll(done => {
     EnvironmentTest.clear(done);
@@ -10,6 +12,8 @@ beforeEach(() => {
 })
 describe('Server Configuration: ', () => {
     const server = http.createServer();
+
+    const properties = Yaml.parse(readFileSync('src/test/resources/application-test.properties.yml').toString());
     beforeAll(done => {
         process.argv.push('--the-way.core.scan.enabled=false');
         process.argv.push('--the-way.core.log.level=0');
@@ -18,7 +22,8 @@ describe('Server Configuration: ', () => {
         process.argv.push('--the-way.server.https.keyPath=src/test/resources/certificate/localhost.key');
         process.argv.push('--the-way.server.https.certPath=src/test/resources/certificate/localhost.cert');
 
-        server.listen(443, () => {
+        const port = properties['the-way'].server.https.port;
+        server.listen(port, () => {
             done();
         });
     });
