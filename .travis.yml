@@ -8,7 +8,7 @@ before_script:
   - yarn install
 script:
   - yarn lint
-  - yarn test
+  - yarn test-no-silent
   - yarn build
 branches:
   only:
