@@ -13,10 +13,10 @@ the-way:
         enabled: true
         operations-log: true
         http:
-            port: 80
+            port: 9000
             enabled: true
         https:
-            port: 443
+            port: 9001
             enabled: false
             keyPath: ''
             certPath: ''
