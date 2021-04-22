@@ -29,6 +29,8 @@ swagger.json
 .settings/
 *.sublime-workspace
 
+*.log
+
 # IDE - VSCode
 .vscode/*
 !.vscode/settings.json

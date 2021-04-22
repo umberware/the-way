@@ -1,9 +1,11 @@
-import { ApplicationException } from './application.exception';
-import { ErrorCodeEnum } from './error-code.enum';
-import { MessagesEnum } from '../model/messages.enum';
+import { RestException } from './rest.exception';
+import { Messages } from '../shared/messages';
 
-export class InternalException extends ApplicationException {
-    constructor(message: string) {
-        super(message, MessagesEnum['internal-server-error'], ErrorCodeEnum.INTERNAL_SERVER_ERROR);
+export class InternalException extends RestException {
+    constructor(
+        public detail: string, public code = 500,
+        public description = Messages.getMessage('http-internal-server-error')
+    ) {
+        super(detail, code, description);
     }
 }

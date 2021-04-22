@@ -1,136 +1,263 @@
-import * as express from 'express';
-import * as bodyParser from 'body-parser';
-import * as morgan from 'morgan';
-import * as helmet from 'helmet';
-import * as cors from 'cors';
-import * as http from 'http';
+import * as Http from 'http';
+import * as Https from 'https';
+import { readdirSync, readFileSync } from 'fs';
 import * as SwaggerUi from 'swagger-ui-express';
-import { readFileSync } from 'fs';
 
-import { Observable, Subscriber } from 'rxjs';
+import { Observable, Subscriber, zip } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 
-import { LogService } from '../service/log/log.service';
-import { AbstractConfiguration } from './abstract.configuration';
-import { Configuration } from '../decorator/configuration.decorator';
-import { PropertiesConfiguration } from './properties.configuration';
-import { CORE } from '../core';
+import { Express } from 'express';
+import express = require('express');
+import morgan = require('morgan');
+import helmet = require('helmet');
+import cors = require('cors');
+import bodyParser = require('body-parser');
+
+import { Configuration }  from '../decorator/configuration.decorator';
+import { Inject } from '../decorator/inject.decorator';
+import { PropertiesHandler } from '../handler/properties.handler';
+import { PropertyModel } from '../model/property.model';
+import { System } from '../decorator/system.decorator';
+import { Configurable } from '../shared/configurable';
+import { Logger } from '../shared/logger';
+import { Messages } from '../shared/messages';
 import { ApplicationException } from '../exeption/application.exception';
-import { ErrorCodeEnum } from '../exeption/error-code.enum';
-import { HttpType } from '../service/http/http-type.enum';
-import { MessagesEnum } from '../model/messages.enum';
+import { HttpType } from '../enum/http-type.enum';
 
-/*eslint-disable @typescript-eslint/ban-types */
+/*
+    eslint-disable @typescript-eslint/ban-types,
+    @typescript-eslint/no-explicit-any,
+    @typescript-eslint/explicit-module-boundary-types
+*/
+@System
 @Configuration()
-export class ServerConfiguration extends AbstractConfiguration {
-    protected logService: LogService;
-    protected propertiesConfiguration: PropertiesConfiguration;
+export class ServerConfiguration extends Configurable {
+    @Inject logger: Logger;
+    @Inject propertiesHandler: PropertiesHandler;
 
-    public context: any;
-    public server: http.Server;
-    public port: number;
-    protected theWayProperties: any;
-    protected serverProperties: any;
+    protected httpProperties: PropertyModel;
+    public httpServer: Http.Server;
+    protected httpsProperties: PropertyModel;
+    public httpsServer: Https.Server;
+    protected serverProperties: PropertyModel;
+    protected serverContext: Express;
 
-    constructor() {
-        super();
-        const core = CORE.getCoreInstance();
-        this.logService = core.getInstanceByName<LogService>('LogService');
-        this.propertiesConfiguration = core.getInstanceByName<PropertiesConfiguration>('PropertiesConfiguration');
-        this.theWayProperties = this.propertiesConfiguration.properties['the-way']
-        this.serverProperties = this.theWayProperties.server;
+    protected buildCredentialsOptions(httpsProperties: PropertyModel): { key: string; cert: string } {
+        const privateKey = readFileSync(httpsProperties.keyPath as string, 'utf8');
+        const certificate = readFileSync(httpsProperties.certPath as string, 'utf8');
+
+        return { key: privateKey, cert: certificate };
     }
-
-    public configure(): Observable<boolean> {
-        this.port =  this.serverProperties.port as number;
-        return this.start();
-    }
-    public destroy(): Observable<boolean> {
-        return new Observable((observer) => {
-            if (!this.server) {
-                observer.next(true);
+    private buildPath(fileProperty: any, beginPath: string): string {
+        let path = fileProperty.path as string;
+        if (!fileProperty.full) {
+            if (path.charAt(0) !== '/') {
+                path = '/' + path;
             }
-
-            this.server.close(() => {
-                observer.next(true);
-            });
+            path = beginPath + path;
+        }
+        return path;
+    }
+    public configure(): void | Observable<void> {
+        this.serverProperties = this.propertiesHandler.getProperties('the-way.server') as PropertyModel;
+        this.httpProperties = this.serverProperties.http as PropertyModel;
+        this.httpsProperties = this.serverProperties.https as PropertyModel;
+        if (!this.serverProperties.enabled) {
+            return;
+        } else {
+            return this.start();
+        }
+    }
+    protected destroyHttpServer(): Observable<void> {
+        return new Observable<void>((observer: Subscriber<void>) => {
+            if (this.httpServer) {
+                this.httpServer.close(() => {
+                    observer.next();
+                });
+            } else {
+                observer.next();
+            }
+        });
+    }
+    protected destroyHttpsServer(): Observable<void> {
+        return new Observable<void>((observer: Subscriber<void>) => {
+            if (this.httpsServer) {
+                this.httpsServer.close(() => {
+                    observer.next();
+                });
+            } else {
+                observer.next();
+            }
+        });
+    }
+    public destroy(): Observable<undefined> {
+        return zip(
+            this.destroyHttpServer().pipe(take(1)),
+            this.destroyHttpsServer().pipe(take(1))
+        ).pipe(
+            map(() => undefined)
+        );
+    }
+    protected handleServer(
+        observer: Subscriber<void>,
+        server: Http.Server | Https.Server,
+        properties: PropertyModel
+    ): void {
+        const messageKey = (server instanceof Http.Server) ? 'http-server-running' : 'https-server-running';
+        server.listen(properties.port, () => {
+            this.logger.info(Messages.getMessage(messageKey, [properties.port as string]));
+            observer.next();
+        });
+        server.on('error', (error: any) => {
+            observer.error(
+                new ApplicationException(
+                    Messages.getMessage('error-server', [error.code]),
+                    Messages.getMessage('TW-012'),
+                    error
+                )
+            );
         });
     }
     protected initializeExpress(): void {
-        const corsOptions: cors.CorsOptions = {
-            origin: true
+        const helmetProperties = this.serverProperties.helmet as PropertyModel;
+        const corsProperties = this.serverProperties.cors as PropertyModel;
+
+        if (this.httpProperties.enabled && (this.serverProperties.file as PropertyModel).enabled) {
+            helmetProperties.contentSecurityPolicy = false;
         }
-        this.context = express();
-        this.context
-            .use(cors(corsOptions))
-            .use(morgan('dev'))
-            .use(bodyParser.json())
-            .use(helmet())
-            .use(bodyParser.urlencoded({ extended: false }))
+
+        this.serverContext = express();
+
+        if (helmetProperties.enabled) {
+            this.initializeExpressHelmet(helmetProperties);
+        }
+        if (corsProperties.enabled) {
+            this.initializeExpressCors(corsProperties);
+        }
+        if (this.serverProperties['operations-log']) {
+            this.initializeExpressOperationsLog();
+        }
+
+        this.registerMiddleware(bodyParser.json());
+        this.registerMiddleware(bodyParser.urlencoded({ extended: false }));
+    }
+    protected initializeExpressHelmet(helmetProperties: any): void {
+        delete helmetProperties.enabled;
+        this.registerMiddleware(helmet(helmetProperties));
+    }
+    protected initializeExpressCors(corsProperties: any): any {
+        delete corsProperties.enabled;
+        this.registerMiddleware(cors(corsProperties));
+    }
+    protected initializeExpressOperationsLog(): any {
+        this.registerMiddleware(morgan('dev'));
     }
     public initializeFileServer(): void {
-        const server = this.theWayProperties.server;
-        const fileProperties = server.file as any;
-        const dirName = process.cwd();
-        const filePath: string = (fileProperties.full) ? fileProperties.path as string : dirName + fileProperties.path as string;
-        const assets = fileProperties.assets as any;
+        this.logger.debug(Messages.getMessage('http-file-enabled'), '[The Way]');
+        const fileProperties = this.serverProperties.file as any;
+        const filePath: string = this.buildPath(fileProperties, process.cwd());
+
+        const assetsProperty = fileProperties.assets as any;
         const staticProperty = fileProperties.static as any;
 
-        if (assets && assets.path !== '') {
-            const assetsPath: string = (assets.full) ? assets.path as string: filePath + assets.path as string;
-            this.context.use('/assets', express.static(assetsPath));
+        if (assetsProperty.enabled) {
+            this.serverContext.use('/assets', express.static(this.buildPath(assetsProperty, filePath)));
         }
 
-        if (staticProperty && staticProperty.path !== '') {
-            const staticPath = (staticProperty.full) ? staticProperty.path as string : filePath + staticProperty.path as string;
-            this.context.use('/static', express.static(staticPath));
+        if (staticProperty.enabled) {
+            this.serverContext.use('/static', express.static(this.buildPath(staticProperty, filePath)));
         }
-        this.context.get('/*', (req: any, res: any, next: Function) => {
-            if (req.path === '/' || (fileProperties.fallback && !(req.path as string).includes(server.path as string))) {
-                (res.sendFile as Function)(filePath + '/index.html');
+
+        this.serverContext.get('/*', (req: any, res: any, next: any) => {
+            if (req.path === '/' || (fileProperties.fallback && !this.isApiPath(req.path))) {
+                res.sendFile(filePath + '/index.html');
             } else {
                 next();
             }
         });
     }
-    protected initializeServer(observer: Subscriber<boolean>): void {
-        this.server = http.createServer(this.context);
-        this.server.listen(this.port, () => {
-            this.logService.info(`Server started on port ${this.port}`);
-            observer.next(true);
-        });
-        this.server.on('error', (error: any) => {
-            if (error.code === 'EADDRINUSE') {
-                observer.error(new ApplicationException(MessagesEnum['server-couldnt-initialize'] + this.port, MessagesEnum['server-port-in-use'], ErrorCodeEnum['RU-007']));
+    protected initializeHttpServer(): Observable<void> {
+        return new Observable<void>((observer: Subscriber<void>) => {
+            if (!this.httpProperties.enabled) {
+                observer.next();
             } else {
-                observer.error(error);
+                this.httpServer = Http.createServer(this.serverContext);
+                this.handleServer(observer, this.httpServer, this.httpProperties);
             }
-        })
+        });
+    }
+    protected initializeHttpsServer(): Observable<void> {
+        return new Observable<void>((observer: Subscriber<void>) => {
+            if (!this.httpsProperties.enabled) {
+                observer.next();
+            } else {
+                const credentials = this.buildCredentialsOptions(this.httpsProperties);
+                this.httpsServer = Https.createServer(credentials, this.serverContext);
+                this.handleServer(observer, this.httpsServer, this.httpsProperties);
+            }
+        });
+    }
+    protected initializeServer(): Observable<undefined> {
+        return zip(
+            this.initializeHttpServer().pipe(take(1)),
+            this.initializeHttpsServer().pipe(take(1))
+        ).pipe(map(() => undefined));
     }
     protected initializeSwagger(): void {
-        const swaggerProperties = this.serverProperties.swagger;
-        const swaggerDoc = readFileSync(swaggerProperties.filePath);
-        this.context.use(this.serverProperties.path + swaggerProperties.path, SwaggerUi.serve, SwaggerUi.setup(JSON.parse(swaggerDoc.toString())));
+        this.logger.debug(Messages.getMessage('http-swagger-enabled'), '[The Way]');
+        const restProperties = this.serverProperties.rest as any;
+        const swaggerProperties = restProperties.swagger;
+
+        const swaggerDoc = readFileSync(this.buildPath(swaggerProperties.file, process.cwd()));
+        this.serverContext.use(
+            restProperties.path + swaggerProperties.apiPath,
+            SwaggerUi.serve,
+            SwaggerUi.setup(JSON.parse(swaggerDoc.toString()))
+        );
+    }
+    protected isApiPath(path: string): boolean {
+        const rest = (this.serverProperties.rest as PropertyModel) as PropertyModel;
+        return path.includes(rest.path as string);
     }
     protected isFileServerEnabled(): boolean {
-        return this.serverProperties.file && this.serverProperties.file.enabled
+        const fileProperties = this.serverProperties.file  as PropertyModel;
+        return fileProperties &&
+            fileProperties.enabled as boolean;
     }
     protected isSwaggerEnabled(): boolean {
-        return this.serverProperties.swagger && this.serverProperties.swagger.enabled
+        const swagger = (this.serverProperties.rest as PropertyModel).swagger as PropertyModel;
+        return swagger !== undefined &&
+            (swagger as PropertyModel).enabled as boolean;
     }
-    protected start(): Observable<boolean> {
-        return new Observable<boolean>((observer: Subscriber<boolean>) => {
-            this.initializeExpress();
-            if (this.isFileServerEnabled())   {
-                this.initializeFileServer();
-            }
-            if (this.isSwaggerEnabled())   {
-                this.initializeSwagger();
-            }
-            this.initializeServer(observer);
-        });
+    public registerPath(path: string, httpType: HttpType, executor: any): void {
+        const restProperties = this.serverProperties.rest as any;
+        const finalPath = restProperties.path + path;
+
+        this.logger.debug('Registered - ' + httpType.toUpperCase() + ' ' + finalPath);
+        this.serverContext[httpType](finalPath, executor);
     }
-    public registerPath(path: string, httpType: HttpType, executor: Function): void {
-        const finalPath = this.serverProperties.path + path;
-        this.context[httpType](finalPath, executor);
+    public registerMiddleware(middlewareFunction: any): void {
+        this.serverContext.use(middlewareFunction);
+    }
+    protected start(): Observable<void> {
+        this.logger.info(Messages.getMessage('http-server-initialization'));
+
+        if (!this.httpProperties.enabled && !this.httpsProperties.enabled) {
+            throw new ApplicationException(
+                Messages.getMessage('error-server-not-enabled'),
+                Messages.getMessage('TW-011')
+            );
+        }
+
+        this.initializeExpress();
+
+        if (this.isSwaggerEnabled()) {
+            this.initializeSwagger();
+        }
+
+        if (this.isFileServerEnabled())   {
+            this.initializeFileServer();
+        }
+        return this.initializeServer();
     }
 }

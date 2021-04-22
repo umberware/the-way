@@ -1,9 +1,11 @@
-import { ApplicationException } from './application.exception';
-import { ErrorCodeEnum } from './error-code.enum';
-import { MessagesEnum } from '../model/messages.enum';
+import { RestException } from './rest.exception';
+import { Messages } from '../shared/messages';
 
-export class BadRequestException extends ApplicationException {
-    constructor(message: string) {
-        super(message, MessagesEnum['bad-request'], ErrorCodeEnum.BAD_REQUEST);
+export class BadRequestException extends RestException {
+    constructor(
+        public detail: string, public code = 400,
+        public description = Messages.getMessage('http-bad-request')
+    ) {
+        super(detail, code, description);
     }
 }

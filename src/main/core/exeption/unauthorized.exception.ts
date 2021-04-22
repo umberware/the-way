@@ -1,9 +1,11 @@
-import { ApplicationException } from './application.exception';
-import { ErrorCodeEnum } from './error-code.enum';
-import { MessagesEnum } from '../model/messages.enum';
+import { RestException } from './rest.exception';
+import { Messages } from '../shared/messages';
 
-export class UnauthorizedException extends ApplicationException {
-    constructor(message: string) {
-        super(message, MessagesEnum['not-authorized'], ErrorCodeEnum.UNAUTHORIZED);
+export class UnauthorizedException extends RestException {
+    constructor(
+        public detail: string, public code = 401,
+        public description = Messages.getMessage('http-not-authorized')
+    ) {
+        super(detail, code, description);
     }
 }

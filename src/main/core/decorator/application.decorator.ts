@@ -1,26 +1,22 @@
-import 'reflect-metadata';
-
 import { CORE } from '../core';
 import { TheWayApplication } from '../../core/the-way-application';
 import { ApplicationException } from '../exeption/application.exception';
-import { ErrorCodeEnum } from '../exeption/error-code.enum';
-import { MessagesEnum } from '../model/messages.enum';
+import { Messages } from '../shared/messages';
 
-/*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
-export function Application(params?: {custom?: Array<any>; automatic?: boolean}) {
-    return (constructor: any): void => {
-        const core = CORE.getCoreInstance();
-
+/* eslint-disable @typescript-eslint/ban-types*/
+export const ApplicationMetaKey = 'Application';
+export const Application = (params?: { automatic?: boolean; }) => {
+    return (constructor: Function): void => {
         if (!(constructor.prototype instanceof TheWayApplication)) {
-            throw new ApplicationException(MessagesEnum['not-the-way'], MessagesEnum['internal-error'], ErrorCodeEnum['RU-001'])
-        }
-
-        if (params?.custom) {
-            core.setCustomInstances(params.custom);
+            throw new ApplicationException(
+                Messages.getMessage('error-is-not-the-way'),
+                Messages.getMessage('TW-001')
+            );
         }
 
         if (!params || params.automatic || params.automatic === undefined) {
-            core.buildMain(constructor);
+            CORE.createCore(constructor);
         }
-    }
-}
+        Reflect.defineMetadata(ApplicationMetaKey, Application, constructor);
+    };
+};

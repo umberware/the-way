@@ -1,9 +1,11 @@
-import { ApplicationException } from './application.exception';
-import { ErrorCodeEnum } from './error-code.enum';
-import { MessagesEnum } from '../model/messages.enum';
+import { RestException } from './rest.exception';
+import { Messages } from '../shared/messages';
 
-export class NotAllowedException extends ApplicationException {
-    constructor(message: string) {
-        super(message, MessagesEnum['not-allowed'], ErrorCodeEnum.NOT_ALLOWED);
+export class NotAllowedException extends RestException {
+    constructor(
+        public detail: string, public code = 403,
+        public description = Messages.getMessage('http-not-allowed')
+    ) {
+        super(detail, code, description);
     }
 }

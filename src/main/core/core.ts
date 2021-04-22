@@ -1,357 +1,395 @@
+'use  strict';
+
 import 'reflect-metadata';
 
-import { BehaviorSubject, Observable, of, forkJoin } from 'rxjs';
-import { map, catchError, take } from 'rxjs/operators';
+import { BehaviorSubject, forkJoin, Observable, of, Subscriber } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
 
-import { ConfigurationMetaKey } from './decorator/configuration.decorator';
-import { AbstractConfiguration } from './configuration/abstract.configuration';
-import { CryptoService } from './service/crypto.service';
-import { PropertiesConfiguration } from './configuration/properties.configuration';
-import { LogService } from './service/log/log.service';
-import { HttpService } from './service/http/http.service';
+import { CoreStateEnum } from './shared/core-state.enum';
+import { DependencyHandler } from './handler/dependency.handler';
+import { InstanceHandler } from './handler/instance.handler';
+import { Messages } from './shared/messages';
+import { FileHandler } from './handler/file.handler';
+import { PropertiesHandler } from './handler/properties.handler';
+import { PropertyModel } from './model/property.model';
+import { Logger } from './shared/logger';
+import { RegisterHandler } from './handler/register.handler';
+import { HttpType } from './enum/http-type.enum';
 import { ApplicationException } from './exeption/application.exception';
-import { ServerConfiguration } from './configuration/server.configuration';
-import { Destroyable } from './destroyable';
-import { ErrorCodeEnum } from './exeption/error-code.enum';
-import { MessagesEnum } from './model/messages.enum';
-import { SecurityService } from './service/security.service';
-import { HttpType } from './service/http/http-type.enum';
+import { ConstructorMapModel } from './model/constructor-map.model';
+import { OverriddenMapModel } from './model/overridden-map.model';
 
-/*eslint-disable @typescript-eslint/ban-types */
-/*eslint-disable @typescript-eslint/no-explicit-any*/
-/*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
-/*eslint-disable no-console*/
-export class CORE extends Destroyable{
-    public static CORE_LOG_ENABLED = false;
-    public static CORE_CALLED = 0;
-    public static instance: CORE;
+/*
+    eslint-disable @typescript-eslint/ban-types,
+    @typescript-eslint/no-explicit-any,
+    @typescript-eslint/explicit-module-boundary-types
+*/
+export class CORE {
+    protected static APPLICATION: Function | Object;
+    protected static END_TIME: Date;
+    protected static ERROR: Error;
+    protected static INIT_TIME: Date;
+    protected static INSTANCE$: BehaviorSubject<CORE | undefined> = new BehaviorSubject<CORE | undefined>(undefined);
+    protected static REGISTERING: Array<{ methodName: string; args: Array<any> }> = [];
 
-    public static destroyed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-    public static ready$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    protected static STATE$: BehaviorSubject<CoreStateEnum> = new BehaviorSubject<CoreStateEnum>(CoreStateEnum.WAITING);
+
+    protected static afterInitialization(): void {
+        const instance = this.getInstance();
+        CORE.END_TIME = new Date();
+        instance.afterInitialization();
+    }
+    protected static applyRegistered(): void {
+        const core = this.getInstance();
+        this.applyRegisteredClass(core.getRegisterHandler());
+        if (!this.isDestroyed()) {
+            this.STATE$.next(CoreStateEnum.INITIALIZATION_STARTED);
+        }
+    }
+    protected static applyRegisteredClass(registerHandler: RegisterHandler): void {
+        this.REGISTERING = this.REGISTERING.sort((a, b) => {
+            if (a.methodName === 'registerRest' && b.methodName === 'registerRestPath') {
+                return -1;
+            } else {
+                return 1;
+            }
+        });
+        for (const register of this.REGISTERING) {
+            if (this.isDestroyed()) {
+                break;
+            }
+            const method = Reflect.get(registerHandler, register.methodName) as Function;
+            Reflect.apply(method, registerHandler, register.args);
+        }
+    }
+    protected static beforeInitialization(): void {
+        const instance = this.getInstance();
+        CORE.INIT_TIME = new Date();
+        instance.beforeInitialization();
+        this.whenHasInstanceAndBeforeInitializationIsDone().subscribe(
+            () => this.applyRegistered()
+        );
+    }
+    public static createCore(application: Function | Object): void {
+        if (!this.INSTANCE$.getValue()) {
+            this.INSTANCE$.next(new CORE());
+            this.APPLICATION = application;
+            CORE.STATE$.next(CoreStateEnum.BEFORE_INITIALIZATION_STARTED);
+            this.watchState().subscribe(
+                (coreState: CoreStateEnum) => {
+                    if (coreState === CoreStateEnum.BEFORE_INITIALIZATION_STARTED) {
+                        CORE.beforeInitialization();
+                    } else if (coreState === CoreStateEnum.INITIALIZATION_DONE) {
+                        CORE.afterInitialization();
+                    } else if (coreState === CoreStateEnum.INITIALIZATION_STARTED ) {
+                        CORE.initialization();
+                    }
+                }
+            );
+        }
+    }
+    public static destroy(): Observable<void | Error> {
+        const instance = this.INSTANCE$.getValue() as CORE;
+        if (!this.isDestroyed()) {
+            instance.destroy();
+        }
+        return CORE.whenDestroyed();
+    }
+    public static getConstructors(): ConstructorMapModel {
+        const instance = this.getInstance();
+        return instance.getRegisterHandler().getComponents();
+    }
+    public static getCoreState(): CoreStateEnum {
+        return CORE.STATE$.getValue();
+    }
+    public static getDependenciesTree(): any {
+        const instance = this.getInstance();
+        return instance.getDependencyHandler().getDependenciesTree();
+    }
+    public static getInstanceByName<T>(name: string): T {
+        const coreInstance = this.getInstance();
+        return coreInstance.getInstanceHandler().getInstanceByName<T>(name);
+    }
+    protected static getInstance(): CORE {
+        return this.INSTANCE$.getValue() as CORE;
+    }
+    public static getInstances(): Array<any> {
+        const instance = this.getInstance();
+        return instance.getInstanceHandler().getInstances();
+    }
+    public static getOverriden(): OverriddenMapModel {
+        const instance = this.getInstance();
+        return instance.getRegisterHandler().getOverriden();
+    }
+    public static getPropertiesHandler(): PropertiesHandler {
+        const instance = this.getInstance();
+        return instance.getPropertiesHandlder();
+    }
+    public static initialization(): void {
+        const instance = this.getInstance();
+        instance.initialize(this.APPLICATION);
+    }
+    public static isDestroyed(): boolean {
+        const state: CoreStateEnum = CORE.getCoreState();
+        return state === CoreStateEnum.DESTRUCTION_STARTED || state == CoreStateEnum.DESTRUCTION_DONE;
+    }
+    protected static register(methodName: string, args: Array<any>): void {
+        this.REGISTERING.push({
+            methodName,
+            args
+        });
+    }
+    public static registerConfiguration(configurationConstructor: Function, over?: Function): void {
+        this.register('registerConfiguration', [configurationConstructor, over]);
+    }
+    public static registerCoreComponent(componenteConstructor: Function): void {
+        this.register('registerCoreComponent', [componenteConstructor]);
+    }
+    public static registerInjection(source: Function, injector: object, key: string): void {
+        this.register('registerInjection', [source, injector, key]);
+    }
+    public static registerRest(
+        restConstructor: Function, path?: string, isAthenticated?: boolean,
+        allowedProfiles?: Array<any>
+    ): void {
+        this.register('registerRest', [restConstructor, path, isAthenticated, allowedProfiles]);
+    }
+    public static registerRestPath(
+        httpType: HttpType, path: string, target: any, propertyKey: string,
+        isAuthenticated?: boolean, allowedProfiles?: Array<any>
+    ): void {
+        this.register('registerRestPath',[ httpType, path, target, propertyKey, isAuthenticated, allowedProfiles ]);
+    }
+    public static registerService(serviceConstructor: Function, over?: Function): void {
+        this.register('registerService', [serviceConstructor, over]);
+    }
+    public static setError(error: Error): void {
+        const instance = this.getInstance();
+        this.ERROR = error;
+        if (!this.isDestroyed()) {
+            instance.destroy(error);
+        }
+    }
+    protected static whenBeforeInitializationIsDone(): Observable<boolean> {
+        return this.STATE$.pipe(
+            filter((state: CoreStateEnum) => state === CoreStateEnum.BEFORE_INITIALIZATION_DONE),
+            map(() => true)
+        );
+    }
+    public static whenDestroyed(): Observable<undefined | Error> {
+        return this.STATE$.pipe(
+            filter((state: CoreStateEnum) => state === CoreStateEnum.DESTRUCTION_DONE),
+            map(() => {
+                this.INSTANCE$.next(undefined);
+                return this.ERROR;
+            })
+        );
+    }
+    protected static whenHasInstanceAndBeforeInitializationIsDone(): Observable<boolean> {
+        return this.INSTANCE$.pipe(
+            filter((instance: CORE | undefined) => instance !== undefined),
+            switchMap(() => {
+                return this.whenBeforeInitializationIsDone();
+            })
+        );
+    }
+    public static whenReady(): Observable<boolean> {
+        return this.STATE$.pipe(
+            filter((state: CoreStateEnum) => state === CoreStateEnum.READY),
+            map(() => true)
+        );
+    }
+    public static watchState(): Observable<CoreStateEnum> {
+        return this.STATE$;
+    }
 
     protected application: Object;
-    protected customInstances: Array<Function>;
-    protected properties: any;
-    protected destroying = false;
-    protected DEPENDENCIES: any = {};
-    protected DEPENDENCIES_TREE: any = {};
-    protected OVERRIDDEN_DEPENDENCIES: any = {};
-    protected CONFIGURATIONS: {
-        configure$: Array<Observable<boolean>>;
-        destructable: Array<any>;
-    } = {
-        configure$: new  Array<Observable<boolean>>(),
-        destructable: []
+    protected coreProperties: PropertyModel;
+    protected dependencyHandler: DependencyHandler;
+    protected fileHandler: FileHandler;
+    protected instanceHandler: InstanceHandler;
+    protected logger: Logger;
+    protected propertiesHandler: PropertiesHandler;
+    protected registerHandler: RegisterHandler;
+
+    protected afterInitialization(): void {
+        this.logInfo(Messages.getMessage('step-after-initialization', [this.calculateElapsedTime()]));
+        CORE.STATE$.next(CoreStateEnum.READY);
     }
-    protected INSTANCES: Map<string, Object> = new Map();
-
-    public buildApplication(): Observable<boolean> {
-        this.logInfo(MessagesEnum['building-core-instances'], true)
-        this.buildCoreInstances();
-        this.logInfo(MessagesEnum['building-properties'], true)
-        this.buildProperties();
-        this.logInfo(MessagesEnum['building-tree-instances'], true)
-        this.buildDependenciesTree();
-        this.logInfo(MessagesEnum['building-instances'], true)
-        this.buildInstances(Object.keys(this.DEPENDENCIES_TREE), this.DEPENDENCIES_TREE, null);
-        this.logInfo(MessagesEnum['building-custom-instances'], true)
-        this.buildCustomInstances();
-        this.buildHttpService();
-
-        (this.getInstanceByName('LogService') as LogService).setLogLevel(
-            this.properties.log.level
+    protected beforeInitialization(): void {
+        this.logger = new Logger();
+        this.logInfo(Messages.getMessage('step-before-initialization-started'));
+        try {
+            this.propertiesHandler = new PropertiesHandler(this.logger);
+            this.checkoutProperties();
+            this.registerHandler = new RegisterHandler(
+                this.propertiesHandler.getProperties('the-way.server') as PropertyModel,
+                this.logger
+            );
+            this.instanceHandler = new InstanceHandler(this.logger, this.registerHandler);
+            this.dependencyHandler = new DependencyHandler(this.logger, this.instanceHandler, this.registerHandler);
+            this.fileHandler = new FileHandler(this.coreProperties.scan as PropertyModel, this.logger);
+            this.instanceHandler.registerInstance(this.logger);
+            this.instanceHandler.registerInstance(this.propertiesHandler);
+            this.fileHandler.initialize().subscribe(
+                () => {
+                    this.logInfo(Messages.getMessage('step-before-initialization-done'));
+                    CORE.STATE$.next(CoreStateEnum.BEFORE_INITIALIZATION_DONE);
+                }, (error: ApplicationException) => {
+                    CORE.setError(error);
+                }
+            );
+        } catch (error) {
+            CORE.setError(error);
+        }
+    }
+    protected bindPaths(): Observable<boolean> {
+        return new Observable<boolean>(
+            (observer: Subscriber<boolean>) => {
+                this.registerHandler.bindPaths();
+                observer.next(true);
+                observer.complete();
+            }
         );
-        return this.watchConfigurations();
     }
-    protected buildCoreInstances(): void {
-        const coreInstances: Array<Function> = [LogService, CryptoService];
-
-        for (const coreInstance of coreInstances) {
-            this.getInstance(coreInstance.name, coreInstance);
-        }
-    }
-    protected buildCustomInstances(): void {
-        if (!this.customInstances) {
-            return;
-        }
-
-        for (const coreInstance of this.customInstances) {
-            this.getInstance(coreInstance.name, coreInstance);
-        }
-    }
-    protected buildDependencyTree(treeNodesNames: Array<string>, node: any): void {
-        for (const treeNodeName of treeNodesNames) {
-            const childNodes: Array<string> = [];
-            const treeNode: any = this.getDependencyNode(treeNodeName, node);
-
-            for (const dependentName in this.DEPENDENCIES[treeNodeName] as any) {
-                childNodes.push(dependentName);
+    protected build(): Observable<boolean> {
+        return new Observable<boolean>(
+            (observer) => {
+                this.logDebug(Messages.getMessage('building'));
+                this.buildDependenciesTree();
+                this.buildInstances();
+                observer.next(true);
+                this.logDebug(Messages.getMessage('building-done'));
+                observer.complete();
             }
-
-            if (childNodes.length > 0) {
-                this.buildDependencyTree(childNodes, treeNode)
-            }
-        }
+        );
     }
     protected buildDependenciesTree(): void {
-        const treeNodes: Array<string> = [];
-        const keys = Object.keys(this.DEPENDENCIES);
-
-        for (let i = 0; i < keys.length; i++) {
-            let isNode = true;
-            for (let j = 0; j < keys.length; j++) {
-                const dependentB = this.DEPENDENCIES[keys[j]] as any;
-                if (dependentB[keys[i]]) {
-                    isNode = false;
+        this.dependencyHandler.buildDependenciesTree();
+    }
+    protected buildInstances(): void {
+        this.dependencyHandler.buildDependenciesInstances();
+        this.instanceHandler.buildCoreInstances();
+        this.instanceHandler.buildInstances();
+    }
+    protected calculateElapsedTime(): string {
+        return ((CORE.END_TIME.getTime() - CORE.INIT_TIME.getTime())/1000) + 's';
+    }
+    protected checkoutProperties(): void {
+        this.coreProperties = this.propertiesHandler.getProperties('the-way.core') as PropertyModel;
+        const logProperties = this.coreProperties.log as PropertyModel;
+        const languageProperty = this.coreProperties.language as string;
+        Messages.setLanguage(languageProperty);
+        this.logger.setProperties(logProperties);
+    }
+    protected configure(constructor: Object | Function): Observable<boolean> {
+        return new Observable((observer) => {
+            this.logDebug(Messages.getMessage('configuring-started'));
+            this.instanceHandler.configure().subscribe(
+                (next) => observer.next(next),
+                (error => observer.error(error)),
+                () => {
+                    this.logDebug(Messages.getMessage('configuring-done'));
+                    observer.complete();
                 }
-            }
-            if (isNode) {
-                treeNodes.push(keys[i]);
-            }
-        }
-
-        this.buildDependencyTree(treeNodes, this.DEPENDENCIES_TREE);
-
-        if (CORE.CORE_LOG_ENABLED) {
-            console.log(this.DEPENDENCIES_TREE);
-        }
-    }
-    public buildInstance<T>(instanceableName: string, constructor: Function | undefined): T {
-        if (constructor) {
-            const instance = this.buildObject(constructor.prototype) as T;
-            const decorators = Reflect.getMetadataKeys(constructor);
-            this.handleInstance(instanceableName, instance, decorators);
-            return instance;
-        } else {
-            throw new ApplicationException(MessagesEnum['not-found'] + instanceableName, MessagesEnum['building-instance-error'], ErrorCodeEnum['RU-005']);
-        }
-    }
-    protected buildInstances(treeNodesNames: Array<string>, node: any, parentName: string | null): void {
-        for (const treeNodeName of treeNodesNames) {
-            const childNodes = Object.keys(node[treeNodeName] as any);
-
-            if (childNodes.length > 0) {
-                this.buildInstances(childNodes, node[treeNodeName] as any, treeNodeName);
-            }
-
-            if (parentName) {
-                const dependent = (parentName.includes(':')) ? parentName.split(':')[0] : parentName;
-                const dependency = (treeNodeName.includes(':')) ? treeNodeName.split(':')[0] : treeNodeName;
-                const dependencyInformation = (this.DEPENDENCIES[dependent] as any)[dependency] as any;
-                const instance = this.getInstance(dependency, dependencyInformation.constructor) as Function;
-                const target = dependencyInformation.target as Function;
-                Reflect.set(target, dependencyInformation.key as string, instance);
-
-                let found = 'Not found';
-
-                if (instance) {
-                    found = instance.constructor.name
-                }
-
-                this.logInfo(MessagesEnum['injecting'] + target.constructor.name + MessagesEnum['injectable'] +dependencyInformation.constructor.name + MessagesEnum['injectable-found'] + found);
-            }
-        }
-    }
-    protected buildHttpService(): void {
-        const serverProperties = this.properties.server;
-        if (serverProperties.enabled) {
-            this.logInfo(MessagesEnum['building-http-service'], true)
-            this.getInstance<SecurityService>(SecurityService.name, SecurityService);
-            this.getInstance<ServerConfiguration>(ServerConfiguration.name, ServerConfiguration);
-            this.getInstance<HttpService>(HttpService.name, HttpService);
-        }
-    }
-    public buildMain(application: Function): void {
-        const instance = this.buildObject(application.prototype);
-        this.setApplicationInstance(instance);
-    }
-    public buildObject<T>(prototype: Function): T {
-        return new (Object.create(prototype)).constructor();
-    }
-    protected buildProperties(): void {
-        this.properties = this.getInstance<PropertiesConfiguration>(PropertiesConfiguration.name, PropertiesConfiguration).properties['the-way'];
-        CORE.CORE_LOG_ENABLED = this.properties.core.log;
-    }
-    public destroy(): Observable<boolean> {
-        if (this.destroying) {
-            return CORE.destroyed$;
-        }
-        this.destroying = true;
-        this.logInfo(MessagesEnum['destroy-all'], true);
-        const destructions: Array<Observable<boolean>> = [];
-
-        for(const configurationInstance of this.CONFIGURATIONS.destructable) {
-            destructions.push((configurationInstance as AbstractConfiguration).destroy().pipe(take(1)));
-        }
-        return this.watchDestructions(destructions);
-    }
-    public getApplicationInstance(): any {
-        return this.application;
-    }
-    public static getCoreInstance(): CORE {
-        if (!CORE.instance) {
-            CORE.ready$.next(false);
-            CORE.destroyed$.next(false);
-            CORE.instance = new CORE();
-        }
-        return CORE.instance;
-    }
-    protected getDependencyNode(treeNodeName: string, node: any): any {
-        if (!this.OVERRIDDEN_DEPENDENCIES[treeNodeName]) {
-            return node[treeNodeName] = {};
-        } else {
-            const overridden = this.OVERRIDDEN_DEPENDENCIES[treeNodeName] as any;
-            return node[treeNodeName + ':' + overridden.name] = {};
-        }
-    }
-    protected getInstance<T>(instanceableName: string, constructor: Function): T {
-        const {realInstanceableName, realConstructor} =  this.getRealInstanceNameAndConstructor(instanceableName, constructor);
-        const instance = this.INSTANCES.get(realInstanceableName) as T;
-        if (!instance) {
-            return this.buildInstance(realInstanceableName, realConstructor);
-        } else {
-            return instance;
-        }
-    }
-    public getInstanceByName<T>(name: string): T {
-        const overridden = this.OVERRIDDEN_DEPENDENCIES[name] as any;
-
-        if (overridden) {
-            name = overridden.name as string;
-        }
-        return this.INSTANCES.get(name) as T;
-    }
-    public getInstances(): Map<string, Object> {
-        return this.INSTANCES;
-    }
-    protected getRealInstanceNameAndConstructor(instanceableName: string, constructor?: Function): {realInstanceableName: string; realConstructor?: Function} {
-        let realInstanceableName = instanceableName;
-        let realConstructor = constructor;
-        const overridden = this.OVERRIDDEN_DEPENDENCIES[instanceableName] as any;
-        if (overridden) {
-            realInstanceableName = overridden.name as string;
-            realConstructor = overridden.constructor;
-        }
-        return {realInstanceableName, realConstructor};
-    }
-    protected handleInstance<T>(instanceableName: string, instance: T, decorators: Array<string>): void {
-        this.INSTANCES.set(instanceableName, instance as Object);
-        if (decorators.includes(ConfigurationMetaKey) && instance instanceof AbstractConfiguration) {
-            this.CONFIGURATIONS.configure$.push(instance.configure().pipe(take(1)));
-        }
-
-        if (instance instanceof Destroyable) {
-            this.CONFIGURATIONS.destructable.push(instance);
-        }
-    }
-    protected logInfo(message: string, force?: boolean): void {
-        if (CORE.CORE_LOG_ENABLED || force) {
-            console.log('[The Way] ' + message);
-        }
-    }
-    public overridenDependency(overridden: string, constructor: Function): void {
-        this.logInfo('Class will be overridden:');
-        this.logInfo('\tOriginal class: ' + constructor.name);
-        this.logInfo('\tOverride class: ' + overridden);
-        this.OVERRIDDEN_DEPENDENCIES[overridden] = {
-            name: constructor.name,
-            constructor: constructor
-        };
-    }
-    public registerDependency(constructor: Function, target: Function, key: string): void {
-        const dependentName: string = target.constructor.name;
-        const dependencyName: string = constructor.name;
-
-        if (!this.DEPENDENCIES[dependentName]) {
-            this.DEPENDENCIES[dependentName] = {};
-        }
-
-        (this.DEPENDENCIES[dependentName] as any)[dependencyName] = {
-            constructor: constructor,
-            target: target,
-            key: key
-        }
-    }
-    /*eslint-disable @typescript-eslint/explicit-module-boundary-types*/
-    public registerPath(
-        httpType: HttpType, path: string, authenticated: boolean | undefined,
-        allowedProfiles: Array<any> | undefined, target: any, propertyKey: string
-    ): void {
-        if (this.properties.server.enabled) {
-            const httpService = CORE.getCoreInstance().getInstanceByName('HttpService') as HttpService;
-            httpService.registerPath(httpType, path, authenticated, allowedProfiles, target, propertyKey);
-        } else {
-            console.error(MessagesEnum['no-http-service'], MessagesEnum['not-found'], ErrorCodeEnum['RU-002']);
-            this.destroy();
-        }
-    }
-    public setApplicationInstance(instance: any): void {
-        this.application = instance;
-    }
-    public setCustomInstances(customInstances: Array<Function>): void {
-        this.customInstances = customInstances;
-    }
-    protected watchConfigurations(): Observable<boolean> {
-        return forkJoin(this.CONFIGURATIONS.configure$).pipe(
-            map((values: Array<boolean>) => {
-                const hasNotConfigured = values.find((value: boolean) => !value);
-                if (!hasNotConfigured) {
-                    this.logInfo(MessagesEnum['configuration-done'], true);
-                    this.logInfo(MessagesEnum['ready'], true);
-                    return true;
-                } else {
-                    throw new ApplicationException(MessagesEnum['not-configured'], MessagesEnum['internal-error'], ErrorCodeEnum['RU-007']);
-                }
-            }),
-            catchError((error: Error) => {
-                console.error(error);
-                CORE.ready$.error(error);
-                throw error;
-            })
+            );
+        }).pipe(
+            switchMap(() => this.configureApplication(constructor))
         );
     }
-    protected watchDestructions(destructions: Array<Observable<boolean>>): Observable<boolean> {
-        if (destructions.length === 0) {
-            this.logInfo(MessagesEnum['time-has-come-one'], true);
-            delete CORE.instance;
-            CORE.CORE_CALLED = 0;
-            this.destroying = false;
+    protected configureApplication(constructor: Function | Object): Observable<boolean> {
+        return new Observable<boolean>(
+            (observer) => {
+                this.logInfo(Messages.getMessage('configuring-application-class'));
+                if ((typeof constructor) === 'object') {
+                    this.instanceHandler.registerInstance(constructor);
+                } else {
+                    this.instanceHandler.buildApplication(constructor as Function);
+                }
+                observer.next(true);
+                observer.complete();
+            }
+        );
+    }
+    protected destroy(error?: Error): void {
+        let code = 0;
+        if (error) {
+            this.logError(Messages.getMessage('error'), error as Error);
+            code = 1;
+        }
+        this.logInfo(Messages.getMessage('step-destruction-started'));
+        CORE.STATE$.next(CoreStateEnum.DESTRUCTION_STARTED);
+
+        this.destroyTheArmy().subscribe(
+            () => {
+                this.logInfo(Messages.getMessage('destruction-destroyed'));
+            }, (destructionError: Error) => {
+                const error = new ApplicationException(
+                    Messages.getMessage('error-in-destruction', [destructionError.message]),
+                    Messages.getMessage('TW-012'),
+                    destructionError
+                );
+                this.logger.error(error, '[The Way]');
+                CORE.setError(error);
+                code = 2;
+                this.destroyed(code);
+            }, () => {
+                this.destroyed(code);
+                this.logInfo(Messages.getMessage('step-destruction-done'));
+            }
+        );
+    }
+    protected destroyed(code: number): void {
+        CORE.STATE$.next(CoreStateEnum.DESTRUCTION_DONE);
+
+        if (this.coreProperties && this.coreProperties['processExit'] as boolean) {
+            process.exit(code);
+        }
+    }
+    protected destroyTheArmy(): Observable<boolean> {
+        if (this.instanceHandler) {
+            return this.instanceHandler.destroy();
+        } else {
             return of(true);
         }
-
-        forkJoin(destructions).pipe(
-            map((values: Array<boolean>) => {
-                const hasNotDestroyed = values.find((value: boolean) => !value);
-                if (!hasNotDestroyed) {
-                    this.logInfo(MessagesEnum['time-has-come-army'], true);
-                    CORE.CORE_CALLED = 0;
-                    delete CORE.instance;
-                    this.destroying = false;
-                    return true;
-                } else {
-                    throw new ApplicationException(MessagesEnum['not-destroyed'], MessagesEnum['internal-error'], ErrorCodeEnum['RU-006']);
-                }
-            }),
-            catchError((error: Error) => {
-                console.error(error);
-                console.log(MessagesEnum['let-me-go'])
-                throw error;
-            })
-        ).subscribe(
+    }
+    protected getDependencyHandler(): DependencyHandler {
+        return this.dependencyHandler;
+    }
+    protected getInstanceHandler(): InstanceHandler {
+        return this.instanceHandler;
+    }
+    protected getPropertiesHandlder(): PropertiesHandler {
+        return this.propertiesHandler;
+    }
+    protected getRegisterHandler(): RegisterHandler {
+        return this.registerHandler;
+    }
+    protected initialize(constructor: Function | Object): void {
+        this.logInfo(Messages.getMessage('step-initialization-started'));
+        forkJoin([
+            this.build(),
+            this.configure(constructor),
+            this.bindPaths()
+        ]).subscribe(
+            /* eslint-disable-next-line @typescript-eslint/no-empty-function */
+            () => {},
+            (error: Error) => {
+                CORE.setError(error);
+            },
             () => {
-                CORE.destroyed$.next(true);
-            }, (error: ApplicationException) => {
-                console.error(error);
-                CORE.destroyed$.next(true);
+                this.logInfo(Messages.getMessage('step-initialization-done'));
+                CORE.STATE$.next(CoreStateEnum.INITIALIZATION_DONE);
             }
         );
-
-        return CORE.destroyed$;
     }
-    public whenDestroyed(): Observable<boolean> {
-        return CORE.destroyed$;
+    protected logDebug(message: string | number): void {
+        this.logger.debug(message.toString(), '[The Way]');
     }
-    public whenReady(): Observable<boolean> {
-        return CORE.ready$;
+    protected logInfo(message: string | number): void {
+        this.logger.info(message.toString(), '[The Way]');
+    }
+    protected logError(message: string | number, error: Error): void {
+        this.logger.error(error, '[The Way]', message.toString());
     }
 }
