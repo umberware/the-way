@@ -1,7 +1,5 @@
 import {EnvironmentTest} from "../../resources/environment/environment.test";
 import {CORE} from "../../../main";
-import {HttpRequestorEnvironment} from "../../resources/environment/http-requestor.environment.test";
-import {HttpsRequestorEnvironment} from "../../resources/environment/https-requestor.environment.test";
 
 afterAll(done => {
     EnvironmentTest.clear(done);
@@ -23,7 +21,6 @@ describe('Server Configuration: ', () => {
                 new result.NotAutomaticMainTest();
                 CORE.whenDestroyed().subscribe((error: any) => {
                     if (error) {
-                        expect(error.errno).toBe(-4058);
                         expect(error.code).toBe('ENOENT');
                         done();
                     }
