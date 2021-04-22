@@ -10,6 +10,8 @@
 
 # The Way
 
-This framework is Way to build great things with more agility and organization. The Way is the way!g
+To improve the life cycle of the development in Node.js in a REST and/or POG concept, this framework is the way.
+With this framework you can build a REST application more easily, you can make singletons and inject this singletons in another class, you can configure and manipulate yours class
+more easily, in other words, the sky is not the limit!
 
 ## Under Construction
