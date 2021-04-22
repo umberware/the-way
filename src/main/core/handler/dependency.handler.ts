@@ -62,16 +62,16 @@ export class DependencyHandler {
         this.logger.debug(Messages.getMessage('building-dependencies-instances'), '[The Way]');
         this.buildDependenciesInstancesRec(Object.keys(this.DEPENDENCIES_TREE), this.DEPENDENCIES_TREE, null);
     }
-    protected buildDependenciesInstancesRec(treeNodesNames: Array<string>, node: any, parentName: string | null): void {
-        for (const treeNodeName of treeNodesNames) {
-            const childNodes = Object.keys(node[treeNodeName] as any);
+    protected buildDependenciesInstancesRec(instanceNames: Array<string>, node: any, parentName: string | null): void {
+        for (const instanceName of instanceNames) {
+            const childNodes = Object.keys(node[instanceName] as any);
 
             if (childNodes.length > 0) {
-                this.buildDependenciesInstancesRec(childNodes, node[treeNodeName] as any, treeNodeName);
+                this.buildDependenciesInstancesRec(childNodes, node[instanceName] as any, instanceName);
             }
 
             if (parentName) {
-                const dependency = treeNodeName;
+                const dependency = instanceName;
                 const dependentName = parentName;
                 const dependencyInformation = this.registerHandler.getDependency(parentName, dependency);
                 const instance = this.instanceHandler.buildInstance(dependencyInformation.constructor) as Object;

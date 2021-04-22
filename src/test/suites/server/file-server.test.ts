@@ -10,7 +10,7 @@ beforeEach(() => {
 })
 describe('Server Configuration: ', () => {
     test('File Server - Full Path', done => {
-        const path = __dirname.replace('suites\\server', 'resources\\file-server')
+        const path = process.cwd() + '/src/test/resources/file-server';
         process.argv.push('--the-way.core.scan.enabled=false');
         process.argv.push('--the-way.core.log.level=0');
         process.argv.push('--the-way.server.http.enabled=false');

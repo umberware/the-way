@@ -257,7 +257,6 @@ export class CORE {
             (observer) => {
                 this.logDebug(Messages.getMessage('building'));
                 this.buildDependenciesTree();
-                this.buildCoreInstances();
                 this.buildInstances();
                 observer.next(true);
                 this.logDebug(Messages.getMessage('building-done'));
@@ -265,14 +264,12 @@ export class CORE {
             }
         );
     }
-    protected buildCoreInstances(): void {
-        this.instanceHandler.buildCoreInstances();
-    }
     protected buildDependenciesTree(): void {
         this.dependencyHandler.buildDependenciesTree();
     }
     protected buildInstances(): void {
         this.dependencyHandler.buildDependenciesInstances();
+        this.instanceHandler.buildCoreInstances();
         this.instanceHandler.buildInstances();
     }
     protected calculateElapsedTime(): string {

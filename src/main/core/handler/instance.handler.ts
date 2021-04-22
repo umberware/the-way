@@ -26,8 +26,8 @@ export class InstanceHandler {
         this.initialize();
     }
 
-    public buildApplication(constructor: Function): Object {
-        const object = this.buildObject(constructor);
+    public buildApplication<T>(constructor: Function): T {
+        const object = this.buildObject<T>(constructor);
         this.registerInstance(object);
         return object;
     }
@@ -64,7 +64,7 @@ export class InstanceHandler {
             }
         );
     }
-    protected buildObject(constructor: Function): Object {
+    protected buildObject<T>(constructor: Function): T {
         return new constructor.prototype.constructor();
     }
     public caller(methodName: string, instances: Array<any>, messageKey: string): Observable<boolean> {
@@ -114,7 +114,7 @@ export class InstanceHandler {
         return this.caller('configure', this.registerHandler.getConfigurables(), 'configuring-instance');
     }
     public destroy(): Observable<boolean> {
-        return this.caller('destroy', this.registerHandler.getDestroyable(), 'destruction-instance',);
+        return this.caller('destroy', this.registerHandler.getDestroyable(), 'destruction-instance');
     }
     public getInstanceByName<T>(name: string): T {
         const registeredConstructor = this.registerHandler.getConstructor(name);
@@ -142,7 +142,7 @@ export class InstanceHandler {
     protected initialize(): void {
         this.INSTANCES = {};
     }
-    public registerInstance(instance: Object): void {
-        this.INSTANCES[instance.constructor.name] = instance;
+    public registerInstance<T>(instance: T): void {
+        this.INSTANCES[(instance as any).constructor.name] = instance;
     }
 }
