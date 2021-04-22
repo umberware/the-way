@@ -1,6 +1,6 @@
 import * as Http from 'http';
 import * as Https from 'https';
-import { readFileSync } from 'fs';
+import { readdirSync, readFileSync } from 'fs';
 import * as SwaggerUi from 'swagger-ui-express';
 
 import { Observable, Subscriber, zip } from 'rxjs';
@@ -56,7 +56,6 @@ export class ServerConfiguration extends Configurable {
             }
             path = beginPath + path;
         }
-        console.log(path, fileProperty, beginPath);
         return path;
     }
     public configure(): void | Observable<void> {
@@ -209,6 +208,7 @@ export class ServerConfiguration extends Configurable {
         const restProperties = this.serverProperties.rest as any;
         const swaggerProperties = restProperties.swagger;
         const swaggerDoc = readFileSync(this.buildPath(swaggerProperties.file, process.cwd()));
+        console.log(readdirSync(process.cwd()));
         this.serverContext.use(
             restProperties.path + swaggerProperties.apiPath,
             SwaggerUi.serve,
