@@ -34,7 +34,7 @@ the-way:
             swagger:
                 enabled: false
                 path: /swagger
-                filePath: './swagger.json'
+                filePath: 'swagger.json'
         file:
             enabled: false
             fallback: false

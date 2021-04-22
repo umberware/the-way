@@ -138,20 +138,19 @@ export class ServerConfiguration extends Configurable {
             this.initializeExpressOperationsLog();
         }
 
-        this.serverContext
-            .use(bodyParser.json())
-            .use(bodyParser.urlencoded({ extended: false }));
+        this.registerMiddleware(bodyParser.json());
+        this.registerMiddleware(bodyParser.urlencoded({ extended: false }));
     }
     protected initializeExpressHelmet(helmetProperties: any): void {
         delete helmetProperties.enabled;
-        this.serverContext.use(helmet(helmetProperties));
+        this.registerMiddleware(helmet(helmetProperties));
     }
     protected initializeExpressCors(corsProperties: any): any {
         delete corsProperties.enabled;
-        this.serverContext.use(cors(corsProperties));
+        this.registerMiddleware(cors(corsProperties));
     }
     protected initializeExpressOperationsLog(): any {
-        this.serverContext.use(morgan('dev'));
+        this.registerMiddleware(morgan('dev'));
     }
     public initializeFileServer(): void {
         this.logger.debug(Messages.getMessage('http-file-enabled'), '[The Way]');
@@ -236,6 +235,9 @@ export class ServerConfiguration extends Configurable {
 
         this.logger.debug('Registered - ' + httpType.toUpperCase() + ' ' + finalPath);
         this.serverContext[httpType](finalPath, executor);
+    }
+    public registerMiddleware(middlewareFunction: any): void {
+        this.serverContext.use(middlewareFunction);
     }
     protected start(): Observable<void> {
         this.logger.info(Messages.getMessage('http-server-initialization'));
