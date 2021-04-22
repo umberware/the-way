@@ -207,7 +207,10 @@ export class ServerConfiguration extends Configurable {
         this.logger.debug(Messages.getMessage('http-swagger-enabled'), '[The Way]');
         const restProperties = this.serverProperties.rest as any;
         const swaggerProperties = restProperties.swagger;
-        console.log(readdirSync(process.cwd()));
+        console.log(readdirSync(process.cwd() + '/src/'));
+        console.log(readdirSync(process.cwd() + '/src/test'));
+        console.log(readdirSync(process.cwd() + '/src/test/resources'));
+
         const swaggerDoc = readFileSync(this.buildPath(swaggerProperties.file, process.cwd()));
         this.serverContext.use(
             restProperties.path + swaggerProperties.apiPath,
