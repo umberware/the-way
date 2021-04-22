@@ -6,6 +6,6 @@ export class NotAllowedException extends RestException {
         public detail: string, public code = 403,
         public description = Messages.getMessage('http-not-allowed')
     ) {
-        super(detail, code, description);
+        super(code, detail, description);
     }
 }

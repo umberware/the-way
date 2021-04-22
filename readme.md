@@ -1,6 +1,6 @@
 [![Documentation](https://img.shields.io/badge/Documentation-lightseagreen.svg)](http://the-way.umberware.com)
 [![Changelog](https://img.shields.io/badge/Changelog-lightblue.svg)](./changelog.md)
-[![Exampples](https://img.shields.io/badge/Examples-lightseagreen.svg)](https://github.com/umberware/the-way-examples)
+[![Examples](https://img.shields.io/badge/Examples-lightseagreen.svg)](https://github.com/umberware/the-way-examples)
 [![npm version](https://badge.fury.io/js/%40umberware%2Fthe-way.svg)](https://badge.fury.io/js/%40umberware%2Fthe-way)
 [![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/umberware/the-way/master/LICENSE)
 [![EsLint](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://raw.githubusercontent.com/umberware/the-way/master/.eslintrc)

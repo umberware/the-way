@@ -6,6 +6,6 @@ export class UnauthorizedException extends RestException {
         public detail: string, public code = 401,
         public description = Messages.getMessage('http-not-authorized')
     ) {
-        super(detail, code, description);
+        super(code, detail, description);
     }
 }

@@ -6,6 +6,6 @@ export class BadRequestException extends RestException {
         public detail: string, public code = 400,
         public description = Messages.getMessage('http-bad-request')
     ) {
-        super(detail, code, description);
+        super(code, detail, description);
     }
 }
