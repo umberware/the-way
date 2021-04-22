@@ -32,9 +32,11 @@ the-way:
                 token-key: B2345678901234567890123456789034
                 token-expiration: '3 days'
             swagger:
+                apiPath: /swagger
                 enabled: false
-                path: /swagger
-                filePath: 'swagger.json'
+                file:
+                    full: false
+                    path: 'swagger.json'
         file:
             enabled: false
             fallback: false
