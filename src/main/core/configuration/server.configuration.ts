@@ -56,6 +56,7 @@ export class ServerConfiguration extends Configurable {
             }
             path = beginPath + path;
         }
+        console.log(path, fileProperty, beginPath);
         return path;
     }
     public configure(): void | Observable<void> {
