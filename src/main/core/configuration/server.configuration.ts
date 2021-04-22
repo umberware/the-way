@@ -186,7 +186,6 @@ export class ServerConfiguration extends Configurable {
             }
         });
     }
-
     protected initializeHttpsServer(): Observable<void> {
         return new Observable<void>((observer: Subscriber<void>) => {
             if (!this.httpsProperties.enabled) {

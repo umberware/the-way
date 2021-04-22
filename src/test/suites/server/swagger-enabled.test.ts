@@ -16,7 +16,7 @@ describe('Server Configuration: ', () => {
         process.argv.push('--the-way.server.http.enabled=false');
         process.argv.push('--the-way.server.https.enabled=true');
         process.argv.push('--the-way.server.rest.swagger.enabled=true')
-        process.argv.push('--the-way.server.rest.swagger.filePath=src/test/resources/swagger.json');
+        process.argv.push('--the-way.server.rest.swagger.filePath=./src/test/resources/swagger.json');
         process.argv.push('--the-way.server.https.keyPath=src/test/resources/certificate/localhost.key');
         process.argv.push('--the-way.server.https.certPath=src/test/resources/certificate/localhost.cert');
         import('../../resources/environment/main/not-automatic-main.test').then(
