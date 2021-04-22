@@ -1,6 +1,6 @@
 import * as Http from 'http';
 import * as Https from 'https';
-import { readdirSync, readFileSync } from 'fs';
+import { readFileSync } from 'fs';
 import * as SwaggerUi from 'swagger-ui-express';
 
 import { Observable, Subscriber, zip } from 'rxjs';
