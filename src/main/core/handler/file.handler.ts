@@ -12,8 +12,6 @@ import { ApplicationException } from '../exeption/application.exception';
 
 /* eslint-disable  no-console */
 export class FileHandler {
-
-    EXTENSIONS = ['.ts', '.js'];
     FOUND_FILES: Array<string> = [];
 
     constructor(
@@ -41,6 +39,24 @@ export class FileHandler {
         }
 
         return regex.substr(0, regex.length - 1);
+    }
+    protected checkPath(path: string, isDirectory: boolean): boolean {
+        const normalizedPath = path.replace(/\\/g, '/');
+        for (const excludes of this.scanProperties.excludes as Array<string>) {
+            if (new RegExp(excludes).test(normalizedPath)) {
+                return false;
+            }
+        }
+        if (isDirectory) {
+            return true;
+        }
+        for (const include of this.scanProperties.includes as Array<string>) {
+            if (new RegExp(include).test(normalizedPath)) {
+                return true;
+            }
+        }
+
+        return false;
     }
     protected getClassTypes(): Array<string> {
         return [ ClassTypeEnum.SERVICE, ClassTypeEnum.CONFIGURATION, ClassTypeEnum.REST, ClassTypeEnum.COMMON ];
@@ -83,14 +99,15 @@ export class FileHandler {
             for (const path of paths) {
                 const fullpath = dirPath + '/' + path;
                 const stat = statSync(fullpath);
-                if (stat.isDirectory()) {
+                const isDirectory = stat.isDirectory();
+                if (!this.checkPath(path, isDirectory)) {
+                    continue;
+                }
+
+                if (isDirectory) {
                     await this.loadApplicationFiles(fullpath);
                 } else {
-                    const extensions = this.EXTENSIONS.toString().replace(',', '|').replace(/\./g, '\\.');
-
-                    if (path.search(extensions) > -1) {
-                        await this.importFile(fullpath);
-                    }
+                    await this.importFile(fullpath);
                 }
             }
         } catch (ex) {

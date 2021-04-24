@@ -309,7 +309,7 @@ export class CORE {
     protected destroyed(code: number): void {
         CORE.STATE$.next(CoreStateEnum.DESTRUCTION_DONE);
 
-        if (this.coreProperties && this.coreProperties['processExit'] as boolean) {
+        if (this.coreProperties && this.coreProperties['process-exit'] as boolean) {
             process.exit(code);
         }
     }

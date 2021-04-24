@@ -14,3 +14,4 @@ dist/test
 test.log
 tsconfig.test.json
 .idea
+documentation

@@ -43,8 +43,8 @@ export class ServerConfiguration extends Configurable {
     protected serverContext: Express;
 
     protected buildCredentialsOptions(httpsProperties: PropertyModel): { key: string; cert: string } {
-        const privateKey = readFileSync(httpsProperties.keyPath as string, 'utf8');
-        const certificate = readFileSync(httpsProperties.certPath as string, 'utf8');
+        const privateKey = readFileSync(httpsProperties['key-path'] as string, 'utf8');
+        const certificate = readFileSync(httpsProperties['cert-path'] as string, 'utf8');
 
         return { key: privateKey, cert: certificate };
     }
@@ -210,7 +210,7 @@ export class ServerConfiguration extends Configurable {
 
         const swaggerDoc = readFileSync(this.buildPath(swaggerProperties.file, process.cwd()));
         this.serverContext.use(
-            restProperties.path + swaggerProperties.apiPath,
+            restProperties.path + swaggerProperties['api-path'],
             SwaggerUi.serve,
             SwaggerUi.setup(JSON.parse(swaggerDoc.toString()))
         );

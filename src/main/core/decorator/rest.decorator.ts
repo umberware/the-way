@@ -1,4 +1,5 @@
 import { CORE } from '../core';
+
 /*
     eslint-disable @typescript-eslint/ban-types,
     @typescript-eslint/no-explicit-any
