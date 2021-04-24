@@ -14,7 +14,7 @@ The application will **sum** the default properties, your application properties
     2. The Properties File Passed
     3. The Default Properties
 
-**Example: Passing a Properties File Path Argument In Command Line And Access those Properties**
+**Example: Passing a Properties File Path Argument In Command Line**
 
 *In Development*
 
@@ -34,7 +34,7 @@ The application will **sum** the default properties, your application properties
 
 By default, all properties that the application uses are within the "path" and you can create properties for your application in the annother application.properties section and access those properties with the property manager.
 
-**Example: The Application Properties With My Custom Properties Section**
+**Example: The Application Properties With My Custom Properties Section And Accessing those Properties**
 
 *File: application.properties.yml*
 
