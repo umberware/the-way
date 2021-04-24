@@ -1,5 +1,5 @@
-import { forkJoin, Observable, of } from 'rxjs';
-import { defaultIfEmpty, map } from 'rxjs/operators';
+import { BehaviorSubject, forkJoin, Observable, of, throwError } from 'rxjs';
+import { defaultIfEmpty, map, switchMap } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
 
 import { Logger } from '../shared/logger';
@@ -7,17 +7,19 @@ import { InstancesMapModel } from '../model/instances-map.model';
 import { RegisterHandler } from './register.handler';
 import { ConstructorModel } from '../model/constructor.model';
 import { Messages } from '../shared/messages';
-import { ConfigurationMetaKey } from '../decorator/configuration.decorator';
-import { Configurable } from '../shared/configurable';
 import { Destroyable } from '../shared/destroyable';
 import { ApplicationException } from '../exeption/application.exception';
+import { DependencyTreeModel } from '../model/dependency-tree.model';
+import { Configurable } from '../shared/configurable';
 
 /*
     eslint-disable @typescript-eslint/ban-types,
-    @typescript-eslint/no-explicit-any
+    @typescript-eslint/no-explicit-any,
+    @typescript-eslint/explicit-module-boundary-types
  */
 export class InstanceHandler {
     protected INSTANCES: InstancesMapModel;
+    protected CONFIGURED_INSTANCES = new Set<Function>();
 
     constructor(
         protected logger: Logger,
@@ -26,12 +28,111 @@ export class InstanceHandler {
         this.initialize();
     }
 
+    protected bindDependentWithDepedencies(dependent: string, dependencies: Array<string>): void {
+        for (const dependency of dependencies) {
+            const dependencyInformation = this.registerHandler.getDependency(dependent, dependency);
+            const instance = this.getInstanceByName(dependencyInformation.dependencyConstructor.name) as Object;
+            const target = dependencyInformation.target as Function;
+            const dependencyName = (instance.constructor.name !== dependencyInformation.dependencyConstructor.name) ?
+                instance.constructor.name + '( as ' + dependencyInformation.dependencyConstructor.name + ' )' :
+                dependencyInformation.dependencyConstructor.name;
+
+            Reflect.set(target, dependencyInformation.key as string, instance);
+            this.logger.debug(
+                Messages.getMessage(
+                    'injection-injected',
+                    [dependencyName, dependent, dependencyInformation.key]
+                ),
+                '[The Way]'
+            );
+        }
+    }
     public buildApplication<T>(constructor: Function): T {
         const object = this.buildObject<T>(constructor);
         this.registerInstance(object);
         return object;
     }
-    public buildInstance<T>(constructor: Function): T | null {
+    public buildCoreComponents(): Array<Configurable> {
+        this.logger.debug(Messages.getMessage('building-core-instances'), '[The Way]');
+        return this.buildComponents(Object.values(this.registerHandler.getCoreComponents()));
+    }
+    public buildApplicationComponents(): Array<Configurable> {
+        this.logger.debug(Messages.getMessage('building-instances'), '[The Way]');
+        return this.buildComponents(Object.values(this.registerHandler.getComponents()));
+    }
+    protected buildComponents(components: Array<any>): Array<Configurable> {
+        const configurable: Array<Configurable> = [];
+        components.forEach(
+            (registeredConstructor: ConstructorModel) => {
+                const instance = this.buildInstance(registeredConstructor.constructorFunction);
+                if ((instance instanceof Configurable) && !this.CONFIGURED_INSTANCES.has((instance as Configurable).constructor)) {
+                    configurable.push(instance);
+                }
+            }
+        );
+        return configurable;
+    }
+    public buildDependenciesInstances(
+        constructor: Function | Object,
+        dependencyTree: DependencyTreeModel
+    ): Observable<boolean> {
+        return new Observable<boolean>((observer) => {
+            const dependencies = Object.keys(dependencyTree);
+            const handler = new BehaviorSubject<Array<string>>(dependencies);
+            const handledDepencencies = new Set<string>();
+
+            handler.subscribe(
+                (dependencies: Array<string>) => {
+                    if (dependencies.length === 0) {
+                        handler.complete();
+                    } else {
+                        const dependency = dependencies.shift() as string;
+                        const subTree = dependencyTree[dependency];
+                        const subDependencies = (subTree) ? Object.keys(subTree) : [];
+
+                        if (!handledDepencencies.has(dependency) && subDependencies.length > 0) {
+                            dependencies.unshift(...subDependencies);
+                            handledDepencencies.add(dependency);
+                            dependencies.push(dependency);
+                            handler.next(dependencies);
+                        } else {
+                            this.bindDependentWithDepedencies(dependency, subDependencies);
+                            const constructor = this.registerHandler.getConstructor(dependency)?.constructorFunction;
+                            if (constructor) {
+                                this.buildInstanceAndConfigure(constructor).subscribe(
+                                    () => handler.next(dependencies),
+                                    (error) => handler.error(error)
+                                );
+                            } else {
+                                handler.next(dependencies);
+                            }
+                        }
+                    }
+                }, (error => {
+                    observer.error(error);
+                    observer.complete();
+                }), () => {
+                    observer.next(true);
+                    observer.complete();
+                }
+            );
+        });
+    }
+    protected buildObject<T>(constructor: Function): T {
+        return new constructor.prototype.constructor();
+    }
+    protected buildObservableFromResult(result: any): Observable<any> {
+        if (result instanceof Promise) {
+            return fromPromise(result);
+        } else if (result instanceof Observable) {
+            return result;
+        } else if (result) {
+            return of(result);
+        } else {
+            return of(undefined);
+        }
+    }
+    public buildInstance<T>(constructor: Function): T {
         const registeredConstructor = this.registerHandler.getConstructor(constructor.name);
         const registeredConstructorName = registeredConstructor.name;
         if (!this.INSTANCES[registeredConstructorName]) {
@@ -40,34 +141,36 @@ export class InstanceHandler {
                 '[The Way]'
             );
             const instance = this.buildObject(registeredConstructor.constructorFunction);
-            const decorators = Reflect.getMetadataKeys(registeredConstructor.constructorFunction);
             this.registerInstance(instance);
-            this.handleInstance(instance, decorators);
+            this.handleInstance(instance);
             return instance as T;
         } else {
             return this.INSTANCES[registeredConstructorName] as T;
         }
     }
-    public buildCoreInstances(): void {
-        this.logger.debug(Messages.getMessage('building-core-instances'), '[The Way]');
-        Object.values(this.registerHandler.getCoreComponents()).forEach(
-            (registeredConstructor: ConstructorModel) => {
-                this.buildInstance(registeredConstructor.constructorFunction);
-            }
+    public buildInstanceAndConfigure(constructor: Function): Observable<any> {
+        const instance = this.buildInstance(constructor);
+        if (this.registerHandler.getConfigurables().has(constructor) && !this.CONFIGURED_INSTANCES.has(constructor)) {
+            return this.configureInstance(instance as Configurable).pipe(
+                map(() => {
+                    this.CONFIGURED_INSTANCES.add(constructor);
+                })
+            );
+        } else {
+            return of(true);
+        }
+    }
+    public buildInstances(constructor: Function | Object, dependencyTree: DependencyTreeModel): Observable<boolean> {
+        this.logger.debug(Messages.getMessage('building-dependencies-instances'), '[The Way]');
+        return this.buildDependenciesInstances(constructor, dependencyTree).pipe(
+            switchMap(() => {
+                const configurableInstances = this.buildCoreComponents();
+                configurableInstances.push(...this.buildApplicationComponents());
+                return this.configureInstances(configurableInstances);
+            })
         );
     }
-    public buildInstances(): void {
-        this.logger.debug(Messages.getMessage('building-instances'), '[The Way]');
-        Object.values(this.registerHandler.getComponents()).forEach(
-            (registeredConstructor: ConstructorModel) => {
-                this.buildInstance(registeredConstructor.constructorFunction);
-            }
-        );
-    }
-    protected buildObject<T>(constructor: Function): T {
-        return new constructor.prototype.constructor();
-    }
-    public caller(methodName: string, instances: Array<any>, messageKey: string): Observable<boolean> {
+    protected caller(methodName: string, instances: Array<any>, messageKey: string): Observable<boolean> {
         const results: Array<Observable<any>> = [];
 
         for (const instance of instances) {
@@ -76,17 +179,7 @@ export class InstanceHandler {
                 this.logger.debug(Messages.getMessage(messageKey, [ instance.constructor.name ]), '[The Way]');
                 const method = Reflect.get(instance, methodName) as Function;
                 const result = Reflect.apply(method, instance, []);
-
-                if (result instanceof Promise) {
-                    observable = fromPromise(result);
-                } else if (result instanceof Observable) {
-                    observable = result;
-                } else {
-                    observable = of(result);
-                }
-                observable.pipe(
-                    defaultIfEmpty(true)
-                );
+                observable = this.buildObservableFromResult(result);
             } catch (ex) {
                 observable = of(ex);
             }
@@ -110,8 +203,15 @@ export class InstanceHandler {
             defaultIfEmpty(true)
         );
     }
-    public configure(): Observable<boolean> {
-        return this.caller('configure', this.registerHandler.getConfigurables(), 'configuring-instance');
+    protected configureInstance(instance: Configurable): Observable<any> {
+        try {
+            return this.buildObservableFromResult((instance).configure());
+        } catch (ex) {
+            return throwError(ex);
+        }
+    }
+    protected configureInstances(instances: Array<Configurable>): Observable<boolean> {
+        return this.caller('configure', instances, 'configuring-instance');
     }
     public destroy(): Observable<boolean> {
         return this.caller('destroy', this.registerHandler.getDestroyable(), 'destruction-instance');
@@ -130,11 +230,7 @@ export class InstanceHandler {
     public getInstances(): Array<any> {
         return Object.values(this.INSTANCES);
     }
-    protected handleInstance<T>(instance: T, decorators: Array<string>): void {
-        if (decorators.includes(ConfigurationMetaKey) && instance instanceof Configurable) {
-            this.registerHandler.registerConfigurable(instance);
-        }
-
+    protected handleInstance<T>(instance: T): void {
         if (instance instanceof Destroyable) {
             this.registerHandler.registerDestroyable(instance);
         }

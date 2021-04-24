@@ -15,8 +15,10 @@ export class EnvironmentTest {
     private static processArgs: Array<string> = [ ...process.argv ];
 
     public static buildCoreConfigueSpy(message: string): void {
-        const core = (CORE as any).getInstance();
-        spyOn(core as any, 'configure').and.returnValue(
+        const core = (CORE as any).INSTANCE$.getValue();
+        console.log(core)
+        const instanceHandler = core.instanceHandler;
+        spyOn(instanceHandler as any, 'configureInstances').and.returnValue(
             new Observable((observer: Subscriber<boolean>) => {
                 observer.error({
                     detail: message

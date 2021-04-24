@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 export interface DependencyModel {
-    constructor: Function;
+    dependencyConstructor: Function;
     target: Function;
     key: string;
 }
