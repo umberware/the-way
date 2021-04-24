@@ -86,27 +86,10 @@ export class InstanceHandler {
                     if (dependencies.length === 0) {
                         handler.complete();
                     } else {
-                        const dependency = dependencies.shift() as string;
-                        const subTree = dependencyTree[dependency];
-                        const subDependencies = (subTree) ? Object.keys(subTree) : [];
-
-                        if (!handledDepencencies.has(dependency) && subDependencies.length > 0) {
-                            dependencies.unshift(...subDependencies);
-                            handledDepencencies.add(dependency);
-                            dependencies.push(dependency);
-                            handler.next(dependencies);
-                        } else {
-                            this.bindDependentWithDepedencies(dependency, subDependencies);
-                            const constructor = this.registerHandler.getConstructor(dependency)?.constructorFunction;
-                            if (constructor) {
-                                this.buildInstanceAndConfigure(constructor).subscribe(
-                                    () => handler.next(dependencies),
-                                    (error) => handler.error(error)
-                                );
-                            } else {
-                                handler.next(dependencies);
-                            }
-                        }
+                        this.buildDependencyInstance(
+                            dependencies.shift() as string, dependencyTree, dependencies,
+                            handler, handledDepencencies
+                        );
                     }
                 }, (error => {
                     observer.error(error);
@@ -117,6 +100,31 @@ export class InstanceHandler {
                 }
             );
         });
+    }
+    protected buildDependencyInstance(
+        dependency: string, dependencyTree: DependencyTreeModel, dependencies: Array<string>,
+        handler: BehaviorSubject<Array<string>>, handledDepencencies: Set<string>
+    ): void {
+        const subTree = dependencyTree[dependency];
+        const subDependencies = (subTree) ? Object.keys(subTree) : [];
+
+        if (!handledDepencencies.has(dependency) && subDependencies.length > 0) {
+            dependencies.unshift(...subDependencies);
+            handledDepencencies.add(dependency);
+            dependencies.push(dependency);
+            handler.next(dependencies);
+        } else {
+            this.bindDependentWithDepedencies(dependency, subDependencies);
+            const constructor = this.registerHandler.getConstructor(dependency)?.constructorFunction;
+            if (constructor) {
+                this.buildInstanceAndConfigure(constructor).subscribe(
+                    () => handler.next(dependencies),
+                    (error) => handler.error(error)
+                );
+            } else {
+                handler.next(dependencies);
+            }
+        }
     }
     protected buildObject<T>(constructor: Function): T {
         return new constructor.prototype.constructor();
