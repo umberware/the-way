@@ -16,8 +16,8 @@ more easily, in other words, the sky is not the limit!
 
 ## Summary
 
- - [Installing](./#installing)
- - [Features](./#features)
+ - [Installing](#installing)
+ - [Features](#features)
  - [NodeJs+Typescript Guide](./documentation/node-typescript-guide.md)
  - [Application Properties](./documentation/application-properties.md)
 

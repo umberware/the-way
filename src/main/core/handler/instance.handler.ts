@@ -48,7 +48,7 @@ export class InstanceHandler {
         }
     }
     public buildApplication<T>(constructor: Function): T {
-        const object = this.buildObject<T>(constructor);
+        const object = Object.create(constructor.prototype);
         this.registerInstance(object);
         return object;
     }

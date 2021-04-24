@@ -8,7 +8,7 @@
     "homepage": "http://the-way.umberware.com",
     "private": false,
     "scripts": {
-        "test": "jest --silent --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
+        "test": "yarn build && jest --silent --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
         "test-watch": "jest --silent --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage --watchAll",
         "test-no-silent": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
         "test-with-log": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose > test.log 2>&1",
