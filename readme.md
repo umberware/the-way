@@ -14,7 +14,33 @@ To improve the life cycle of the development in Node.js in a REST and/or POG con
 With this framework you can build a REST application more easily, you can make singletons and inject this singletons in another class, you can configure and manipulate yours class
 more easily, in other words, the sky is not the limit!
 
-## Table of Content
+## Summary
 
+ - [Installing](./#installing)
+ - [Features](./#features)
+ - [NodeJs+Typescript Guide](./documentation/node-typescript-guide.md)
  - [Application Properties](./documentation/application-properties.md)
 
+## Installing
+
+This framework is built for NodeJs with Typescript and you need a project configured. You can check how to create a NodeJs + Typescript project [here](./documentation/node-typescript-guide.md).
+
+Installing the TheWay:
+
+*For Yarn*
+
+    yarn add @umberware/the-way
+
+*For Npm*
+
+    npm install @umberware/the-way
+
+## Features
+
+With this framework you can elevate the life cycle of the development in Node.js with a lot of features, and the principles are:
+
+ - All in a Core: The framework will find the files that contains decorators of this framework and automatically import and process these decorators and configure when that class need to be configured
+ - REST mapping and concepts more intelligible and concise: For that we use decorators to abstract some things and configure automatically the [express](https://github.com/expressjs/express) routes, security and others
+ - Class Injection & Singleton: When a class is decorated with some this framework decorators, we will instantiate and configure this class and allow this instance to be injected in another component
+ - Customizing & Overriding: If for some reason you want to change a class behavior you can override that class and inject you custom class in the old class injections points. With application properties or POG, you can customize some things for your application.
+ - Automatic HTTP and HTTPS server: We use the [express](https://github.com/expressjs/express) for build a http and/or https server and you can customize some properties for this server
