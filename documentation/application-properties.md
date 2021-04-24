@@ -1,6 +1,6 @@
 ## Application Properties
 
-The Application Core accepts a lot of properties for customization & configuration. In this section we will talk about these properties and what is their purpose.
+The Application Core accepts a lot of properties for customization & configuration. In this section we will talk about those properties and what is their purpose.
 You can check the default properties file [here](../src/main/resources/application.properties.yml).
 
 ### Behavior
@@ -14,7 +14,7 @@ The application will **sum** the default properties, your application properties
     2. The Properties File Passed
     3. The Default Properties
 
-**Example: Passing a Properties Path In Command Line**
+**Example: Passing a Properties File Path Argument In Command Line And Access those Properties**
 
 *In Development*
 
@@ -28,15 +28,15 @@ The application will **sum** the default properties, your application properties
 
     ts-node src/main/main.ts --the-way.server.https.enabled=true
 
-    ts-node src/main/main.ts --mongo.ip=127.0.0.1 --mongo.port=27018
+    node dist/src/main/main.js src/main/main.ts --mongo.ip=127.0.0.1 --mongo.port=27018
 
 ### Creating a Custom Properties for My Application
 
-By default, all the properties that the application uses is inside the "the-way" and you can create properties for your application in annother application.properties section and access this properties with the Properties Handler.
+By default, all properties that the application uses are within the "path" and you can create properties for your application in the annother application.properties section and access those properties with the property manager.
 
 **Example: The Application Properties With My Custom Properties Section**
 
-*application.properties.yml*
+*File: application.properties.yml*
 
     the-way:
     ...
@@ -47,7 +47,7 @@ By default, all the properties that the application uses is inside the "the-way"
             - 8989
             - 9292
 
-*My Main*
+*Class: My Main*
 
     import { Application, TheWayApplication, Inject, PropertiesHandler, PropertyModel} from '@umberware/the-way';
 
@@ -94,7 +94,7 @@ Represents the language that will be used in the Messages.getMessage. *By defaul
 
 ### 'the-way.core.process-exit'
 
-When the initialization core has an error and this property is true, the node process will be terminated. *By default false*
+When an error occurs at the boot core and this property is true, the node process will be terminated. *By default, false*
 
 ### 'the-way.server'
 
@@ -102,7 +102,7 @@ Represents all the servers configurations in the application.
 
 ### 'the-way.server.enabled'
 
-When these properties are true, we will start an express server using others properties present in this section. *By default true*
+When those properties are true, we will start an express server using others properties present in this section. *By default true*
 
 ### 'the-way.server.operations-log'
 
@@ -110,14 +110,14 @@ When true, every REST call will be logged. *By default true*
 
 ### 'the-way.server.http'
 
-Represents the http properties. These properties will be used to create a http server with express. Has the follow properties:
+Represents the http properties. those properties will be used to create a http server with express. Has the follow properties:
 
  - port: Is the port when the application will run. *By default 9000*
  - enabled: When true will start the Http Server. *By default true*
 
 ### 'the-way.server.https'
 
-Represents the https properties. These properties will be used to create a https server with express. Has the follow properties:
+Represents the https properties. those properties will be used to create a https server with express. Has the follow properties:
 
 - port: Is the port when the application will run. *By default 9001*
 - enabled: When true will start the Https Server. *By default false*
@@ -130,14 +130,14 @@ Is an express middleware to increase the security of the server. *By default tru
 
 ### 'the-way.server.cors'
 
-These properties are used to enable the cors. Has the follow properties:
+those properties are used to enable the cors. Has the follow properties:
 
  - enabled: Enable the Cors in the server. *By default true*
  - origin: Enable cross-origin over the server. *By default true*
 
 ### 'the-way.server.rest'
 
-These properties are used to configure the REST operations of your application. Has the follow properties:
+those properties are used to configure the REST operations of your application. Has the follow properties:
 
  - path: Is the root path of your REST operations. *By default /api*
  - security: Is a block of properties for the JWT authentication.
@@ -153,7 +153,7 @@ These properties are used to configure the REST operations of your application. 
 
 ### 'the-way.server.file'
 
-These properties are used to configure a file server. Has the follow properties:
+those properties are used to configure a file server. Has the follow properties:
 
  - enabled: Will initialize the file server when true. *By default false*
  - path: Is the base path for your files that will be served in the server. *By default ''*
