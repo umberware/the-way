@@ -1,6 +1,6 @@
 {
     "name": "@umberware/the-way",
-    "version": "1.0.0-Beta.0.2",
+    "version": "1.0.0-Beta.0.3",
     "description": "We are a framework to help the development life to be better.",
     "main": "dist/src/main/index.js",
     "types": "dist/src/main/index.d.ts",
@@ -53,10 +53,10 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/nihasoft/the-way.git"
+        "url": "https://github.com/umberware/the-way"
     },
     "bugs": {
-        "url": "https://github.com/nihasoft/the-way/issues"
+        "url": "https://github.com/umberware/the-way/issues"
     },
     "donations": "https://www.paypal.com/donate/?token=Ov4xNE4bAuZWCSF9e0BjGy75laGShREyS7BDFs-oQSwMsGOVEzDZAq9VDVNKmaCewqrBUW&country.x=BR&locale.x=BR",
     "keywords": [
@@ -65,6 +65,7 @@
         "typescript dependency injection",
         "dependency injection",
         "@nihasoft/the-way",
+        "@Umberware",
         "the way",
         "node api",
         "node rest",
