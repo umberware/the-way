@@ -15,7 +15,7 @@ swagger.json
 
 # dependencies
 **/node_modules
-
+.log
 
 # key
 **/key.json
