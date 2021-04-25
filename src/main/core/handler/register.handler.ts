@@ -27,10 +27,10 @@ import { CoreRestService } from '../service/core-rest.service';
     @typescript-eslint/explicit-module-boundary-types
 */
 export class RegisterHandler {
+    protected BLOCKED_CORE_COMPONENTS: Array<Function> = [ PropertiesHandler, FileHandler, InstanceHandler, DependencyHandler ];
     protected COMPONENTS: ConstructorMapModel;
-    protected CONFIGURABLE: Array<Configurable>;
+    protected CONFIGURABLE: Set<Function>;
     protected CORE_COMPONENTS: ConstructorMapModel;
-    protected CORE_CONSTRUCTORS: Array<Function> = [ PropertiesHandler, FileHandler, InstanceHandler, DependencyHandler ]
     protected DEPENDENCIES: DependencyMapModel;
     protected DESTROYABLE: Array<Destroyable>
     protected OVERRIDEN: OverriddenMapModel;
@@ -43,7 +43,7 @@ export class RegisterHandler {
         this.initialize();
     }
 
-    public bindPaths(): true {
+    public bindPaths(): void {
         const coreRestService = CORE.getInstanceByName<CoreRestService>('CoreRestService');
         const isHttpEnabled = this.serverProperties.enabled as boolean;
         const paths = Object.values(this.PATHS);
@@ -71,13 +71,11 @@ export class RegisterHandler {
                 );
             }
         }
-
-        return true;
     }
     public getComponents(): ConstructorMapModel {
         return this.COMPONENTS;
     }
-    public getConfigurables(): Array<Configurable> {
+    public getConfigurables(): Set<Function> {
         return this.CONFIGURABLE;
     }
     public getConstructor(name: string): ConstructorModel {
@@ -97,7 +95,7 @@ export class RegisterHandler {
     public getCoreComponents(): ConstructorMapModel {
         return this.CORE_COMPONENTS;
     }
-    public getDependecies(): DependencyMapModel {
+    public getDependencies(): DependencyMapModel {
         return this.DEPENDENCIES;
     }
     public getDependency(dependent: string, dependency: string): DependencyModel {
@@ -117,7 +115,7 @@ export class RegisterHandler {
         return mapper;
     }
     private initialize(): void {
-        this.CONFIGURABLE = [];
+        this.CONFIGURABLE = new Set<Function>();
         this.COMPONENTS = {};
         this.CORE_COMPONENTS = {};
         this.DEPENDENCIES = {};
@@ -126,8 +124,8 @@ export class RegisterHandler {
         this.PATHS = {};
     }
     protected isCoreConstructor(constructor: Function, overConstructor?: Function, ...exclude: Array<Function>): boolean {
-        return (this.CORE_CONSTRUCTORS.includes(constructor) && exclude && !exclude.includes(constructor)) ||
-            (overConstructor !== undefined && this.CORE_CONSTRUCTORS.includes(overConstructor as Function));
+        return (this.BLOCKED_CORE_COMPONENTS.includes(constructor) && exclude && !exclude.includes(constructor)) ||
+            (overConstructor !== undefined && this.BLOCKED_CORE_COMPONENTS.includes(overConstructor as Function));
     }
     protected registerClass(name: string, constructor: Function, classType: ClassTypeEnum, isCore = false): void {
         const constructorMap = (!isCore) ? this.COMPONENTS : this.CORE_COMPONENTS;
@@ -166,11 +164,14 @@ export class RegisterHandler {
             this.registerClass(constructorName, constructor, type);
         }
     }
-    public registerConfigurable(instance: Configurable): void {
-        this.CONFIGURABLE.push(instance);
+    public registerConfigurable(constructor: Function): void {
+        this.CONFIGURABLE.add(constructor);
     }
     public registerConfiguration(constructor: Function, over?: Function): void {
         this.registerComponent(constructor, ClassTypeEnum.CONFIGURATION, over);
+        if (constructor.prototype instanceof Configurable) {
+            this.registerConfigurable(constructor);
+        }
     }
     public registerCoreComponent(constructor: Function): void {
         const constructorName = constructor.name;
@@ -187,9 +188,9 @@ export class RegisterHandler {
 
         this.registerClass(constructorName, constructor, type, true);
     }
-    protected registerDependency(constructor: Function, target: object, key: string): void {
+    protected registerDependency(dependencyConstructor: Function, target: object, key: string): void {
         const dependentName: string = target.constructor.name;
-        const dependencyName: string = constructor.name;
+        const dependencyName: string = dependencyConstructor.name;
 
         this.logger.debug(
             Messages.getMessage(
@@ -203,7 +204,7 @@ export class RegisterHandler {
         }
 
         (this.DEPENDENCIES[dependentName])[dependencyName] = {
-            constructor: constructor,
+            dependencyConstructor: dependencyConstructor,
             target: target,
             key: key
         } as DependencyModel;
@@ -211,8 +212,8 @@ export class RegisterHandler {
     public registerDestroyable(instance: Destroyable): void {
         this.DESTROYABLE.push(instance);
     }
-    public registerInjection(constructor: Function, target: object, propertyKey: string): void {
-        if (!constructor) {
+    public registerInjection(dependencyConstructor: Function, target: object, propertyKey: string): void {
+        if (!dependencyConstructor) {
             CORE.setError(new ApplicationException(
                 Messages.getMessage('error-not-found-dependency-constructor', [propertyKey, target.constructor.name]),
                 Messages.getMessage('TW-009')
@@ -220,16 +221,16 @@ export class RegisterHandler {
             return;
         }
 
-        this.registerDependency(constructor, target, propertyKey);
-        if (this.isCoreConstructor(constructor) && constructor !== PropertiesHandler) {
+        this.registerDependency(dependencyConstructor, target, propertyKey);
+        if (this.isCoreConstructor(dependencyConstructor) && dependencyConstructor !== PropertiesHandler) {
             CORE.setError(new ApplicationException(
-                Messages.getMessage('error-cannot-inject', [constructor.name]),
+                Messages.getMessage('error-cannot-inject', [dependencyConstructor.name]),
                 Messages.getMessage('TW-015')
             ));
             return;
         } else {
-            if (!this.CORE_COMPONENTS[constructor.name] && !this.COMPONENTS[constructor.name]) {
-                this.registerClass(constructor.name, constructor, ClassTypeEnum.COMMON);
+            if (!this.CORE_COMPONENTS[dependencyConstructor.name] && !this.COMPONENTS[dependencyConstructor.name]) {
+                this.registerClass(dependencyConstructor.name, dependencyConstructor, ClassTypeEnum.COMMON);
             }
         }
     }

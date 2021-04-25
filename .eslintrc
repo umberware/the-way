@@ -22,6 +22,6 @@
       "max-classes-per-file": ["error", 1],
       "max-lines": ["error", 1000],
       "object-curly-spacing": ["error", "always"],
-      "semi": "error"
+      "semi": ["error", "always"]
   }
 }

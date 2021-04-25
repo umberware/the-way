@@ -19,12 +19,14 @@ test('Initialization: Not Automatic With Dependencies', (done) => {
                 const mustBe = {
                     path: scanPath,
                     enabled: true,
-                    full: false
+                    includes: ['.js', '.ts'],
+                    excludes: ['node_modules'],
+                    full: false,
                 };
                 const scanProperties = CORE.getPropertiesHandler().getProperties('the-way.core.scan');
                 const constructors = EnvironmentTest.getConstructorsWithoutCore();
                 console.log(constructors)
-                expect(JSON.stringify(mustBe)).toBe(JSON.stringify(scanProperties));
+                expect(JSON.stringify(scanProperties)).toBe(JSON.stringify(mustBe));
                 expect(Object.keys(constructors).length).toBe(1);
                 expect(Object.keys(constructors).includes('SimpleServiceTest')).toBeTruthy();
                 CORE.destroy();

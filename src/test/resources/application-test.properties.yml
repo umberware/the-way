@@ -3,6 +3,11 @@ the-way:
         scan:
             path: 'src/test/resources/banana'
             enabled: false
+            includes:
+                - .js
+                - .ts
+            excludes:
+                - node_modules
         log:
             level: 0
     server:

@@ -10,7 +10,7 @@ beforeAll(() => {
 test('Injection: Service And Configuration', done => {
     const scanPath = '/src/test/resources/injection/service-and-configuration';
     process.argv.push('--the-way.core.scan.path=' + scanPath);
-    process.argv.push('--the-way.core.processExit=' + true);
+    process.argv.push('--the-way.core.process-exit=' + true);
     process.argv.push('--the-way.core.scan.enabled=true');
 
     import('../../resources/environment/main/main.test').then((result) => {

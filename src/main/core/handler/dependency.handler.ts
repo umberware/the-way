@@ -24,6 +24,16 @@ export class DependencyHandler {
         this.initialize();
     }
 
+    public buildDependenciesTree(): void {
+        const dependentsName = Object.keys(this.registerHandler.getDependencies()).sort();
+        for (const dependentName of dependentsName) {
+            const dependencies = this.registerHandler.getDependencies()[dependentName];
+            this.DEPENDENCIES_TREE[dependentName] = this.buildDependencyTree(dependentName, dependencies);
+        }
+        if (this.logger.getLogLevel() === LogLevelEnum.FULL) {
+            this.printDependenciesTree();
+        }
+    }
     protected buildDependencyTree(dependentName: string, dependencies: { [key: string]: DependencyModel }, found = ''): any {
         const dependentTree: DependencyTreeModel = {};
 
@@ -37,7 +47,7 @@ export class DependencyHandler {
                 );
             }
 
-            const dependencies = this.registerHandler.getDependecies()[dependency];
+            const dependencies = this.registerHandler.getDependencies()[dependency];
 
             if (!dependencies) {
                 dependentTree[dependency] = true;
@@ -47,49 +57,6 @@ export class DependencyHandler {
         }
 
         return dependentTree;
-    }
-    public buildDependenciesTree(): void {
-        const dependentsName = Object.keys(this.registerHandler.getDependecies()).sort();
-        for (const dependentName of dependentsName) {
-            const dependencies = this.registerHandler.getDependecies()[dependentName];
-            this.DEPENDENCIES_TREE[dependentName] = this.buildDependencyTree(dependentName, dependencies);
-        }
-        if (this.logger.getLogLevel() === LogLevelEnum.FULL) {
-            this.printDependenciesTree();
-        }
-    }
-    public buildDependenciesInstances(): void {
-        this.logger.debug(Messages.getMessage('building-dependencies-instances'), '[The Way]');
-        this.buildDependenciesInstancesRec(Object.keys(this.DEPENDENCIES_TREE), this.DEPENDENCIES_TREE, null);
-    }
-    protected buildDependenciesInstancesRec(instanceNames: Array<string>, node: any, parentName: string | null): void {
-        for (const instanceName of instanceNames) {
-            const childNodes = Object.keys(node[instanceName] as any);
-
-            if (childNodes.length > 0) {
-                this.buildDependenciesInstancesRec(childNodes, node[instanceName] as any, instanceName);
-            }
-
-            if (parentName) {
-                const dependency = instanceName;
-                const dependentName = parentName;
-                const dependencyInformation = this.registerHandler.getDependency(parentName, dependency);
-                const instance = this.instanceHandler.buildInstance(dependencyInformation.constructor) as Object;
-                const target = dependencyInformation.target as Function;
-                const dependencyName = (instance.constructor.name !== dependencyInformation.constructor.name) ?
-                    instance.constructor.name + '( as ' + dependencyInformation.constructor.name + ' )' :
-                    dependencyInformation.constructor.name;
-
-                Reflect.set(target, dependencyInformation.key as string, instance);
-                this.logger.debug(
-                    Messages.getMessage(
-                        'injection-injected',
-                        [dependencyName, dependentName, dependencyInformation.key]
-                    ),
-                    '[The Way]'
-                );
-            }
-        }
     }
     public getDependenciesTree(): any {
         return this.DEPENDENCIES_TREE;

@@ -12,7 +12,7 @@ In this version the library was refactored and this is the new beginning.
 
 ### Changed
 
-- **Repository changed:** Now the project is under UmberWare organiazation;
+- **Repository changed:** Now the project is under UmberWare organization;
 - **the-way.server.file.assets & the-way.server.file.static:** Now to use assets and/or static property, you must pass true in the property field "enabled". Ex.: the-way.server.file.static=true.
 Also, when full = false the *file path* will be concated in the static/assets path. If the path haven't slash at the begging will be appended (when full = false)
 - **the-way.server.file.path:** If the path haven't slash at the begging will be appended (when full = false)

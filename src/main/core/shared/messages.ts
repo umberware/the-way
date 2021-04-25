@@ -10,9 +10,7 @@ export const MESSAGES: { [key: string]: { [key: string]: string | number; } } = 
         'building-instances': 'Building: Instances...',
 
         'configuring-application-class': 'Configuring: Application instance...',
-        'configuring-done': 'Configuring: Done',
         'configuring-instance': 'Configuring: $',
-        'configuring-started': 'Configuring: Started',
 
         'destruction-instance': 'Desctruction: Destroying $',
         'destruction-destroyed': 'Desctruction: I\'m inevitable! Was destroyed every thing. CYA!',

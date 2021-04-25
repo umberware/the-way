@@ -6,6 +6,6 @@ export class InternalException extends RestException {
         public detail: string, public code = 500,
         public description = Messages.getMessage('http-internal-server-error')
     ) {
-        super(detail, code, description);
+        super(code, detail, description);
     }
 }

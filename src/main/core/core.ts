@@ -1,8 +1,10 @@
+import { fromPromise } from 'rxjs/internal-compatibility';
+
 'use  strict';
 
 import 'reflect-metadata';
 
-import { BehaviorSubject, forkJoin, Observable, of, Subscriber } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 
 import { CoreStateEnum } from './shared/core-state.enum';
@@ -72,7 +74,7 @@ export class CORE {
     }
     public static createCore(application: Function | Object): void {
         if (!this.INSTANCE$.getValue()) {
-            this.INSTANCE$.next(new CORE());
+            this.INSTANCE$.next(new CORE(application));
             this.APPLICATION = application;
             CORE.STATE$.next(CoreStateEnum.BEFORE_INITIALIZATION_STARTED);
             this.watchState().subscribe(
@@ -145,8 +147,8 @@ export class CORE {
     public static registerCoreComponent(componenteConstructor: Function): void {
         this.register('registerCoreComponent', [componenteConstructor]);
     }
-    public static registerInjection(source: Function, injector: object, key: string): void {
-        this.register('registerInjection', [source, injector, key]);
+    public static registerInjection(dependencyConstructor: Function, source: object, key: string): void {
+        this.register('registerInjection', [dependencyConstructor, source, key]);
     }
     public static registerRest(
         restConstructor: Function, path?: string, isAthenticated?: boolean,
@@ -203,7 +205,6 @@ export class CORE {
         return this.STATE$;
     }
 
-    protected application: Object;
     protected coreProperties: PropertyModel;
     protected dependencyHandler: DependencyHandler;
     protected fileHandler: FileHandler;
@@ -211,6 +212,8 @@ export class CORE {
     protected logger: Logger;
     protected propertiesHandler: PropertiesHandler;
     protected registerHandler: RegisterHandler;
+
+    constructor(protected application: Function | Object) {}
 
     protected afterInitialization(): void {
         this.logInfo(Messages.getMessage('step-after-initialization', [this.calculateElapsedTime()]));
@@ -243,34 +246,27 @@ export class CORE {
             CORE.setError(error);
         }
     }
-    protected bindPaths(): Observable<boolean> {
-        return new Observable<boolean>(
-            (observer: Subscriber<boolean>) => {
-                this.registerHandler.bindPaths();
-                observer.next(true);
-                observer.complete();
-            }
+    protected bindRestPaths(): void {
+        this.registerHandler.bindPaths();
+    }
+    protected build(constructor: Function | Object): Observable<boolean> {
+        this.logDebug(Messages.getMessage('building'));
+        return this.buildDependenciesTree().pipe(
+            switchMap(() => {
+                return this.instanceHandler.buildInstances(constructor, this.dependencyHandler.getDependenciesTree());
+            })
         );
     }
-    protected build(): Observable<boolean> {
-        return new Observable<boolean>(
-            (observer) => {
-                this.logDebug(Messages.getMessage('building'));
-                this.buildDependenciesTree();
-                this.buildInstances();
-                observer.next(true);
-                this.logDebug(Messages.getMessage('building-done'));
-                observer.complete();
-            }
-        );
+    protected buildApplication(constructor: Function | Object): void {
+        this.logInfo(Messages.getMessage('configuring-application-class'));
+        if ((typeof constructor) === 'object') {
+            this.instanceHandler.registerInstance(constructor);
+        } else {
+            this.instanceHandler.buildApplication(constructor as Function);
+        }
     }
-    protected buildDependenciesTree(): void {
-        this.dependencyHandler.buildDependenciesTree();
-    }
-    protected buildInstances(): void {
-        this.dependencyHandler.buildDependenciesInstances();
-        this.instanceHandler.buildCoreInstances();
-        this.instanceHandler.buildInstances();
+    protected buildDependenciesTree(): Observable<void>  {
+        return fromPromise(new Promise((resolve => resolve(this.dependencyHandler.buildDependenciesTree()))));
     }
     protected calculateElapsedTime(): string {
         return ((CORE.END_TIME.getTime() - CORE.INIT_TIME.getTime())/1000) + 's';
@@ -281,35 +277,6 @@ export class CORE {
         const languageProperty = this.coreProperties.language as string;
         Messages.setLanguage(languageProperty);
         this.logger.setProperties(logProperties);
-    }
-    protected configure(constructor: Object | Function): Observable<boolean> {
-        return new Observable((observer) => {
-            this.logDebug(Messages.getMessage('configuring-started'));
-            this.instanceHandler.configure().subscribe(
-                (next) => observer.next(next),
-                (error => observer.error(error)),
-                () => {
-                    this.logDebug(Messages.getMessage('configuring-done'));
-                    observer.complete();
-                }
-            );
-        }).pipe(
-            switchMap(() => this.configureApplication(constructor))
-        );
-    }
-    protected configureApplication(constructor: Function | Object): Observable<boolean> {
-        return new Observable<boolean>(
-            (observer) => {
-                this.logInfo(Messages.getMessage('configuring-application-class'));
-                if ((typeof constructor) === 'object') {
-                    this.instanceHandler.registerInstance(constructor);
-                } else {
-                    this.instanceHandler.buildApplication(constructor as Function);
-                }
-                observer.next(true);
-                observer.complete();
-            }
-        );
     }
     protected destroy(error?: Error): void {
         let code = 0;
@@ -342,7 +309,7 @@ export class CORE {
     protected destroyed(code: number): void {
         CORE.STATE$.next(CoreStateEnum.DESTRUCTION_DONE);
 
-        if (this.coreProperties && this.coreProperties['processExit'] as boolean) {
+        if (this.coreProperties && this.coreProperties['process-exit'] as boolean) {
             process.exit(code);
         }
     }
@@ -367,19 +334,18 @@ export class CORE {
     }
     protected initialize(constructor: Function | Object): void {
         this.logInfo(Messages.getMessage('step-initialization-started'));
-        forkJoin([
-            this.build(),
-            this.configure(constructor),
-            this.bindPaths()
-        ]).subscribe(
-            /* eslint-disable-next-line @typescript-eslint/no-empty-function */
-            () => {},
-            (error: Error) => {
-                CORE.setError(error);
-            },
+        this.build(constructor).pipe(
+            map(() => {
+                this.buildApplication(constructor),
+                this.bindRestPaths();
+            })
+        ).subscribe(
             () => {
                 this.logInfo(Messages.getMessage('step-initialization-done'));
                 CORE.STATE$.next(CoreStateEnum.INITIALIZATION_DONE);
+            },
+            (error: Error) => {
+                CORE.setError(error);
             }
         );
     }

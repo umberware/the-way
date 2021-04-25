@@ -114,10 +114,10 @@ export class PropertiesHandler {
     }
     protected sumProperties(properties: PropertyModel, defaultProperties: PropertyModel, keys: Array<string>): void {
         for(const defaultPropertyKey in defaultProperties) {
-            let property: string | number | boolean | PropertyModel = properties;
+            let property: PropertyModel = properties;
             if (keys.length > 0) {
                 for (const key of keys) {
-                    property = (property as PropertyModel)[key];
+                    property = (property as PropertyModel)[key] as PropertyModel;
                 }
             }
             if ((property as PropertyModel)[defaultPropertyKey] === undefined) {

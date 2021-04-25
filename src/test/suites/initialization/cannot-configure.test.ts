@@ -14,7 +14,7 @@ test('Initialization: Cannot Configure', (done) => {
             const message = 'Luke, I\'m your father!!!';
             CORE.watchState().subscribe(
                 (core: CoreStateEnum) => {
-                    if (core === CoreStateEnum.BEFORE_INITIALIZATION_STARTED) {
+                    if (core === CoreStateEnum.BEFORE_INITIALIZATION_DONE) {
                         EnvironmentTest.buildCoreConfigueSpy(message);
                     }
                 }
