@@ -2,9 +2,20 @@
 
 The Typescript is basically a Javascript with types and closest to the ECMAscript implementations.
 
+### Summary
+
+ - [NodeJs Installation](#nodejs-installation)
+ - [Initializing Your Project With NPM](#initializing-your-project)
+ - [Installing & Initializing the Typescript](#installing-the-typescript)
+ - [Adjustments For TheWay And ECMA](#adjustments-in-tsconfigjson)
+ - [Testing The Main](#creating-a-main-for-test-and-run)
+ - [Installing TheWay and RUN!](#installing-and-using-the-way-framework)
+ - [Extra: TSNode - Running The Typescript Source Code](#extra-typescript-in-development-stage)
+ - [Extra: Watching File Change And Recompile](#extra-watch-code-changes-and-automatic-run)
+
 ### NodeJS Installation
 
-First of all you need to install the [NodeJS](https://nodejs.org/en/). When the NodeJs is installed you can mode to the next state.
+First you need to install the [NodeJS](https://nodejs.org/en/). When the NodeJs is installed you can move to the next state.
 
 ### Initializing Your Project
 
@@ -38,7 +49,18 @@ To use the TheWay framework we need to add the follow lines in "compilerOptions"
             "outDir": "dist/src/main",
             "experimentalDecorators": true,
             "emitDecoratorMetadata": true,
-            "strict": false,
+            "strict": true,
+            "strictPropertyInitialization": false
+        ...
+        }
+    }
+
+Also, in the tsconfig.json we must change the "target" inside of "compilerOptions" to "ES2017"
+
+    {
+        "compilerOptions": {
+        ...
+            "target": "ES2017"
         ...
         }
     }
