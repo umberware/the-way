@@ -4,20 +4,20 @@ The Typescript is basically a Javascript with types and closest to the ECMAscrip
 
 ### Summary
 
- - [NodeJs Installation](#nodejs-installation)
- - [Initializing Your Project With NPM](#initializing-your-project)
- - [Installing & Initializing the Typescript](#installing-the-typescript)
- - [Adjustments For TheWay And ECMA](#adjustments-in-tsconfigjson)
- - [Testing The Main](#creating-a-main-for-test-and-run)
- - [Installing TheWay and RUN!](#installing-and-using-the-way-framework)
+ - [Before The Way](#before-the-way)
+ - [Initializing Project: NPM](#initializing-project-npm)
+ - [Initializing Project: Typescript](#initializing-project-typescript)
+ - [TsConfig: Adjustments](#tsconfig-adjustments)
+ - [Main: A First Typescript Class](#main-a-first-typescript-class)
+ - [Initializing Project: The Way](#initializing-project-the-way)
  - [Extra: TSNode - Running The Typescript Source Code](#extra-typescript-in-development-stage)
- - [Extra: Watching File Change And Recompile](#extra-watch-code-changes-and-automatic-run)
+ - [Extra: Watching File Chcange And Recompile](#extra-watch-code-changes-and-automatic-run)
 
-### NodeJS Installation
+### Before The Way
 
 First you need to install the [NodeJS](https://nodejs.org/en/). When the NodeJs is installed you can move to the next state.
 
-### Initializing Your Project
+### Initializing Project: NPM
 
 Create a folder that will be your project or clone a git repository and move to this directory.
 Execute the command:
@@ -27,7 +27,7 @@ Execute the command:
 With this command a wizard setup will initialize asking things for your project.
 When you complete the wizard you can move to the next stage.
 
-### Installing the Typescript
+### Initializing Project: Typescript
 
 Now we will install the typescript and initialize your project. Execute the follow commands:
 
@@ -39,7 +39,7 @@ Now we will install the typescript and initialize your project. Execute the foll
 
     tsc --init
 
-### Adjustments in tsconfig.json
+### TSConfig: Adjustments
 
 To use the TheWay framework we need to add the follow lines in "compilerOptions" in the tsconfig.json
 
@@ -68,7 +68,7 @@ Also, in the tsconfig.json we must change the "target" inside of "compilerOption
 *The property "outDir" is the directory that the typescript build will put the final source code.*
 *You cam remove all the commented code in this file*
 
-### Creating a Main for Test and Run
+### Main: A First Typescript Class
 
 Now let's code a bit. Create the directory path: `src/main`, and inside of thes directory, create a file named with: `main.ts`.
 In the created file put the below code:
@@ -96,7 +96,7 @@ Now with file and directory created, you can execute this code but first you nee
 With the code above when you run the builded program, an instance of type Main will be created and consoled the information 'Hello World'.
 
 
-### Installing and Using The Way Framework
+### Initializing Project: The Way
 
 Now with every thing configured and created, you can improve the code with the framework TheWay.
 To install the way you need to run the command: `npm install @umberware/the-way`
