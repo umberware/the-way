@@ -1,17 +1,16 @@
 ## NodeJs With Typescript
 
-The Typescript is basically a Javascript with types and closest to the ECMAscript implementations.
+The Typescript is basically a Javascript with types and closest to the ECMAScript implementations.
 
 ### Summary
 
  - [Before The Way](#before-the-way)
  - [Initializing Project: NPM](#initializing-project-npm)
  - [Initializing Project: Typescript](#initializing-project-typescript)
- - [TsConfig: Adjustments](#tsconfig-adjustments)
  - [Main: A First Typescript Class](#main-a-first-typescript-class)
  - [Initializing Project: The Way](#initializing-project-the-way)
  - [Extra: TSNode - Running The Typescript Source Code](#extra-typescript-in-development-stage)
- - [Extra: Watching File Chcange And Recompile](#extra-watch-code-changes-and-automatic-run)
+ - [Extra: Watching File Change And Recompile](#extra-watch-code-changes-and-automatic-run)
 
 ### Before The Way
 
@@ -25,7 +24,7 @@ Execute the command:
     npm init
 
 With this command a wizard setup will initialize asking things for your project.
-When you complete the wizard you can move to the next stage.
+When the Wizard Setup is done, you can move to the next stage.
 
 ### Initializing Project: Typescript
 
@@ -35,45 +34,31 @@ Now we will install the typescript and initialize your project. Execute the foll
 
     npm i typescript --save-dev
 
-*Initializing the project with Typescript*
-
-    tsc --init
-
-### TSConfig: Adjustments
-
-To use the TheWay framework we need to add the follow lines in "compilerOptions" in the tsconfig.json
+*Create a file named **tsconfig.json** with the follow content*
 
     {
         "compilerOptions": {
-        ...
+            "module": "commonjs",
+            "esModuleInterop": true,
+            "target": "ES2017",
+            "moduleResolution": "node",
+            "sourceMap": true,
             "outDir": "dist/src/main",
             "experimentalDecorators": true,
             "emitDecoratorMetadata": true,
             "strict": true,
             "strictPropertyInitialization": false
-        ...
-        }
-    }
-
-Also, in the tsconfig.json we must change the "target" inside of "compilerOptions" to "ES2017"
-
-    {
-        "compilerOptions": {
-        ...
-            "target": "ES2017"
-        ...
         }
     }
 
 *The property "outDir" is the directory that the typescript build will put the final source code.*
-*You cam remove all the commented code in this file*
 
 ### Main: A First Typescript Class
 
-Now let's code a bit. Create the directory path: `src/main`, and inside of thes directory, create a file named with: `main.ts`.
+Now let's code a bit. Create the directory path: `src/main`, and inside this directory, create a file named with: `main.ts`.
 In the created file put the below code:
 
-*src/main/main.ts*
+*Main: src/main/main.ts*
 
     export class Main {
         constructor() {
@@ -82,25 +67,40 @@ In the created file put the below code:
     }
     new Main();
 
-Now with file and directory created, you can execute this code but first you need to build. To build and execute, you need to run the fellow commands:
+Now with a file and directory created, you can execute this code but first you need to build. To build and execute, you need to run the fellow commands:
 
-*Building your TS code*
+Create a package.json script to execute the BUILD task:
 
-    tsc
+*Script: package.json*
 
-*Running the builded code*
+    {
+        ...
+        "scripts": {
+            "build": "tsc"
+        }
+        ...
+    }
 
-    tnode dist/src/main/main.js
+*Script: build run*
+
+    npm run build
+
+After the build goal, let's run the final code:
+
+    node dist/src/main/main.js
 
 
-With the code above when you run the builded program, an instance of type Main will be created and consoled the information 'Hello World'.
-
+With the code above, when you run the built program an instance of type Main will be created and consoled the information 'Hello World'.
 
 ### Initializing Project: The Way
 
 Now with every thing configured and created, you can improve the code with the framework TheWay.
-To install the way you need to run the command: `npm install @umberware/the-way`
-After the command execution we need to adjust the main.ts that has been created with the follow code:
+
+*Installing TheWay*
+
+    npm install @umberware/the-way
+
+*Main: Adjustments for The Way*
 
     import { Application, TheWayApplication } from '@umberware/the-way';
 
@@ -111,13 +111,13 @@ After the command execution we need to adjust the main.ts that has been created 
         }
     }
 
-**To use the framework, your MAIN class need to be decorated with @Application and must extends the class TheWayApplication.**
+**To use the framework, your MAIN class need to be decorated with @Application and must extend the class TheWayApplication.**
 
 After the adjustment let's run the code baby!!!
 
-*Building*
+*Script: build run*
 
-    tsc
+    npm run build
 
 *Running*
 
@@ -128,16 +128,30 @@ Now you are ready to explore all the features in TheWay Framework!
 
 ### Extra: Typescript In Development Stage
 
-In the examples above, every change in the code to be executed must be builded and in development stage this behavior can be exhaustive.
-With the library `ts-node` we can execute the typescript source code without the build.
+In the examples above, every change in the code must be built and in development stage this behavior can be exhaustive.
+With the library [ts-node](https://www.npmjs.com/package/ts-node) we can execute the typescript source code without the build.
 
-*Installing TS-NODE*
+Installing the Ts-Node
 
     npm install ts-node --save-dev
 
-*Running Typescript Code*
 
-    ts-node src/main/main.ts
+Create a script in package.json to execute the ts-node command:
+
+*Script: package.json*
+
+    {
+        ...
+        "scripts": {
+            "build": "tsc",
+            "serve": "ts-node src/main/main.ts"
+        }
+        ...
+    }
+
+*Script: server run*
+
+    npm run serve
 
 ### Extra: Watch Code Changes And Automatic RUN
 
