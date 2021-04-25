@@ -2,20 +2,23 @@
     "name": "@umberware/the-way",
     "version": "1.0.0-Beta.0.3",
     "description": "We are a framework to help the development life to be better.",
-    "main": "dist/src/main/index.js",
-    "types": "dist/src/main/index.d.ts",
+    "main": "src/main/index.js",
+    "types": "src/main/index.d.ts",
     "site": "http://the-way.umberware.com",
     "homepage": "http://the-way.umberware.com",
     "private": false,
     "scripts": {
+        "build": "tsc && yarn copy-properties-file && yarn copy-package && yarn copy-npm-ignore",
+        "copy-npm-ignore": "copyfiles .npmignore ./dist",
+        "copy-package": "copyfiles package.json ./dist",
+        "copy-properties-file": "copyfiles src/main/resources/application.properties.yml ./dist ",
+        "lint": "eslint . --ext .ts",
+        "publish-prod": "yarn build && npm publish dist/ --registry https://registry.npmjs.org/ --access public",
+        "publish-beta": "yarn build && npm publish dist/ --tag beta --registry https://registry.npmjs.org/ --access public",
         "test": "yarn build && jest --silent --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
         "test-watch": "jest --silent --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage --watchAll",
         "test-no-silent": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
-        "test-with-log": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose > test.log 2>&1",
-        "lint": "eslint . --ext .ts",
-        "build": "tsc && copyfiles src/main/resources/application.properties.yml ./dist",
-        "publish-prod": "yarn build && npm publish --registry https://registry.npmjs.org/ --access public",
-        "publish-beta": "yarn build && npm publish --tag beta --registry https://registry.npmjs.org/ --access public"
+        "test-with-log": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose > test.log 2>&1"
     },
     "dependencies": {
         "body-parser": "^1.19.0",
@@ -27,8 +30,10 @@
         "reflect-metadata": "^0.1.13",
         "swagger-ui-express": "^4.1.6",
         "yaml": "^1.10.2",
-        "@types/node": "^14.14.10",
         "rxjs": "^6.6.7"
+    },
+    "peerDependencies": {
+        "@types/node": "^14.14.10"
     },
     "devDependencies": {
         "@types/body-parser": "^1.19.0",
