@@ -30,9 +30,11 @@ When the Wizard Setup is done, you can move to the next stage.
 
 Now we will install the typescript and initialize your project. Execute the follow commands:
 
-*Installing the typescript*
+*Installing the typescript and Node Types*
 
-    npm i typescript --save-dev
+    npm i typescript --save-dev @types/node
+
+**Note: @types/node is necessary to work with NodeJs components like Http, Https and others**
 
 *Create a file named **tsconfig.json** with the follow content*
 

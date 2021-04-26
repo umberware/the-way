@@ -35,6 +35,8 @@ Installing the TheWay:
 
     npm install @umberware/the-way
 
+**Remember to install @types/node as dev dependencies when you are using the typescript with Node**
+
 ## Features
 
 With this framework you can elevate the life cycle of the development in Node.js with a lot of features, and the principles are:
