@@ -61,7 +61,8 @@ export class ServerConfiguration extends Configurable {
         this.serverProperties = this.propertiesHandler.getProperties('the-way.server') as PropertyModel;
         this.httpProperties = this.serverProperties.http as PropertyModel;
         this.httpsProperties = this.serverProperties.https as PropertyModel;
-        if (!this.serverProperties.enabled) {
+
+        if (this.serverProperties.enabled !== true) {
             return;
         } else {
             return this.start();
