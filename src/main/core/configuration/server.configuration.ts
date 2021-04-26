@@ -6,7 +6,6 @@ import * as SwaggerUi from 'swagger-ui-express';
 import { Observable, Subscriber, zip } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
-import { Express } from 'express';
 import express = require('express');
 import morgan = require('morgan');
 import helmet = require('helmet');
@@ -40,7 +39,7 @@ export class ServerConfiguration extends Configurable {
     protected httpsProperties: PropertyModel;
     public httpsServer: Https.Server;
     protected serverProperties: PropertyModel;
-    protected serverContext: Express;
+    protected serverContext: any;
 
     protected buildCredentialsOptions(httpsProperties: PropertyModel): { key: string; cert: string } {
         const privateKey = readFileSync(httpsProperties['key-path'] as string, 'utf8');

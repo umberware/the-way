@@ -1,5 +1,3 @@
-import { Request, Response } from 'express';
-
 import { Observable, of } from 'rxjs';
 import { defaultIfEmpty, switchMap } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
@@ -61,7 +59,7 @@ export class CoreRestService {
         );
     }
     protected execute(
-        httpType: HttpType, target: any, propertyKey: string,  req: Request, res: Response,
+        httpType: HttpType, target: any, propertyKey: string,  req: any, res: any,
         fatherPath: PathMapModel, authenticated?: boolean, allowedProfiles?: Array<any>
     ): void {
         try {
@@ -90,8 +88,8 @@ export class CoreRestService {
         }
     }
     protected executeMethod(
-        httpType: HttpType, target: any, propertyKey: string, req: Request,
-        res: Response, tokenClaims?: TokenClaims
+        httpType: HttpType, target: any, propertyKey: string, req: any,
+        res: any, tokenClaims?: TokenClaims
     ): Observable<unknown> {
         const method = target[propertyKey];
         const functionArgumentsLength = method.length;
