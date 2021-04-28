@@ -75,7 +75,7 @@ export class FileHandler {
         );
     }
     protected async importFile(fullPath: string): Promise<void> {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const regex = new RegExp(this.buildRegex(this.getClassTypes()), 'g');
             const stream = createReadStream(fullPath, { encoding: 'utf-8' });
             stream.on('data', (data) => {
@@ -84,7 +84,7 @@ export class FileHandler {
                     this.logger.debug(Messages.getMessage('register-found-resource', [fullPath]), '[The Way]');
                     import(fullPath).then(() => {
                         resolve();
-                    });
+                    }).catch((ex) => reject(ex));
                     stream.close();
                 }
             });
