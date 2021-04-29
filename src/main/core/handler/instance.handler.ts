@@ -19,7 +19,6 @@ import { Configurable } from '../shared/configurable';
  */
 export class InstanceHandler {
     protected INSTANCES: InstancesMapModel;
-    protected CONFIGURED_INSTANCES = new Set<Function>();
 
     constructor(
         protected logger: Logger,
@@ -64,8 +63,8 @@ export class InstanceHandler {
         const configurable: Array<Configurable> = [];
         components.forEach(
             (registeredConstructor: ConstructorModel) => {
-                const instance = this.buildInstance(registeredConstructor.constructorFunction);
-                if ((instance instanceof Configurable) && !this.CONFIGURED_INSTANCES.has((instance as Configurable).constructor)) {
+                const [instance, wasCreatedBefore] = this.buildInstance(registeredConstructor.constructorFunction);
+                if ((instance instanceof Configurable) && !wasCreatedBefore) {
                     configurable.push(instance);
                 }
             }
@@ -77,18 +76,21 @@ export class InstanceHandler {
         dependencyTree: DependencyTreeModel
     ): Observable<boolean> {
         return new Observable<boolean>((observer) => {
-            const dependencies = Object.keys(dependencyTree);
-            const handler = new BehaviorSubject<Array<string>>(dependencies);
-            const handledDepencencies = new Set<string>();
-
+            const componentsOrdered = this.getBuildDependenciesOrder(dependencyTree);
+            const handler = new BehaviorSubject<Array<string>>(componentsOrdered);
             handler.subscribe(
-                (dependencies: Array<string>) => {
-                    if (dependencies.length === 0) {
+                (components: Array<string>) => {
+                    if (components.length === 0) {
                         handler.complete();
                     } else {
-                        this.buildDependencyInstance(
-                            dependencies.shift() as string, dependencyTree, dependencies,
-                            handler, handledDepencencies
+                        const component = components.shift() as string;
+                        const dependenciesTree = dependencyTree[component];
+                        const dependencies = (dependenciesTree) ? Object.keys(dependenciesTree) : [];
+                        this.buildDependencyInstance(component, dependencies).subscribe(
+                            () => {
+                                handler.next(components);
+                            },
+                            (error) => handler.error(error)
                         );
                     }
                 }, (error => {
@@ -102,28 +104,17 @@ export class InstanceHandler {
         });
     }
     protected buildDependencyInstance(
-        dependency: string, dependencyTree: DependencyTreeModel, dependencies: Array<string>,
-        handler: BehaviorSubject<Array<string>>, handledDepencencies: Set<string>
-    ): void {
-        const subTree = dependencyTree[dependency];
-        const subDependencies = (subTree) ? Object.keys(subTree) : [];
-
-        if (!handledDepencencies.has(dependency) && subDependencies.length > 0) {
-            dependencies.unshift(...subDependencies);
-            handledDepencencies.add(dependency);
-            dependencies.push(dependency);
-            handler.next(dependencies);
+        component: string, dependencies: Array<string>
+    ): Observable<boolean> {
+        this.bindDependentWithDepedencies(component, dependencies);
+        const constructor = this.registerHandler.getConstructor(component)?.constructorFunction;
+        if (constructor) {
+            return this.buildInstanceAndConfigure(constructor);
         } else {
-            this.bindDependentWithDepedencies(dependency, subDependencies);
-            const constructor = this.registerHandler.getConstructor(dependency)?.constructorFunction;
-            if (constructor) {
-                this.buildInstanceAndConfigure(constructor).subscribe(
-                    () => handler.next(dependencies),
-                    (error) => handler.error(error)
-                );
-            } else {
-                handler.next(dependencies);
-            }
+            /*
+            * When the component is the MAIN class
+            * */
+            return of(true);
         }
     }
     protected buildObject<T>(constructor: Function): T {
@@ -140,7 +131,7 @@ export class InstanceHandler {
             return of(undefined);
         }
     }
-    public buildInstance<T>(constructor: Function): T {
+    public buildInstance<T>(constructor: Function): [T, boolean] {
         const registeredConstructor = this.registerHandler.getConstructor(constructor.name);
         const registeredConstructorName = registeredConstructor.name;
         if (!this.INSTANCES[registeredConstructorName]) {
@@ -151,19 +142,15 @@ export class InstanceHandler {
             const instance = this.buildObject(registeredConstructor.constructorFunction);
             this.registerInstance(instance);
             this.handleInstance(instance);
-            return instance as T;
+            return [instance as T, false];
         } else {
-            return this.INSTANCES[registeredConstructorName] as T;
+            return [this.INSTANCES[registeredConstructorName] as T, true];
         }
     }
     public buildInstanceAndConfigure(constructor: Function): Observable<any> {
-        const instance = this.buildInstance(constructor);
-        if (this.registerHandler.getConfigurables().has(constructor) && !this.CONFIGURED_INSTANCES.has(constructor)) {
-            return this.configureInstance(instance as Configurable).pipe(
-                map(() => {
-                    this.CONFIGURED_INSTANCES.add(constructor);
-                })
-            );
+        const [instance, wasCreatedBefore] = this.buildInstance(constructor);
+        if (this.registerHandler.getConfigurables().has(constructor) && !wasCreatedBefore) {
+            return this.configureInstance(instance as Configurable);
         } else {
             return of(true);
         }
@@ -174,11 +161,11 @@ export class InstanceHandler {
             switchMap(() => {
                 const configurableInstances = this.buildCoreComponents();
                 configurableInstances.push(...this.buildApplicationComponents());
-                return this.configureInstances(configurableInstances);
+                return this.configureInstances(new Set<Configurable>(configurableInstances));
             })
         );
     }
-    protected caller(methodName: string, instances: Array<any>, messageKey: string): Observable<boolean> {
+    protected caller(methodName: string, instances: Set<any>, messageKey: string): Observable<boolean> {
         const results: Array<Observable<any>> = [];
 
         for (const instance of instances) {
@@ -191,9 +178,9 @@ export class InstanceHandler {
             } catch (ex) {
                 observable = of(ex);
             }
-
             results.push(observable);
         }
+
         return forkJoin(results).pipe(
             map((values: Array<any>) => {
                 const errors = values.filter((value => {
@@ -207,22 +194,57 @@ export class InstanceHandler {
                 } else {
                     return true;
                 }
-            }),
-            defaultIfEmpty(true)
+            })
         );
     }
     protected configureInstance(instance: Configurable): Observable<any> {
         try {
+            this.logger.debug(
+                Messages.getMessage('configuring-instance', [ instance.constructor.name ]),
+                '[The Way]'
+            );
             return this.buildObservableFromResult((instance).configure());
         } catch (ex) {
             return throwError(ex);
         }
     }
-    protected configureInstances(instances: Array<Configurable>): Observable<boolean> {
-        return this.caller('configure', instances, 'configuring-instance');
+    protected configureInstances(instances: Set<Configurable>): Observable<boolean> {
+        if (instances.size > 0) {
+            return this.caller('configure', instances, 'configuring-instance');
+        } else {
+            return of(true);
+        }
     }
     public destroy(): Observable<boolean> {
-        return this.caller('destroy', this.registerHandler.getDestroyable(), 'destruction-instance');
+        const destroyable = this.registerHandler.getDestroyable();
+        if (destroyable.size > 0) {
+            return this.caller('destroy', destroyable, 'destruction-instance');
+        } else {
+            return of(true);
+        }
+    }
+    protected getBuildDependenciesOrder(dependencyTree: DependencyTreeModel): Array<string> {
+        let dependencies = Object.keys(dependencyTree);
+        const resolvingDependencies = new Set<string>();
+        const processed = new Set<string>();
+
+        for (let i = 0; i < dependencies.length; i++) {
+            const dependency = dependencies[i];
+            const subDependenciesTree = dependencyTree[dependency];
+            const subDependencies = (subDependenciesTree && !resolvingDependencies.has(dependency)) ? Object.keys(subDependenciesTree) : [];
+
+            if (subDependencies.length > 0) {
+                dependencies = [...dependencies.slice(0, i), ...subDependencies, ...dependencies.slice(i, dependencies.length)];
+                resolvingDependencies.add(dependency);
+                i--;
+            } else if (processed.has(dependency)) {
+                dependencies.splice(i, 1);
+                i--;
+            } else {
+                processed.add(dependency);
+            }
+        }
+        return dependencies;
     }
     public getInstanceByName<T>(name: string): T {
         const registeredConstructor = this.registerHandler.getConstructor(name);

@@ -32,7 +32,7 @@ export class RegisterHandler {
     protected CONFIGURABLE: Set<Function>;
     protected CORE_COMPONENTS: ConstructorMapModel;
     protected DEPENDENCIES: DependencyMapModel;
-    protected DESTROYABLE: Array<Destroyable>
+    protected DESTROYABLE: Set<Destroyable>
     protected OVERRIDEN: OverriddenMapModel;
     protected PATHS: {[key: string] : PathMapModel};
 
@@ -101,7 +101,7 @@ export class RegisterHandler {
     public getDependency(dependent: string, dependency: string): DependencyModel {
         return this.DEPENDENCIES[dependent][dependency];
     }
-    public getDestroyable(): Array<Destroyable> {
+    public getDestroyable(): Set<Destroyable> {
         return this.DESTROYABLE;
     }
     public getOverriden(): OverriddenMapModel {
@@ -119,7 +119,7 @@ export class RegisterHandler {
         this.COMPONENTS = {};
         this.CORE_COMPONENTS = {};
         this.DEPENDENCIES = {};
-        this.DESTROYABLE = [];
+        this.DESTROYABLE = new Set<Destroyable>();
         this.OVERRIDEN = {};
         this.PATHS = {};
     }
@@ -210,7 +210,7 @@ export class RegisterHandler {
         } as DependencyModel;
     }
     public registerDestroyable(instance: Destroyable): void {
-        this.DESTROYABLE.push(instance);
+        this.DESTROYABLE.add(instance);
     }
     public registerInjection(dependencyConstructor: Function, target: object, propertyKey: string): void {
         if (!dependencyConstructor) {

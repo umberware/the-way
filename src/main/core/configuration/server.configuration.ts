@@ -105,7 +105,7 @@ export class ServerConfiguration extends Configurable {
     ): void {
         const messageKey = (server instanceof Http.Server) ? 'http-server-running' : 'https-server-running';
         server.listen(properties.port, () => {
-            this.logger.info(Messages.getMessage(messageKey, [properties.port as string]));
+            this.logger.info(Messages.getMessage(messageKey, [properties.port as string]),'[The Way]');
             observer.next();
         });
         server.on('error', (error: any) => {
@@ -233,14 +233,14 @@ export class ServerConfiguration extends Configurable {
         const restProperties = this.serverProperties.rest as any;
         const finalPath = restProperties.path + path;
 
-        this.logger.debug('Registered - ' + httpType.toUpperCase() + ' ' + finalPath);
+        this.logger.debug('Registered - ' + httpType.toUpperCase() + ' ' + finalPath, '[The Way]');
         this.serverContext[httpType](finalPath, executor);
     }
     public registerMiddleware(middlewareFunction: any): void {
         this.serverContext.use(middlewareFunction);
     }
     protected start(): Observable<void> {
-        this.logger.info(Messages.getMessage('http-server-initialization'));
+        this.logger.info(Messages.getMessage('http-server-initialization'), '[The Way]');
 
         if (!this.httpProperties.enabled && !this.httpsProperties.enabled) {
             throw new ApplicationException(
