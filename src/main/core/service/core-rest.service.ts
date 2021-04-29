@@ -1,4 +1,4 @@
-import { Observable, of } from 'rxjs';
+import { isObservable, Observable, of } from 'rxjs';
 import { defaultIfEmpty, switchMap } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
 
@@ -45,10 +45,10 @@ export class CoreRestService {
     }
     protected buildObservableFromResponse(result: any): Observable<any> {
         let executionResultObservable;
-        if (result instanceof Promise) {
-            executionResultObservable = fromPromise(result);
-        } else if (result instanceof Observable) {
+        if (isObservable(result)) {
             executionResultObservable = result;
+        } else if (result instanceof Promise) {
+            executionResultObservable = fromPromise(result);
         } else if (result) {
             executionResultObservable = of(result);
         } else {

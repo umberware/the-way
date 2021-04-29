@@ -1,5 +1,5 @@
-import { BehaviorSubject, forkJoin, Observable, of, throwError } from 'rxjs';
-import { defaultIfEmpty, map, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, forkJoin, isObservable, Observable, of, throwError } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
 
 import { Logger } from '../shared/logger';
@@ -121,10 +121,10 @@ export class InstanceHandler {
         return new constructor.prototype.constructor();
     }
     protected buildObservableFromResult(result: any): Observable<any> {
-        if (result instanceof Promise) {
-            return fromPromise(result);
-        } else if (result instanceof Observable) {
+        if (isObservable(result)) {
             return result;
+        } else if (result instanceof Promise) {
+            return fromPromise(result);
         } else if (result) {
             return of(result);
         } else {
