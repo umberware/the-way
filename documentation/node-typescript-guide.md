@@ -32,7 +32,7 @@ Now we will install the typescript and initialize your project. Execute the foll
 
 *Installing the typescript and Node Types*
 
-    npm i typescript --save-dev @types/node
+    npm i typescript @types/node --save-dev
 
 **Note: @types/node is necessary to work with NodeJs components like Http, Https and others**
 

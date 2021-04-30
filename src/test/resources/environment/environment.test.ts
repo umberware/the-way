@@ -16,7 +16,6 @@ export class EnvironmentTest {
 
     public static buildCoreConfigueSpy(message: string): void {
         const core = (CORE as any).INSTANCE$.getValue();
-        console.log(core)
         const instanceHandler = core.instanceHandler;
         spyOn(instanceHandler as any, 'configureInstances').and.returnValue(
             new Observable((observer: Subscriber<boolean>) => {

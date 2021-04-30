@@ -64,6 +64,7 @@ export class CORE {
             Reflect.apply(method, registerHandler, register.args);
         }
     }
+    // Todo descrever toda a etapa da construção do core e seus estados.
     protected static beforeInitialization(): void {
         const instance = this.getInstance();
         CORE.INIT_TIME = new Date();
@@ -172,7 +173,7 @@ export class CORE {
             instance.destroy(error);
         }
     }
-    protected static whenBeforeInitializationIsDone(): Observable<boolean> {
+    public static whenBeforeInitializationIsDone(): Observable<boolean> {
         return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.BEFORE_INITIALIZATION_DONE),
             map(() => true)
