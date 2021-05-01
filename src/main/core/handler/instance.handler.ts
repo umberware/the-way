@@ -248,8 +248,11 @@ export class InstanceHandler {
     }
     public getInstanceByName<T>(name: string): T {
         const registeredConstructor = this.registerHandler.getConstructor(name);
-        if (registeredConstructor) {
-            return this.INSTANCES[registeredConstructor.name];
+        const instance = (registeredConstructor) ?
+            this.INSTANCES[registeredConstructor.name] :
+            this.INSTANCES[name];
+        if (instance) {
+            return instance;
         } else {
             throw new ApplicationException(
                 Messages.getMessage('error-not-found-instance', [name]),

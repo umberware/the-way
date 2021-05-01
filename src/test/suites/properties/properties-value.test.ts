@@ -10,6 +10,7 @@ beforeAll(() => {
 });
 describe('Properties Handler: ', () => {
     let propertiesHandler: PropertiesHandler;
+    let propertiesHandlerFromInstances: PropertiesHandler;
     beforeAll(done => {
         process.argv.push('--the-way.core.scan.enabled=false');
         process.argv.push('--custom.batman.qi=250');
@@ -22,6 +23,7 @@ describe('Properties Handler: ', () => {
                 CORE.whenReady().subscribe(
                     () => {
                         propertiesHandler = CORE.getPropertiesHandler();
+                        propertiesHandlerFromInstances = CORE.getInstanceByName('PropertiesHandler')
                         done();
                     }
                 );
@@ -36,6 +38,7 @@ describe('Properties Handler: ', () => {
         const customProperties = properties['custom'] as PropertyModel;
         const batmanProperties = customProperties['batman'] as PropertyModel;
 
+        expect(propertiesHandler).toBe(propertiesHandlerFromInstances);
         expect(scanProperties.enabled).toBeFalsy();
         expect(batmanProperties['op'] as boolean).toBeTruthy();
         expect(batmanProperties['name'] as boolean).toBe('Bruce');

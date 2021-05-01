@@ -1,5 +1,5 @@
 import { EnvironmentTest } from '../../resources/environment/environment.test';
-import { Configurable, CORE } from '../../../main';
+import { CORE, PropertiesHandler } from '../../../main';
 import { debounceTime } from 'rxjs/operators';
 
 afterAll(done => {
@@ -18,8 +18,9 @@ test('Injection: Service And Configuration', done => {
         CORE.whenReady().subscribe(
             () => {
                 const instances = EnvironmentTest.getInstancesWithout([result.Main]);
-                const bConfiguration: Configurable = CORE.getInstanceByName('BConfigurationTest');
+                const propertiesHandler: PropertiesHandler = CORE.getInstanceByName('PropertiesHandler');
                 const dependenciesTree = {};
+                expect(propertiesHandler).toBeDefined();
                 expect(JSON.stringify(EnvironmentTest.getDependenciesTree())).toBe(JSON.stringify(dependenciesTree));
                 expect(JSON.stringify(instances)).toBe('[{},{},{},{},{}]');
                 CORE.destroy().pipe(
