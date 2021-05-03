@@ -8,7 +8,6 @@ The Typescript is basically a Javascript with types and closest to the ECMAScrip
  - [Initializing Project: NPM](#initializing-project-npm)
  - [Initializing Project: Typescript](#initializing-project-typescript)
  - [Main: A First Typescript Class](#main-a-first-typescript-class)
- - [Initializing Project: The Way](#initializing-project-the-way)
  - [Extra: TSNode - Running The Typescript Source Code](#extra-typescript-in-development-stage)
  - [Extra: Watching File Change And Recompile](#extra-watch-code-changes-and-automatic-run)
 
@@ -92,41 +91,7 @@ After the build goal, let's run the final code:
     node dist/src/main/main.js
 
 
-With the code above, when you run the built program an instance of type Main will be created and consoled the information 'Hello World'.
-
-### Initializing Project: The Way
-
-Now with every thing configured and created, you can improve the code with the framework TheWay.
-
-*Installing TheWay*
-
-    npm install @umberware/the-way
-
-*Main: Adjustments for The Way*
-
-    import { Application, TheWayApplication } from '@umberware/the-way';
-
-    @Application()
-    export class Main extends TheWayApplication {
-        public start(): void {
-            console.log('Hello World')
-        }
-    }
-
-**To use the framework, your MAIN class need to be decorated with @Application and must extend the class TheWayApplication.**
-
-After the adjustment let's run the code baby!!!
-
-*Script: build run*
-
-    npm run build
-
-*Running*
-
-    node dist/src/main/main.js
-
-
-Now you are ready to explore all the features in TheWay Framework!
+With the above command, the built code will execute and console 'Hello World' in the terminal.
 
 ### Extra: Typescript In Development Stage
 
@@ -167,7 +132,7 @@ To watch and run the code automatically we need to configure the [nodemon](https
 In root path of your project create a file denominated as nodemon.json and put the follow code:
 
     {
-        "watch": ["src", "../the-way/dist"],
+        "watch": ["src", "dist"],
         "ext": "ts",
         "ignore": ["src/**/*.spec.ts", "node_modules/**", "src/**/*.js"],
         "exec": "ts-node src/main/main.ts"

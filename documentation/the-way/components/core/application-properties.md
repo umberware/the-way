@@ -1,11 +1,11 @@
 ## Application Properties
 
 The Application Core accepts a lot of properties for customization & configuration. In this section we will talk about those properties and what is their purpose.
-You can check the default properties file [here](../src/main/resources/application.properties.yml).
+You can check the default properties file [here](../../../../src/main/resources/application.properties.yml).
 
 ### Behavior
 
-By default, the CORE application will try to load an application.properties.yml in the root of the project. If hasen't an application file, the core will load the [default properties](../src/main/resources/application.properties.yml).
+By default, the CORE application will try to load an application.properties.yml in the root of the project. If hasen't an application file, the core will load the [default properties](../../../../src/main/resources/application.properties.yml).
 You can pass an argument in command line to pass a specific application.properties.yml path.
 Also, you can pass properties in command line.
 The application will **sum** the default properties, your application properties and the command line properties, priority:
@@ -94,7 +94,7 @@ Represents the language that will be used in the Messages.getMessage. *By defaul
 
 ### 'the-way.core.process-exit'
 
-When an error occurs at the boot core or is called the [destroy](./core.md#coredestroy) method from core and this property is true, the node process will be terminated. *By default, false*
+When an error occurs at the boot core or is called the [destroy](core.md#coredestroy) method from core and this property is true, the node process will be terminated. *By default, false*
 
 ### 'the-way.server'
 
