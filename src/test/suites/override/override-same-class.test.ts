@@ -14,6 +14,7 @@ test('Overridde: Twice Same Class', done => {
     process.argv.push('--the-way.core.language=br');
     import('../../resources/environment/main/main.test').then(() => {
         CORE.whenDestroyed().subscribe(
+            () => expect(true).toBeFalsy(),
             (error: Error | undefined) => {
                 if (error && error instanceof ApplicationException) {
                     expect(error.detail).toBe(Messages.getMessage('error-cannot-overridden-twice', [ 'DependencyAServiceTest', 'DependencyBServiceTest', 'DependencyCServiceTest' ]))

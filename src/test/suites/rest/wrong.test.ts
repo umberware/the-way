@@ -27,6 +27,7 @@ describe('Rest', () => {
     });
     test('Using Claims Wihtout Authentication', done => {
         CORE.whenDestroyed().subscribe(
+            () => expect(true).toBeFalsy(),
             (error: any) => {
                 expect(error.description).toBe(Messages.getMessage('TW-011'))
                 expect(error.detail).toBe(Messages.getMessage('error-rest-claims-without-token-verify'))

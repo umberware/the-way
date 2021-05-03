@@ -1,11 +1,8 @@
 import { fromPromise } from 'rxjs/internal-compatibility';
-
-'use  strict';
-
 import 'reflect-metadata';
 
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { filter, map, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, EMPTY, Observable, of } from 'rxjs';
+import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 
 import { CoreStateEnum } from './shared/core-state.enum';
 import { DependencyHandler } from './handler/dependency.handler';
@@ -20,6 +17,8 @@ import { HttpType } from './enum/http-type.enum';
 import { ApplicationException } from './exeption/application.exception';
 import { ConstructorMapModel } from './model/constructor-map.model';
 import { OverriddenMapModel } from './model/overridden-map.model';
+
+'use  strict';
 
 /*
     eslint-disable @typescript-eslint/ban-types,
@@ -64,7 +63,6 @@ export class CORE {
             Reflect.apply(method, registerHandler, register.args);
         }
     }
-    // Todo descrever toda a etapa da construção do core e seus estados.
     protected static beforeInitialization(): void {
         const instance = this.getInstance();
         CORE.INIT_TIME = new Date();
@@ -86,17 +84,31 @@ export class CORE {
                         CORE.afterInitialization();
                     } else if (coreState === CoreStateEnum.INITIALIZATION_STARTED ) {
                         CORE.initialization();
+                    } else if (coreState === CoreStateEnum.DESTRUCTION_STARTED) {
+                        CORE.destruction();
                     }
                 }
             );
         }
     }
-    public static destroy(): Observable<void | Error> {
-        const instance = this.INSTANCE$.getValue() as CORE;
+    public static destroy(): Observable<CoreStateEnum> {
         if (!this.isDestroyed()) {
-            instance.destroy();
+            CORE.STATE$.next(CoreStateEnum.DESTRUCTION_STARTED);
         }
         return CORE.whenDestroyed();
+    }
+    protected static destroyed(code: number, mustExit: boolean): void {
+        CORE.STATE$.next(CoreStateEnum.DESTRUCTION_DONE);
+
+        if (mustExit) {
+            process.exit(code);
+        }
+
+        CORE.INSTANCE$.next(undefined);
+    }
+    protected static destruction(): void {
+        const instance = this.getInstance();
+        instance.destroy(this.ERROR);
     }
     public static getConstructors(): ConstructorMapModel {
         const instance = this.getInstance();
@@ -167,39 +179,41 @@ export class CORE {
         this.register('registerService', [serviceConstructor, over]);
     }
     public static setError(error: Error): void {
-        const instance = this.getInstance();
         this.ERROR = error;
         if (!this.isDestroyed()) {
-            instance.destroy(error);
+            CORE.STATE$.next(CoreStateEnum.DESTRUCTION_STARTED);
         }
     }
-    public static whenBeforeInitializationIsDone(): Observable<boolean> {
+    public static whenBeforeInitializationIsDone(): Observable<CoreStateEnum> {
         return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.BEFORE_INITIALIZATION_DONE),
-            map(() => true)
+            take(1)
         );
     }
-    public static whenDestroyed(): Observable<undefined | Error> {
+    public static whenDestroyed(): Observable<CoreStateEnum> {
         return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.DESTRUCTION_DONE),
-            map(() => {
-                this.INSTANCE$.next(undefined);
-                return this.ERROR;
-            })
+            tap(() => {
+                if (CORE.ERROR) {
+                    throw CORE.ERROR;
+                }
+            }),
+            take(1)
         );
     }
-    protected static whenHasInstanceAndBeforeInitializationIsDone(): Observable<boolean> {
+    protected static whenHasInstanceAndBeforeInitializationIsDone(): Observable<CoreStateEnum> {
         return this.INSTANCE$.pipe(
             filter((instance: CORE | undefined) => instance !== undefined),
             switchMap(() => {
                 return this.whenBeforeInitializationIsDone();
-            })
+            }),
+            take(1)
         );
     }
-    public static whenReady(): Observable<boolean> {
+    public static whenReady(): Observable<CoreStateEnum> {
         return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.READY),
-            map(() => true)
+            take(1)
         );
     }
     public static watchState(): Observable<CoreStateEnum> {
@@ -281,38 +295,30 @@ export class CORE {
     }
     protected destroy(error?: Error): void {
         let code = 0;
+        const mustExit = this.coreProperties && this.coreProperties['process-exit'] as boolean;
         if (error) {
             this.logError(Messages.getMessage('error'), error as Error);
             code = 1;
         }
         this.logInfo(Messages.getMessage('step-destruction-started'));
-        CORE.STATE$.next(CoreStateEnum.DESTRUCTION_STARTED);
-
         this.destroyTheArmy().subscribe(
             () => {
                 this.logInfo(Messages.getMessage('destruction-destroyed'));
             }, (destructionError: Error) => {
-                const error = new ApplicationException(
+                const finalError = new ApplicationException(
                     Messages.getMessage('error-in-destruction', [destructionError.message]),
                     Messages.getMessage('TW-012'),
                     destructionError
                 );
-                this.logger.error(error, '[The Way]');
-                CORE.setError(error);
+                this.logger.error(finalError, '[The Way]');
+                CORE.setError(finalError);
                 code = 2;
-                this.destroyed(code);
+                CORE.destroyed(code, mustExit);
             }, () => {
-                this.destroyed(code);
                 this.logInfo(Messages.getMessage('step-destruction-done'));
+                CORE.destroyed(code, mustExit);
             }
         );
-    }
-    protected destroyed(code: number): void {
-        CORE.STATE$.next(CoreStateEnum.DESTRUCTION_DONE);
-
-        if (this.coreProperties && this.coreProperties['process-exit'] as boolean) {
-            process.exit(code);
-        }
     }
     protected destroyTheArmy(): Observable<boolean> {
         if (this.instanceHandler) {
@@ -337,7 +343,7 @@ export class CORE {
         this.logInfo(Messages.getMessage('step-initialization-started'));
         this.build(constructor).pipe(
             map(() => {
-                this.buildApplication(constructor),
+                this.buildApplication(constructor);
                 this.bindRestPaths();
             })
         ).subscribe(

@@ -26,6 +26,7 @@ beforeAll(() => {
 test('Instance: Core Handler Inject Error', done => {
     new Main();
     CORE.whenDestroyed().subscribe(
+        () => expect(true).toBeFalsy(),
         (error: Error | undefined) => {
             if (error && error instanceof ApplicationException) {
                 expect(error.getDetail()).toBe(Messages.getMessage('error-cannot-inject', [ 'FileHandler' ]))

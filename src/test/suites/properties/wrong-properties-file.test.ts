@@ -14,6 +14,7 @@ describe('Properties Handler: ', () => {
         import('../../resources/environment/main/main.test').then(
             () => {
                 CORE.whenDestroyed().subscribe(
+                    () => expect(true).toBeFalsy(),
                     (error: Error | undefined) => {
                         if (error && error instanceof ApplicationException) {
                             expect(error.getDetail()).toBe(Messages.getMessage('error-properties-not-valid'));

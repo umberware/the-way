@@ -20,7 +20,7 @@ more easily, in other words, the sky is not the limit!
  - [Installing](#installing)
  - [Getting Started](#getting-started)
  - [Application Properties](#application-properties)
- - [Documentation](./documentation/index.md)
+ - [Documentation](#documentation)
 
 ## Features
 
@@ -80,4 +80,4 @@ For more detail, please visit the [Application Properties Documentation](documen
 
 ## Documentation
 
-To access the full documentation you check [here](documentation/index.md)
+To access the full documentation you can access [this](documentation/index.md)

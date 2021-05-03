@@ -28,7 +28,8 @@ beforeAll(() => {
 test('Overridde: Core Handler Overridden', done => {
     new Main();
     CORE.whenDestroyed().subscribe(
-        (error: Error | undefined) => {
+        () => expect(true).toBeFalsy(),
+        (error: Error) => {
             if (error && error instanceof ApplicationException) {
                 expect(error.getDetail()).toBe(Messages.getMessage('error-cannot-overridden-core-classes', [ 'CustomFileHanlder' ]))
                 done();

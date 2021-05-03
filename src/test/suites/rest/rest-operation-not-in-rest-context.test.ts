@@ -27,6 +27,7 @@ describe('Rest', () => {
     });
     test('Rest operation not in REST context', done => {
         CORE.whenDestroyed().subscribe(
+            () => expect(true).toBeFalsy(),
             (error: any) => {
                 expect(error.description).toBe(Messages.getMessage('TW-011'))
                 expect(error.detail).toBe(Messages.getMessage('error-rest-operation-not-in-rest'))

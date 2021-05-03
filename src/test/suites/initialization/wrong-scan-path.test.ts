@@ -16,6 +16,7 @@ test('Initialization: Wrong Scan Path', (done) => {
         (value => {
             new value.NotAutomaticMainTest();
             CORE.whenDestroyed().subscribe(
+                () => expect(true).toBeFalsy(),
                 (error: Error | undefined) => {
                     if (error) {
                         expect((error as any).code).toBe(Messages.getCodeMessage('not-found-code'));

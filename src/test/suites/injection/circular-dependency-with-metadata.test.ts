@@ -17,6 +17,7 @@ test('Injection: Circular Dependency With Metadata', done => {
     import('../../resources/environment/main/not-automatic-main.test').then((value) => {
         new value.NotAutomaticMainTest();
         CORE.whenDestroyed().subscribe(
+            () => expect(true).toBeFalsy(),
             (error: Error | undefined) => {
                 if (error) {
                     const applicationException = error as ApplicationException;

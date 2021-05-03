@@ -1,6 +1,6 @@
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 import { CORE, CoreStateEnum } from '../../../main';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, take } from 'rxjs/operators';
 
 afterAll(done => {
     EnvironmentTest.clear(done);
@@ -18,9 +18,15 @@ test('Destruction: Service & Configuration', done => {
             CORE.whenReady().pipe(
                 switchMap(() => {
                     return CORE.destroy();
-                })
+                }),
+                take(1)
             ).subscribe(
                 () => {
+                    expect(CORE.getCoreState()).toBe(CoreStateEnum.DESTRUCTION_DONE);
+                }, error => {
+                    expect(error).toBeUndefined();
+                }, () => {
+                    expect(CORE.getCoreState()).toBe(CoreStateEnum.DESTRUCTION_DONE);
                     done();
                 }
             );

@@ -28,6 +28,7 @@ describe('Server Configuration: ', () => {
             (result) => {
                 new result.NotAutomaticMainTest();
                 CORE.whenDestroyed().subscribe(
+                    () => expect(true).toBeFalsy(),
                     (error) => {
                         expect((error as ApplicationException).detail).toBe('Cannot initialize server -> EADDRINUSE');
                         server.close(() => {

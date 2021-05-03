@@ -17,6 +17,7 @@ test('Instance: Instance not created', done => {
     import('../../resources/environment/main/main.test').then(
         () => {
             CORE.whenDestroyed().subscribe(
+                () => expect(true).toBeFalsy(),
                 (error: Error | undefined) => {
                     if (error) {
                         expect(error.message).toBe('I\'m Thanos!')

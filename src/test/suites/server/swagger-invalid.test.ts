@@ -19,12 +19,16 @@ describe('Server Configuration: ', () => {
         import('../../resources/environment/main/not-automatic-main.test').then(
             (result) => {
                 new result.NotAutomaticMainTest();
-                CORE.whenDestroyed().subscribe((error: any) => {
-                    if (error) {
-                        expect(error.code).toBe('ENOENT');
-                        done();
+
+                CORE.whenDestroyed().subscribe(
+                    () => expect(true).toBeFalsy(),
+                    (error: any) => {
+                        if (error) {
+                            expect(error.code).toBe('ENOENT');
+                            done();
+                        }
                     }
-                })
+                );
             }
         );
     });

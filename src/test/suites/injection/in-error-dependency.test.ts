@@ -17,6 +17,7 @@ test('Injection: Error In Dependency', done => {
     import('../../resources/environment/main/main.test').then(
         () => {
             CORE.whenDestroyed().subscribe(
+                () => expect(true).toBeFalsy(),
                 (error: Error | undefined ) => {
                     expect(error).toBeDefined();
                     done();

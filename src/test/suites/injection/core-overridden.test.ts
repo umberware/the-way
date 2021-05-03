@@ -19,7 +19,6 @@ test('Injection: Core Overridden', done => {
                 const tree = EnvironmentTest.getDependenciesTree();
                 const instances = CORE.getInstances();
 
-                console.log(instances)
                 expect(JSON.stringify(tree)).toBe(JSON.stringify({}));
                 expect(instances.find((instance: any) => {
                     return instance instanceof CustomCoreConfiguration

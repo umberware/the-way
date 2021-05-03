@@ -20,6 +20,7 @@ test('Initialization: Cannot Configure', (done) => {
                 }
             );
             CORE.whenDestroyed().subscribe(
+                () => expect(true).toBeFalsy(),
                 (error: any) => {
                     if (error) {
                         expect(error.detail).toBe(message);

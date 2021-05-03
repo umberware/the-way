@@ -16,6 +16,7 @@ describe('Server Configuration: ', () => {
             (result) => {
                 new result.NotAutomaticMainTest();
                 CORE.whenDestroyed().subscribe(
+                    () => expect(true).toBeFalsy(),
                     (error: any) => {
                         expect(error.description).toBe(Messages.getMessage('TW-011'));
                         expect(error.detail).toBe(Messages.getMessage('error-server-not-enabled'));
