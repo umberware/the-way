@@ -94,7 +94,7 @@ Represents the language that will be used in the Messages.getMessage. *By defaul
 
 ### 'the-way.core.process-exit'
 
-When an error occurs at the boot core and this property is true, the node process will be terminated. *By default, false*
+When an error occurs at the boot core or is called the [destroy](./core.md#coredestroy) method from core and this property is true, the node process will be terminated. *By default, false*
 
 ### 'the-way.server'
 

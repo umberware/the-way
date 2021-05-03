@@ -2,9 +2,25 @@ import * as Crypto from 'crypto';
 import { System } from '../decorator/system.decorator';
 import { Service } from '../decorator/service.decorator';
 
+/**
+ *   CoreCryptoService
+ *   This component can be used to encrypt/decrypt, generate a hash and generate a random hash.
+ *   @since 1.0.0
+ */
 @Service()
 @System
 export class CoreCryptoService {
+    /**
+     *   Cipher
+     *   A method to cipher some data.
+     *   You can pass an algorithm that Crypto(from node) accept to encrypt the data
+     *   @since 1.0.0
+     *   @param data Refers to the data that will be encrypted
+     *   @param algorithm Is the algorithm that will be used to cipher the data (only Crypto algorithm)
+     *   @param privateKey is a secret text that will be used in the algorithm
+     *   @param type is the 'base' of the ciphered data
+     *   @return the ciphered data
+     */
     public cipher(data: string, algorithmn: string, privateKey: string, type: 'hex'|'base64' = 'hex'): string {
         const cypher = Crypto.createCipheriv(algorithmn, privateKey, Buffer.from([]));
         const encrypted = Buffer.concat([cypher.update(data, 'utf8'), cypher.final()]);
