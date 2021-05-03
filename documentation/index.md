@@ -5,6 +5,7 @@ Also, 'some getting started' will be related.
 
 ### Classes and Components Documentation
 
+ - [Application Properties](the-way/components/core/application-properties.md)
  - [Core](the-way/components/core/core.md)
  - [CoreCryptoService](the-way/components/core/core-crypto-service-doc.md)
 

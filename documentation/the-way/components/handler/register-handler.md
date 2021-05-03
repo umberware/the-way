@@ -1,1 +1,1 @@
-## PropertiesHandler
+## RegisterHandler

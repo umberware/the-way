@@ -18,6 +18,8 @@ more easily, in other words, the sky is not the limit!
 
  - [Features](#features)
  - [Installing](#installing)
+ - [Getting Started](#getting-started)
+ - [Application Properties](#application-properties)
  - [Documentation](./documentation/index.md)
 
 ## Features
@@ -32,7 +34,9 @@ With this framework you can elevate the life cycle of the development in Node.js
 
 ## Installing
 
-This framework is built for NodeJs with Typescript, and you need a project configured. You can check how to create a NodeJs + Typescript project [here](documentation/guides/node-typescript-guide.md).
+This framework is built for NodeJs with Typescript, and you need a project configured.
+
+**You can check how to create a NodeJs + Typescript project [here](documentation/guides/node-typescript-guide.md)**
 
 Installing the TheWay:
 
@@ -51,6 +55,7 @@ Installing the TheWay:
 
 In this section we will create a simple application that use this framework.
 We will presume that you was installed the node.js, configured to use typescript and installed the packages: @umberware/the-way, @types/node.
+
 **You can check how to do it in the guide: [NodeJs With Typescript](./documentation/guides/node-typescript-guide.md)**
 
 *Main: A file in: src/main/main.ts*
@@ -66,7 +71,12 @@ We will presume that you was installed the node.js, configured to use typescript
         }
     }
 
-**For more examples or guides, you can access the [The Way Examples Repository](https://github.com/umberware/the-way-examples)** or/and [Guides](./documentation/index.md#guides)
+**For more examples or guides, you can access the [The Way Examples Repository](https://github.com/umberware/the-way-examples) or/and [Guides](./documentation/index.md#guides)**
+
+## Application Properties
+
+This framework use application properties in [Yaml Format](https://yaml.org/) and has a lot of properties that can be changed for your use. If no application properties is provided, the framework will use the **default** properties.
+For more detail, please visit the [Application Properties Documentation](documentation/the-way/components/core/application-properties.md)
 
 ## Documentation
 

@@ -7,8 +7,8 @@ The core is the heart and brain of this library. It controls all stages of the a
  - [Decorator @Application and Core](#decorator-application-and-core)
  - [Core States](#core-states)
  - [Step: Before Initialization](#step-before-initialization)
- - [Step: Initialization](#step-before-initialization)
- - [Step: After Initialization](#step-before-initialization)
+ - [Step: Initialization](#step-initialization)
+ - [Step: After Initialization](#step-after-initialization)
  - [Step: Destruction](#step-destruction)
 
 ### Decorator @Application and Core
@@ -96,7 +96,7 @@ When Finished:
   - CoreState change: from [INITIALIZATION_STARTED](core-state-enum.md#INITIALIZATION_STARTED) to [INITIALIZATION_DONE](core-state-enum.md#INITIALIZATION_DONE)
   - All classes mapped with the [Core Decorators](../decorator/core-decorators.md), can be Injected
   - All classes decorated with [@Configuration](../decorator/core-decorators.md#configuration) and is extended with [Configurable](../configuration/configurable.md), are configured
-  - All classes that are extended with [Destroyable](../configuration/destroyable.md), will be destroyed when the Core step change to [destruction](#step-desctruction)
+  - All classes that are extended with [Destroyable](../configuration/destroyable.md), will be destroyed when the Core step change to [destruction](#step-destruction)
   - When server is enabled, the Http and/or Https can be accessed, and the rest operations is bind and accessible.
 
 ### Step: After Initialization
