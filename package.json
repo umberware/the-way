@@ -1,6 +1,6 @@
 {
     "name": "@umberware/the-way",
-    "version": "1.0.0-Beta.0.24",
+    "version": "1.0.0-Beta.0.25",
     "description": "We are a framework to help the development life to be better.",
     "main": "src/main/index.js",
     "types": "src/main/index.d.ts",
