@@ -1,7 +1,7 @@
 import { fromPromise } from 'rxjs/internal-compatibility';
 import 'reflect-metadata';
 
-import { BehaviorSubject, EMPTY, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 
 import { CoreStateEnum } from './shared/core-state.enum';

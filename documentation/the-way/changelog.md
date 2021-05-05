@@ -10,6 +10,8 @@ In this version the library was refactored and this is the new beginning.
 
 - **changelog.md:** Was been added.
 - **documentation:** Now, all the documentation is present in this repository.
+    - **application-properties**: added
+    - **CoreCryptoService documentation**: added
 
 ### Changed
 

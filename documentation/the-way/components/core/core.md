@@ -10,6 +10,11 @@ The core is the heart and brain of this library. It controls all stages of the a
  - [Step: Initialization](#step-initialization)
  - [Step: After Initialization](#step-after-initialization)
  - [Step: Destruction](#step-destruction)
+ - [Method: Destroy](#method-static-destroy)
+ - [Method: GetInstanceByName](#method-static-getinstancebyname)
+ - [Method: GetPropertiesHandler](#method-static-getpropertieshandler)
+ - [Method: WatchState](#method-static-watchstate)
+ - [Method: WhenDestroyed](#method-static-whendestroyed)
 
 ### Decorator @Application and Core
 
@@ -73,7 +78,7 @@ When Started:
 When Finished:
 
  - CoreState change: From [BEFORE_INITIALIZATION_STARTED](core-state-enum.md#BEFORE_INITIALIZATION_STARTED) to [BEFORE_INITIALIZATION_DONE](core-state-enum.md#BEFORE_INITIALIZATION_DONE)
- - The [PropertiesHandler](../handler/properties-handler.md) can be [injected](../decorator/core-decorators.md#inject), retrieved with [getInstanceByName](#coregetinstancebyname) or [getPropertiesHandler](#coregetpropertieshandler)
+ - The [PropertiesHandler](../handler/properties-handler.md) can be [injected](../decorator/core-decorators.md#inject), retrieved with [getInstanceByName](#method-static-getinstancebyname) or [getPropertiesHandler](#method-static-getpropertieshandler)
 
 
 ### Step: Initialization
@@ -113,7 +118,7 @@ When Finished:
 
 ### Step: Destruction
 
-This is the destruction step and is activated when is called the method [destroy()](#coredestroy) or occurs an error in the initialization steps.
+This is the destruction step and is activated when is called the method [destroy()](#method-static-destroy) or occurs an error in the initialization steps.
 
 Is responsible for:
 
@@ -129,15 +134,15 @@ When Finished:
 
 - CoreState change: from [DESTRUCTION_STARTED](core-state-enum.md#DESTRUCTION_STARTED) to [DESTRUCTION_DONE](core-state-enum.md#destruction_done)
 
-### Core.destroy
+### Method: static destroy
 
-### Core.getInstanceByName
+### Method: static getInstanceByName
 
-### Core.getPropertiesHandler
+### Method: static getPropertiesHandler
 
-### Core.watchState
+### Method: static watchState
 
-### Core.whenDestroyed
+### Method: static whenDestroyed
 
 
 

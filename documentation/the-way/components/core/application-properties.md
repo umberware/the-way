@@ -3,6 +3,27 @@
 The Application Core accepts a lot of properties for customization & configuration. In this section we will talk about those properties and what is their purpose.
 You can check the default properties file [here](../../../../src/main/resources/application.properties.yml).
 
+### Summary
+
+ - [Behavior](#behavior)
+ - [Custom Properties In Application Properties](#custom-properties-in-application-properties)
+ - [Mapped properties and their purposes](#mapped-properties-and-their-purposes)
+    - [the-way](#the-way)
+    - [the-way.core](#the-waycore)
+    - [the-way.core.scan](#the-waycorescan)
+    - [the-way.core.log](#the-waycorelog)
+    - [the-way.core.language](#the-waycorelanguage)
+    - [the-way.core.process-exit](#the-waycoreprocess-exit)
+    - [the-way.server](#the-wayserver)
+    - [the-way.server.enabled](#the-wayserverenabled)
+    - [the-way.server.operations-log](#the-wayserveroperations-log)
+    - [the-way.server.http](#the-wayserverhttp)
+    - [the-way.server.https](#the-wayserverhttps)
+    - [the-way.server.helmet](#the-wayserverhelmetenabled)
+    - [the-way.server.cors](#the-wayservercors)
+    - [the-way.server.rest](#the-wayserverrest)
+    - [the-way.server.file](#the-wayserverfile)
+
 ### Behavior
 
 By default, the CORE application will try to load an application.properties.yml in the root of the project. If hasen't an application file, the core will load the [default properties](../../../../src/main/resources/application.properties.yml).
@@ -30,7 +51,7 @@ The application will **sum** the default properties, your application properties
 
     node dist/src/main/main.js src/main/main.ts --mongo.ip=127.0.0.1 --mongo.port=27018
 
-### Creating a Custom Properties for My Application
+### Custom Properties In Application Properties
 
 By default, all properties that the application uses are within the "path" and you can create properties for your application in the annother application.properties section and access those properties with the property manager.
 
@@ -60,18 +81,17 @@ By default, all properties that the application uses are within the "path" and y
         }
     }
 
-
-### Explaining the Properties and Their Purpose
+### Mapped Properties and Their Purposes
 
 #### 'the-way'
 
 The TheWay section. In this section you will see all the properties that the framework uses.
 
-### 'the-way.core'
+### the-way.core
 
 This section represents the properties that the framework will use.
 
-### 'the-way.core.scan'
+### the-way.core.scan
 
 Relative to the FileHandler(mechanism that import every TheWay component), has the follow properties:
 
@@ -81,41 +101,44 @@ Relative to the FileHandler(mechanism that import every TheWay component), has t
  - includes: The extensions that must be scanned to find components(accepts Javascript Regex)
  - excludes: The directories, files or extensions that must be ignored(accepts Javascript Regex)
 
-### 'the-way.core.log'
+### the-way.core.log
 
 Relative to the Logger(An injectable service to log information) has the follow properties:
 
  - level: Can assume 0 or 1. When 0 will log debug and when 1 only errors and info. *By default 1*
  - date: Will log the date when logging. *By default true*
 
-### 'the-way.core.language'
+See the logger documentation [here](logger.md)
 
-Represents the language that will be used in the Messages.getMessage. *By default en*
+### the-way.core.language
 
-### 'the-way.core.process-exit'
+Represents the language that will be used in the Messages.getMessage. *By default en*.
+You can check how to customize and enable another language [here](messages.md);
+
+### the-way.core.process-exit
 
 When an error occurs at the boot core or is called the [destroy](core.md#coredestroy) method from core and this property is true, the node process will be terminated. *By default, false*
 
-### 'the-way.server'
+### the-way.server
 
-Represents all the servers configurations in the application.
+Represents all the servers configurations in the application. See [Server Configuration](../configuration/server-configuration.md) documentation.
 
-### 'the-way.server.enabled'
+### the-way.server.enabled
 
 When those properties are true, we will start an express server using others properties present in this section. *By default true*
 
-### 'the-way.server.operations-log'
+### the-way.server.operations-log
 
 When true, every REST call will be logged. *By default true*
 
-### 'the-way.server.http'
+### the-way.server.http
 
 Represents the http properties. those properties will be used to create a http server with express. Has the follow properties:
 
  - port: Is the port when the application will run. *By default 9000*
  - enabled: When true will start the Http Server. *By default true*
 
-### 'the-way.server.https'
+### the-way.server.https
 
 Represents the https properties. those properties will be used to create a https server with express. Has the follow properties:
 
@@ -124,25 +147,25 @@ Represents the https properties. those properties will be used to create a https
 - key-path: Is the certificate key path
 - cert-path: Is the certificate path
 
-### 'the-way.server.helmet.enabled'
+### the-way.server.helmet.enabled
 
 Is an express middleware to increase the security of the server. *By default true*
 
-### 'the-way.server.cors'
+### the-way.server.cors
 
 those properties are used to enable the cors. Has the follow properties:
 
  - enabled: Enable the Cors in the server. *By default true*
  - origin: Enable cross-origin over the server. *By default true*
 
-### 'the-way.server.rest'
+### the-way.server.rest
 
 those properties are used to configure the REST operations of your application. Has the follow properties:
 
  - path: Is the root path of your REST operations. *By default /api*
  - security: Is a block of properties for the JWT authentication.
-   - user-key: Is a key in for cypher the claims in the JWT token. This key is used in aes-256-cbc algorithm
-   - token-key: Is the token key for the token validation
+   - user-key: Is the key used to cipher claims in the JWT token. This key is used in aes-256-cbc algorithm
+   - token-key: Is the token key for token validation
    - token-expiration: Is the token validation when created
  - swagger: Is a block of properties that allow the SwaggerUI for your REST operations
    - api-path: Is the Swagger path in application API. *By default /swagger*
@@ -151,7 +174,10 @@ those properties are used to configure the REST operations of your application. 
       - path: Is the path for a swagger.json. The swagger.json is used in the SwaggerUI. *By default swagger.json*
       - full: When true, the `the-way.server.rest.swagger.file.path` must be absolute. *By default false*
 
-### 'the-way.server.file'
+You can check more informations in [CoreCryptoService](core-crypto-service-doc.md), [ServerConfiguration](../configuration/server-configuration.md) and
+[CoreRestService](core-rest-service.md)
+
+### the-way.server.file
 
 those properties are used to configure a file server. Has the follow properties:
 
