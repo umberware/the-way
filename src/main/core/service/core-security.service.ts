@@ -1,17 +1,17 @@
 import * as Jwt from 'jsonwebtoken';
 
-import { Service } from '../decorator/service.decorator';
-import { System } from '../decorator/system.decorator';
-import { Inject } from '../decorator/inject.decorator';
+import { Service } from '../decorator/core/service.decorator';
+import { System } from '../decorator/core/system.decorator';
+import { Inject } from '../decorator/core/inject.decorator';
 import { PropertiesHandler } from '../handler/properties.handler';
-import { TokenClaims } from '../model/token-claims.model';
+import { TokenClaims } from '../shared/model/token-claims.model';
 import { CoreCryptoService } from './core-crypto.service';
-import { PropertyModel } from '../model/property.model';
+import { PropertyModel } from '../shared/model/property.model';
 import { NotAllowedException } from '../exeption/not-allowed.exception';
-import { Messages } from '../shared/messages';
+import { CoreMessageService } from './core-message.service';
 import { UnauthorizedException } from '../exeption/unauthorized.exception';
 import { RestException } from '../exeption/rest.exception';
-import { PathMapModel } from '../model/path-map.model';
+import { PathMapModel } from '../shared/model/path-map.model';
 
 /*eslint-disable @typescript-eslint/no-explicit-any*/
 @System
@@ -81,12 +81,12 @@ export class CoreSecurityService {
     }
     protected verifyProfile(token: TokenClaims | undefined, profiles: Array<any>, fatherProfiles: Array<any>): void{
         if (!token || !token.profiles || !(token.profiles instanceof Array)) {
-            throw new NotAllowedException(Messages.getMessage('error-rest-cannot-perform-action'));
+            throw new NotAllowedException(CoreMessageService.getMessage('error-rest-cannot-perform-action'));
         }
 
         const tokenProfiles: Array<any> = token.profiles;
         if (!this.hasFatherProfile(tokenProfiles, fatherProfiles) || !this.hasPathProfile(tokenProfiles, profiles)) {
-            throw new NotAllowedException(Messages.getMessage('error-rest-cannot-perform-action'));
+            throw new NotAllowedException(CoreMessageService.getMessage('error-rest-cannot-perform-action'));
         }
     }
     public verifyToken(
@@ -95,9 +95,9 @@ export class CoreSecurityService {
     ): TokenClaims | undefined {
         try {
             if (!token) {
-                throw new NotAllowedException(Messages.getMessage('error-rest-no-token'));
+                throw new NotAllowedException(CoreMessageService.getMessage('error-rest-no-token'));
             } else if (token.search(/^Bearer /) === -1) {
-                throw new UnauthorizedException(Messages.getMessage('error-rest-invalid-token'));
+                throw new UnauthorizedException(CoreMessageService.getMessage('error-rest-invalid-token'));
             }
 
             const tokenClaims: TokenClaims | undefined = this.getTokenClaims(token.replace('Bearer ', ''));
@@ -112,7 +112,7 @@ export class CoreSecurityService {
                 throw ex;
             } else {
                 console.error(ex);
-                throw new UnauthorizedException(Messages.getMessage('error-rest-invalid-token'));
+                throw new UnauthorizedException(CoreMessageService.getMessage('error-rest-invalid-token'));
             }
         }
     }

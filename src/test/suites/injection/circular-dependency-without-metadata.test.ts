@@ -1,5 +1,5 @@
 import { EnvironmentTest } from '../../resources/environment/environment.test';
-import { ApplicationException, CORE, Messages } from '../../../main';
+import { ApplicationException, CORE, CoreMessageService } from '../../../main';
 
 afterAll(done => {
     EnvironmentTest.clear(done);
@@ -22,8 +22,8 @@ test('Injection: Circular Dependency Without Metadata', done => {
                 if (error) {
                     const applicationException = error as ApplicationException;
                     console.log(error)
-                    expect(applicationException.getDescription()).toBe(Messages.getMessage('TW-009'));
-                    expect(applicationException.getDetail()).toBe(Messages.getMessage('error-not-found-dependency-constructor', ['dependencyA', 'DependencyBServiceTest']));
+                    expect(applicationException.getDescription()).toBe(CoreMessageService.getMessage('TW-009'));
+                    expect(applicationException.getDetail()).toBe(CoreMessageService.getMessage('error-not-found-dependency-constructor', ['dependencyA', 'DependencyBServiceTest']));
                     done();
                 }
             }

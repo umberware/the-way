@@ -5,7 +5,7 @@ import {
     CORE,
     FileHandler,
     Inject,
-    Messages,
+    CoreMessageService,
     TheWayApplication
 } from '../../../main';
 
@@ -31,7 +31,7 @@ test('Overridde: Core Handler Overridden', done => {
         () => expect(true).toBeFalsy(),
         (error: Error) => {
             if (error && error instanceof ApplicationException) {
-                expect(error.getDetail()).toBe(Messages.getMessage('error-cannot-overridden-core-classes', [ 'CustomFileHanlder' ]))
+                expect(error.getDetail()).toBe(CoreMessageService.getMessage('error-cannot-overridden-core-classes', [ 'CustomFileHanlder' ]))
                 done();
             }
         }

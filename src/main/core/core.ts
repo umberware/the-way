@@ -4,19 +4,19 @@ import 'reflect-metadata';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 
-import { CoreStateEnum } from './shared/core-state.enum';
+import { CoreStateEnum } from './shared/enum/core-state.enum';
 import { DependencyHandler } from './handler/dependency.handler';
 import { InstanceHandler } from './handler/instance.handler';
-import { Messages } from './shared/messages';
+import { CoreMessageService } from './service/core-message.service';
 import { FileHandler } from './handler/file.handler';
 import { PropertiesHandler } from './handler/properties.handler';
-import { PropertyModel } from './model/property.model';
-import { Logger } from './shared/logger';
+import { PropertyModel } from './shared/model/property.model';
+import { CoreLogger } from './service/core-logger';
 import { RegisterHandler } from './handler/register.handler';
-import { HttpType } from './enum/http-type.enum';
+import { HttpTypeEnum } from './shared/enum/http-type.enum';
 import { ApplicationException } from './exeption/application.exception';
-import { ConstructorMapModel } from './model/constructor-map.model';
-import { OverriddenMapModel } from './model/overridden-map.model';
+import { ConstructorMapModel } from './shared/model/constructor-map.model';
+import { OverriddenMapModel } from './shared/model/overridden-map.model';
 
 'use  strict';
 
@@ -170,7 +170,7 @@ export class CORE {
         this.register('registerRest', [restConstructor, path, isAthenticated, allowedProfiles]);
     }
     public static registerRestPath(
-        httpType: HttpType, path: string, target: any, propertyKey: string,
+        httpType: HttpTypeEnum, path: string, target: any, propertyKey: string,
         isAuthenticated?: boolean, allowedProfiles?: Array<any>
     ): void {
         this.register('registerRestPath',[ httpType, path, target, propertyKey, isAuthenticated, allowedProfiles ]);
@@ -224,19 +224,19 @@ export class CORE {
     protected dependencyHandler: DependencyHandler;
     protected fileHandler: FileHandler;
     protected instanceHandler: InstanceHandler;
-    protected logger: Logger;
+    protected logger: CoreLogger;
     protected propertiesHandler: PropertiesHandler;
     protected registerHandler: RegisterHandler;
 
     constructor(protected application: Function | Object) {}
 
     protected afterInitialization(): void {
-        this.logInfo(Messages.getMessage('step-after-initialization', [this.calculateElapsedTime()]));
+        this.logInfo(CoreMessageService.getMessage('step-after-initialization', [this.calculateElapsedTime()]));
         CORE.STATE$.next(CoreStateEnum.READY);
     }
     protected beforeInitialization(): void {
-        this.logger = new Logger();
-        this.logInfo(Messages.getMessage('step-before-initialization-started'));
+        this.logger = new CoreLogger();
+        this.logInfo(CoreMessageService.getMessage('step-before-initialization-started'));
         try {
             this.propertiesHandler = new PropertiesHandler(this.logger);
             this.checkoutProperties();
@@ -251,7 +251,7 @@ export class CORE {
             this.instanceHandler.registerInstance(this.propertiesHandler);
             this.fileHandler.initialize().subscribe(
                 () => {
-                    this.logInfo(Messages.getMessage('step-before-initialization-done'));
+                    this.logInfo(CoreMessageService.getMessage('step-before-initialization-done'));
                     CORE.STATE$.next(CoreStateEnum.BEFORE_INITIALIZATION_DONE);
                 }, (error: ApplicationException) => {
                     CORE.setError(error);
@@ -265,7 +265,7 @@ export class CORE {
         this.registerHandler.bindPaths();
     }
     protected build(constructor: Function | Object): Observable<boolean> {
-        this.logDebug(Messages.getMessage('building'));
+        this.logDebug(CoreMessageService.getMessage('building'));
         return this.buildDependenciesTree().pipe(
             switchMap(() => {
                 return this.instanceHandler.buildInstances(constructor, this.dependencyHandler.getDependenciesTree());
@@ -273,7 +273,7 @@ export class CORE {
         );
     }
     protected buildApplication(constructor: Function | Object): void {
-        this.logInfo(Messages.getMessage('configuring-application-class'));
+        this.logInfo(CoreMessageService.getMessage('configuring-application-class'));
         if ((typeof constructor) === 'object') {
             this.instanceHandler.registerInstance(constructor);
         } else {
@@ -290,24 +290,24 @@ export class CORE {
         this.coreProperties = this.propertiesHandler.getProperties('the-way.core') as PropertyModel;
         const logProperties = this.coreProperties.log as PropertyModel;
         const languageProperty = this.coreProperties.language as string;
-        Messages.setLanguage(languageProperty);
+        CoreMessageService.setLanguage(languageProperty);
         this.logger.setProperties(logProperties);
     }
     protected destroy(error?: Error): void {
         let code = 0;
         const mustExit = this.coreProperties && this.coreProperties['process-exit'] as boolean;
         if (error) {
-            this.logError(Messages.getMessage('error'), error as Error);
+            this.logError(CoreMessageService.getMessage('error'), error as Error);
             code = 1;
         }
-        this.logInfo(Messages.getMessage('step-destruction-started'));
+        this.logInfo(CoreMessageService.getMessage('step-destruction-started'));
         this.destroyTheArmy().subscribe(
             () => {
-                this.logInfo(Messages.getMessage('destruction-destroyed'));
+                this.logInfo(CoreMessageService.getMessage('destruction-destroyed'));
             }, (destructionError: Error) => {
                 const finalError = new ApplicationException(
-                    Messages.getMessage('error-in-destruction', [destructionError.message]),
-                    Messages.getMessage('TW-012'),
+                    CoreMessageService.getMessage('error-in-destruction', [destructionError.message]),
+                    CoreMessageService.getMessage('TW-012'),
                     destructionError
                 );
                 this.logger.error(finalError, '[The Way]');
@@ -315,7 +315,7 @@ export class CORE {
                 code = 2;
                 CORE.destroyed(code, mustExit);
             }, () => {
-                this.logInfo(Messages.getMessage('step-destruction-done'));
+                this.logInfo(CoreMessageService.getMessage('step-destruction-done'));
                 CORE.destroyed(code, mustExit);
             }
         );
@@ -340,7 +340,7 @@ export class CORE {
         return this.registerHandler;
     }
     protected initialize(constructor: Function | Object): void {
-        this.logInfo(Messages.getMessage('step-initialization-started'));
+        this.logInfo(CoreMessageService.getMessage('step-initialization-started'));
         this.build(constructor).pipe(
             map(() => {
                 this.buildApplication(constructor);
@@ -348,7 +348,7 @@ export class CORE {
             })
         ).subscribe(
             () => {
-                this.logInfo(Messages.getMessage('step-initialization-done'));
+                this.logInfo(CoreMessageService.getMessage('step-initialization-done'));
                 CORE.STATE$.next(CoreStateEnum.INITIALIZATION_DONE);
             },
             (error: Error) => {

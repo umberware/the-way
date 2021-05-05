@@ -1,4 +1,4 @@
-import { CORE } from '../core';
+import { CORE } from '../../core';
 
 /* eslint-disable @typescript-eslint/ban-types */
 export const Inject = (

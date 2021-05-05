@@ -1,11 +1,11 @@
-import { Logger } from '../shared/logger';
-import { DependencyModel } from '../model/dependency.model';
-import { Messages } from '../shared/messages';
+import { CoreLogger } from '../service/core-logger';
+import { DependencyModel } from '../shared/model/dependency.model';
+import { CoreMessageService } from '../service/core-message.service';
 import { InstanceHandler } from './instance.handler';
 import { ApplicationException } from '../exeption/application.exception';
-import { LogLevelEnum } from '../shared/log-level.enum';
+import { LogLevelEnum } from '../shared/enum/log-level.enum';
 import { RegisterHandler } from './register.handler';
-import { DependencyTreeModel } from '../model/dependency-tree.model';
+import { DependencyTreeModel } from '../shared/model/dependency-tree.model';
 
 /*
     eslint-disable @typescript-eslint/no-explicit-any,
@@ -17,7 +17,7 @@ export class DependencyHandler {
     protected DEPENDENCIES_TREE: DependencyTreeModel;
 
     constructor(
-        protected logger: Logger,
+        protected logger: CoreLogger,
         protected instanceHandler: InstanceHandler,
         protected registerHandler: RegisterHandler
     ) {
@@ -42,8 +42,8 @@ export class DependencyHandler {
             const matches = found.match(regex);
             if (matches) {
                 throw new ApplicationException(
-                    Messages.getMessage('error-circular-dependency', [dependentName, dependency]),
-                    Messages.getMessage('TW-008')
+                    CoreMessageService.getMessage('error-circular-dependency', [dependentName, dependency]),
+                    CoreMessageService.getMessage('TW-008')
                 );
             }
 
@@ -89,6 +89,6 @@ export class DependencyHandler {
         }
 
         treeMessage = treeMessage.substr(0, treeMessage.length - 1);
-        this.logger.debug(Messages.getMessage('building-dependencies-tree-done', [treeMessage]), '[The Way]');
+        this.logger.debug(CoreMessageService.getMessage('building-dependencies-tree-done', [treeMessage]), '[The Way]');
     }
 }

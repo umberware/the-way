@@ -12,6 +12,17 @@ In this version the library was refactored and this is the new beginning.
 - **documentation:** Now, all the documentation is present in this repository.
     - **application-properties**: added
     - **CoreCryptoService documentation**: added
+    - **HttpCodesEnum documentation**: added
+    - **CoreStateEnum documentation**: added
+    - **ClassTypeEnum documentation**: added
+    - **LogLevelEnum documentation**: added
+    - **HttpTypeEnum documentation**: added
+    - **RestException documentation**: added
+    - **ApplicationException documentation**: added
+    - **BadRequestException documentation**: added
+    - **InternalException documentation**: added
+    - **NotAllowedException documentation**: added
+    - **NotFoundException documentation**: added
 
 ### Changed
 

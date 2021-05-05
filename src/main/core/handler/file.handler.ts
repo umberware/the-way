@@ -4,10 +4,10 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
 
-import { PropertyModel } from '../model/property.model';
-import { Messages } from '../shared/messages';
-import { Logger } from '../shared/logger';
-import { ClassTypeEnum } from '../shared/class-type.enum';
+import { PropertyModel } from '../shared/model/property.model';
+import { CoreMessageService } from '../service/core-message.service';
+import { CoreLogger } from '../service/core-logger';
+import { ClassTypeEnum } from '../shared/enum/class-type.enum';
 import { ApplicationException } from '../exeption/application.exception';
 
 /* eslint-disable  no-console */
@@ -16,7 +16,7 @@ export class FileHandler {
 
     constructor(
         protected scanProperties: PropertyModel,
-        protected logger: Logger
+        protected logger: CoreLogger
     ) {}
 
     protected buildPath(): string {
@@ -65,7 +65,7 @@ export class FileHandler {
         if (!this.scanProperties.enabled) {
             return of(true);
         }
-        this.logger.info(Messages.getMessage('register-scanning'), '[The Way]');
+        this.logger.info(CoreMessageService.getMessage('register-scanning'), '[The Way]');
 
         const path = this.buildPath();
         return fromPromise(this.loadApplicationFiles(path)).pipe(
@@ -81,7 +81,7 @@ export class FileHandler {
             stream.on('data', (data) => {
                 if (data.toString().search(regex) > -1) {
                     this.FOUND_FILES.push(fullPath);
-                    this.logger.debug(Messages.getMessage('register-found-resource', [fullPath]), '[The Way]');
+                    this.logger.debug(CoreMessageService.getMessage('register-found-resource', [fullPath]), '[The Way]');
                     import(fullPath).then(() => {
                         resolve();
                     }).catch((ex) => reject(ex));
@@ -113,8 +113,8 @@ export class FileHandler {
         } catch (ex) {
             this.logger.error(ex);
             throw new ApplicationException(
-                Messages.getMessage('error-cannot-scan', [ex.message]),
-                Messages.getMessage('TW-003'),
+                CoreMessageService.getMessage('error-cannot-scan', [ex.message]),
+                CoreMessageService.getMessage('TW-003'),
                 ex
             );
         }

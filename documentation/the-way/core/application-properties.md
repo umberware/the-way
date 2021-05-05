@@ -1,7 +1,7 @@
 ## Application Properties
 
 The Application Core accepts a lot of properties for customization & configuration. In this section we will talk about those properties and what is their purpose.
-You can check the default properties file [here](../../../../src/main/resources/application.properties.yml).
+You can check the default properties file [here](../../../src/main/resources/application.properties.yml).
 
 ### Summary
 
@@ -26,7 +26,7 @@ You can check the default properties file [here](../../../../src/main/resources/
 
 ### Behavior
 
-By default, the CORE application will try to load an application.properties.yml in the root of the project. If hasen't an application file, the core will load the [default properties](../../../../src/main/resources/application.properties.yml).
+By default, the CORE application will try to load an application.properties.yml in the root of the project. If hasen't an application file, the core will load the [default properties](../../../src/main/resources/application.properties.yml).
 You can pass an argument in command line to pass a specific application.properties.yml path.
 Also, you can pass properties in command line.
 The application will **sum** the default properties, your application properties and the command line properties, priority:
@@ -108,12 +108,12 @@ Relative to the Logger(An injectable service to log information) has the follow 
  - level: Can assume 0 or 1. When 0 will log debug and when 1 only errors and info. *By default 1*
  - date: Will log the date when logging. *By default true*
 
-See the logger documentation [here](logger.md)
+See the logger documentation [here](service/core-logger.md)
 
 ### the-way.core.language
 
 Represents the language that will be used in the Messages.getMessage. *By default en*.
-You can check how to customize and enable another language [here](messages.md);
+You can check how to customize and enable another language [here](service/core-message-service.md);
 
 ### the-way.core.process-exit
 
@@ -121,7 +121,7 @@ When an error occurs at the boot core or is called the [destroy](core.md#coredes
 
 ### the-way.server
 
-Represents all the servers configurations in the application. See [Server Configuration](../configuration/server-configuration.md) documentation.
+Represents all the servers configurations in the application. See [Server Configuration](configuration/server-configuration.md) documentation.
 
 ### the-way.server.enabled
 
@@ -174,8 +174,8 @@ those properties are used to configure the REST operations of your application. 
       - path: Is the path for a swagger.json. The swagger.json is used in the SwaggerUI. *By default swagger.json*
       - full: When true, the `the-way.server.rest.swagger.file.path` must be absolute. *By default false*
 
-You can check more informations in [CoreCryptoService](core-crypto-service-doc.md), [ServerConfiguration](../configuration/server-configuration.md) and
-[CoreRestService](core-rest-service.md)
+You can check more informations in [CoreCryptoService](service/core-crypto-service-doc.md), [ServerConfiguration](configuration/server-configuration.md) and
+[CoreRestService](service/core-rest-service.md)
 
 ### the-way.server.file
 

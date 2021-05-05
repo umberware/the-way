@@ -1,4 +1,4 @@
-import { ApplicationException, CORE, Messages } from '../../../main';
+import { ApplicationException, CORE, CoreMessageService } from '../../../main';
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 
 afterAll(done => {
@@ -17,8 +17,8 @@ test('Overridde: Twice Same Class', done => {
             () => expect(true).toBeFalsy(),
             (error: Error | undefined) => {
                 if (error && error instanceof ApplicationException) {
-                    expect(error.detail).toBe(Messages.getMessage('error-cannot-overridden-twice', [ 'DependencyAServiceTest', 'DependencyBServiceTest', 'DependencyCServiceTest' ]))
-                    expect(error.description).toBe(Messages.getMessage('TW-010'))
+                    expect(error.detail).toBe(CoreMessageService.getMessage('error-cannot-overridden-twice', [ 'DependencyAServiceTest', 'DependencyBServiceTest', 'DependencyCServiceTest' ]))
+                    expect(error.description).toBe(CoreMessageService.getMessage('TW-010'))
                     done();
                 }
             }

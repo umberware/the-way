@@ -1,7 +1,7 @@
-import { CORE } from '../core';
-import { TheWayApplication } from '../../core/the-way-application';
-import { ApplicationException } from '../exeption/application.exception';
-import { Messages } from '../shared/messages';
+import { CORE } from '../../core';
+import { TheWayApplication } from '../../the-way-application';
+import { ApplicationException } from '../../exeption/application.exception';
+import { CoreMessageService } from '../../service/core-message.service';
 
 /* eslint-disable @typescript-eslint/ban-types*/
 export const ApplicationMetaKey = 'Application';
@@ -9,8 +9,8 @@ export const Application = (params?: { automatic?: boolean; }) => {
     return (constructor: Function): void => {
         if (!(constructor.prototype instanceof TheWayApplication)) {
             throw new ApplicationException(
-                Messages.getMessage('error-is-not-the-way'),
-                Messages.getMessage('TW-001')
+                CoreMessageService.getMessage('error-is-not-the-way'),
+                CoreMessageService.getMessage('TW-001')
             );
         }
 

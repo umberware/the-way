@@ -1,4 +1,4 @@
-import { HttpType } from '../enum/http-type.enum';
+import { HttpTypeEnum } from '../enum/http-type.enum';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface PathModel {
@@ -7,5 +7,5 @@ export interface PathModel {
     path: string;
     target: any;
     propertyKey: string;
-    type: HttpType;
+    type: HttpTypeEnum;
 }

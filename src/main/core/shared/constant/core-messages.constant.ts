@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-export const MESSAGES: { [key: string]: { [key: string]: string | number; } } = {
+export const CORE_MESSAGES: { [key: string]: { [key: string]: string | number; } } = {
     'en': {
         'building': 'Building: Started',
         'building-core-instances': 'Building: Core instances...',
@@ -41,6 +41,7 @@ export const MESSAGES: { [key: string]: { [key: string]: string | number; } } = 
         'http-bad-request': 'Bad Request',
         'http-internal-server-error': 'Internal Server Error',
         'http-not-allowed': 'Not Allowed',
+        'http-not-found': 'Not Found',
         'http-not-authorized': 'Not Authorized',
         'http-server-initialization': 'Configuring the Http & Https server.',
         'http-server-running': 'HttpServer started on port $',
@@ -86,33 +87,3 @@ export const MESSAGES: { [key: string]: { [key: string]: string | number; } } = 
         'warning-http-file-with-helmet': 'Http enabled but with HELMET parameters. This can cause problems in file server.',
     }
 };
-
-export class Messages {
-    static messages = MESSAGES;
-    static language = 'en'
-    static setLanguage(language: string): void {
-        this.language = language;
-    }
-    private static get(name: string): string | number {
-        const defaultMessages = this.messages.en;
-        let languageMessages = this.messages[this.language];
-        if (!languageMessages) {
-            languageMessages = defaultMessages;
-        }
-        return (languageMessages[name]) ? languageMessages[name] : defaultMessages[name];
-    }
-    static getCodeMessage(name: string): number {
-        return this.get(name) as number;
-    }
-    static getMessage(name: string, replacements?: Array<string>): string {
-        let message = this.get(name) as string;
-
-        if (replacements && (typeof message === 'string')) {
-            for (const replace of replacements) {
-                message = (message as string).replace('$', replace);
-            }
-        }
-
-        return message;
-    }
-}

@@ -1,7 +1,7 @@
 import { EnvironmentTest } from '../../resources/environment/environment.test';
-import { CORE, MESSAGES } from '../../../main';
+import { CORE, CORE_MESSAGES } from '../../../main';
 
-MESSAGES.br = {};
+CORE_MESSAGES.br = {};
 
 afterAll(done => {
     EnvironmentTest.clear(done);
@@ -21,7 +21,7 @@ test('Overridde: Simple', done => {
                 const instances = EnvironmentTest.getInstancesWithout([ result.Main ]);
                 const overriden = CORE.getOverriden();
                 const tree = EnvironmentTest.getDependenciesTree();
-                const expectedDependencyTree = { DependentAxServiceTest: { DependencyAServiceTest: true, Logger: true}};
+                const expectedDependencyTree = { DependentAxServiceTest: { DependencyAServiceTest: true, CoreLogger: true}};
                 const expectedOverriden = { DependencyAServiceTest: 'DependencyBServiceTest' };
 
                 console.log(expectedOverriden);

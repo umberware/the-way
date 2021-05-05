@@ -1,10 +1,10 @@
 import * as Yaml from 'yaml';
 import * as fs from 'fs';
 
-import { PropertyModel } from '../model/property.model';
-import { Messages } from '../shared/messages';
+import { PropertyModel } from '../shared/model/property.model';
+import { CoreMessageService } from '../service/core-message.service';
 import { ApplicationException } from '../exeption/application.exception';
-import { Logger } from '../shared/logger';
+import { CoreLogger } from '../service/core-logger';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 export class PropertiesHandler {
@@ -12,7 +12,7 @@ export class PropertiesHandler {
     private defaultProperties: PropertyModel;
     protected properties: PropertyModel;
 
-    constructor(protected logger: Logger) {
+    constructor(protected logger: CoreLogger) {
         this.initialize();
     }
 
@@ -60,8 +60,8 @@ export class PropertiesHandler {
             return Yaml.parse(fs.readFileSync(path).toString());
         } catch(ex) {
             throw new ApplicationException(
-                Messages.getMessage('error-properties-not-valid'),
-                Messages.getMessage('TW-011'),
+                CoreMessageService.getMessage('error-properties-not-valid'),
+                CoreMessageService.getMessage('TW-011'),
                 ex
             );
         }
@@ -76,7 +76,7 @@ export class PropertiesHandler {
             try {
                 this.loadLocalFile();
             } catch (ex) {
-                this.logger.warn(Messages.getMessage('warning-properties-not-gived'), '[The Way]');
+                this.logger.warn(CoreMessageService.getMessage('warning-properties-not-gived'), '[The Way]');
                 this.properties = this.defaultProperties;
             }
         }

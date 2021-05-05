@@ -1,9 +1,9 @@
 import * as Crypto from 'crypto';
-import { System } from '../decorator/system.decorator';
-import { Service } from '../decorator/service.decorator';
+import { System } from '../decorator/core/system.decorator';
+import { Service } from '../decorator/core/service.decorator';
 
 /**
- *   CoreCryptoService
+ *   @name CoreCryptoService
  *   This component can be used to encrypt/decrypt, generate a hash and generate a random hash.
  *   @since 1.0.0
  */

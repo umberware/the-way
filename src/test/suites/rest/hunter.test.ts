@@ -1,6 +1,6 @@
 import { map, switchMap } from 'rxjs/operators';
 
-import { CORE, Messages, RestException } from '../../../main';
+import { CORE, CoreMessageService, RestException } from '../../../main';
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 import { HttpsRequestorEnvironment } from '../../resources/environment/https-requestor.environment.test';
 
@@ -41,8 +41,8 @@ describe('Rest', () => {
             () => {},
             error => {
                 expect(error.code).toBe(403);
-                expect(error.detail).toBe(Messages.getMessage('error-rest-cannot-perform-action'));
-                expect(error.description).toBe(Messages.getMessage('http-not-allowed'));
+                expect(error.detail).toBe(CoreMessageService.getMessage('error-rest-cannot-perform-action'));
+                expect(error.description).toBe(CoreMessageService.getMessage('http-not-allowed'));
                 done();
             }
         );

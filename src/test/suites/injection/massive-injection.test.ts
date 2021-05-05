@@ -27,7 +27,7 @@ test('Injection: Massive Injection', done => {
                     const buildOrder = (instanceHandler as any).getBuildDependenciesOrder(dependencyTree);
                     expect(buildOrder.length).toBe(10);
                     expect(buildOrder.toString()).toBe(
-                        'Logger,PropertiesHandler,ServerConfiguration,CoreCryptoService,CoreSecurityService,' +
+                        'CoreLogger,PropertiesHandler,ServerConfiguration,CoreCryptoService,CoreSecurityService,' +
                         'CoreRestService,ServiceCTest,ServiceDTest,ServiceATest,ServiceBTest'
                     )
                     done();

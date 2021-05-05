@@ -1,4 +1,4 @@
-import { ApplicationException, CORE, Messages } from '../../../main';
+import { ApplicationException, CORE, CoreMessageService } from '../../../main';
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 
 afterAll(done => {

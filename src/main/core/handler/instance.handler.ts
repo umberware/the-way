@@ -2,15 +2,15 @@ import { BehaviorSubject, forkJoin, isObservable, Observable, of, throwError } f
 import { map, switchMap } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
 
-import { Logger } from '../shared/logger';
-import { InstancesMapModel } from '../model/instances-map.model';
+import { CoreLogger } from '../service/core-logger';
+import { InstancesMapModel } from '../shared/model/instances-map.model';
 import { RegisterHandler } from './register.handler';
-import { ConstructorModel } from '../model/constructor.model';
-import { Messages } from '../shared/messages';
-import { Destroyable } from '../shared/destroyable';
+import { ConstructorModel } from '../shared/model/constructor.model';
+import { CoreMessageService } from '../service/core-message.service';
+import { Destroyable } from '../shared/abstract/destroyable';
 import { ApplicationException } from '../exeption/application.exception';
-import { DependencyTreeModel } from '../model/dependency-tree.model';
-import { Configurable } from '../shared/configurable';
+import { DependencyTreeModel } from '../shared/model/dependency-tree.model';
+import { Configurable } from '../shared/abstract/configurable';
 
 /*
     eslint-disable @typescript-eslint/ban-types,
@@ -21,7 +21,7 @@ export class InstanceHandler {
     protected INSTANCES: InstancesMapModel;
 
     constructor(
-        protected logger: Logger,
+        protected logger: CoreLogger,
         protected registerHandler: RegisterHandler
     )   {
         this.initialize();
@@ -38,7 +38,7 @@ export class InstanceHandler {
 
             Reflect.set(target, dependencyInformation.key as string, instance);
             this.logger.debug(
-                Messages.getMessage(
+                CoreMessageService.getMessage(
                     'injection-injected',
                     [dependencyName, dependent, dependencyInformation.key]
                 ),
@@ -52,11 +52,11 @@ export class InstanceHandler {
         return object;
     }
     public buildCoreComponents(): Array<Configurable> {
-        this.logger.debug(Messages.getMessage('building-core-instances'), '[The Way]');
+        this.logger.debug(CoreMessageService.getMessage('building-core-instances'), '[The Way]');
         return this.buildComponents(Object.values(this.registerHandler.getCoreComponents()));
     }
     public buildApplicationComponents(): Array<Configurable> {
-        this.logger.debug(Messages.getMessage('building-instances'), '[The Way]');
+        this.logger.debug(CoreMessageService.getMessage('building-instances'), '[The Way]');
         return this.buildComponents(Object.values(this.registerHandler.getComponents()));
     }
     protected buildComponents(components: Array<any>): Array<Configurable> {
@@ -136,7 +136,7 @@ export class InstanceHandler {
         const registeredConstructorName = registeredConstructor.name;
         if (!this.INSTANCES[registeredConstructorName]) {
             this.logger.debug(
-                Messages.getMessage('building-instance', [ registeredConstructorName ]),
+                CoreMessageService.getMessage('building-instance', [ registeredConstructorName ]),
                 '[The Way]'
             );
             const instance = this.buildObject(registeredConstructor.constructorFunction);
@@ -156,7 +156,7 @@ export class InstanceHandler {
         }
     }
     public buildInstances(constructor: Function | Object, dependencyTree: DependencyTreeModel): Observable<boolean> {
-        this.logger.debug(Messages.getMessage('building-dependencies-instances'), '[The Way]');
+        this.logger.debug(CoreMessageService.getMessage('building-dependencies-instances'), '[The Way]');
         return this.buildDependenciesInstances(constructor, dependencyTree).pipe(
             switchMap(() => {
                 const configurableInstances = this.buildCoreComponents();
@@ -171,7 +171,7 @@ export class InstanceHandler {
         for (const instance of instances) {
             let observable: Observable<any>;
             try {
-                this.logger.debug(Messages.getMessage(messageKey, [ instance.constructor.name ]), '[The Way]');
+                this.logger.debug(CoreMessageService.getMessage(messageKey, [ instance.constructor.name ]), '[The Way]');
                 const method = Reflect.get(instance, methodName) as Function;
                 const result = Reflect.apply(method, instance, []);
                 observable = this.buildObservableFromResult(result);
@@ -200,7 +200,7 @@ export class InstanceHandler {
     protected configureInstance(instance: Configurable): Observable<any> {
         try {
             this.logger.debug(
-                Messages.getMessage('configuring-instance', [ instance.constructor.name ]),
+                CoreMessageService.getMessage('configuring-instance', [ instance.constructor.name ]),
                 '[The Way]'
             );
             return this.buildObservableFromResult((instance).configure());
@@ -255,8 +255,8 @@ export class InstanceHandler {
             return instance;
         } else {
             throw new ApplicationException(
-                Messages.getMessage('error-not-found-instance', [name]),
-                Messages.getMessage('TW-012')
+                CoreMessageService.getMessage('error-not-found-instance', [name]),
+                CoreMessageService.getMessage('TW-012')
             );
         }
     }

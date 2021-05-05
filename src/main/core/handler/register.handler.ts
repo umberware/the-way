@@ -1,24 +1,24 @@
 import 'reflect-metadata';
 
 import { CORE } from '../core';
-import { Configurable } from '../shared/configurable';
-import { ClassTypeEnum } from '../shared/class-type.enum';
-import { Destroyable } from '../shared/destroyable';
-import { Logger } from '../shared/logger';
-import { Messages } from '../shared/messages';
+import { Configurable } from '../shared/abstract/configurable';
+import { ClassTypeEnum } from '../shared/enum/class-type.enum';
+import { Destroyable } from '../shared/abstract/destroyable';
+import { CoreLogger } from '../service/core-logger';
+import { CoreMessageService } from '../service/core-message.service';
 import { ApplicationException } from '../exeption/application.exception';
-import { ConstructorMapModel } from '../model/constructor-map.model';
-import { DependencyModel } from '../model/dependency.model';
-import { DependencyMapModel } from '../model/dependency-map.model';
-import { ConstructorModel } from '../model/constructor.model';
-import { OverriddenMapModel } from '../model/overridden-map.model';
+import { ConstructorMapModel } from '../shared/model/constructor-map.model';
+import { DependencyModel } from '../shared/model/dependency.model';
+import { DependencyMapModel } from '../shared/model/dependency-map.model';
+import { ConstructorModel } from '../shared/model/constructor.model';
+import { OverriddenMapModel } from '../shared/model/overridden-map.model';
 import { PropertiesHandler } from './properties.handler';
 import { FileHandler } from './file.handler';
 import { InstanceHandler } from './instance.handler';
 import { DependencyHandler } from './dependency.handler';
-import { HttpType } from '../enum/http-type.enum';
-import { PathMapModel } from '../model/path-map.model';
-import { PropertyModel } from '../model/property.model';
+import { HttpTypeEnum } from '../shared/enum/http-type.enum';
+import { PathMapModel } from '../shared/model/path-map.model';
+import { PropertyModel } from '../shared/model/property.model';
 import { CoreRestService } from '../service/core-rest.service';
 
 /*
@@ -38,7 +38,7 @@ export class RegisterHandler {
 
     constructor(
         protected serverProperties: PropertyModel,
-        protected logger: Logger
+        protected logger: CoreLogger
     ) {
         this.initialize();
     }
@@ -50,16 +50,16 @@ export class RegisterHandler {
 
         if (!isHttpEnabled && paths.length > 0) {
             throw new ApplicationException(
-                Messages.getMessage('error-server-cannot-map-path'),
-                Messages.getMessage('TW-011')
+                CoreMessageService.getMessage('error-server-cannot-map-path'),
+                CoreMessageService.getMessage('TW-011')
             );
         }
 
         for (const fatherPath of paths) {
             if (!fatherPath.inContext) {
                 throw new ApplicationException(
-                    Messages.getMessage('error-rest-operation-not-in-rest'),
-                    Messages.getMessage('TW-011')
+                    CoreMessageService.getMessage('error-rest-operation-not-in-rest'),
+                    CoreMessageService.getMessage('TW-011')
                 );
             }
 
@@ -144,8 +144,8 @@ export class RegisterHandler {
     protected registerComponent(constructor: Function, type: ClassTypeEnum, over?: Function): void {
         if (this.isCoreConstructor(constructor, over)) {
             CORE.setError(new ApplicationException(
-                Messages.getMessage('error-cannot-overridden-core-classes', [constructor.name]),
-                Messages.getMessage('TW-014'),
+                CoreMessageService.getMessage('error-cannot-overridden-core-classes', [constructor.name]),
+                CoreMessageService.getMessage('TW-014'),
             ));
             return;
         }
@@ -156,7 +156,7 @@ export class RegisterHandler {
             coreComponent.type = type;
             return;
         } else {
-            this.logger.debug(Messages.getMessage('register-class', [constructor.name, type]), '[The Way]');
+            this.logger.debug(CoreMessageService.getMessage('register-class', [constructor.name, type]), '[The Way]');
 
             if (over) {
                 this.registerOverriddenClass(over.name, constructor);
@@ -183,7 +183,7 @@ export class RegisterHandler {
             delete this.COMPONENTS[constructorName];
         } else {
             type = ClassTypeEnum.COMMON;
-            this.logger.debug(Messages.getMessage('register-class', [constructor.name, type]), '[The Way]');
+            this.logger.debug(CoreMessageService.getMessage('register-class', [constructor.name, type]), '[The Way]');
         }
 
         this.registerClass(constructorName, constructor, type, true);
@@ -193,7 +193,7 @@ export class RegisterHandler {
         const dependencyName: string = dependencyConstructor.name;
 
         this.logger.debug(
-            Messages.getMessage(
+            CoreMessageService.getMessage(
                 'register-dependency',
                 [dependencyName, dependentName]
             ), '[The Way]'
@@ -215,8 +215,8 @@ export class RegisterHandler {
     public registerInjection(dependencyConstructor: Function, target: object, propertyKey: string): void {
         if (!dependencyConstructor) {
             CORE.setError(new ApplicationException(
-                Messages.getMessage('error-not-found-dependency-constructor', [propertyKey, target.constructor.name]),
-                Messages.getMessage('TW-009')
+                CoreMessageService.getMessage('error-not-found-dependency-constructor', [propertyKey, target.constructor.name]),
+                CoreMessageService.getMessage('TW-009')
             ));
             return;
         }
@@ -224,8 +224,8 @@ export class RegisterHandler {
         this.registerDependency(dependencyConstructor, target, propertyKey);
         if (this.isCoreConstructor(dependencyConstructor) && dependencyConstructor !== PropertiesHandler) {
             CORE.setError(new ApplicationException(
-                Messages.getMessage('error-cannot-inject', [dependencyConstructor.name]),
-                Messages.getMessage('TW-015')
+                CoreMessageService.getMessage('error-cannot-inject', [dependencyConstructor.name]),
+                CoreMessageService.getMessage('TW-015')
             ));
             return;
         } else {
@@ -237,15 +237,15 @@ export class RegisterHandler {
     protected registerOverriddenClass(name: string, constructor: Function): void {
         if (this.OVERRIDEN[name]) {
             CORE.setError(new ApplicationException(
-                Messages.getMessage('error-cannot-overridden-twice', [ name,  this.OVERRIDEN[name], constructor.name]),
-                Messages.getMessage('TW-010')
+                CoreMessageService.getMessage('error-cannot-overridden-twice', [ name,  this.OVERRIDEN[name], constructor.name]),
+                CoreMessageService.getMessage('TW-010')
             ));
             return;
         }
 
         const overridenName = constructor.name;
         this.OVERRIDEN[name] = overridenName;
-        this.logger.debug(Messages.getMessage('register-overridden', [name, overridenName]), '[The Way]');
+        this.logger.debug(CoreMessageService.getMessage('register-overridden', [name, overridenName]), '[The Way]');
     }
     public registerRest(constructor: Function, path?: string, isAuthenticed?: boolean, allowedProfiles?: Array<any>): void {
         const name = constructor.name;
@@ -264,11 +264,11 @@ export class RegisterHandler {
             mapper.fatherPath = path;
             mapper.isAuthenticed = isAuthenticed;
 
-            this.logger.debug(Messages.getMessage('register-father-path', [path, constructor.name]), '[The Way]');
+            this.logger.debug(CoreMessageService.getMessage('register-father-path', [path, constructor.name]), '[The Way]');
         }
     }
     public registerRestPath(
-        type: HttpType, path: string, target: any, propertyKey: string,
+        type: HttpTypeEnum, path: string, target: any, propertyKey: string,
         isAuthenticated?: boolean, allowedProfiles?: Array<any>
     ): void {
         const fatherName = target.constructor.name;
@@ -287,7 +287,7 @@ export class RegisterHandler {
             allowedProfiles
         });
         this.logger.info(
-            Messages.getMessage('register-path', [type.toUpperCase(), path, fatherName])
+            CoreMessageService.getMessage('register-path', [type.toUpperCase(), path, fatherName])
         );
     }
     public registerService(constructor: Function, over?: Function): void {

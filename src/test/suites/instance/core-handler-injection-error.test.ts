@@ -5,7 +5,7 @@ import {
     CORE,
     FileHandler,
     Inject,
-    Messages,
+    CoreMessageService,
     TheWayApplication
 } from '../../../main';
 
@@ -29,7 +29,7 @@ test('Instance: Core Handler Inject Error', done => {
         () => expect(true).toBeFalsy(),
         (error: Error | undefined) => {
             if (error && error instanceof ApplicationException) {
-                expect(error.getDetail()).toBe(Messages.getMessage('error-cannot-inject', [ 'FileHandler' ]))
+                expect(error.getDetail()).toBe(CoreMessageService.getMessage('error-cannot-inject', [ 'FileHandler' ]))
                 done();
             }
         }

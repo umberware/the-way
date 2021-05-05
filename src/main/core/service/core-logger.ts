@@ -1,9 +1,9 @@
 import { ApplicationException } from '../exeption/application.exception';
-import { LogLevelEnum } from './log-level.enum';
-import { PropertyModel } from '../model/property.model';
+import { LogLevelEnum } from '../shared/enum/log-level.enum';
+import { PropertyModel } from '../shared/model/property.model';
 
 /* eslint-disable no-console */
-export class Logger {
+export class CoreLogger {
 
     protected logProperties: PropertyModel;
 

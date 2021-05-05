@@ -1,4 +1,4 @@
-import { CORE, Messages } from '../../../main';
+import { CORE, CoreMessageService } from '../../../main';
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 
 afterAll(done => {
@@ -18,8 +18,8 @@ describe('Server Configuration: ', () => {
                 CORE.whenDestroyed().subscribe(
                     () => expect(true).toBeFalsy(),
                     (error: any) => {
-                        expect(error.description).toBe(Messages.getMessage('TW-011'));
-                        expect(error.detail).toBe(Messages.getMessage('error-server-not-enabled'));
+                        expect(error.description).toBe(CoreMessageService.getMessage('TW-011'));
+                        expect(error.detail).toBe(CoreMessageService.getMessage('error-server-not-enabled'));
                         done();
                     }
                 );

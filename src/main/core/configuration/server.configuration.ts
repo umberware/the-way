@@ -12,16 +12,16 @@ import helmet = require('helmet');
 import cors = require('cors');
 import bodyParser = require('body-parser');
 
-import { Configuration }  from '../decorator/configuration.decorator';
-import { Inject } from '../decorator/inject.decorator';
+import { Configuration }  from '../decorator/core/configuration.decorator';
+import { Inject } from '../decorator/core/inject.decorator';
 import { PropertiesHandler } from '../handler/properties.handler';
-import { PropertyModel } from '../model/property.model';
-import { System } from '../decorator/system.decorator';
-import { Configurable } from '../shared/configurable';
-import { Logger } from '../shared/logger';
-import { Messages } from '../shared/messages';
+import { PropertyModel } from '../shared/model/property.model';
+import { System } from '../decorator/core/system.decorator';
+import { Configurable } from '../shared/abstract/configurable';
+import { CoreLogger } from '../service/core-logger';
+import { CoreMessageService } from '../service/core-message.service';
 import { ApplicationException } from '../exeption/application.exception';
-import { HttpType } from '../enum/http-type.enum';
+import { HttpTypeEnum } from '../shared/enum/http-type.enum';
 
 /*
     eslint-disable @typescript-eslint/ban-types,
@@ -31,7 +31,7 @@ import { HttpType } from '../enum/http-type.enum';
 @System
 @Configuration()
 export class ServerConfiguration extends Configurable {
-    @Inject logger: Logger;
+    @Inject logger: CoreLogger;
     @Inject propertiesHandler: PropertiesHandler;
 
     protected httpProperties: PropertyModel;
@@ -105,14 +105,14 @@ export class ServerConfiguration extends Configurable {
     ): void {
         const messageKey = (server instanceof Http.Server) ? 'http-server-running' : 'https-server-running';
         server.listen(properties.port, () => {
-            this.logger.info(Messages.getMessage(messageKey, [properties.port as string]),'[The Way]');
+            this.logger.info(CoreMessageService.getMessage(messageKey, [properties.port as string]),'[The Way]');
             observer.next();
         });
         server.on('error', (error: any) => {
             observer.error(
                 new ApplicationException(
-                    Messages.getMessage('error-server', [error.code]),
-                    Messages.getMessage('TW-012'),
+                    CoreMessageService.getMessage('error-server', [error.code]),
+                    CoreMessageService.getMessage('TW-012'),
                     error
                 )
             );
@@ -153,7 +153,7 @@ export class ServerConfiguration extends Configurable {
         this.registerMiddleware(morgan('dev'));
     }
     public initializeFileServer(): void {
-        this.logger.debug(Messages.getMessage('http-file-enabled'), '[The Way]');
+        this.logger.debug(CoreMessageService.getMessage('http-file-enabled'), '[The Way]');
         const fileProperties = this.serverProperties.file as any;
         const filePath: string = this.buildPath(fileProperties, process.cwd());
 
@@ -204,7 +204,7 @@ export class ServerConfiguration extends Configurable {
         ).pipe(map(() => undefined));
     }
     protected initializeSwagger(): void {
-        this.logger.debug(Messages.getMessage('http-swagger-enabled'), '[The Way]');
+        this.logger.debug(CoreMessageService.getMessage('http-swagger-enabled'), '[The Way]');
         const restProperties = this.serverProperties.rest as any;
         const swaggerProperties = restProperties.swagger;
 
@@ -229,7 +229,7 @@ export class ServerConfiguration extends Configurable {
         return swagger !== undefined &&
             (swagger as PropertyModel).enabled as boolean;
     }
-    public registerPath(path: string, httpType: HttpType, executor: any): void {
+    public registerPath(path: string, httpType: HttpTypeEnum, executor: any): void {
         const restProperties = this.serverProperties.rest as any;
         const finalPath = restProperties.path + path;
 
@@ -240,12 +240,12 @@ export class ServerConfiguration extends Configurable {
         this.serverContext.use(middlewareFunction);
     }
     protected start(): Observable<void> {
-        this.logger.info(Messages.getMessage('http-server-initialization'), '[The Way]');
+        this.logger.info(CoreMessageService.getMessage('http-server-initialization'), '[The Way]');
 
         if (!this.httpProperties.enabled && !this.httpsProperties.enabled) {
             throw new ApplicationException(
-                Messages.getMessage('error-server-not-enabled'),
-                Messages.getMessage('TW-011')
+                CoreMessageService.getMessage('error-server-not-enabled'),
+                CoreMessageService.getMessage('TW-011')
             );
         }
 

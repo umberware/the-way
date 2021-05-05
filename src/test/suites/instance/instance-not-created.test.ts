@@ -1,5 +1,5 @@
 import { EnvironmentTest } from '../../resources/environment/environment.test';
-import { CORE, Messages } from '../../../main';
+import { CORE, CoreMessageService } from '../../../main';
 
 afterAll(done => {
     EnvironmentTest.clear(done);
@@ -16,10 +16,10 @@ test('Instance: Not Created', done => {
                 try {
                     CORE.getInstanceByName('MarvelGreatherThanDCFake');
                 } catch (ex) {
-                    expect(ex.detail).toBe(Messages.getMessage(
+                    expect(ex.detail).toBe(CoreMessageService.getMessage(
                         'error-not-found-instance', ['MarvelGreatherThanDCFake']
                     ));
-                    expect(ex.description).toBe(Messages.getMessage('TW-012'));
+                    expect(ex.description).toBe(CoreMessageService.getMessage('TW-012'));
                     done();
                 }
             }
