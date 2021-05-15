@@ -23,6 +23,7 @@ In this version the library was refactored and this is the new beginning.
     - **InternalException documentation**: added
     - **NotAllowedException documentation**: added
     - **NotFoundException documentation**: added
+    - **ServerConfiguration documentation**: added
 
 ### Changed
 

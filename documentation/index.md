@@ -7,6 +7,8 @@ Also, 'some getting started' will be related.
 
  - [Application Properties](the-way/core/application-properties.md)
  - [Core](the-way/core/core.md)
+ - Configuration
+    - [ServerConfiguration](the-way/core/configuration/server-configuration.md)
  - Service
     - [CoreCryptoService](the-way/core/service/core-crypto-service-doc.md)
  - Exception

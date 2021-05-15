@@ -88,7 +88,7 @@ This is the second step and is activated when the current value of the CoreState
 Is responsible for:
 
  - Build the Dependencies Tree
- - All registered classes decorated with [@Configuration](decorator/core-decorators.md#configuration) and extended with [Configurable](configuration/configurable.md) will be Configured
+ - All registered classes decorated with [@Configuration](decorator/core-decorators.md#configuration) and extended with [Configurable](shared/abstract/configurable.md) will be Configured
  - All registered classes via [Core Decorators](decorator/core-decorators.md) and [Register Handler](handler/register-handler.md) will be built
  - When the server is enabled, the [Server Configuration](configuration/server-configuration.md) will be configured and the registered paths with the [Rest Decorators](decorator/rest-decorators.md) will be bind.
 
@@ -100,8 +100,8 @@ When Finished:
 
   - CoreState change: from [INITIALIZATION_STARTED](shared/enum/core-state-enum.md#INITIALIZATION_STARTED) to [INITIALIZATION_DONE](shared/enum/core-state-enum.md#INITIALIZATION_DONE)
   - All classes mapped with the [Core Decorators](decorator/core-decorators.md), can be Injected
-  - All classes decorated with [@Configuration](decorator/core-decorators.md#configuration) and is extended with [Configurable](configuration/configurable.md), are configured
-  - All classes that are extended with [Destroyable](configuration/destroyable.md), will be destroyed when the Core step change to [destruction](#step-destruction)
+  - All classes decorated with [@Configuration](decorator/core-decorators.md#configuration) and is extended with [Configurable](shared/abstract/configurable.md), are configured
+  - All classes that are extended with [Destroyable](shared/abstract/destroyable.md), will be destroyed when the Core step change to [destruction](#step-destruction)
   - When server is enabled, the Http and/or Https can be accessed, and the rest operations is bind and accessible.
 
 ### Step: After Initialization
@@ -123,7 +123,7 @@ This is the destruction step and is activated when is called the method [destroy
 Is responsible for:
 
 - Destroy the core
-- Destroy all classes instances that extends the [destroyable](configuration/destroyable.md) class
+- Destroy all classes instances that extends the [destroyable](shared/abstract/destroyable.md) class
 - Will terminate the node process if the property the-way.core.process-exit is true (see [properties](application-properties.md))
 
 When Started:

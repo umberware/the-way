@@ -152,7 +152,7 @@ export class ServerConfiguration extends Configurable {
     protected initializeExpressOperationsLog(): any {
         this.registerMiddleware(morgan('dev'));
     }
-    public initializeFileServer(): void {
+    private initializeFileServer(): void {
         this.logger.debug(CoreMessageService.getMessage('http-file-enabled'), '[The Way]');
         const fileProperties = this.serverProperties.file as any;
         const filePath: string = this.buildPath(fileProperties, process.cwd());
