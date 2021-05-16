@@ -153,3 +153,5 @@ In the `package.json` over the "scripts" you need to add a new instruction:
 *Running and Watching the Code*
 
     npm run serve
+
+**For more examples or guides, you can access the [The Way Examples Repository](https://github.com/umberware/the-way-examples#readme) or/and [Guides](../index.md#guides)**

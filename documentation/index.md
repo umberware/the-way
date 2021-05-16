@@ -34,3 +34,4 @@ Also, 'some getting started' will be related.
 You can check all the code present in the guides in [The Way Examples Repository](https://github.com/umberware/the-way-examples)
 
  - [NodeJs With Typescript](guides/node-typescript-guide.md)
+ - [TheWay: HeroesRest](guides/the-way-heroes-rest.md)
