@@ -25,6 +25,7 @@ In this version the library was refactored and this is the new beginning.
     - **NotFoundException documentation**: added
     - **ServerConfiguration documentation**: added
     - **CoreDecorators documentation**: added
+    - **RestDecorators documentation**: added
 
 ### Changed
 

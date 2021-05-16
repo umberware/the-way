@@ -11,6 +11,7 @@ Also, 'some getting started' will be related.
     - [ServerConfiguration](the-way/core/configuration/server-configuration.md)
  - Decorators
     - [CoreDecorators](the-way/core/decorator/core-decorators.md)
+    - [RestDecorators](the-way/core/decorator/rest-decorators.md)
  - Service
     - [CoreCryptoService](the-way/core/service/core-crypto-service-doc.md)
  - Exception

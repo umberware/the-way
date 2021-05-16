@@ -110,6 +110,14 @@ Will be called when the Core change to [DESTRUCTION_STARTED](../core.md#step-des
 
 This method will register any REST path in the server and enable.
 
+Params:
+- *path*: The path to be registered
+- *httpType*: The operation type for the path
+- *executor*: the "function" that will execute
+
 ### Method: registerMiddleware
 
 With this method you can enable some middlewares(for express) in the server, like body parser, helmet and others.
+
+Params:
+- *middlewareFunction*: The middleware function that will be used in express context

@@ -28,6 +28,12 @@ import { HttpTypeEnum } from '../shared/enum/http-type.enum';
     @typescript-eslint/no-explicit-any,
     @typescript-eslint/explicit-module-boundary-types
 */
+/**
+ *   @name ServerConfiguration
+ *   @description The ServerConfiguration is responsible to start
+ *      the http/https server with some features.
+ *   @since 1.0.0
+ */
 @System
 @Configuration()
 export class ServerConfiguration extends Configurable {
@@ -57,6 +63,12 @@ export class ServerConfiguration extends Configurable {
         }
         return path;
     }
+    /**
+     *   @method configure
+     *   @description This method is called when the class is built and will
+     *      configure and start the server.
+     *   @since 1.0.0
+     */
     public configure(): void | Observable<void> {
         this.serverProperties = this.propertiesHandler.getProperties('the-way.server') as PropertyModel;
         this.httpProperties = this.serverProperties.http as PropertyModel;
@@ -90,6 +102,11 @@ export class ServerConfiguration extends Configurable {
             }
         });
     }
+    /**
+     *   @method destroy
+     *   @description Will be called when the CoreState change to DESTRUCTION_STARTED
+     *   @since 1.0.0
+     */
     public destroy(): Observable<undefined> {
         return zip(
             this.destroyHttpServer().pipe(take(1)),
@@ -229,6 +246,14 @@ export class ServerConfiguration extends Configurable {
         return swagger !== undefined &&
             (swagger as PropertyModel).enabled as boolean;
     }
+    /**
+     *   @method registerPath
+     *   @description This method will register any REST path in the server and enable.
+     *   @since 1.0.0
+     *   @param path The path to be registered
+     *   @param httpType The operation type for the path
+     *   @param executor the "function" that will execute
+     */
     public registerPath(path: string, httpType: HttpTypeEnum, executor: any): void {
         const restProperties = this.serverProperties.rest as any;
         const finalPath = restProperties.path + path;
@@ -236,6 +261,14 @@ export class ServerConfiguration extends Configurable {
         this.logger.debug('Registered - ' + httpType.toUpperCase() + ' ' + finalPath, '[The Way]');
         this.serverContext[httpType](finalPath, executor);
     }
+    /**
+     *   @method registerMiddleware
+     *   @description With this method you can enable some middlewares
+     *      (for express) in the server, like body parser, helmet and others.
+     *   @since 1.0.0
+     *   @param middlewareFunction The middleware function that will be
+     *      used in express context
+     */
     public registerMiddleware(middlewareFunction: any): void {
         this.serverContext.use(middlewareFunction);
     }
