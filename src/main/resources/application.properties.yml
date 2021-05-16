@@ -1,0 +1,59 @@
+the-way:
+    core:
+        scan:
+            path: 'src/main'
+            full: false
+            enabled: true
+            includes:
+                - .js
+                - .ts
+            excludes:
+                - node_modules
+                - .test.ts
+                - .test.js
+        log:
+            level: 1
+            date: true
+        language: 'en'
+        process-exit: false
+    server:
+        enabled: true
+        operations-log: true
+        http:
+            port: 9000
+            enabled: true
+        https:
+            port: 9001
+            enabled: false
+            key-path: ''
+            cert-path: ''
+        helmet:
+            enabled: true
+        cors:
+            enabled: true
+            origin: true
+        rest:
+            path: /api
+            security:
+                user-key: A2345678901234567890123456789012
+                token-key: B2345678901234567890123456789034
+                token-expiration: '3 days'
+            swagger:
+                api-path: /swagger
+                enabled: false
+                file:
+                    full: false
+                    path: 'swagger.json'
+        file:
+            enabled: false
+            fallback: false
+            full: false
+            path: ''
+            static:
+                path: ''
+                full: false
+                enabled: false
+            assets:
+                path: ''
+                full: false
+                enabled: false

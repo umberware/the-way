@@ -10,20 +10,18 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
-    "indent": [
-        "error", 4
-    ],
-    "no-multiple-empty-lines": [
-        "error", { "max": 1, "maxEOF": 1 }
-    ],
-    "no-console": [
-      "error", {
-        "allow": ["error"]
-      }
-    ],
-    "quotes": ["error", "single"],
-    "no-trailing-spaces": "error",
-    "eol-last": "error",
-    "@typescript-eslint/no-explicit-any": "off"
+      "no-console": ["error", {
+          "allow": ["error", "info"]
+      }],
+      "indent": ["error", 4, { "SwitchCase": 1 }],
+      "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 1 }],
+      "quotes": ["error", "single"],
+      "no-trailing-spaces": "error",
+      "eol-last":"error",
+      "max-len": [ "error", { "code": 140 }],
+      "max-classes-per-file": ["error", 1],
+      "max-lines": ["error", 1000],
+      "object-curly-spacing": ["error", "always"],
+      "semi": ["error", "always"]
   }
 }

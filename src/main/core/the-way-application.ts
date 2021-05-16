@@ -1,24 +1,17 @@
 import { CORE } from './core';
-import { MessagesEnum } from './model/messages.enum';
 
+/* eslint-disable @typescript-eslint/no-empty-function */
 export abstract class TheWayApplication {
     constructor() {
-        const core = CORE.getCoreInstance();
-        CORE.CORE_CALLED += 1;
-
-        if (CORE.CORE_CALLED > 1) {
-            throw new Error(MessagesEnum['application-multiples']);
-        }
-
-        core.buildApplication().subscribe(
+        CORE.createCore(this);
+        CORE.whenReady().subscribe(
             () => {
-                this.start();
-                core.setApplicationInstance(this);
-            }, () => {
-                core.destroy();
+                if (!CORE.isDestroyed()) {
+                    this.start();
+                }
             }
         );
     }
 
-    public abstract start(): void
+    public start(): void {}
 }

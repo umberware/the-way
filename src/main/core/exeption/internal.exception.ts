@@ -1,9 +1,20 @@
-import { ApplicationException } from './application.exception';
-import { ErrorCodeEnum } from './error-code.enum';
-import { MessagesEnum } from '../model/messages.enum';
+import { RestException } from './rest.exception';
+import { CoreMessageService } from '../service/core-message.service';
+import { HttpCodesEnum } from '../shared/enum/http-codes.enum';
 
-export class InternalException extends ApplicationException {
-    constructor(message: string) {
-        super(message, MessagesEnum['internal-server-error'], ErrorCodeEnum.INTERNAL_SERVER_ERROR);
+/**
+ *   @name InternalException
+ *   This exception should be thrown when an unexpected error occurs.
+ *   @param code by default is HttpCodesEnum.InternalServerError.
+ *   @param detail is the error detail
+ *   @param description is the error summary
+ *   @since 1.0.0
+ */
+export class InternalException extends RestException {
+    constructor(
+        public detail: string, public code = HttpCodesEnum.InternalServerError,
+        public description = CoreMessageService.getMessage('http-internal-server-error')
+    ) {
+        super(code, detail, description);
     }
 }

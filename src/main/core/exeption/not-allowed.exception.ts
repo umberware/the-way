@@ -1,9 +1,20 @@
-import { ApplicationException } from './application.exception';
-import { ErrorCodeEnum } from './error-code.enum';
-import { MessagesEnum } from '../model/messages.enum';
+import { RestException } from './rest.exception';
+import { CoreMessageService } from '../service/core-message.service';
+import { HttpCodesEnum } from '../shared/enum/http-codes.enum';
 
-export class NotAllowedException extends ApplicationException {
-    constructor(message: string) {
-        super(message, MessagesEnum['not-allowed'], ErrorCodeEnum.NOT_ALLOWED);
+/**
+ *   @name NotAllowedException
+ *   This exception should be thrown when the user has a valid token but not a allowed profile.
+ *   @param code by default is HttpCodesEnum.Forbidden.
+ *   @param detail is the error detail
+ *   @param description is the error summary
+ *   @since 1.0.0
+ */
+export class NotAllowedException extends RestException {
+    constructor(
+        public detail: string, public code = HttpCodesEnum.Forbidden,
+        public description = CoreMessageService.getMessage('http-not-allowed')
+    ) {
+        super(code, detail, description);
     }
 }

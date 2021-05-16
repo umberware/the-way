@@ -1,23 +1,35 @@
 language: node_js
-node_js: 
-  - "stable"
+node_js:
+    - "stable"
 cache:
-  directories:
-    - "node_modules"
+    directories:
+        - "node_modules"
 before_script:
-  - yarn install
+    - yarn install
 script:
-  - yarn build
+    - yarn lint
+    - yarn test-no-silent
+    - yarn build
 branches:
-  only:
-    - "master"
-    - "dev"
+    only:
+        - "master"
+        - "dev"
 after_success:
-  - bash <(curl -s https://codecov.io/bash) -t a5898a5e-8445-4608-8cde-8cb7305e0715
+    - bash <(curl -s https://codecov.io/bash) -t a5898a5e-8445-4608-8cde-8cb7305e0715
+before_deploy:
+    - cd dist
 deploy:
-  provider: npm
-  email: $NPM_EMAIL
-  api_key: $NPM_TOKEN
-  skip_cleanup: true
-  on:
-    branch: master
+    - provider: npm
+      email: $NPM_EMAIL
+      api_key: $NPM_TOKEN
+      skip_cleanup: true
+      on:
+          branch: master
+    - provider: npm
+      skip_cleanup: true
+      email: $NPM_EMAIL
+      api_key: $NPM_TOKEN
+      tag: beta
+      on:
+          branch:
+              - dev

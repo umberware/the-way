@@ -15,7 +15,7 @@ swagger.json
 
 # dependencies
 **/node_modules
-
+.log
 
 # key
 **/key.json
@@ -28,6 +28,8 @@ swagger.json
 *.launch
 .settings/
 *.sublime-workspace
+
+*.log
 
 # IDE - VSCode
 .vscode/*

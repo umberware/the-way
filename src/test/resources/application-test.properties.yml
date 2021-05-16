@@ -1,0 +1,17 @@
+the-way:
+    core:
+        scan:
+            path: 'src/test/resources/banana'
+            enabled: false
+            includes:
+                - .js
+                - .ts
+            excludes:
+                - node_modules
+        log:
+            level: 0
+    server:
+        http:
+            port: 9797
+        https:
+            port: 4430

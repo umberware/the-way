@@ -1,10 +1,22 @@
-import { ErrorCodeEnum } from './error-code.enum';
 
-export class ApplicationException implements Error {
+/**
+ *   @name ApplicationException
+ *   This class will be used when an error occur in the Core
+ *   @param detail is the error detail
+ *   @param description is the error summary
+ *   @since 1.0.0
+ */
+export class ApplicationException extends Error {
     public message: string;
     public name: string;
 
-    constructor(public detail: string, public description: string, public code: ErrorCodeEnum) {
+    constructor(public detail: string, public description: string, ex?: Error) {
+        super();
+        if (ex) {
+            this.stack = ex.stack;
+        } else {
+            Error.captureStackTrace(this, this.constructor);
+        }
         this.message = detail + ' -> ' + description;
     }
 
@@ -13,8 +25,5 @@ export class ApplicationException implements Error {
     }
     public getDescription(): string {
         return this.description;
-    }
-    public getCode(): string | number {
-        return this.code;
     }
 }

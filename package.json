@@ -1,127 +1,144 @@
 {
-  "name": "@nihasoft/the-way",
-  "version": "0.6.6",
-  "description": "We are a framework to help the development life to be better.",
-  "main": "dist/src/main/index.js",
-  "types": "dist/src/main/index.d.ts",
-  "site": "https://nihasoft.github.io/the-way/",
-  "homepage": "https://nihasoft.github.io/the-way/",
-  "scripts": {
-    "test": "jest --no-cache --properties=application-test.properties.yml --i --verbose --collectCoverage",
-    "lint": "eslint . --ext .ts",
-    "build": "yarn lint && tsc && yarn test && copyfiles ./src/main/core/configuration/application.properties.yml ./dist",
-    "publish-version": "yarn build && npm publish"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "helmet": "^3.23.3",
-    "jsonwebtoken": "^8.5.1",
-    "morgan": "^1.10.0",
-    "reflect-metadata": "^0.1.13",
-    "swagger-ui-express": "^4.1.4",
-    "yaml": "^1.10.0"
-  },
-  "peerDependencies": {
-    "@types/node": "^14.0.13",
-    "rxjs": "^6.6.0"
-  },
-  "devDependencies": {
-    "@types/body-parser": "^1.19.0",
-    "@types/cors": "^2.8.6",
-    "@types/express": "^4.17.6",
-    "@types/helmet": "^0.0.47",
-    "@types/jest": "^26.0.0",
-    "@types/js-yaml": "^3.12.3",
-    "@types/jsonwebtoken": "^8.3.9",
-    "@types/morgan": "^1.9.0",
-    "@types/swagger-ui-express": "^4.1.2",
-    "@typescript-eslint/eslint-plugin": "^3.2.0",
-    "@typescript-eslint/parser": "^3.2.0",
-    "@types/node": "^14.0.13",
-    "rxjs": "^6.6.0",
-    "copyfiles": "^2.2.0",
-    "eslint": "^7.0.0",
-    "jest": "^26.0.1",
-    "jest-html-reporter": "^3.1.3",
-    "ts-jest": "^26.0.0",
-    "ts-node": "^8.8.2",
-    "typescript": "^3.8.3"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/nihasoft/the-way.git"
-  },
-  "bugs": {
-    "url": "https://github.com/nihasoft/the-way/issues"
-  },
-  "donations": "https://www.paypal.com/donate/?token=Ov4xNE4bAuZWCSF9e0BjGy75laGShREyS7BDFs-oQSwMsGOVEzDZAq9VDVNKmaCewqrBUW&country.x=BR&locale.x=BR",
-  "keywords": [
-    "http decorator",
-    "dependencies",
-    "typescript dependency injection",
-    "dependency injection",
-    "@nihasoft/the-way",
-    "the way",
-    "node api",
-    "node rest",
-    "rest",
-    "inject",
-    "injections",
-    "swagger",
-    "express",
-    "typescript decoratos",
-    "typescript rest",
-    "rest decorator",
-    "express decorators",
-    "decorator",
-    "decorators",
-    "@nihasoft"
-  ],
-  "author": "Hanor Sátiro Cintra <hanor.cintra@outlook.com>",
-  "license": "MIT",
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/src/main/",
-      "/src/test/environment",
-      "/src/test/scenario",
-      "/src/test/application-test"
+    "name": "@umberware/the-way",
+    "version": "1.0.0",
+    "description": "We are a framework to help the development life to be better.",
+    "main": "src/main/index.js",
+    "types": "src/main/index.d.ts",
+    "site": "http://the-way.umberware.com",
+    "homepage": "http://the-way.umberware.com",
+    "private": false,
+    "scripts": {
+        "build": "tsc && yarn copy-properties-file && yarn copy-package && yarn copy-npm-ignore && yarn copy-readme",
+        "copy-npm-ignore": "copyfiles .npmignore ./dist",
+        "copy-package": "copyfiles package.json ./dist",
+        "copy-readme": "copyfiles readme.md ./dist",
+        "copy-properties-file": "copyfiles src/main/resources/application.properties.yml ./dist ",
+        "lint": "eslint . --ext .ts",
+        "publish-prod": "yarn build && npm publish dist/ --registry https://registry.npmjs.org/ --access public",
+        "publish-beta": "yarn build && npm publish dist/ --tag beta --registry https://registry.npmjs.org/ --access public",
+        "test": "yarn build && jest --silent --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
+        "test-watch": "jest --silent --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage --watchAll",
+        "test-no-silent": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
+        "test-with-log": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose > test.log 2>&1"
+    },
+    "dependencies": {
+        "body-parser": "^1.19.0",
+        "cors": "^2.8.5",
+        "express": "^4.17.1",
+        "helmet": "^4.6.0",
+        "jsonwebtoken": "^8.5.1",
+        "morgan": "^1.10.0",
+        "reflect-metadata": "^0.1.13",
+        "rxjs": "^6.6.7",
+        "swagger-ui-express": "^4.1.6",
+        "yaml": "^1.10.2"
+    },
+    "peerDependencies": {
+        "@types/node": "^14.14.11"
+    },
+    "devDependencies": {
+        "@types/body-parser": "^1.19.0",
+        "@types/cors": "^2.8.8",
+        "@types/express": "^4.17.9",
+        "@types/helmet": "^4.0.0",
+        "@types/jest": "^26.0.15",
+        "@types/js-yaml": "^3.12.5",
+        "@types/jsonwebtoken": "^8.5.0",
+        "@types/morgan": "^1.9.2",
+        "@types/node": "^14.14.10",
+        "@types/swagger-ui-express": "^4.1.2",
+        "@typescript-eslint/eslint-plugin": "^4.9.0",
+        "@typescript-eslint/parser": "^4.9.0",
+        "copyfiles": "^2.4.1",
+        "eslint": "^7.25.0",
+        "jest": "^26.6.3",
+        "jest-html-reporter": "^3.3.0",
+        "ts-jest": "^26.5.5",
+        "ts-node": "^9.1.1",
+        "typescript": "^4.2.4"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/umberware/the-way"
+    },
+    "bugs": {
+        "url": "https://github.com/umberware/the-way/issues"
+    },
+    "donations": "https://www.paypal.com/donate/?token=Ov4xNE4bAuZWCSF9e0BjGy75laGShREyS7BDFs-oQSwMsGOVEzDZAq9VDVNKmaCewqrBUW&country.x=BR&locale.x=BR",
+    "keywords": [
+        "http decorator",
+        "dependencies",
+        "typescript dependency injection",
+        "dependency injection",
+        "@nihasoft/the-way",
+        "@Umberware",
+        "the way",
+        "node api",
+        "node rest",
+        "rest",
+        "inject",
+        "injections",
+        "swagger",
+        "express",
+        "typescript decoratos",
+        "typescript rest",
+        "rest decorator",
+        "express decorators",
+        "decorator",
+        "decorators",
+        "@nihasoft"
     ],
-    "testRegex": ".test.ts",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "testTimeout": 30000,
-    "reporters": [
-      "default",
-      [
-        "./node_modules/jest-html-reporter",
-        {
-          "pageTitle": "Test Report",
-          "outputPath": "./dist/src/test/test-report/index.html",
-          "includeFailureMsg": true,
-          "includeConsoleLog": true
+    "author": "Hanor Sátiro Cintra <hanor.cintra@outlook.com>",
+    "license": "MIT",
+    "jest": {
+        "preset": "ts-jest",
+        "testEnvironment": "node",
+        "testPathIgnorePatterns": [
+            "/node_modules/",
+            "/src/main/",
+            "/src/test/core",
+            "/src/test/resources"
+        ],
+        "coverageThreshold": {
+            "global": {
+                "branches": 100,
+                "functions": 100,
+                "lines": 100,
+                "statements": 100
+            }
+        },
+        "testRegex": ".test.ts",
+        "moduleFileExtensions": [
+            "ts",
+            "tsx",
+            "js",
+            "jsx",
+            "json",
+            "node"
+        ],
+        "testTimeout": 30000,
+        "reporters": [
+            "default",
+            [
+                "./node_modules/jest-html-reporter",
+                {
+                    "pageTitle": "Test Report",
+                    "outputPath": "./dist/src/test/test-report/index.html",
+                    "includeFailureMsg": true,
+                    "includeConsoleLog": true
+                }
+            ]
+        ],
+        "collectCoverage": true,
+        "coverageDirectory": "./dist/src/test/coverage/",
+        "collectCoverageFrom": [
+            "src/main/**/*.ts",
+            "!src/main/index.ts"
+        ],
+        "globals": {
+            "ts-jest": {
+                "tsconfig": "tsconfig.test.json"
+            }
         }
-      ]
-    ],
-    "collectCoverage": true,
-    "coverageDirectory": "./dist/src/test/corevage/",
-    "collectCoverageFrom": [
-      "src/main/**/*.ts",
-      "!src/*/filesToExclude.ts"
-    ],
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "tsconfig.test.json"
-      }
     }
-  }
 }

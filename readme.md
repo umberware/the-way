@@ -1,186 +1,84 @@
-[![Documentation](https://img.shields.io/badge/Documentation-lightseagreen.svg)](https://nihasoft.github.io/the-way/)
-[![Exampples](https://img.shields.io/badge/Examples-lightseagreen.svg)](https://github.com/nihasoft/the-way-examples)
-[![npm version](https://badge.fury.io/js/%40nihasoft%2Fthe-way.svg)](https://badge.fury.io/js/%40nihasoft%2Fthe-way)
-[![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/LICENSE)
-[![EsLint](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://raw.githubusercontent.com/nihasoft/the-way/master/.eslintrc)
-[![Build Status](https://travis-ci.com/nihasoft/the-way.svg?branch=master)](https://travis-ci.com/nihasoft/the-way)
-[![codecov](https://codecov.io/gh/nihasoft/the-way/branch/master/graph/badge.svg)](https://codecov.io/gh/nihasoft/the-way)
-[![Donate](https://img.shields.io/badge/%24-Donate-blue.svg)](https://nihasoft.github.io/the-way/donate)
+[![Site](https://img.shields.io/badge/Site-lightblue.svg)](http://the-way.umberware.com/)
+[![Documentation](https://img.shields.io/badge/Documentation-lightseagreen.svg)](documentation/index.md)
+[![Changelog](https://img.shields.io/badge/Changelog-lightseagreen.svg)](documentation/the-way/changelog.md)
+[![Examples](https://img.shields.io/badge/Examples-lightseagreen.svg)](https://github.com/umberware/the-way-examples)
+[![npm version](https://badge.fury.io/js/%40umberware%2Fthe-way.svg)](https://badge.fury.io/js/%40umberware%2Fthe-way)
+[![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/umberware/the-way/master/LICENSE)
+[![EsLint](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://raw.githubusercontent.com/umberware/the-way/master/.eslintrc)
+[![Build Status](https://travis-ci.com/umberware/the-way.svg?branch=master)](https://travis-ci.com/umberware/the-way)
+[![codecov](https://codecov.io/gh/umberware/the-way/branch/master/graph/badge.svg?token=JDRUQC0T9A)](https://codecov.io/gh/umberware/the-way)
+[![Donate](https://img.shields.io/badge/%24-Donate-blue.svg)](http://the-way.umberware.com/donate)
 
 # The Way
-To improve the life cicle of the development, we created this framework to help your application to be more clean and intelligible with a loot of decorators.
-With this you can use an express server with improvements (best practices from express) with **swagger** (when provided the swagger.json), inject classes (as singleton), overridde classes, automatic configurations provided by [@Configuration](https://nihasoft.github.io/the-way/#/guide/application-decorator#configure), [destroy](https://nihasoft.github.io/the-way/#/guide/core#destroy), you can map and use **REST** method's more intuitive and more clean with the [Rest & Decorators](https://nihasoft.github.io/the-way/#/guide/rest). You can [define some properties](https://nihasoft.github.io/the-way/#/guide/application-properties)  overriding the default properties and putting in this file **yours** custom properties to use in your classes injecting the  class [PropertiesConfiguration](https://nihasoft.github.io/the-way/#/guide/configurations#properties-configuration).
 
-You also can customize some behaviors of this framework with decorators [@Configuration](https://nihasoft.github.io/the-way/#/guide/application-decorator#configure) and [@Service](https://nihasoft.github.io/the-way/#/guide/application-decorator#service).
+To improve the life cycle of the development in Node.js in a REST and/or POG concept, this framework is the way.
+With this framework you can build a REST application more easily, you can make singletons and inject these singletons in another class, you can configure and manipulate yours class
+more easily, in other words, the sky is not the limit!
 
-**Note**: When you use the @Configure you **MUST** extends the class [AbstractConfiguration](https://nihasoft.github.io/the-way/#/guide/configurations#abstract-configuration).
+## Summary
 
-**Note**: By default, we start an express http server. To change this behavior you must provide an **application.properties.yml in the root path of your project** or with the command line argument: **--properties=/path/to/your/properties/application.properties.yml**
+ - [Features](#features)
+ - [Installing](#installing)
+ - [Getting Started](#getting-started)
+ - [Application Properties](#application-properties)
+ - [Documentation](#documentation)
+
+## Features
+
+With this framework you can elevate the life cycle of the development in Node.js with a lot of features, and the principles are:
+
+ - All in a Core: The framework will find the files that contains decorators of this framework and automatically import and process these decorators and configure when that class need to be configured
+ - Class Injection & Singleton: When a class is decorated with some this framework decorators, we will instantiate and configure this class and allow this instance to be injected in another component
+ - Customizing and Substituting: If for some reason you want to change the behavior of a class, you can substitute that class and inject your custom class into the old class injection points. With the properties of the application or POG, you can customize some things for your application.
+ - REST mapping and concepts more intelligible and concise: For that we use decorators to abstract some things and configure automatically the [express](https://github.com/expressjs/express) routes, security and others
+ - HTTP and HTTPS automatic server: We use the [express](https://github.com/expressjs/express) to build a http and / or https server and you can customize some properties for this server
+
+## Installing
+
+This framework is built for NodeJs with Typescript, and you need a project configured.
+
+**You can check how to create a NodeJs + Typescript project [here](documentation/guides/node-typescript-guide.md)**
+
+Installing the TheWay:
+
+*For Yarn*
+
+    yarn add @umberware/the-way
+
+*For Npm*
+
+    npm install @umberware/the-way
+
+**Remember to install @types/node as dev dependencies when you are using the typescript with Node**
 
 
-    the-way:
-        server:
-            enabled: false
+## Getting Started
 
-# Table of Contents
+In this section we will create a simple application that use this framework.
+We will presume that you was installed the node.js, configured to use typescript and installed the packages: @umberware/the-way, @types/node.
 
-- [Installation](#installation)
-- [Usage](#usage)
-- [All The Current Application Properties](#applicationproperties)
-- [Issues](#issues)
-- [Full Documentation](#documentation)
+**You can check how to do it in the guide: [NodeJs With Typescript](./documentation/guides/node-typescript-guide.md)**
 
-# Installation
-To use this framework you must have a project with Node.js and configurated to use Typescript, you can see how to do this [here](https://nihasoft.github.io/the-way/#/guide/fast-setup#tsNode).
+*Main: A file in: src/main/main.ts*
 
-With a project in Node.Js configurated with Typescript you only need to install this framework with commando below:
-
-    npm i @nihasoft/the-way
-
-**Note:** This library use the @types/node and the rxjs. So, your application must have this libraries as devDependency and as dependency respectively.
-
-# Usage
-With the framework installed you can now do the magic.
-You only need to create a "main class" that extends the [TheWayApplication](https://nihasoft.github.io/the-way/#/guide/core#the-way-application) and decorate your class with the [@Application()](https://nihasoft.github.io/the-way/#/guide/application-decorator#application)
-
-The example below can be viewed [here](https://nihasoft.github.io/the-way/#/guide/fast-setup#theWay)
-
-### The Main Class
-
-    import { TheWayApplication, Application } from '@nihasoft/the-way'
-
-    @Application()
-    export class Main extends TheWayApplication {
-        public start(): void {
-            console.log('Yeah, now I\'m The Way application');
-        }
-    }
-
-### The Command to run
-
-In your project:
-
-    tsc && path_to_your_dist/main.js
-
-This example above, will enable the application to use [Rest & Decorators](https://nihasoft.github.io/the-way/#/guide/rest) and the [Application Decorators](https://nihasoft.github.io/the-way/#/guide/application-decorator). Will be used the **default configurations** like properties, security, configurations and services. You can check all the default properties and beheviors [here](https://nihasoft.github.io/the-way/).
-
-## Inject decorator
-Some times we want to use a singleton and import/inject this class into another class. You can to this using the decorator [@Inject()](https://nihasoft.github.io/the-way/#/guide/application-decorator#inject). The example below can be viewed [here](https://nihasoft.github.io/the-way/#/guide/fast-setup#injection-example)
-
-### Creating a class to be injected
-    export class InjectionExample {
-        public helloWorld() {
-            console.log('hello world');
-        }
-    }
-
-### Injecting another class into you main
-
-    import { TheWayApplication, Application, Inject } from '@nihasoft/the-way'
-    import { InjectionExample } from './injection-example';
+    import { Application, TheWayApplication, Inject, Logger } from '@umberware/the-way';
 
     @Application()
     export class Main extends TheWayApplication {
-
-        @Inject() injectionExample: InjectionExample;
-
-        public start(): void {
-            this.injectionExample.helloWorld();
-        }
-    }
-
-
-## Rest & Decorator
-In this section we will create a rest class with some methods enabled to be called. The example below, can be viewed [here](https://nihasoft.github.io/the-way/#/guide/fast-setup#rest-example)
-
-**Note**: We will concat your path in decorators with the property **the-way.server.path**. To change this behavior you must provide an **application.properties.yml in the root path of your project** or with the command line argument: **--properties=/path/to/your/properties/application.properties.yml**
-
-    the-way:
-        server:
-            path: /api
-
-**Note**: By default, we start an express http server. To change this behavior you must provide an **application.properties.yml in the root path of your project** or with the command line argument: **--properties=/path/to/your/properties/application.properties.yml**
-
-    the-way:
-        server:
-            enabled: false
-
-### Creating a rest class with some rest methods
-
-    import { Get } from '@nihasoft/the-way';
-    import { Observable, of } from 'rxjs';
-
-    export class HeroRest {
-        @Get('/hero')
-        public getHero(): Observable<{id: number, name: string, power: number}> {
-            return of({
-                id: 10,
-                name: 'Batman',
-                power: 10000
-            })
-        }
-    }
-
-### Importing that class into main
-
-    import { TheWayApplication, Application, Inject } from '@nihasoft/the-way'
-    import { InjectionExample } from './injection-example';
-    import { HeroRest } from './hero.rest';
-
-    @Application()
-    export class Main extends TheWayApplication {
-
-        @Inject() injectionExample: InjectionExample;
-        @Inject() heroRest: HeroRest;
+        @Inject logger: Logger;
 
         public start(): void {
-            this.injectionExample.helloWorld();
+            this.logger.info('Hello World');
         }
     }
 
-# ApplicationProperties
+**For more examples or guides, you can access the [The Way Examples Repository](https://github.com/umberware/the-way-examples) or/and [Guides](./documentation/index.md#guides)**
 
-We use an application.propertles.yml to be configurable by parameters, you can provide in the root path of your project **application.properties.yml** or with command line argument: **--properties=/path/to/your/properties/application.properties.yml**. You can see more [here](https://nihasoft.github.io/the-way/#/guide/application-properties).
-You can also pass **command line properties**. Properties passed in argument line will be the priority.
-Example:
-    --the-way.server.port=8090
-if in my application properties the the-way.server.port is 8081 but if is passed the the-way.server.port in command line so the value will be the value passed in command line (like the example above, the value will be 8090).
+## Application Properties
 
-The current default properties are:
+This framework use application properties in [Yaml Format](https://yaml.org/) and has a lot of properties that can be changed for your use. If no application properties is provided, the framework will use the **default** properties.
+For more detail, please visit the [Application Properties Documentation](documentation/the-way/core/application-properties.md)
 
-    the-way:
-        core:
-            log: true
-        log:
-            level: 0
-        server:
-            enabled: true
-            port: 8081
-            path: /api
-            swagger:
-                enabled: false
-                path: /swagger
-                filePath: './swagger.json'
-            security:
-                user-key: A2345678901234567890123456789012
-                token-key: B2345678901234567890123456789034
-                token-expiration: '3 days'
-            file:
-                enabled: false
-                fallback: false
-                full: false
-                path: ''
-                static: 
-                    path: ''
-                    full: false
-                assets: 
-                    path: ''
-                    full: false
+## Documentation
 
-# Issues
-
-If you have an idea, a bug, a feature or anything else, please help us to growth creating an issue for that [here](https://github.com/nihasoft/the-way/issues)
-
-# Documentation 
-
-You can access the full documentation [here](https://nihasoft.github.io/the-way/)
+To access the full documentation you can access [this](documentation/index.md)
