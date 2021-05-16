@@ -12,9 +12,7 @@ import {
 @Configuration(FileHandler)
 class CustomFileHanlder {}
 
-@Application({
-    automatic: false
-})
+@Application(false)
 class Main extends TheWayApplication {
     @Inject fileHandler: CustomFileHanlder;
 }

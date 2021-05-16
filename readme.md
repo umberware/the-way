@@ -27,9 +27,9 @@ more easily, in other words, the sky is not the limit!
 With this framework you can elevate the life cycle of the development in Node.js with a lot of features, and the principles are:
 
  - All in a Core: The framework will find the files that contains decorators of this framework and automatically import and process these decorators and configure when that class need to be configured
- - REST mapping and concepts more intelligible and concise: For that we use decorators to abstract some things and configure automatically the [express](https://github.com/expressjs/express) routes, security and others
  - Class Injection & Singleton: When a class is decorated with some this framework decorators, we will instantiate and configure this class and allow this instance to be injected in another component
  - Customizing and Substituting: If for some reason you want to change the behavior of a class, you can substitute that class and inject your custom class into the old class injection points. With the properties of the application or POG, you can customize some things for your application.
+ - REST mapping and concepts more intelligible and concise: For that we use decorators to abstract some things and configure automatically the [express](https://github.com/expressjs/express) routes, security and others
  - HTTP and HTTPS automatic server: We use the [express](https://github.com/expressjs/express) to build a http and / or https server and you can customize some properties for this server
 
 ## Installing

@@ -5,7 +5,7 @@ import { CoreMessageService } from '../../service/core-message.service';
 
 /* eslint-disable @typescript-eslint/ban-types*/
 export const ApplicationMetaKey = 'Application';
-export const Application = (params?: { automatic?: boolean; }) => {
+export const Application = (automatic = true) => {
     return (constructor: Function): void => {
         if (!(constructor.prototype instanceof TheWayApplication)) {
             throw new ApplicationException(
@@ -14,7 +14,7 @@ export const Application = (params?: { automatic?: boolean; }) => {
             );
         }
 
-        if (!params || params.automatic || params.automatic === undefined) {
+        if (automatic) {
             CORE.createCore(constructor);
         }
         Reflect.defineMetadata(ApplicationMetaKey, Application, constructor);

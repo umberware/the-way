@@ -1,7 +1,5 @@
 import { Application, TheWayApplication } from '../../../../main';
 
-@Application({
-    automatic: false
-})
+@Application(false)
 export class NotAutomaticMainTest extends TheWayApplication {
 }

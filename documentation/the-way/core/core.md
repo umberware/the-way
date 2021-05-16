@@ -42,9 +42,7 @@ So, it's automatic or manually called.
 
     import { Application, TheWayApplication } from '@umberware/the-way';
 
-    @Application({
-        automatic: false
-    })
+    @Application(false)
     export class Main extends TheWayApplication {}
 
     ...

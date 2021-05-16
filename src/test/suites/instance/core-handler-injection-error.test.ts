@@ -10,9 +10,7 @@ import {
 } from '../../../main';
 
 
-@Application({
-    automatic: false
-})
+@Application(false)
 class Main extends TheWayApplication {
     @Inject fileHandler: FileHandler;
 }

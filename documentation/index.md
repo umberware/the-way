@@ -9,6 +9,8 @@ Also, 'some getting started' will be related.
  - [Core](the-way/core/core.md)
  - Configuration
     - [ServerConfiguration](the-way/core/configuration/server-configuration.md)
+ - Decorators
+    - [CoreDecorators](the-way/core/decorator/core-decorators.md)
  - Service
     - [CoreCryptoService](the-way/core/service/core-crypto-service-doc.md)
  - Exception

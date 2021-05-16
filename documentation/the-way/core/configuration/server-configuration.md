@@ -30,7 +30,9 @@ You can check the full documentation of the properties [here](../application-pro
 
 To enable the http, you need to provide the value true in the properties:
 
-`the-way.server.enabled` and `the-way.server.http.enable`
+`the-way.server.enabled`
+
+`the-way.server.http.enable`
 
 You can customize the port to the http server with the property `the-way.server.http.port`.
 

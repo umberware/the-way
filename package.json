@@ -1,6 +1,6 @@
 {
     "name": "@umberware/the-way",
-    "version": "1.0.0-Beta.0.26",
+    "version": "1.0.0-Beta.0.27",
     "description": "We are a framework to help the development life to be better.",
     "main": "src/main/index.js",
     "types": "src/main/index.d.ts",
@@ -25,7 +25,7 @@
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
         "express": "^4.17.1",
-        "helmet": "^4.5.0",
+        "helmet": "^4.6.0",
         "jsonwebtoken": "^8.5.1",
         "morgan": "^1.10.0",
         "reflect-metadata": "^0.1.13",
