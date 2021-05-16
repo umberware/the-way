@@ -27,16 +27,16 @@ more easily, in other words, the sky is not the limit!
 
 With this framework you can elevate the life cycle of the development in Node.js with a lot of features, and the principles are:
 
- - All in a Core: The framework will find the files that contains decorators of this framework and automatically import and process these decorators and configure when that class need to be configured
- - Class Injection & Singleton: When a class is decorated with some this framework decorators, we will instantiate and configure this class and allow this instance to be injected in another component
- - Overridden: If for some reason you want to change the behavior of a class, you can substitute that class and inject your custom class into the old class injection points
- - REST mapping and concepts more intelligible and concise: For that we use decorators to abstract some things and configure automatically the [express](https://github.com/expressjs/express) routes, security and others
+ - All in a Core: The [Core](documentation/the-way/core/core.md) will prepare every thing for your application, the life cycle of instances, the instances dependencies, the configurations, the rest operations and a lot more
+ - Class Injection & Singleton: With [@Inject](documentation/the-way/core/decorator/core-decorators.md#inject) decorator, will tell to Core to create an instance of the wanted class as a singleton. So, you don't need to instantiate the classes because the Core will resolve it for you
+ - Overridden: Some cases we want to create a custom behavior to resolve a certain problem, and thinking about it, the [@Configuration](documentation/the-way/core/decorator/core-decorators.md#configuration) and [@Service](documentation/the-way/core/decorator/core-decorators.md#service) can be used to do this. When you pass as argument a class in these decorators, the injections points will change from the old class to override class
+ - REST mapping and concepts more intelligible and concise: With the [Rest Decorators](documentation/the-way/core/decorator/rest-decorators.md), you can create more intelligibility and easily REST operations
  - HTTP and HTTPS automatic server: We use the [express](https://github.com/expressjs/express) to build a http and / or https server and you can customize some properties for this server
  - Features On The Way: We use YAML format to provide a lot of properties that can enable some feature or change their behavior
 
 ## Installing
 
-This framework is built for NodeJs with Typescript, and you need a project configured.
+This framework is built for NodeJs with Typescript, and you need a project configured to use.
 
 **You can check how to create a NodeJs + Typescript project [here](documentation/guides/node-typescript-guide.md)**
 
