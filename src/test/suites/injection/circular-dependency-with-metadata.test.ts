@@ -1,5 +1,5 @@
 import { EnvironmentTest } from '../../resources/environment/environment.test';
-import { ApplicationException, CORE, Messages } from '../../../main';
+import { ApplicationException, CORE, CoreMessageService } from '../../../main';
 
 afterAll(done => {
     EnvironmentTest.clear(done);
@@ -17,11 +17,12 @@ test('Injection: Circular Dependency With Metadata', done => {
     import('../../resources/environment/main/not-automatic-main.test').then((value) => {
         new value.NotAutomaticMainTest();
         CORE.whenDestroyed().subscribe(
+            () => expect(true).toBeFalsy(),
             (error: Error | undefined) => {
                 if (error) {
                     const applicationException = error as ApplicationException;
-                    expect(applicationException.getDescription()).toBe(Messages.getMessage('TW-008'));
-                    expect(applicationException.getDetail()).toBe(Messages.getMessage('error-circular-dependency', ['DependencyDServiceTest', 'DependencyDServiceTest']));
+                    expect(applicationException.getDescription()).toBe(CoreMessageService.getMessage('TW-008'));
+                    expect(applicationException.getDetail()).toBe(CoreMessageService.getMessage('error-circular-dependency', ['DependencyDServiceTest', 'DependencyDServiceTest']));
                     done();
                 }
             }

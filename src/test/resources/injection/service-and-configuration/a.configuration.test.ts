@@ -1,4 +1,5 @@
 import { Observable, of } from 'rxjs';
+import { debounceTime, map } from 'rxjs/operators';
 
 import { Configuration, Configurable} from '../../../../main';
 

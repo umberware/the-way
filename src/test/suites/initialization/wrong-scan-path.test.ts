@@ -1,4 +1,4 @@
-import { CORE, Messages } from '../../../main';
+import { CORE, CoreMessageService } from '../../../main';
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 
 afterAll(done => {
@@ -16,9 +16,10 @@ test('Initialization: Wrong Scan Path', (done) => {
         (value => {
             new value.NotAutomaticMainTest();
             CORE.whenDestroyed().subscribe(
+                () => expect(true).toBeFalsy(),
                 (error: Error | undefined) => {
                     if (error) {
-                        expect((error as any).code).toBe(Messages.getCodeMessage('not-found-code'));
+                        expect((error as any).code).toBe(CoreMessageService.getCodeMessage('not-found-code'));
                         process.argv = defaultArgs;
                         done();
                     }

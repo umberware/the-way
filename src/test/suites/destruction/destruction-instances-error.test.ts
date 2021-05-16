@@ -21,6 +21,7 @@ test('Destruction: Service & Configuration With Error', done => {
                     return CORE.destroy();
                 })
             ).subscribe(
+                () => expect(true).toBeFalsy(),
                 (error: Error | void) => {
                     expect((error as Error).message).toBe('Destruction: An error ocurred in the destruction step. Error Damn!! SMASHER!. -> Error');
                     done();

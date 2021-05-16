@@ -4,11 +4,18 @@ the-way:
             path: 'src/main'
             full: false
             enabled: true
+            includes:
+                - .js
+                - .ts
+            excludes:
+                - node_modules
+                - .test.ts
+                - .test.js
         log:
             level: 1
             date: true
         language: 'en'
-        processExit: false
+        process-exit: false
     server:
         enabled: true
         operations-log: true
@@ -18,8 +25,8 @@ the-way:
         https:
             port: 9001
             enabled: false
-            keyPath: ''
-            certPath: ''
+            key-path: ''
+            cert-path: ''
         helmet:
             enabled: true
         cors:
@@ -32,7 +39,7 @@ the-way:
                 token-key: B2345678901234567890123456789034
                 token-expiration: '3 days'
             swagger:
-                apiPath: /swagger
+                api-path: /swagger
                 enabled: false
                 file:
                     full: false

@@ -1,38 +1,43 @@
 import * as Http from 'http';
 import * as Https from 'https';
-import { readdirSync, readFileSync } from 'fs';
+import { readFileSync } from 'fs';
 import * as SwaggerUi from 'swagger-ui-express';
 
 import { Observable, Subscriber, zip } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
-import { Express } from 'express';
 import express = require('express');
 import morgan = require('morgan');
 import helmet = require('helmet');
 import cors = require('cors');
 import bodyParser = require('body-parser');
 
-import { Configuration }  from '../decorator/configuration.decorator';
-import { Inject } from '../decorator/inject.decorator';
+import { Configuration }  from '../decorator/core/configuration.decorator';
+import { Inject } from '../decorator/core/inject.decorator';
 import { PropertiesHandler } from '../handler/properties.handler';
-import { PropertyModel } from '../model/property.model';
-import { System } from '../decorator/system.decorator';
-import { Configurable } from '../shared/configurable';
-import { Logger } from '../shared/logger';
-import { Messages } from '../shared/messages';
+import { PropertyModel } from '../shared/model/property.model';
+import { System } from '../decorator/core/system.decorator';
+import { Configurable } from '../shared/abstract/configurable';
+import { CoreLogger } from '../service/core-logger';
+import { CoreMessageService } from '../service/core-message.service';
 import { ApplicationException } from '../exeption/application.exception';
-import { HttpType } from '../enum/http-type.enum';
+import { HttpTypeEnum } from '../shared/enum/http-type.enum';
 
 /*
     eslint-disable @typescript-eslint/ban-types,
     @typescript-eslint/no-explicit-any,
     @typescript-eslint/explicit-module-boundary-types
 */
+/**
+ *   @name ServerConfiguration
+ *   @description The ServerConfiguration is responsible to start
+ *      the http/https server with some features.
+ *   @since 1.0.0
+ */
 @System
 @Configuration()
 export class ServerConfiguration extends Configurable {
-    @Inject logger: Logger;
+    @Inject logger: CoreLogger;
     @Inject propertiesHandler: PropertiesHandler;
 
     protected httpProperties: PropertyModel;
@@ -40,11 +45,11 @@ export class ServerConfiguration extends Configurable {
     protected httpsProperties: PropertyModel;
     public httpsServer: Https.Server;
     protected serverProperties: PropertyModel;
-    protected serverContext: Express;
+    protected serverContext: any;
 
     protected buildCredentialsOptions(httpsProperties: PropertyModel): { key: string; cert: string } {
-        const privateKey = readFileSync(httpsProperties.keyPath as string, 'utf8');
-        const certificate = readFileSync(httpsProperties.certPath as string, 'utf8');
+        const privateKey = readFileSync(httpsProperties['key-path'] as string, 'utf8');
+        const certificate = readFileSync(httpsProperties['cert-path'] as string, 'utf8');
 
         return { key: privateKey, cert: certificate };
     }
@@ -58,11 +63,18 @@ export class ServerConfiguration extends Configurable {
         }
         return path;
     }
+    /**
+     *   @method configure
+     *   @description This method is called when the class is built and will
+     *      configure and start the server.
+     *   @since 1.0.0
+     */
     public configure(): void | Observable<void> {
         this.serverProperties = this.propertiesHandler.getProperties('the-way.server') as PropertyModel;
         this.httpProperties = this.serverProperties.http as PropertyModel;
         this.httpsProperties = this.serverProperties.https as PropertyModel;
-        if (!this.serverProperties.enabled) {
+
+        if (this.serverProperties.enabled !== true) {
             return;
         } else {
             return this.start();
@@ -90,6 +102,11 @@ export class ServerConfiguration extends Configurable {
             }
         });
     }
+    /**
+     *   @method destroy
+     *   @description Will be called when the CoreState change to DESTRUCTION_STARTED
+     *   @since 1.0.0
+     */
     public destroy(): Observable<undefined> {
         return zip(
             this.destroyHttpServer().pipe(take(1)),
@@ -105,14 +122,14 @@ export class ServerConfiguration extends Configurable {
     ): void {
         const messageKey = (server instanceof Http.Server) ? 'http-server-running' : 'https-server-running';
         server.listen(properties.port, () => {
-            this.logger.info(Messages.getMessage(messageKey, [properties.port as string]));
+            this.logger.info(CoreMessageService.getMessage(messageKey, [properties.port as string]),'[The Way]');
             observer.next();
         });
         server.on('error', (error: any) => {
             observer.error(
                 new ApplicationException(
-                    Messages.getMessage('error-server', [error.code]),
-                    Messages.getMessage('TW-012'),
+                    CoreMessageService.getMessage('error-server', [error.code]),
+                    CoreMessageService.getMessage('TW-012'),
                     error
                 )
             );
@@ -152,8 +169,8 @@ export class ServerConfiguration extends Configurable {
     protected initializeExpressOperationsLog(): any {
         this.registerMiddleware(morgan('dev'));
     }
-    public initializeFileServer(): void {
-        this.logger.debug(Messages.getMessage('http-file-enabled'), '[The Way]');
+    private initializeFileServer(): void {
+        this.logger.debug(CoreMessageService.getMessage('http-file-enabled'), '[The Way]');
         const fileProperties = this.serverProperties.file as any;
         const filePath: string = this.buildPath(fileProperties, process.cwd());
 
@@ -204,13 +221,13 @@ export class ServerConfiguration extends Configurable {
         ).pipe(map(() => undefined));
     }
     protected initializeSwagger(): void {
-        this.logger.debug(Messages.getMessage('http-swagger-enabled'), '[The Way]');
+        this.logger.debug(CoreMessageService.getMessage('http-swagger-enabled'), '[The Way]');
         const restProperties = this.serverProperties.rest as any;
         const swaggerProperties = restProperties.swagger;
 
         const swaggerDoc = readFileSync(this.buildPath(swaggerProperties.file, process.cwd()));
         this.serverContext.use(
-            restProperties.path + swaggerProperties.apiPath,
+            restProperties.path + swaggerProperties['api-path'],
             SwaggerUi.serve,
             SwaggerUi.setup(JSON.parse(swaggerDoc.toString()))
         );
@@ -229,23 +246,39 @@ export class ServerConfiguration extends Configurable {
         return swagger !== undefined &&
             (swagger as PropertyModel).enabled as boolean;
     }
-    public registerPath(path: string, httpType: HttpType, executor: any): void {
+    /**
+     *   @method registerPath
+     *   @description This method will register any REST path in the server and enable.
+     *   @since 1.0.0
+     *   @param path The path to be registered
+     *   @param httpType The operation type for the path
+     *   @param executor the "function" that will execute
+     */
+    public registerPath(path: string, httpType: HttpTypeEnum, executor: any): void {
         const restProperties = this.serverProperties.rest as any;
         const finalPath = restProperties.path + path;
 
-        this.logger.debug('Registered - ' + httpType.toUpperCase() + ' ' + finalPath);
+        this.logger.debug('Registered - ' + httpType.toUpperCase() + ' ' + finalPath, '[The Way]');
         this.serverContext[httpType](finalPath, executor);
     }
+    /**
+     *   @method registerMiddleware
+     *   @description With this method you can enable some middlewares
+     *      (for express) in the server, like body parser, helmet and others.
+     *   @since 1.0.0
+     *   @param middlewareFunction The middleware function that will be
+     *      used in express context
+     */
     public registerMiddleware(middlewareFunction: any): void {
         this.serverContext.use(middlewareFunction);
     }
     protected start(): Observable<void> {
-        this.logger.info(Messages.getMessage('http-server-initialization'));
+        this.logger.info(CoreMessageService.getMessage('http-server-initialization'), '[The Way]');
 
         if (!this.httpProperties.enabled && !this.httpsProperties.enabled) {
             throw new ApplicationException(
-                Messages.getMessage('error-server-not-enabled'),
-                Messages.getMessage('TW-011')
+                CoreMessageService.getMessage('error-server-not-enabled'),
+                CoreMessageService.getMessage('TW-011')
             );
         }
 

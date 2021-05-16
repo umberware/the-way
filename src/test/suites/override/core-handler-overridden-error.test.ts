@@ -5,16 +5,14 @@ import {
     CORE,
     FileHandler,
     Inject,
-    Messages,
+    CoreMessageService,
     TheWayApplication
 } from '../../../main';
 
 @Configuration(FileHandler)
 class CustomFileHanlder {}
 
-@Application({
-    automatic: false
-})
+@Application(false)
 class Main extends TheWayApplication {
     @Inject fileHandler: CustomFileHanlder;
 }
@@ -28,9 +26,10 @@ beforeAll(() => {
 test('Overridde: Core Handler Overridden', done => {
     new Main();
     CORE.whenDestroyed().subscribe(
-        (error: Error | undefined) => {
+        () => expect(true).toBeFalsy(),
+        (error: Error) => {
             if (error && error instanceof ApplicationException) {
-                expect(error.getDetail()).toBe(Messages.getMessage('error-cannot-overridden-core-classes', [ 'CustomFileHanlder' ]))
+                expect(error.getDetail()).toBe(CoreMessageService.getMessage('error-cannot-overridden-core-classes', [ 'CustomFileHanlder' ]))
                 done();
             }
         }

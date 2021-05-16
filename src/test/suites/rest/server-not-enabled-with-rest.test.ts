@@ -1,7 +1,8 @@
 import { switchMap } from 'rxjs/operators';
 
-import { CORE, Messages } from '../../../main';
+import { CORE, CoreMessageService } from '../../../main';
 import { EnvironmentTest } from '../../resources/environment/environment.test';
+import exp = require('constants');
 
 afterAll(done => {
     EnvironmentTest.clear(done);
@@ -26,9 +27,10 @@ describe('Rest', () => {
     });
     test('Server Not Enabled With Rest', done => {
         CORE.whenDestroyed().subscribe(
+            () => expect(true).toBeFalsy(),
             (error: any) => {
-                expect(error.description).toBe(Messages.getMessage('TW-011'))
-                expect(error.detail).toBe(Messages.getMessage('error-server-cannot-map-path'))
+                expect(error.description).toBe(CoreMessageService.getMessage('TW-011'))
+                expect(error.detail).toBe(CoreMessageService.getMessage('error-server-cannot-map-path'))
                 done();
             }
         );

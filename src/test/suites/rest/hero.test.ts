@@ -1,6 +1,6 @@
 import { map, switchMap } from 'rxjs/operators';
 
-import { CORE, Messages, RestException } from '../../../main';
+import { CORE, CoreMessageService, HttpCodesEnum, RestException } from '../../../main';
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 import { HttpsRequestorEnvironment } from '../../resources/environment/https-requestor.environment.test';
 
@@ -17,8 +17,8 @@ describe('Rest', () => {
         process.argv.push('--the-way.core.log.level=0');
         process.argv.push('--the-way.server.http.enabled=false');
         process.argv.push('--the-way.server.https.enabled=true');
-        process.argv.push('--the-way.server.https.keyPath=src/test/resources/certificate/localhost.key');
-        process.argv.push('--the-way.server.https.certPath=src/test/resources/certificate/localhost.cert');
+        process.argv.push('--the-way.server.https.key-path=src/test/resources/certificate/localhost.key');
+        process.argv.push('--the-way.server.https.cert-path=src/test/resources/certificate/localhost.cert');
         import('../../resources/environment/main/not-automatic-main.test').then(
             (result) => {
                 new result.NotAutomaticMainTest();
@@ -35,6 +35,17 @@ describe('Rest', () => {
             (hero: any) => {
                 expect(hero.name).toBe('batman');
                 expect(hero.power).toBe(10000);
+                done();
+            }
+        );
+    });
+    test('Heroes: Get A Non Existing Hero', done => {
+        HttpsRequestorEnvironment.Get('/api/heroes/hero/1000').subscribe(
+            (hero: any) => {
+               expect(hero).toBeUndefined();
+            }, error => {
+                expect(error).toBeDefined();
+                expect(error.code).toBe(HttpCodesEnum.NotFound);
                 done();
             }
         );
@@ -77,8 +88,8 @@ describe('Rest', () => {
             (error: RestException) => {
                 expect(error).toBeDefined();
                 expect(error.code).toBe(500);
-                expect(error.description).toBe(Messages.getMessage('http-internal-server-error'))
-                expect(error.detail).toBe(Messages.getMessage('error-rest-path-parameter', [':id']))
+                expect(error.description).toBe(CoreMessageService.getMessage('http-internal-server-error'))
+                expect(error.detail).toBe(CoreMessageService.getMessage('error-rest-path-parameter', [':id']))
                 done();
             }
         );
@@ -98,8 +109,8 @@ describe('Rest', () => {
             () => {},
             (error: any) => {
                 expect(error).toBeDefined();
-                expect(error.description).toBe(Messages.getMessage('http-bad-request'));
-                expect(error.detail).toBe(Messages.getMessage('error-rest-empty-request'));
+                expect(error.description).toBe(CoreMessageService.getMessage('http-bad-request'));
+                expect(error.detail).toBe(CoreMessageService.getMessage('error-rest-empty-request'));
                 done();
             }
         );
@@ -109,8 +120,8 @@ describe('Rest', () => {
             () => {},
             (error: any) => {
                 expect(error).toBeDefined();
-                expect(error.description).toBe(Messages.getMessage('http-internal-server-error'));
-                expect(error.detail).toBe(Messages.getMessage('error-rest-empty-response'));
+                expect(error.description).toBe(CoreMessageService.getMessage('http-internal-server-error'));
+                expect(error.detail).toBe(CoreMessageService.getMessage('error-rest-empty-response'));
                 done();
             }
         );
@@ -120,8 +131,8 @@ describe('Rest', () => {
             () => {},
             (error: any) => {
                 expect(error).toBeDefined();
-                expect(error.description).toBe(Messages.getMessage('http-internal-server-error'));
-                expect(error.detail).toBe(Messages.getMessage('error-rest-empty-response'));
+                expect(error.description).toBe(CoreMessageService.getMessage('http-internal-server-error'));
+                expect(error.detail).toBe(CoreMessageService.getMessage('error-rest-empty-response'));
                 done();
             }
         );
@@ -201,8 +212,8 @@ describe('Rest', () => {
             }, (error => {
                 expect(error).toBeDefined();
                 expect(error.code).toBe(403);
-                expect(error.description).toBe(Messages.getMessage('http-not-allowed'));
-                expect(error.detail).toBe(Messages.getMessage('error-rest-no-token'));
+                expect(error.description).toBe(CoreMessageService.getMessage('http-not-allowed'));
+                expect(error.detail).toBe(CoreMessageService.getMessage('error-rest-no-token'));
                 done();
             })
         );
@@ -213,8 +224,8 @@ describe('Rest', () => {
             }, (error => {
                 expect(error).toBeDefined();
                 expect(error.code).toBe(401);
-                expect(error.description).toBe(Messages.getMessage('http-not-authorized'));
-                expect(error.detail).toBe(Messages.getMessage('error-rest-invalid-token'));
+                expect(error.description).toBe(CoreMessageService.getMessage('http-not-authorized'));
+                expect(error.detail).toBe(CoreMessageService.getMessage('error-rest-invalid-token'));
                 done();
             })
         );
@@ -225,8 +236,8 @@ describe('Rest', () => {
             }, (error => {
                 expect(error).toBeDefined();
                 expect(error.code).toBe(401);
-                expect(error.description).toBe(Messages.getMessage('http-not-authorized'));
-                expect(error.detail).toBe(Messages.getMessage('error-rest-invalid-token'));
+                expect(error.description).toBe(CoreMessageService.getMessage('http-not-authorized'));
+                expect(error.detail).toBe(CoreMessageService.getMessage('error-rest-invalid-token'));
                 done();
             })
         );
@@ -265,8 +276,8 @@ describe('Rest', () => {
             () => {},
             error => {
                 expect(error.code).toBe(403);
-                expect(error.description).toBe(Messages.getMessage('http-not-allowed'));
-                expect(error.detail).toBe(Messages.getMessage('error-rest-cannot-perform-action'));
+                expect(error.description).toBe(CoreMessageService.getMessage('http-not-allowed'));
+                expect(error.detail).toBe(CoreMessageService.getMessage('error-rest-cannot-perform-action'));
                 done();
             }
         );
@@ -286,8 +297,8 @@ describe('Rest', () => {
             () => {},
             error => {
                 expect(error.code).toBe(403);
-                expect(error.description).toBe(Messages.getMessage('http-not-allowed'));
-                expect(error.detail).toBe(Messages.getMessage('error-rest-cannot-perform-action'));
+                expect(error.description).toBe(CoreMessageService.getMessage('http-not-allowed'));
+                expect(error.detail).toBe(CoreMessageService.getMessage('error-rest-cannot-perform-action'));
                 done();
             }
         );
@@ -307,8 +318,8 @@ describe('Rest', () => {
             () => {},
             error => {
                 expect(error.code).toBe(403);
-                expect(error.description).toBe(Messages.getMessage('http-not-allowed'));
-                expect(error.detail).toBe(Messages.getMessage('error-rest-cannot-perform-action'));
+                expect(error.description).toBe(CoreMessageService.getMessage('http-not-allowed'));
+                expect(error.detail).toBe(CoreMessageService.getMessage('error-rest-cannot-perform-action'));
                 done();
             }
         );

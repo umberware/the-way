@@ -16,6 +16,7 @@ test('Initialization: Wrong Properties Path', (done) => {
         (value => {
             new value.NotAutomaticMainTest();
             CORE.whenDestroyed().subscribe(
+                () => expect(true).toBeFalsy(),
                 (error) => {
                     if (error) {
                         expect(CORE.isDestroyed()).toBeTruthy();

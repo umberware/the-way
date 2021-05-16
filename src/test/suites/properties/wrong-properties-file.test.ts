@@ -1,4 +1,4 @@
-import { ApplicationException, CORE, Messages, PropertyModel } from '../../../main';
+import { ApplicationException, CORE, CoreMessageService, PropertyModel } from '../../../main';
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 
 afterAll(done => {
@@ -14,10 +14,11 @@ describe('Properties Handler: ', () => {
         import('../../resources/environment/main/main.test').then(
             () => {
                 CORE.whenDestroyed().subscribe(
+                    () => expect(true).toBeFalsy(),
                     (error: Error | undefined) => {
                         if (error && error instanceof ApplicationException) {
-                            expect(error.getDetail()).toBe(Messages.getMessage('error-properties-not-valid'));
-                            expect(error.getDescription()).toBe(Messages.getMessage('TW-011'));
+                            expect(error.getDetail()).toBe(CoreMessageService.getMessage('error-properties-not-valid'));
+                            expect(error.getDescription()).toBe(CoreMessageService.getMessage('TW-011'));
                             done();
                         }
                     }

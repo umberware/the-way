@@ -1,36 +1,40 @@
 {
     "name": "@umberware/the-way",
-    "version": "1.0.0-Beta.0",
+    "version": "1.0.0-Beta.0.27",
     "description": "We are a framework to help the development life to be better.",
-    "main": "dist/src/main/index.js",
-    "types": "dist/src/main/index.d.ts",
+    "main": "src/main/index.js",
+    "types": "src/main/index.d.ts",
     "site": "http://the-way.umberware.com",
     "homepage": "http://the-way.umberware.com",
     "private": false,
     "scripts": {
-        "test": "jest --silent --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
+        "build": "tsc && yarn copy-properties-file && yarn copy-package && yarn copy-npm-ignore && yarn copy-readme",
+        "copy-npm-ignore": "copyfiles .npmignore ./dist",
+        "copy-package": "copyfiles package.json ./dist",
+        "copy-readme": "copyfiles readme.md ./dist",
+        "copy-properties-file": "copyfiles src/main/resources/application.properties.yml ./dist ",
+        "lint": "eslint . --ext .ts",
+        "publish-prod": "yarn build && npm publish dist/ --registry https://registry.npmjs.org/ --access public",
+        "publish-beta": "yarn build && npm publish dist/ --tag beta --registry https://registry.npmjs.org/ --access public",
+        "test": "yarn build && jest --silent --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
         "test-watch": "jest --silent --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage --watchAll",
         "test-no-silent": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
-        "test-with-log": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose > test.log 2>&1",
-        "lint": "eslint . --ext .ts",
-        "build": "tsc && copyfiles src/main/resources/application.properties.yml ./dist",
-        "publish-prod": "yarn build && npm publish --registry https://registry.npmjs.org/ --access public",
-        "publish-beta": "yarn build && npm publish --tag beta --registry https://registry.npmjs.org/ --access public"
+        "test-with-log": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose > test.log 2>&1"
     },
     "dependencies": {
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
         "express": "^4.17.1",
-        "helmet": "^4.4.1",
+        "helmet": "^4.6.0",
         "jsonwebtoken": "^8.5.1",
         "morgan": "^1.10.0",
         "reflect-metadata": "^0.1.13",
+        "rxjs": "^6.6.7",
         "swagger-ui-express": "^4.1.6",
-        "yaml": "^1.10.0"
+        "yaml": "^1.10.2"
     },
     "peerDependencies": {
-        "@types/node": "^14.14.10",
-        "rxjs": "^6.6.3"
+        "@types/node": "^14.14.11"
     },
     "devDependencies": {
         "@types/body-parser": "^1.19.0",
@@ -46,20 +50,19 @@
         "@typescript-eslint/eslint-plugin": "^4.9.0",
         "@typescript-eslint/parser": "^4.9.0",
         "copyfiles": "^2.4.1",
-        "eslint": "^7.14.0",
+        "eslint": "^7.25.0",
         "jest": "^26.6.3",
         "jest-html-reporter": "^3.3.0",
-        "rxjs": "^6.6.3",
-        "ts-jest": "^26.4.4",
-        "ts-node": "^9.0.0",
-        "typescript": "^4.1.2"
+        "ts-jest": "^26.5.5",
+        "ts-node": "^9.1.1",
+        "typescript": "^4.2.4"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/nihasoft/the-way.git"
+        "url": "https://github.com/umberware/the-way"
     },
     "bugs": {
-        "url": "https://github.com/nihasoft/the-way/issues"
+        "url": "https://github.com/umberware/the-way/issues"
     },
     "donations": "https://www.paypal.com/donate/?token=Ov4xNE4bAuZWCSF9e0BjGy75laGShREyS7BDFs-oQSwMsGOVEzDZAq9VDVNKmaCewqrBUW&country.x=BR&locale.x=BR",
     "keywords": [
@@ -68,6 +71,7 @@
         "typescript dependency injection",
         "dependency injection",
         "@nihasoft/the-way",
+        "@Umberware",
         "the way",
         "node api",
         "node rest",

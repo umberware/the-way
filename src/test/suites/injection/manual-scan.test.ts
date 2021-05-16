@@ -16,9 +16,9 @@ test('Injection: Manual scan', done => {
         const expectedTree = {
             DependencyAServiceTest: { DependencyBServiceTest: { DependencyCServiceTest: true } },
             DependencyBServiceTest: { DependencyCServiceTest: true },
-            DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: { DependencyCServiceTest: true } }, DependencyBServiceTest: { DependencyCServiceTest: true }, Logger: true },
+            DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: { DependencyCServiceTest: true } }, DependencyBServiceTest: { DependencyCServiceTest: true }, CoreLogger: true },
             Main: {
-                DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: { DependencyCServiceTest: true } }, DependencyBServiceTest: { DependencyCServiceTest: true }, Logger: true }
+                DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: { DependencyCServiceTest: true } }, DependencyBServiceTest: { DependencyCServiceTest: true }, CoreLogger: true }
             }
         };
         const instances = EnvironmentTest.getInstancesWithout( [Main]);

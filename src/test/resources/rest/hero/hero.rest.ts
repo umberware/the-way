@@ -9,7 +9,7 @@ import {
     ResponseContext,
     RequestContext,
     HeaderContext,
-    Post, BodyParam, Delete, Head, Put, Inject, CoreSecurityService, Claims, TokenClaims
+    Post, BodyParam, Delete, Head, Put, Inject, CoreSecurityService, Claims, TokenClaims, NotFoundException
 } from '../../../../main';
 
 @Rest('heroes')
@@ -48,7 +48,13 @@ export class HeroRest {
     }
     @Get('hero/:id')
     public getHero(@PathParam('id') heroId: string): any {
-        return this.heroes.find((hero: any) => hero.id == heroId);
+        const hero = this.heroes.find((hero: any) => hero.id == heroId);
+
+        if (!hero) {
+            throw new NotFoundException('The hero ' + heroId + ' not found');
+        }
+
+        return hero;
     }
     @Get('power')
     public getHeroByPower(

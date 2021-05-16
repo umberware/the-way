@@ -14,17 +14,21 @@ describe('Server Configuration: ', () => {
         process.argv.push('--the-way.server.http.enabled=false');
         process.argv.push('--the-way.server.https.enabled=true');
         process.argv.push('--the-way.server.rest.swagger.enabled=true')
-        process.argv.push('--the-way.server.https.keyPath=src/test/resources/certificate/localhost.key');
-        process.argv.push('--the-way.server.https.certPath=src/test/resources/certificate/localhost.cert');
+        process.argv.push('--the-way.server.https.key-path=src/test/resources/certificate/localhost.key');
+        process.argv.push('--the-way.server.https.cert-path=src/test/resources/certificate/localhost.cert');
         import('../../resources/environment/main/not-automatic-main.test').then(
             (result) => {
                 new result.NotAutomaticMainTest();
-                CORE.whenDestroyed().subscribe((error: any) => {
-                    if (error) {
-                        expect(error.code).toBe('ENOENT');
-                        done();
+
+                CORE.whenDestroyed().subscribe(
+                    () => expect(true).toBeFalsy(),
+                    (error: any) => {
+                        if (error) {
+                            expect(error.code).toBe('ENOENT');
+                            done();
+                        }
                     }
-                })
+                );
             }
         );
     });

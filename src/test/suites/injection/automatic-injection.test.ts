@@ -21,7 +21,7 @@ test('Injection: Auto Inject', done => {
                const expectedTree = {
                    DependencyAServiceTest: { DependencyBServiceTest: { DependencyCServiceTest: true } },
                    DependencyBServiceTest: { DependencyCServiceTest: true },
-                   DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: { DependencyCServiceTest: true } }, DependencyBServiceTest: { DependencyCServiceTest: true }, Logger: true }
+                   DependentServiceTest: { DependencyAServiceTest: { DependencyBServiceTest: { DependencyCServiceTest: true } }, DependencyBServiceTest: { DependencyCServiceTest: true }, CoreLogger: true }
                };
                const instances = EnvironmentTest.getInstancesWithout([ result.Main ]);
                expect(JSON.stringify(tree)).toBe(JSON.stringify(expectedTree));
