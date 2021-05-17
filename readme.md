@@ -53,7 +53,7 @@ Installing the TheWay:
 
 ## Getting Started
 
-In this section we will create a simple application that use this framework.
+In this section we will create a simple application that uses this framework.
 We will presume that you was installed the node.js, configured to use typescript and installed the packages: `@umberware/the-way` and `@types/node`.
 
 **You can check how to configure Node.js to work with Typescript in this guide: [NodeJs With Typescript](./documentation/guides/node-typescript-guide.md)**
@@ -82,7 +82,7 @@ We will presume that you was installed the node.js, configured to use typescript
 
 ## Application Properties
 
-This framework use application properties in [Yaml Format](https://yaml.org/) and has a lot of properties that can be changed for your use. If no application properties is provided, the framework will use the **default** properties.
+This framework uses application properties in [Yaml Format](https://yaml.org/) and has a lot of properties that can be changed for your use. If no application properties is provided, the framework will use the **default** properties.
 For more detail, please visit the [Application Properties Documentation](documentation/the-way/core/application-properties.md)
 
 ## Documentation
