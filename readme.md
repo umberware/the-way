@@ -1,18 +1,17 @@
 [![Site](https://img.shields.io/badge/Site-blue.svg)](http://the-way.umberware.com/)
-[![Documentation](https://img.shields.io/badge/Documentation-green.svg)](documentation/index.md)
-[![Changelog](https://img.shields.io/badge/Changelog-lightseagreen.svg)](documentation/the-way/changelog.md)
-[![Examples](https://img.shields.io/badge/Examples-lightblue.svg)](https://github.com/umberware/the-way-examples)
-[![npm version](https://badge.fury.io/js/%40umberware%2Fthe-way.svg)](https://badge.fury.io/js/%40umberware%2Fthe-way)
-[![License](https://img.shields.io/badge/License-MIT-red.svg)](https://raw.githubusercontent.com/umberware/the-way/master/LICENSE)
-[![EsLint](https://img.shields.io/badge/EsLint-Enabled-green.svg)](https://raw.githubusercontent.com/umberware/the-way/master/.eslintrc)
+[![Documentation](https://img.shields.io/badge/Documentation-blue.svg)](documentation/index.md)
+[![Changelog](https://img.shields.io/badge/Changelog-blue.svg)](documentation/the-way/changelog.md)
+[![Examples](https://img.shields.io/badge/Examples-blue.svg)](https://github.com/umberware/the-way-examples)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://raw.githubusercontent.com/umberware/the-way/master/LICENSE)
+[![EsLint](https://img.shields.io/badge/EsLint-Enabled-blue.svg)](https://raw.githubusercontent.com/umberware/the-way/master/.eslintrc)
+[![Donate](https://img.shields.io/badge/Donate-blue.svg)](http://the-way.umberware.com/donate)
 [![Build Status](https://travis-ci.com/umberware/the-way.svg?branch=master)](https://travis-ci.com/umberware/the-way)
 [![codecov](https://codecov.io/gh/umberware/the-way/branch/master/graph/badge.svg?token=JDRUQC0T9A)](https://codecov.io/gh/umberware/the-way)
-[![Donate](https://img.shields.io/badge/Donate-blue.svg)](http://the-way.umberware.com/donate)
 
 # The Way
 
-We built a framework to help you, turning your development more easily and your code more simple!
-With this framework you can define REST operations easily and simple, inject classes, configure and destroy automatically classes, override classes to define your behavior, enable or disable some features, and a lot more thinks.
+We built a framework to help you, turning your development easier and your code simple!
+With this framework, you can define REST operations easily and simply, inject an instance of a class, configure and destroy instances automatically, override classes to define your behavior, enable/disable features, and a lot more thinks.
 With TheWay, the sky is not the limit!
 
 ## Summary
@@ -25,7 +24,7 @@ With TheWay, the sky is not the limit!
 
 ## Features
 
-With this framework you can elevate the life cycle of the development in Node.js with a lot of features, and the principles are:
+With this framework you can elevate the life cycle of the development in Node.js with a lot of features. The main features are:
 
  - All in a Core: The [Core](documentation/the-way/core/core.md) will prepare every thing for your application, the life cycle of instances, the instances dependencies, the configurations, the rest operations and a lot more
  - Class Injection & Singleton: With [@Inject](documentation/the-way/core/decorator/core-decorators.md#inject) decorator, will tell to Core to create an instance of the wanted class as a singleton. So, you don't need to instantiate the classes because the Core will resolve it for you
