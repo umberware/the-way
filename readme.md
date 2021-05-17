@@ -11,7 +11,7 @@
 # The Way
 
 We built a framework to help you, turning your development easier and your code simple!
-With this framework, you can define REST operations easily and simply, inject an instance of a class, configure and destroy instances automatically, override classes to define your behavior, enable/disable features, and a lot more thinks.
+With this framework, you can define REST operations easily and simply, inject an instance of a class, configure and destroy instances automatically, override classes to define your behavior, enable/disable features, and a lot more things.
 With TheWay, the sky is not the limit!
 
 ## Summary
