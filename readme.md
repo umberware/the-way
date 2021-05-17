@@ -11,9 +11,9 @@
 
 # The Way
 
-To improve the life cycle of the development in Node.js in a REST and/or POG concept, this framework is the way.
-With this framework you can build a REST application more easily, you can make singletons and inject these singletons in another class, you can configure and manipulate yours class
-more easily, in other words, the sky is not the limit!
+We built a framework to help you, turning your development more easily and your code more simple!
+With this framework you can define REST operations easily and simple, inject classes, configure and destroy automatically classes, override classes to define your behavior, enable or disable some features, and a lot more thinks.
+With TheWay, the sky is not the limit!
 
 ## Summary
 
