@@ -1,7 +1,7 @@
 ## Application Properties
 
 The Application Core accepts a lot of properties for customization & configuration. In this section we will talk about those properties and what is their purpose.
-You can check the default properties file [here](../../../src/main/resources/application.properties.yml).
+You can check the default properties file [here](src/main/resources/application.properties.yml).
 
 ### Summary
 
@@ -26,7 +26,7 @@ You can check the default properties file [here](../../../src/main/resources/app
 
 ### Behavior
 
-By default, the CORE application will try to load an application.properties.yml in the root of the project. If hasen't an application file, the core will load the [default properties](../../../src/main/resources/application.properties.yml).
+By default, the CORE application will try to load an application.properties.yml in the root of the project. If hasn't an application file, the core will load the [default properties](src/main/resources/application.properties.yml).
 You can pass an argument in command line to pass a specific application.properties.yml path.
 Also, you can pass properties in command line.
 The application will **sum** the default properties, your application properties and the command line properties, priority:
@@ -41,7 +41,7 @@ The application will **sum** the default properties, your application properties
 
     ts-node src/main/main.ts --properties=/home/abc123/application.properties.yml
 
-*In a Builded Version*
+*In a Built Version*
 
     node dist/src/main/main.js --properties=/home/abc123/application.properties.yml
 
@@ -52,8 +52,9 @@ The application will **sum** the default properties, your application properties
     node dist/src/main/main.js src/main/main.ts --mongo.ip=127.0.0.1 --mongo.port=27018
 
 ### Custom Properties In Application Properties
-
-By default, all properties that the application uses are within the "path" and you can create properties for your application in the annother application.properties section and access those properties with the property manager.
+By default, all properties the application uses are within the "the-way", and
+you can create properties for your application in the another application.properties section and
+access those properties with the property manager.
 
 **Example: The Application Properties With My Custom Properties Section And Accessing those Properties**
 
@@ -117,7 +118,7 @@ You can check how to customize and enable another language [here](service/core-m
 
 ### the-way.core.process-exit
 
-When an error occurs at the boot core or is called the [destroy](core.md#coredestroy) method from core and this property is true, the node process will be terminated. *By default, false*
+When an error occurs at the core boot or is called the [destroy](core.md#method-static-destroy) method from core and this property is true, the node process will be terminated. *By default, false*
 
 ### the-way.server
 
@@ -174,7 +175,7 @@ those properties are used to configure the REST operations of your application. 
       - path: Is the path for a swagger.json. The swagger.json is used in the SwaggerUI. *By default swagger.json*
       - full: When true, the `the-way.server.rest.swagger.file.path` must be absolute. *By default false*
 
-You can check more informations in [CoreCryptoService](service/core-crypto-service-doc.md), [ServerConfiguration](configuration/server-configuration.md) and
+You can check for more information in [CoreCryptoService](service/core-crypto-service-doc.md), [ServerConfiguration](configuration/server-configuration.md) and
 [CoreRestService](service/core-rest-service.md)
 
 ### the-way.server.file

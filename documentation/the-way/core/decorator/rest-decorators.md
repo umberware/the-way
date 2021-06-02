@@ -25,7 +25,7 @@ You can return: [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScrip
 
 ### Get
 
-The @Get is designed for [HTTP GET](https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Methods/GET).
+The @Get is designed for [HTTP GET](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET).
 You can use [@QueryParam](#queryparam), [@PathParam](#pathparam) and others that is for all operations type.
 
 Where to use it:
@@ -40,7 +40,7 @@ Params:
 
 ### Delete
 
-The @Delete is designed for [HTTP DELETE](https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Methods/DELETE).
+The @Delete is designed for [HTTP DELETE](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/DELETE).
 You can use [@QueryParam](#queryparam), [@PathParam](#pathparam) and others that is for all operations type.
 
 Where to use it:
@@ -55,7 +55,7 @@ Params:
 
 ### Head
 
-The @Head is designed for [HTTP HEAD](https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Methods/HEAD).
+The @Head is designed for [HTTP HEAD](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/HEAD).
 You can use [@QueryParam](#queryparam), [@PathParam](#pathparam) and others that is for all operations type.
 
 Where to use it:
@@ -70,7 +70,7 @@ Params:
 
 ### Patch
 
-The @Patch is designed for [HTTP PATCH](https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Methods/PATCH).
+The @Patch is designed for [HTTP PATCH](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH).
 You can use [@BodyParam](#bodyparam), [@PathParam](#pathparam) and others that is for all operations type.
 
 Where to use it:
@@ -85,7 +85,7 @@ Params:
 
 ### Post
 
-The @Post is designed for [HTTP POST](https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Methods/POST).
+The @Post is designed for [HTTP POST](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST).
 You can use [@BodyParam](#bodyparam), [@PathParam](#pathparam) and others that is for all operations type.
 
 Where to use it:
@@ -100,7 +100,7 @@ Params:
 
 ### Put
 
-The @Put is designed for [HTTP PUT](https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Methods/PUT).
+The @Put is designed for [HTTP PUT](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PUT).
 You can use [@BodyParam](#bodyparam), [@PathParam](#pathparam) and others that is for all operations type.
 
 Where to use it:

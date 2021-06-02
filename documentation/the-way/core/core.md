@@ -67,7 +67,7 @@ Is responsible for:
 - Create [RegisterHandler](handler/register-handler.md) and prepare to register paths, classes and others
 - Create [DependencyHandler](handler/dependency-handler.md) to build the dependencies tree
 - Create [InstanceHandler](handler/instance-handler.md) to build the instances
-- Create [FileHandler](handler/file-handler.md) to scan the folders(of your project) and import these classes decorated with [Core Decorators](decorator/core-decorators.md). This FileHandler will be changed in future release to compose the build process in a "The Way CI" and not the running process with the Core.
+- Create [FileHandler](handler/file-handler.md) to scan the folders(of your project) and import these classes decorated with [Core Decorators](decorator/core-decorators.md). This FileHandler will be changed in future release to compose the build process(will be handled in "The Way CI") and not the running process with the Core.
 
 When Started:
 

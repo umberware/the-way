@@ -1,7 +1,6 @@
 ## The Way Documentation
 
-This paper will relate all the library components with their documentation and function.
-Also, 'some getting started' will be related.
+This paper will relate all the library components with their documentation and function, and some Guides to teach how to work with TheWay.
 
 ### Classes and Components Documentation
 
