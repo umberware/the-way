@@ -1,4 +1,3 @@
-import Spy = jasmine.Spy;
 import resetAllMocks = jest.resetAllMocks;
 
 import { Observable, Subscriber } from 'rxjs';
@@ -14,7 +13,7 @@ export class EnvironmentTest {
     private static processExitSpy: jest.SpyInstance
     private static processArgs: Array<string> = [ ...process.argv ];
 
-    public static buildCoreConfigueSpy(message: string): void {
+    public static buildCoreConfigureSpy(message: string): void {
         const core = (CORE as any).INSTANCE$.getValue();
         const instanceHandler = core.instanceHandler;
         jest.spyOn(instanceHandler as any, 'configureInstances').mockReturnValue(

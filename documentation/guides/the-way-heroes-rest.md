@@ -88,4 +88,5 @@ With this code, we can bind a variable in the path with `@PathParam`, in the exa
     ts-node src/main/main.ts
 
 You can check the source code of this example [here](https://github.com/umberware/the-way-examples/tree/master/examples/heroes-rest/).
+
 **For more examples or guides, you can access the [The Way Examples Repository](https://github.com/umberware/the-way-examples#readme) or/and [Guides](../index.md#guides)**

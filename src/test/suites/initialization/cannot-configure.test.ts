@@ -15,7 +15,7 @@ test('Initialization: Cannot Configure', (done) => {
             CORE.watchState().subscribe(
                 (core: CoreStateEnum) => {
                     if (core === CoreStateEnum.BEFORE_INITIALIZATION_DONE) {
-                        EnvironmentTest.buildCoreConfigueSpy(message);
+                        EnvironmentTest.buildCoreConfigureSpy(message);
                     }
                 }
             );
