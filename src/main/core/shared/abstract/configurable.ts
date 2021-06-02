@@ -14,8 +14,11 @@ export abstract class Configurable extends Destroyable {
     /**
      *   @name configure
      *   @description This method is designed to be called when the Core instantiate a class,
-     *      so if you need start a connection, prepare something for your application or configure, this method is for it
-     *   @return The return of this method can be a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise), [RxJs Observable](https://rxjs.dev/api/index/class/Observabl) or all not "async" types
+     *      so if you need start a connection, prepare something for your application or configure,
+     *      this method is for it
+     *   @return The return of this method can be a
+     *      [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise),
+     *      [RxJs Observable](https://rxjs.dev/api/index/class/Observabl) or all not "async" types
      *   @since 1.0.0
      */
     abstract configure(): Observable<any> | Promise<any> | any;

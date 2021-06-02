@@ -11,13 +11,13 @@ import {
 export class EnvironmentTest {
     private static CORE_INSTANCES = [ 'CoreSecurityService', 'CoreCryptoService', 'PropertiesHandler', 'CoreLogger', 'CoreRestService'];
     private static CORE_TYPES = [ CoreSecurityService, CoreCryptoService, CoreLogger, ServerConfiguration, PropertiesHandler, CoreRestService ];
-    private static processExitSpy: Spy
+    private static processExitSpy: jest.SpyInstance
     private static processArgs: Array<string> = [ ...process.argv ];
 
     public static buildCoreConfigueSpy(message: string): void {
         const core = (CORE as any).INSTANCE$.getValue();
         const instanceHandler = core.instanceHandler;
-        spyOn(instanceHandler as any, 'configureInstances').and.returnValue(
+        jest.spyOn(instanceHandler as any, 'configureInstances').mockReturnValue(
             new Observable((observer: Subscriber<boolean>) => {
                 observer.error({
                     detail: message
@@ -74,7 +74,7 @@ export class EnvironmentTest {
         });
     }
     public static spyProcessExit(): void {
-        this.processExitSpy = spyOn(process, 'exit');
-        this.processExitSpy.and.returnValue('banana');
+        this.processExitSpy = jest.spyOn(process, 'exit');
+        this.processExitSpy.mockReturnValue('banana');
     }
 }
