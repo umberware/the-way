@@ -1,6 +1,6 @@
 {
     "name": "@umberware/the-way",
-    "version": "1.0.0",
+    "version": "1.0.0-Beta.1.2",
     "description": "We are a framework to help the development life to be better.",
     "main": "src/main/index.js",
     "types": "src/main/index.d.ts",
@@ -21,6 +21,12 @@
         "test-no-silent": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
         "test-with-log": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose > test.log 2>&1"
     },
+    "funding": [
+        {
+            "type": "opencollective",
+            "url": "https://opencollective.com/umberware#category-CONTRIBUTE"
+        }
+    ],
     "dependencies": {
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
@@ -64,14 +70,12 @@
     "bugs": {
         "url": "https://github.com/umberware/the-way/issues"
     },
-    "donations": "https://www.paypal.com/donate/?token=Ov4xNE4bAuZWCSF9e0BjGy75laGShREyS7BDFs-oQSwMsGOVEzDZAq9VDVNKmaCewqrBUW&country.x=BR&locale.x=BR",
     "keywords": [
         "http decorator",
         "dependencies",
         "typescript dependency injection",
         "dependency injection",
-        "@nihasoft/the-way",
-        "@Umberware",
+        "@umberware/the-way",
         "the way",
         "node api",
         "node rest",
@@ -86,7 +90,7 @@
         "express decorators",
         "decorator",
         "decorators",
-        "@nihasoft"
+        "@umberware"
     ],
     "author": "Hanor Sátiro Cintra <hanor.cintra@outlook.com>",
     "license": "MIT",

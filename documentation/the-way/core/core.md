@@ -4,17 +4,17 @@ The core is the heart and brain of this library. It controls all stages of the a
 
 ### Summary
 
- - [Decorator @Application and Core](#decorator-application-and-core)
- - [Core States](#core-states)
- - [Step: Before Initialization](#step-before-initialization)
- - [Step: Initialization](#step-initialization)
- - [Step: After Initialization](#step-after-initialization)
- - [Step: Destruction](#step-destruction)
- - [Method: Destroy](#method-static-destroy)
- - [Method: GetInstanceByName](#method-static-getinstancebyname)
- - [Method: GetPropertiesHandler](#method-static-getpropertieshandler)
- - [Method: WatchState](#method-static-watchstate)
- - [Method: WhenDestroyed](#method-static-whendestroyed)
+- [Decorator @Application and Core](#decorator-application-and-core)
+- [Core States](#core-states)
+- [Step: Before Initialization](#step-before-initialization)
+- [Step: Initialization](#step-initialization)
+- [Step: After Initialization](#step-after-initialization)
+- [Step: Destruction](#step-destruction)
+- [Method: Destroy](#method-static-destroy)
+- [Method: GetInstanceByName](#method-static-getinstancebyname)
+- [Method: GetPropertiesHandler](#method-static-getpropertieshandler)
+- [Method: WatchState](#method-static-watchstate)
+- [Method: WhenDestroyed](#method-static-whendestroyed)
 
 ### Decorator @Application and Core
 
@@ -23,8 +23,8 @@ When a CoreInstance is created, the initialization step will initialize. The Cor
 
 A CoreInstance is created when:
 
- - A class decorated with [@Application](decorator/core-decorators.md#application) with no parameters or with the parameter automatic = true and extends the class [TheWayApplication](the-way-application.md)
- - A class decorated with [@Application](decorator/core-decorators.md#application) with the parameter automatic = false, is extended with [TheWayApplication](the-way-application.md) and the new is called
+- A class decorated with [@Application](decorator/core-decorators.md#application) with no parameters or with the parameter automatic = true and extends the class [TheWayApplication](the-way-application.md)
+- A class decorated with [@Application](decorator/core-decorators.md#application) with the parameter automatic = false, is extended with [TheWayApplication](the-way-application.md) and the new is called
 
 So, it's automatic or manually called.
 
@@ -71,12 +71,12 @@ Is responsible for:
 
 When Started:
 
- - CoreState change: From [WAITING](shared/enum/core-state-enum.md#WAITING) to [BEFORE_INITIALIZATION_STARTED](shared/enum/core-state-enum.md#BEFORE_INITIALIZATION_STARTED)
+- CoreState change: From [WAITING](shared/enum/core-state-enum.md#WAITING) to [BEFORE_INITIALIZATION_STARTED](shared/enum/core-state-enum.md#BEFORE_INITIALIZATION_STARTED)
 
 When Finished:
 
- - CoreState change: From [BEFORE_INITIALIZATION_STARTED](shared/enum/core-state-enum.md#BEFORE_INITIALIZATION_STARTED) to [BEFORE_INITIALIZATION_DONE](shared/enum/core-state-enum.md#BEFORE_INITIALIZATION_DONE)
- - The [PropertiesHandler](handler/properties-handler.md) can be [injected](decorator/core-decorators.md#inject), retrieved with [getInstanceByName](#method-static-getinstancebyname) or [getPropertiesHandler](#method-static-getpropertieshandler)
+- CoreState change: From [BEFORE_INITIALIZATION_STARTED](shared/enum/core-state-enum.md#BEFORE_INITIALIZATION_STARTED) to [BEFORE_INITIALIZATION_DONE](shared/enum/core-state-enum.md#BEFORE_INITIALIZATION_DONE)
+- The [PropertiesHandler](handler/properties-handler.md) can be [injected](decorator/core-decorators.md#inject), retrieved with [getInstanceByName](#method-static-getinstancebyname) or [getPropertiesHandler](#method-static-getpropertieshandler)
 
 
 ### Step: Initialization
@@ -85,22 +85,22 @@ This is the second step and is activated when the current value of the CoreState
 
 Is responsible for:
 
- - Build the Dependencies Tree
- - All registered classes decorated with [@Configuration](decorator/core-decorators.md#configuration) and extended with [Configurable](shared/abstract/configurable.md) will be Configured
- - All registered classes via [Core Decorators](decorator/core-decorators.md) and [Register Handler](handler/register-handler.md) will be built
- - When the server is enabled, the [Server Configuration](configuration/server-configuration.md) will be configured and the registered paths with the [Rest Decorators](decorator/rest-decorators.md) will be bind.
+- Build the Dependencies Tree
+- All registered classes decorated with [@Configuration](decorator/core-decorators.md#configuration) and extended with [Configurable](shared/abstract/configurable.md) will be Configured
+- All registered classes via [Core Decorators](decorator/core-decorators.md) and [Register Handler](handler/register-handler.md) will be built
+- When the server is enabled, the [Server Configuration](configuration/server-configuration.md) will be configured and the registered paths with the [Rest Decorators](decorator/rest-decorators.md) will be bind.
 
 When Started:
 
-  - CoreState change: from [BEFORE_INITIALIZATION_DONE](shared/enum/core-state-enum.md#BEFORE_INITIALIZATION_DONE) to [INITIALIZATION_STARTED](shared/enum/core-state-enum.md#initialization_started)
+- CoreState change: from [BEFORE_INITIALIZATION_DONE](shared/enum/core-state-enum.md#BEFORE_INITIALIZATION_DONE) to [INITIALIZATION_STARTED](shared/enum/core-state-enum.md#initialization_started)
 
 When Finished:
 
-  - CoreState change: from [INITIALIZATION_STARTED](shared/enum/core-state-enum.md#INITIALIZATION_STARTED) to [INITIALIZATION_DONE](shared/enum/core-state-enum.md#INITIALIZATION_DONE)
-  - All classes mapped with the [Core Decorators](decorator/core-decorators.md), can be Injected
-  - All classes decorated with [@Configuration](decorator/core-decorators.md#configuration) and is extended with [Configurable](shared/abstract/configurable.md), are configured
-  - All classes that are extended with [Destroyable](shared/abstract/destroyable.md), will be destroyed when the Core step change to [destruction](#step-destruction)
-  - When server is enabled, the Http and/or Https can be accessed, and the rest operations is bind and accessible.
+- CoreState change: from [INITIALIZATION_STARTED](shared/enum/core-state-enum.md#INITIALIZATION_STARTED) to [INITIALIZATION_DONE](shared/enum/core-state-enum.md#INITIALIZATION_DONE)
+- All classes mapped with the [Core Decorators](decorator/core-decorators.md), can be Injected
+- All classes decorated with [@Configuration](decorator/core-decorators.md#configuration) and is extended with [Configurable](shared/abstract/configurable.md), are configured
+- All classes that are extended with [Destroyable](shared/abstract/destroyable.md), will be destroyed when the Core step change to [destruction](#step-destruction)
+- When server is enabled, the Http and/or Https can be accessed, and the rest operations is bind and accessible.
 
 ### Step: After Initialization
 
@@ -108,7 +108,7 @@ This is the second step and is activated when the current value of the CoreState
 
 Is responsible for:
 
- - Mark the CoreState as [READY](shared/enum/core-state-enum.md#READY)
+- Mark the CoreState as [READY](shared/enum/core-state-enum.md#READY)
 
 When Finished:
 
@@ -132,11 +132,90 @@ When Finished:
 
 - CoreState change: from [DESTRUCTION_STARTED](shared/enum/core-state-enum.md#DESTRUCTION_STARTED) to [DESTRUCTION_DONE](shared/enum/core-state-enum.md#destruction_done)
 
+### Method: static createCore
+
+This method is called in @Application or in TheWayApplication Constructor.
+This method tell to the CORE to initialize the application.
+
+Params:
+
+- *application*: Can be a Class or Instance of a class. This parameter will be used
+  to set the application instance. After the initialization,
+  the [method start](documentation/the-way/core/the-way-application.md#method-start) of TheWayApplication will be called.
+
 ### Method: static destroy
+
+This method can be called in any stage of the Core. When called, the Core
+will start the process to destroy the instances, configurations and connections.
+
+Return:
+
+- Returns an observable that will emit value when the construction step is done,
+  or an error occurs in the destruction step
+
+### Method: static getConstructors
+
+This method will access the [register handler](documentation/the-way/core/handler/register-handler.md) and get all the constructions registered
+
+Return:
+
+ - Returns all registered constructors: [ConstructorMapModel](documentation/the-way/core/shared/model/constructor-map-model.md)
+
+### Method: static getCoreState
+
+Retrieves the current Core State
+
+Return:
+
+ - Actual state: [CoreStateEnum](documentation/the-way/core/shared/enum/core-state-enum.md)
+
+### Method: static getDependenciesTree
+
+Retrieves the dependencies tree of the application
+
+Return:
+
+ - The built dependencies tree: [DependencyTreeModel](documentation/the-way/core/shared/model/dependency-tree-model.md)
 
 ### Method: static getInstanceByName
 
+Retrieve the class singleton by name class
+
+Params:
+
+ - *name*: The class name
+
+Throws:
+
+ - *ApplicationException*: If the wanted instance is not found
+
+Return:
+
+ - The instance of the class: T
+
+### Method: static getInstances
+
+Retrieve all instances
+
+Return:
+
+ - An array of the instances
+
+### Method: getInstance
+
+Retrieve all overridden classes
+
+Return:
+
+ - The overridden map: [OverriddenMapModel](documentation/the-way/core/shared/model/overridden-map-model.md)
+
 ### Method: static getPropertiesHandler
+
+Will return the PropertiesHandler of the application
+
+Return:
+
+ - The propertiesHandler: [PropertiesHandler](documentation/the-way/core/handler/properties-handler.md)
 
 ### Method: static watchState
 

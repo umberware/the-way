@@ -1,17 +1,17 @@
-[![Site](https://img.shields.io/badge/Site-blue.svg)](http://the-way.umberware.com/)
-[![Documentation](https://img.shields.io/badge/Documentation-blue.svg)](documentation/index.md)
-[![Changelog](https://img.shields.io/badge/Changelog-blue.svg)](documentation/the-way/changelog.md)
-[![Examples](https://img.shields.io/badge/Examples-blue.svg)](https://github.com/umberware/the-way-examples)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://raw.githubusercontent.com/umberware/the-way/master/LICENSE)
-[![EsLint](https://img.shields.io/badge/EsLint-Enabled-blue.svg)](https://raw.githubusercontent.com/umberware/the-way/master/.eslintrc)
-[![Donate](https://img.shields.io/badge/Donate-blue.svg)](http://the-way.umberware.com/donate)
-[![Build Status](https://travis-ci.com/umberware/the-way.svg?branch=master)](https://travis-ci.com/umberware/the-way)
-[![codecov](https://codecov.io/gh/umberware/the-way/branch/master/graph/badge.svg?token=JDRUQC0T9A)](https://codecov.io/gh/umberware/the-way)
-
+[![Site](https://img.shields.io/badge/Site-blue.svg?style=for-the-badge)](http://the-way.umberware.com/)
+[![Documentation](https://img.shields.io/badge/Documentation-blue.svg?style=for-the-badge)](documentation/index.md)
+[![Changelog](https://img.shields.io/badge/Changelog-blue.svg?style=for-the-badge)](documentation/the-way/changelog.md)
+[![Examples](https://img.shields.io/badge/Examples-blue.svg?style=for-the-badge)](https://github.com/umberware/the-way-examples)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://raw.githubusercontent.com/umberware/the-way/master/LICENSE)
+[![EsLint](https://img.shields.io/badge/EsLint-Enabled-blue.svg?style=for-the-badge)](https://raw.githubusercontent.com/umberware/the-way/master/.eslintrc)
+[![Build Status](https://img.shields.io/travis/umberware/the-way/master.svg?label=Build&style=for-the-badge)](https://travis-ci.com/umberware/the-way)
+[![Coverage](https://img.shields.io/codecov/c/gh/umberware/the-way/master?token=JDRUQC0T9A&style=for-the-badge)]((https://codecov.io/gh/umberware/the-way))
+[![Sponsor](https://img.shields.io/badge/Sponsor-black?logo=github-sponsors&style=for-the-badge)](https://opencollective.com/umberware#category-CONTRIBUTE)
 # The Way
 
 We built a framework to help you, turning your development easier and your code simple!
 With this framework, you can define REST operations easily and simply, inject an instance of a class, configure and destroy instances automatically, override classes to define your behavior, enable/disable features, and a lot more things
+
 With TheWay, the sky is not the limit!
 
 ## Summary
@@ -26,7 +26,7 @@ With TheWay, the sky is not the limit!
 
 With this framework you can elevate the life cycle of the development in Node.js with a lot of features. The main features are:
 
- - All in a Core: The [Core](documentation/the-way/core/core.md) will prepare every thing for your application: the life cycle of instances, the instances dependencies, the configurations, the rest operations and a lot more
+ - Core: The [Core](documentation/the-way/core/core.md) will prepare every thing for your application: the life cycle of instances, the instances dependencies, the configurations, the rest operations and a lot more
  - Class Injection & Singleton: When the [@Inject](documentation/the-way/core/decorator/core-decorators.md#inject) decorator is used, a dependency will be registered, and the Core will instantiate this dependency (as singleton) and inject this dependency at the @Inject point
  - Overridden: In some cases, we want to create a custom class and replace the old behavior, thinking about it, the [@Configuration](documentation/the-way/core/decorator/core-decorators.md#configuration) and [@Service](documentation/the-way/core/decorator/core-decorators.md#service) can be used to do this. When you pass as argument a class in these decorators, the core will inject the override class instead of the original class at the injection points
  - REST mapping and concepts more intelligible and concise: With the [Rest Decorators](documentation/the-way/core/decorator/rest-decorators.md), you can create REST operations with intelligibility, security and concise

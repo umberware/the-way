@@ -44,6 +44,8 @@ In this version the library was refactored and this is the new beginning.
     - **PropertyModel documentation**: added
     - **TokenClaimsModel documentation**: added
     - **CORE_MESSAGES documentation**: added
+    - **Destroyable documentation**: added
+    - **Configurable documentation**: added
 
 ### Changed
 

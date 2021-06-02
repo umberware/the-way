@@ -17,6 +17,7 @@ import { HttpTypeEnum } from './shared/enum/http-type.enum';
 import { ApplicationException } from './exeption/application.exception';
 import { ConstructorMapModel } from './shared/model/constructor-map.model';
 import { OverriddenMapModel } from './shared/model/overridden-map.model';
+import { DependencyTreeModel } from './shared/model/dependency-tree.model';
 
 'use  strict';
 
@@ -25,6 +26,12 @@ import { OverriddenMapModel } from './shared/model/overridden-map.model';
     @typescript-eslint/no-explicit-any,
     @typescript-eslint/explicit-module-boundary-types
 */
+/**
+ *   @name CORE
+ *   @description The core is the heart and brain of this library.
+ *      It controls all stages of the application in 4 major steps.
+ *   @since 1.0.0
+ */
 export class CORE {
     protected static APPLICATION: Function | Object;
     protected static END_TIME: Date;
@@ -71,6 +78,15 @@ export class CORE {
             () => this.applyRegistered()
         );
     }
+    /**
+     *   @name createCore
+     *   @description This method is called in @Application or in TheWayApplication Constructor.
+     *      This method tell to the CORE to initialize the application.
+     *   @param application: Can be a Class or Instance of a class. This parameter will be used
+     *      to set the application instance. After the initialization,
+     *      the method start of TheWayApplication will be called.
+     *   @since 1.0.0
+     */
     public static createCore(application: Function | Object): void {
         if (!this.INSTANCE$.getValue()) {
             this.INSTANCE$.next(new CORE(application));
@@ -91,6 +107,14 @@ export class CORE {
             );
         }
     }
+    /**
+     *   @name destroy
+     *   @description This method can be called in any stage of the Core. When called, the Core
+     *      will start the process to destroy the instances, configurations and connections.
+     *   @return Returns an observable that will emit value when the construction step is done
+     *      or an error occurs in the destruction step
+     *   @since 1.0.0
+     */
     public static destroy(): Observable<CoreStateEnum> {
         if (!this.isDestroyed()) {
             CORE.STATE$.next(CoreStateEnum.DESTRUCTION_STARTED);
@@ -110,17 +134,43 @@ export class CORE {
         const instance = this.getInstance();
         instance.destroy(this.ERROR);
     }
+    /**
+     *   @name getConstructors
+     *   @description This method will access the register handler and get all the constructions registered
+     *   @return Returns all registered constructors: ConstructorMapModel
+     *   @since 1.0.0
+     */
     public static getConstructors(): ConstructorMapModel {
         const instance = this.getInstance();
         return instance.getRegisterHandler().getComponents();
     }
+    /**
+     *   @name getCoreState
+     *   @description Retrieves the current Core State
+     *   @return Actual state: CoreStateEnum
+     *   @since 1.0.0
+     */
     public static getCoreState(): CoreStateEnum {
         return CORE.STATE$.getValue();
     }
-    public static getDependenciesTree(): any {
+    /**
+     *   @name getDependenciesTree
+     *   @description Retrieves the dependencies tree of the application
+     *   @return The built dependencies tree: DependencyTreeModel
+     *   @since 1.0.0
+     */
+    public static getDependenciesTree(): DependencyTreeModel {
         const instance = this.getInstance();
         return instance.getDependencyHandler().getDependenciesTree();
     }
+    /**
+     *   @name getInstanceByName
+     *   @description Retrieve the class singleton by name class
+     *   @param name The class name
+     *   @throws ApplicationException: If the wanted instance is not found
+     *   @return The instance of the class: T
+     *   @since 1.0.0
+     */
     public static getInstanceByName<T>(name: string): T {
         const coreInstance = this.getInstance();
         return coreInstance.getInstanceHandler().getInstanceByName<T>(name);
@@ -128,22 +178,46 @@ export class CORE {
     protected static getInstance(): CORE {
         return this.INSTANCE$.getValue() as CORE;
     }
+    /**
+     *   @name getInstances
+     *   @description Retrieve all instances
+     *   @return An array of the instances
+     *   @since 1.0.0
+     */
     public static getInstances(): Array<any> {
         const instance = this.getInstance();
         return instance.getInstanceHandler().getInstances();
     }
+    /**
+     *   @name getInstances
+     *   @description Retrieve all overridden classes
+     *   @return The overridden map: OverriddenMapModel
+     *   @since 1.0.0
+     */
     public static getOverriden(): OverriddenMapModel {
         const instance = this.getInstance();
         return instance.getRegisterHandler().getOverridden();
     }
+    /**
+     *   @name getPropertiesHandler
+     *   @description Will return the PropertiesHandler of the application
+     *   @return The propertiesHandler: PropertiesHandler
+     *   @since 1.0.0
+     */
     public static getPropertiesHandler(): PropertiesHandler {
         const instance = this.getInstance();
         return instance.getPropertiesHandlder();
     }
-    public static initialization(): void {
+    protected static initialization(): void {
         const instance = this.getInstance();
         instance.initialize(this.APPLICATION);
     }
+    /**
+     *   @name isDestroyed
+     *   @description Will check if the core is destroyed
+     *   @return The propertiesHandler: PropertiesHandler
+     *   @since 1.0.0
+     */
     public static isDestroyed(): boolean {
         const state: CoreStateEnum = CORE.getCoreState();
         return state === CoreStateEnum.DESTRUCTION_STARTED || state == CoreStateEnum.DESTRUCTION_DONE;

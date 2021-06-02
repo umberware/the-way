@@ -28,6 +28,9 @@ This paper will relate all the library components with their documentation and f
     - [RegisterHandler](the-way/core/handler/register-handler.md)
  - Service
     - [CoreCryptoService](the-way/core/service/core-crypto-service-doc.md)
+ - Abstract
+    - [Destroyable](the-way/core/shared/abstract/destroyable.md)
+    - [Configurable](the-way/core/shared/abstract/configurable.md)
  - Constant
     - [CORE_MESSAGES](the-way/core/shared/constant/core-messages-constant.md)
  - Enum
