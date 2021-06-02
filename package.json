@@ -1,6 +1,6 @@
 {
     "name": "@umberware/the-way",
-    "version": "1.0.0-Beta.1.3",
+    "version": "1.0.0-Beta.1.4",
     "description": "We are a framework to help the development life to be better.",
     "main": "src/main/index.js",
     "types": "src/main/index.d.ts",
@@ -21,15 +21,10 @@
         "test-no-silent": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
         "test-with-log": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose > test.log 2>&1"
     },
-    "funding": [
-        {
-            "type": "opencollective",
-            "url": "https://opencollective.com/umberware#category-CONTRIBUTE"
-        }, {
-            "type": "paypal",
-            "url": "https://www.paypal.com/donate?token=SiKA-YGv5TokXejLd3t7VPUTemeWGHneByVEG8S8bgai18Y-5AU-XS6U5PU78Kq1MFelvzZl2yr-gLEm"
-        }
-    ],
+    "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/umberware#category-CONTRIBUTE"
+    },
     "dependencies": {
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
