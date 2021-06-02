@@ -17,6 +17,12 @@ import { Configurable } from '../shared/abstract/configurable';
     @typescript-eslint/no-explicit-any,
     @typescript-eslint/explicit-module-boundary-types
  */
+/**
+ *   @name InstanceHandler
+ *   @description InstanceHandler is the responsible to create the instances, resolve the dependencies tree,
+ *      configure and destroy instances.
+ *   @since 1.0.0
+ */
 export class InstanceHandler {
     protected INSTANCES: InstancesMapModel;
 
@@ -46,16 +52,23 @@ export class InstanceHandler {
             );
         }
     }
+    /**
+     *   @name buildApplication
+     *   @description This method will create an instance of the class decorated with @Application. Used in core only.
+     *   @param constructor: With type Function, is the constructor of the main application class.
+     *   @return instance: Is the constructor of the main application class.
+     *   @since 1.0.0
+     */
     public buildApplication<T>(constructor: Function): T {
         const object = this.buildObject<T>(constructor);
         this.registerInstance(object);
         return object;
     }
-    public buildCoreComponents(): Array<Configurable> {
+    protected buildCoreComponents(): Array<Configurable> {
         this.logger.debug(CoreMessageService.getMessage('building-core-instances'), '[The Way]');
         return this.buildComponents(Object.values(this.registerHandler.getCoreComponents()));
     }
-    public buildApplicationComponents(): Array<Configurable> {
+    protected buildApplicationComponents(): Array<Configurable> {
         this.logger.debug(CoreMessageService.getMessage('building-instances'), '[The Way]');
         return this.buildComponents(Object.values(this.registerHandler.getComponents()));
     }
@@ -71,7 +84,7 @@ export class InstanceHandler {
         );
         return configurable;
     }
-    public buildDependenciesInstances(
+    protected buildDependenciesInstances(
         constructor: Function | Object,
         dependencyTree: DependencyTreeModel
     ): Observable<boolean> {
@@ -131,6 +144,17 @@ export class InstanceHandler {
             return of(undefined);
         }
     }
+    /**
+     *   @name buildInstance
+     *   @description Will create or retrieve an instance of a constructor.
+     *      If the constructor was override, will be returned the overridden class instance
+     *      If the class extends the Destroyable, this instance will be registered to be destroyed when the
+     *      Core assume the destruction state.
+     *   @param constructor: With type Function, is the constructor of the class.
+     *   @return [instance, boolean], will return an array with instance in first index, and a boolean flag in the second index.
+     *      The boolean flag will be false when an instance is created and true when has an instance.
+     *   @since 1.0.0
+     */
     public buildInstance<T>(constructor: Function): [T, boolean] {
         const registeredConstructor = this.registerHandler.getConstructor(constructor.name);
         const registeredConstructorName = registeredConstructor.name;
@@ -147,7 +171,7 @@ export class InstanceHandler {
             return [this.INSTANCES[registeredConstructorName] as T, true];
         }
     }
-    public buildInstanceAndConfigure(constructor: Function): Observable<any> {
+    protected buildInstanceAndConfigure(constructor: Function): Observable<any> {
         const [instance, wasCreatedBefore] = this.buildInstance(constructor);
         if (this.registerHandler.getConfigurables().has(constructor) && !wasCreatedBefore) {
             return this.configureInstance(instance as Configurable);
@@ -155,9 +179,18 @@ export class InstanceHandler {
             return of(true);
         }
     }
-    public buildInstances(constructor: Function | Object, dependencyTree: DependencyTreeModel): Observable<boolean> {
+    /**
+     *   @name buildInstances
+     *   @description this method will resolve the dependencies tree, create all the instances registered and configure the classes
+     *      that extends the Configurable. Core only.
+     *   @param mainConstructor: With type Function, is the constructor of the main class.
+     *   @param dependencyTree: is the dependency tree created in DependencyHandler
+     *   @return Observable<boolean>: emits true when all instances were created and configured.
+     *   @since 1.0.0
+     */
+    public buildInstances(mainConstructor: Function | Object, dependencyTree: DependencyTreeModel): Observable<boolean> {
         this.logger.debug(CoreMessageService.getMessage('building-dependencies-instances'), '[The Way]');
-        return this.buildDependenciesInstances(constructor, dependencyTree).pipe(
+        return this.buildDependenciesInstances(mainConstructor, dependencyTree).pipe(
             switchMap(() => {
                 const configurableInstances = this.buildCoreComponents();
                 configurableInstances.push(...this.buildApplicationComponents());
@@ -215,6 +248,12 @@ export class InstanceHandler {
             return of(true);
         }
     }
+    /**
+     *   @name destroy
+     *   @description will destroy all instances that extends Destroyable.
+     *   @return Observable<boolean>: emits true when all instances are destroyed.
+     *   @since 1.0.0
+     */
     public destroy(): Observable<boolean> {
         const destroyable = this.registerHandler.getDestroyable();
         if (destroyable.size > 0) {
@@ -246,6 +285,13 @@ export class InstanceHandler {
         }
         return dependencies;
     }
+    /**
+     *   @name getInstanceByName
+     *   @description Will return the wanted class instance.
+     *   @param name: With type string, is the class name of the wanted instance. When not found, an exception will be thrown
+     *   @return The wanted instance
+     *   @since 1.0.0
+     */
     public getInstanceByName<T>(name: string): T {
         const registeredConstructor = this.registerHandler.getConstructor(name);
         const instance = (registeredConstructor) ?
@@ -260,6 +306,12 @@ export class InstanceHandler {
             );
         }
     }
+    /**
+     *   @name getInstances
+     *   @description This method will return all created instances.
+     *   @return All instances
+     *   @since 1.0.0
+     */
     public getInstances(): Array<any> {
         return Object.values(this.INSTANCES);
     }
@@ -271,6 +323,12 @@ export class InstanceHandler {
     protected initialize(): void {
         this.INSTANCES = {};
     }
+    /**
+     *   @name registerInstance
+     *   @description Will register an instance
+     *   @param The class instance
+     *   @since 1.0.0
+     */
     public registerInstance<T>(instance: T): void {
         this.INSTANCES[(instance as any).constructor.name] = instance;
     }

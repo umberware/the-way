@@ -7,6 +7,13 @@ import { ApplicationException } from '../exeption/application.exception';
 import { CoreLogger } from '../service/core-logger';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/**
+ *   @name PropertiesHandler
+ *   @description PropertiesHandler is responsible to handle the application properties.
+ *      The properties can be passed in command line and .yml file. The PropertiesHandler will "SUM"
+ *      the given properties. Properties passed in command line is stronger than properties in a file.
+ *   @since 1.0.0
+ */
 export class PropertiesHandler {
     static readonly PROPERTIES_NAME = 'application.properties.yml';
     private defaultProperties: PropertyModel;
@@ -25,6 +32,17 @@ export class PropertiesHandler {
             return value;
         }
     }
+    /**
+     *   @name getProperties
+     *   @description This method receives an "propertyName" and return the property when is present.
+     *      Will return null if the property is not found. You can pass the full key to get the property
+     *   @param propertyName: With type string, can be the full object key
+     *   @return The return can be string, boolean, number, null or PropertyModel
+     *   @example
+     *      const propertiesHandler = Core.getInstanceByName<PropertiesHandler>('PropertiesHandler');
+     *      const httpsProperties: PropertyModel = propertiesHandler.getProperties('the-way.server.https')
+     *   @since 1.0.0
+     */
     public getProperties(propertyName?: string): string | boolean | number | PropertyModel | null {
         if (!propertyName) {
             return this.properties;
@@ -43,7 +61,7 @@ export class PropertiesHandler {
             return property;
         }
     }
-    public initialize(): void {
+    protected initialize(): void {
         const args = process.argv;
         const propertiesFilePath = args.find((arg: string) => arg.includes('--properties=')) as string;
         this.loadDefaultFileProperties();

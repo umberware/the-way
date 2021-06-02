@@ -13,6 +13,13 @@ import { DependencyTreeModel } from '../shared/model/dependency-tree.model';
     no-console,
     @typescript-eslint/ban-types
 */
+/**
+ *   @name DependencyHandler
+ *   @description DependencyHandler is the responsible to generate the tree dependencies.
+ *      This tree will be used in the InstanceHandler
+ *      to resolve all the dependencies and injections of the application.
+ *   @since 1.0.0
+ */
 export class DependencyHandler {
     protected DEPENDENCIES_TREE: DependencyTreeModel;
 
@@ -24,6 +31,12 @@ export class DependencyHandler {
         this.initialize();
     }
 
+    /**
+     *   @method buildDependenciesTree
+     *   @description This method is called to build the tree. When a class has a property decorated with @Inject,
+     *      the RegisterHandler will be called to register this dependency and this dependency will be used to build the dependencies tree.
+     *   @since 1.0.0
+     */
     public buildDependenciesTree(): void {
         const dependentsName = Object.keys(this.registerHandler.getDependencies()).sort();
         for (const dependentName of dependentsName) {
@@ -58,6 +71,12 @@ export class DependencyHandler {
 
         return dependentTree;
     }
+    /**
+     *   @method getDependenciesTree
+     *   @description When a dependencies tree is built, you can get the tree with this method.
+     *   @return DEPENDENCIES_TREE: DependencyTreeModel
+     *   @since 1.0.0
+     */
     public getDependenciesTree(): any {
         return this.DEPENDENCIES_TREE;
     }

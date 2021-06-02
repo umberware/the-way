@@ -26,6 +26,24 @@ In this version the library was refactored and this is the new beginning.
     - **ServerConfiguration documentation**: added
     - **CoreDecorators documentation**: added
     - **RestDecorators documentation**: added
+    - **DependencyHandler documentation**: added
+    - **FileHandler documentation**: added
+    - **InstanceHandler documentation**: added
+    - **PropertiesHandler documentation**: added
+    - **RegisterHandler documentation**: added
+    - **TheWayApplication documentation**: added
+    - **ConstructorModel documentation**: added
+    - **ConstructorMapModel documentation**: added
+    - **DependencyModel documentation**: added
+    - **DependencyMapModel documentation**: added
+    - **DependencyTreeModel documentation**: added
+    - **InstancesMapModel documentation**: added
+    - **OverriddenMapModel documentation**: added
+    - **PathModel documentation**: added
+    - **PathMapModel documentation**: added
+    - **PropertyModel documentation**: added
+    - **TokenClaimsModel documentation**: added
+    - **CORE_MESSAGES documentation**: added
 
 ### Changed
 
@@ -38,3 +56,4 @@ In this version the library was refactored and this is the new beginning.
 ### Fixed
 
 - Void
+

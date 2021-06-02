@@ -1,4 +1,25 @@
 /* eslint-disable max-len */
+
+/**
+ *   @name CORE_MESSAGES
+ *   @description This constant is used to make an internationalization.
+ *      The keys are the language, and the value of the language key,
+ *      is a generic object with a message name as key, and the value as message.
+ *      The system language is defined in the property 'the-way.core.language', and
+ *      used in CoreMessagesService
+ *   @example  A new Language
+ *      {
+ *          'en': {
+ *              ...
+ *              'welcome-message': 'Hello user'
+ *           },
+ *          'pt': {
+ *              ...
+ *              'welcome-message': 'Olá usuário'
+ *          }
+ *      }
+ *   @since 1.0.0
+ */
 export const CORE_MESSAGES: { [key: string]: { [key: string]: string | number; } } = {
     'en': {
         'building': 'Building: Started',
@@ -12,16 +33,16 @@ export const CORE_MESSAGES: { [key: string]: { [key: string]: string | number; }
         'configuring-application-class': 'Configuring: Application instance...',
         'configuring-instance': 'Configuring: $',
 
-        'destruction-instance': 'Desctruction: Destroying $',
-        'destruction-destroyed': 'Desctruction: I\'m inevitable! Was destroyed every thing. CYA!',
+        'destruction-instance': 'Destruction: Destroying $',
+        'destruction-destroyed': 'Destruction: I\'m inevitable! Was destroyed every thing. CYA!',
 
-        'error': 'An error ocurred',
+        'error': 'An error occurred',
         'error-cannot-inject': 'Register: The class $ cannot be injected. Only The Core PropertiesHandler can be injected.',
-        'error-cannot-overridden-core-classes': 'Register: Core class cannot be overriden $.',
+        'error-cannot-overridden-core-classes': 'Register: Core class cannot be overridden $.',
         'error-cannot-overridden-twice': 'Register: Is not possible to overwrite more than once. Was registered the overridden $ as $. The current is $.',
         'error-cannot-scan': 'Register: Cannot scan files with the provided path $.',
         'error-circular-dependency': 'Register: Found a circular dependency between $ -> $.',
-        'error-in-destruction': 'Destruction: An error ocurred in the destruction step. Error $.',
+        'error-in-destruction': 'Destruction: An error occurred in the destruction step. Error $.',
         'error-is-not-the-way': 'Preparing: Your application does not extend the class TheWayApplication',
         'error-not-found-dependency-constructor': 'Register: Cannot inject $ in class $. Cannot acquire the metadata from property. Probably a circular dependency',
         'error-not-found-instance': 'The $ instance not found',
@@ -62,8 +83,8 @@ export const CORE_MESSAGES: { [key: string]: { [key: string]: string | number; }
         'step-after-initialization': 'Running: The application is running [elapsed time $].',
         'step-before-initialization-started': 'Register Step: Started',
         'step-before-initialization-done': 'Register Step: Done.',
-        'step-destruction-started': 'Desctruction Step: Started',
-        'step-destruction-done': 'Desctruction Step: Done.',
+        'step-destruction-started': 'Destruction Step: Started',
+        'step-destruction-done': 'Destruction Step: Done.',
         'step-initialization-started': 'Building & Configuration Step: Started',
         'step-initialization-done': 'Building & Configuration Step: Done.',
 
@@ -79,11 +100,11 @@ export const CORE_MESSAGES: { [key: string]: { [key: string]: string | number; }
         'TW-010': 'Cannot Override',
         'TW-011': 'Not Valid',
         'TW-012': 'Error',
-        'TW-013': 'Cannnot register',
+        'TW-013': 'Cannot register',
         'TW-014': 'Core Constructor',
         'TW-015': 'Core Class Injection',
 
-        'warning-properties-not-gived': 'Preparing: Not gived a file properties. Will be used the default properties.',
+        'warning-properties-not-gived': 'Preparing: Not given a file properties. Will be used the default properties.',
         'warning-http-file-with-helmet': 'Http enabled but with HELMET parameters. This can cause problems in file server.',
     }
 };

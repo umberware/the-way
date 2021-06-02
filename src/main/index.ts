@@ -5,7 +5,6 @@ export { Configurable }  from './core/shared/abstract/configurable';
 export { ServerConfiguration } from './core/configuration/server.configuration';
 export { Destroyable } from './core/shared/abstract/destroyable';
 /* Model */
-export { ConfigurationsModel } from './core/shared/model/configurations-model';
 export { ConstructorMapModel } from './core/shared/model/constructor-map.model';
 export { ConstructorModel } from './core/shared/model/constructor.model';
 export { DependencyMapModel } from './core/shared/model/dependency-map.model';
@@ -13,7 +12,6 @@ export { DependencyModel } from './core/shared/model/dependency.model';
 export { DependencyTreeModel } from './core/shared/model/dependency-tree.model';
 export { InstancesMapModel } from './core/shared/model/instances-map.model';
 export { OverriddenMapModel } from './core/shared/model/overridden-map.model';
-export { OverriddenModel } from './core/shared/model/overridden.model';
 export { PropertyModel } from './core/shared/model/property.model';
 export { TokenClaims } from './core/shared/model/token-claims.model';
 export { PathModel } from './core/shared/model/path.model';

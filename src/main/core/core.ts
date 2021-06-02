@@ -134,7 +134,7 @@ export class CORE {
     }
     public static getOverriden(): OverriddenMapModel {
         const instance = this.getInstance();
-        return instance.getRegisterHandler().getOverriden();
+        return instance.getRegisterHandler().getOverridden();
     }
     public static getPropertiesHandler(): PropertiesHandler {
         const instance = this.getInstance();
@@ -264,11 +264,11 @@ export class CORE {
     protected bindRestPaths(): void {
         this.registerHandler.bindPaths();
     }
-    protected build(constructor: Function | Object): Observable<boolean> {
+    protected build(mainConstructor: Function | Object): Observable<boolean> {
         this.logDebug(CoreMessageService.getMessage('building'));
         return this.buildDependenciesTree().pipe(
             switchMap(() => {
-                return this.instanceHandler.buildInstances(constructor, this.dependencyHandler.getDependenciesTree());
+                return this.instanceHandler.buildInstances(mainConstructor, this.dependencyHandler.getDependenciesTree());
             })
         );
     }
@@ -339,11 +339,11 @@ export class CORE {
     protected getRegisterHandler(): RegisterHandler {
         return this.registerHandler;
     }
-    protected initialize(constructor: Function | Object): void {
+    protected initialize(mainConstructor: Function | Object): void {
         this.logInfo(CoreMessageService.getMessage('step-initialization-started'));
-        this.build(constructor).pipe(
+        this.build(mainConstructor).pipe(
             map(() => {
-                this.buildApplication(constructor);
+                this.buildApplication(mainConstructor);
                 this.bindRestPaths();
             })
         ).subscribe(

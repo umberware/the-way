@@ -11,6 +11,12 @@ import { ClassTypeEnum } from '../shared/enum/class-type.enum';
 import { ApplicationException } from '../exeption/application.exception';
 
 /* eslint-disable  no-console */
+/**
+ *   @name FileHandler
+ *   @description FileHandler is the responsible to scan and 'import' the files that has CoreDecorators
+ *      and match to the scan properties.
+ *   @since 1.0.0
+ */
 export class FileHandler {
     FOUND_FILES: Array<string> = [];
 
@@ -31,11 +37,11 @@ export class FileHandler {
         }
         return path;
     }
-    protected buildRegex(findabbles: Array<string>): string {
+    protected buildRegex(findable: Array<string>): string {
         let regex = '';
 
-        for (const findabble of findabbles) {
-            regex += '(\\@' + findabble + '|\\.' + findabble +')|';
+        for (const find of findable) {
+            regex += '(\\@' + find + '|\\.' + find +')|';
         }
 
         return regex.substr(0, regex.length - 1);
@@ -61,6 +67,12 @@ export class FileHandler {
     protected getClassTypes(): Array<string> {
         return [ ClassTypeEnum.SERVICE, ClassTypeEnum.CONFIGURATION, ClassTypeEnum.REST, ClassTypeEnum.COMMON ];
     }
+    /**
+     *   @method initialize
+     *   @description This method is called in the Core to scan the directory and import files decorated with CoreDecorators.
+     *      The properties 'the-way.core.scan' will be used to determine the place to scan and files/directories to be excluded.
+     *   @since 1.0.0
+     */
     public initialize(): Observable<boolean> {
         if (!this.scanProperties.enabled) {
             return of(true);

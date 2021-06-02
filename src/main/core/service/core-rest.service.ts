@@ -164,7 +164,7 @@ export class CoreRestService {
         fatherPath: PathMapModel, token?: string,
         profiles?: Array<any>, authenticated?: boolean
     ): Observable<TokenClaims | undefined> {
-        if (!authenticated && !fatherPath.isAuthenticed) {
+        if (!authenticated && !fatherPath.isAuthenticated) {
             return of(undefined);
         } else {
             const verificationResult = this.securityService.verifyToken(
