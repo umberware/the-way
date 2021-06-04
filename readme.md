@@ -9,8 +9,9 @@
 [![Sponsor](https://img.shields.io/badge/Sponsor-black?logo=github-sponsors&style=for-the-badge)](https://opencollective.com/umberware#category-CONTRIBUTE)
 # The Way
 
-We built a framework to help you, turning your development easier and your code simple!
-With this framework, you can define REST operations easily and simply, inject an instance of a class, configure and destroy instances automatically, override classes to define your behavior, enable/disable features, and a lot more things
+TheWay is a framework to enhance the development with NodeJs and Typescript, promoting agility, simplicity and intelligibility.
+
+Using TheWay, you can easily and simply define REST operations, inject instances of a class, automatically configure and destroy instances, override classes to define a custom behavior, enable/disable features, and much more.
 
 With TheWay, the sky is not the limit!
 
@@ -24,19 +25,19 @@ With TheWay, the sky is not the limit!
 
 ## Features
 
-With this framework you can elevate the life cycle of the development in Node.js with a lot of features. The main features are:
+The proposal of TheWay is to enhance the life cycle of the development in Node.js with a lot of features. The main features are:
 
  - Class Injection & Singleton: When the [@Inject](documentation/the-way/core/decorator/core-decorators.md#inject) decorator is used, a dependency will be registered, and the [Core](documentation/the-way/core/core.md) will instantiate this dependency (as singleton) and inject at the injection point
- - Automatic Components Scan: By default, classes decorated with a [Core Decorator](documentation/the-way/core/decorator/core-decorators.md), will be automatically registered in the [Core](documentation/the-way/core/core.md). You can disable this feature and manually inject into your main class, the components. See more in the [documentation](documentation/the-way/core/application-properties.md#the-waycorescan)
- - Overridden: In some cases, we want to create a custom class and replace the old behavior, thinking about it, the [@Configuration](documentation/the-way/core/decorator/core-decorators.md#configuration) and [@Service](documentation/the-way/core/decorator/core-decorators.md#service) can be used to do this. When you pass as argument a class in these decorators, the core will inject the override class instead of the original class at the injection points
  - REST Operations & Concepts: With the [Rest Decorators](documentation/the-way/core/decorator/rest-decorators.md), you can create REST operations with intelligibility, security and conciseness
  - HTTP and HTTPS automatic server: We use the [express](https://github.com/expressjs/express) to build a http and / or https server, and you can customize some properties for this server
  - Configurable & Destroyable: When you want to configure something before the "running state", you can extend the [Configurable](documentation/the-way/core/shared/abstract/configurable.md) class and implement the method *configure* or if you want to execute something before the destruction, you can extend the [Destroyable](documentation/the-way/core/shared/abstract/destroyable.md) class and implement the method *destroy*
+ - Automatic Components Scan: By default, classes decorated with a [Core Decorator](documentation/the-way/core/decorator/core-decorators.md), will be automatically registered in the [Core](documentation/the-way/core/core.md). You can disable this feature and manually inject into your main class, the components. For more information, please visit the [documentation](documentation/the-way/core/application-properties.md#the-waycorescan)
+ - Overridden: In some cases, we want to create a custom class and replace the old behavior, thinking about it, the [@Configuration](documentation/the-way/core/decorator/core-decorators.md#configuration) and [@Service](documentation/the-way/core/decorator/core-decorators.md#service) can be used to do this. When you pass as argument a class in these decorators, the core will inject the override class instead of the original class at the injection points
  - YAML Application Properties: We use YAML format to provide a lot of [properties](documentation/the-way/core/application-properties.md) that can enable some feature or change their behavior
 
 ## Installing
 
-This framework is built for a NodeJs with Typescript project, and you need a project set up to use.
+TheWay is built for projects designed with NodeJs and Typescript.
 
 **You can check how to create a NodeJs + Typescript project [here](documentation/guides/node-typescript-guide.md)**
 
@@ -54,16 +55,16 @@ Installing the TheWay:
 
 ## Getting Started
 
-In this section we will create a simple application that uses this framework.
+In this section, we will create a simple application that uses **TheWay**.
 
-**It is imperative that you have: NodeJs installed, and a NodeJs project configured to use typescript.
+**It is imperative that you have: NodeJs installed and a NodeJs project configured to use typescript.
 You can check how to configure Node.js to work with Typescript in this guide: [NodeJs With Typescript](./documentation/guides/node-typescript-guide.md)**
 
 *Installing: @umberware/TheWay*
 
-    `npm install @umberware/the-way`
+    npm install @umberware/the-way
 
-*Creating: A file (src/main/main.ts)*
+*Creating: A Main class(src/main/main.ts)*
 
     import { Application, TheWayApplication, Inject, CoreLogger } from '@umberware/the-way';
 
@@ -91,7 +92,7 @@ You can check how to configure Node.js to work with Typescript in this guide: [N
     node disc/src/main/main.js
 
 
-**You can check how to build a REST application in this guide: [TheWay: HeroesRest](./documentation/guides/the-way-heroes-rest.md)**
+**You can check how to build a REST application in this guide: [TheWay: HeroesRest](documentation/guides/the-way-heroes-rest.md)**
 
 **For more examples or guides, you can access the [The Way Examples Repository](https://github.com/umberware/the-way-examples#readme) or/and [Guides](documentation/index.md#guides)**
 
