@@ -26,16 +26,17 @@ With TheWay, the sky is not the limit!
 
 With this framework you can elevate the life cycle of the development in Node.js with a lot of features. The main features are:
 
- - Core: The [Core](documentation/the-way/core/core.md) will prepare every thing for your application: the life cycle of instances, the instances dependencies, the configurations, the rest operations and a lot more
- - Class Injection & Singleton: When the [@Inject](documentation/the-way/core/decorator/core-decorators.md#inject) decorator is used, a dependency will be registered, and the Core will instantiate this dependency (as singleton) and inject this dependency at the @Inject point
+ - Class Injection & Singleton: When the [@Inject](documentation/the-way/core/decorator/core-decorators.md#inject) decorator is used, a dependency will be registered, and the [Core](documentation/the-way/core/core.md) will instantiate this dependency (as singleton) and inject at the injection point
+ - Automatic Components Scan: By default, classes decorated with a [Core Decorator](documentation/the-way/core/decorator/core-decorators.md), will be automatically registered in the [Core](documentation/the-way/core/core.md). You can disable this feature and manually inject into your main class, the components. See more in the [documentation](documentation/the-way/core/application-properties.md#the-waycorescan)
  - Overridden: In some cases, we want to create a custom class and replace the old behavior, thinking about it, the [@Configuration](documentation/the-way/core/decorator/core-decorators.md#configuration) and [@Service](documentation/the-way/core/decorator/core-decorators.md#service) can be used to do this. When you pass as argument a class in these decorators, the core will inject the override class instead of the original class at the injection points
- - REST mapping and concepts more intelligible and concise: With the [Rest Decorators](documentation/the-way/core/decorator/rest-decorators.md), you can create REST operations with intelligibility, security and concise
+ - REST Operations & Concepts: With the [Rest Decorators](documentation/the-way/core/decorator/rest-decorators.md), you can create REST operations with intelligibility, security and conciseness
  - HTTP and HTTPS automatic server: We use the [express](https://github.com/expressjs/express) to build a http and / or https server, and you can customize some properties for this server
- - Features On The Way: We use YAML format to provide a lot of properties that can enable some feature or change their behavior
+ - Configurable & Destroyable: When you want to configure something before the "running state", you can extend the [Configurable](documentation/the-way/core/shared/abstract/configurable.md) class and implement the method *configure* or if you want to execute something before the destruction, you can extend the [Destroyable](documentation/the-way/core/shared/abstract/destroyable.md) class and implement the method *destroy*
+ - YAML Application Properties: We use YAML format to provide a lot of [properties](documentation/the-way/core/application-properties.md) that can enable some feature or change their behavior
 
 ## Installing
 
-This framework is built for NodeJs with Typescript, and you need a project configured to use.
+This framework is built for a NodeJs with Typescript project, and you need a project set up to use.
 
 **You can check how to create a NodeJs + Typescript project [here](documentation/guides/node-typescript-guide.md)**
 
@@ -54,11 +55,15 @@ Installing the TheWay:
 ## Getting Started
 
 In this section we will create a simple application that uses this framework.
-We will presume that you was installed the node.js, configured to use typescript and installed the packages: `@umberware/the-way` and `@types/node`.
 
-**You can check how to configure Node.js to work with Typescript in this guide: [NodeJs With Typescript](./documentation/guides/node-typescript-guide.md)**
+**It is imperative that you have: NodeJs installed, and a NodeJs project configured to use typescript.
+You can check how to configure Node.js to work with Typescript in this guide: [NodeJs With Typescript](./documentation/guides/node-typescript-guide.md)**
 
-*Main: A file in: src/main/main.ts*
+*Installing: @umberware/TheWay*
+
+    `npm install @umberware/the-way`
+
+*Creating: A file (src/main/main.ts)*
 
     import { Application, TheWayApplication, Inject, CoreLogger } from '@umberware/the-way';
 
@@ -71,14 +76,26 @@ We will presume that you was installed the node.js, configured to use typescript
         }
     }
 
-*Running*
+*Running: The Typescript source code (via [ts-node](https://www.npmjs.com/package/ts-node))*
 
     ts-node src/main/main.ts
+
+*Build & Run: The final Javascript code*
+
+ Build
+
+    tsc
+
+ Running the built code
+
+    node disc/src/main/main.js
 
 
 **You can check how to build a REST application in this guide: [TheWay: HeroesRest](./documentation/guides/the-way-heroes-rest.md)**
 
 **For more examples or guides, you can access the [The Way Examples Repository](https://github.com/umberware/the-way-examples#readme) or/and [Guides](documentation/index.md#guides)**
+
+**Remember to install @types/node as dev dependencies when you are using the typescript with Node**
 
 ## Application Properties
 

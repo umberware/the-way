@@ -1,7 +1,7 @@
 ## The Way: HeroesRest
 
 If you configured your node.js project to use typescript and installed the `@umberware/the-way` and `@types/node` you can move to the start right now!
-This guide will teach to you to create a REST operation using the framework TheWay. So, Autobots, roll out!
+This guide will teach you how to create a REST operation using the TheWay framework. So Autobots, roll out!
 
 Create your main file
 
@@ -55,11 +55,11 @@ Create a HeroService with an array of heroes mocked
         }
     }
 
-To create a REST operation with this framework, you need to create a class decorated with [@Rest](../the-way/core/decorator/core-decorators.md#rest)
-and in this decorator, you can pass a path. After this, you can use the rest decorators in the methods like [@Get](../the-way/core/decorator/rest-decorators.md#get) to map and use others decorators do bind some REQUEST property, for example: [@PathParam](../the-way/core/decorator/rest-decorators.md#pathparam)
+To create a REST operation with this framework, you need to create a class decorated with [@Rest](documentation/the-way/core/decorator/core-decorators.md#rest)
+and in this decorator, you can pass a path. After this, you can use rest decorators in methods such as [@Get](documentation/the-way/core/decorator/rest-decorators.md#get)
+to map a path and set security for this endpoint. Also, in a method decorated with a rest decorator, it is allowed to use property decorators to bind some REQUEST property, for example: [@PathParam](documentation/the-way/core/decorator/rest-decorators.md#pathparam)
 In the code below, we created a HeroRest class decorated with `@Rest` and mapped a 'father path' as '/hero'. Also, we created a method `getHeroById` decorated with @Get and with the path ':id'.
-With this code, we can bind a variable in the path with `@PathParam`, in the example below, the variable is **id**.
-
+With this code, we can bind a variable in the path with `@PathParam` and in the example below, the variable is **id**.
 
 *HeroRest: A file in: src/main/hero/hero.rest.ts*
 
@@ -81,7 +81,7 @@ With this code, we can bind a variable in the path with `@PathParam`, in the exa
     }
 
 
-**Note:** You don't need to import the HeroRest into the Main if you use the properties ['the-way.core.scan'](documentation/the-way/core/application-properties.md#the-waycorescan)
+**Note:** You don't need to import the HeroRest into the Main class if the [scan is enabled](documentation/the-way/core/application-properties.md#the-waycorescan)
 
 *Running*
 
@@ -89,4 +89,4 @@ With this code, we can bind a variable in the path with `@PathParam`, in the exa
 
 You can check the source code of this example [here](https://github.com/umberware/the-way-examples/tree/master/examples/heroes-rest/).
 
-**For more examples or guides, you can access the [The Way Examples Repository](https://github.com/umberware/the-way-examples#readme) or/and [Guides](../index.md#guides)**
+**For more examples or guides, you can access the [The Way Examples Repository](https://github.com/umberware/the-way-examples#readme) or/and [Guides](documentation/index.md#guides)**

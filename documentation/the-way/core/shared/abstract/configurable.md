@@ -1,8 +1,10 @@
 ## Configurable
 
-This abstract class can be used to autoconfigure an object instance.
+This abstract class can be used to autoconfigure an object instance
 When a class extends Configurable and is registered in the Core,
-when the core instantiates the class, the method: configure, will be called.
+when the core instantiates the class, the method: configure, will be called
+
+Also, this class extends the [destroyable](documentation/the-way/core/shared/abstract/destroyable.md) class
 
 ### Summary
 

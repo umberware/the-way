@@ -94,13 +94,16 @@ This section represents the properties that the framework will use.
 
 ### the-way.core.scan
 
-Relative to the FileHandler(mechanism that import every TheWay component), has the follow properties:
+Relative to the [FileHandler](documentation/the-way/core/handler/file-handler.md)(mechanism that import every TheWay component), has the follow properties:
 
- - path: Represents the path that will be scanned to find the components. *By default src/main*
+ - path: Represents the path that will be scanned to find the components.
+   In a built code, this path will be contextualized with the *process.cwb()* to get the "output directory" when the property "full" is false. *By default src/main*
  - full: When true the path must be the absolute path to the directory that will be scanned. In other case, will be used the process.cwb(). *By default false*
- - enabled: When true will use the others parameters to scan and find components. If false, you need to inject your classes into your main that extends TheWayApplication and is decorated with @Application(). *By default true*
+ - enabled: When true, will use the others parameters to scan and find components. If it's false, you need to inject your classes into your main class which extends TheWayApplication and is decorated with [@Application](documentation/the-way/core/decorator/core-decorators.md#application). *By default true*
  - includes: The extensions that must be scanned to find components(accepts Javascript Regex)
  - excludes: The directories, files or extensions that must be ignored(accepts Javascript Regex)
+
+**These properties will change when the [TheWayCli](https://github.com/umberware/the-way/issues/47) is created**
 
 ### the-way.core.log
 
