@@ -8,7 +8,7 @@ beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });
 test('Initialization: Not Automatic With Dependencies', (done) => {
-    const scanPath = 'src/test/resources/simple';
+    const scanPath = '../../resources/simple';
     process.argv.push('--the-way.core.scan.path=' + scanPath);
     process.argv.push('--the-way.core.scan.enabled=true');
 

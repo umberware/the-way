@@ -9,7 +9,7 @@ beforeAll(() => {
 });
 test('Initialization: Wrong Scan Path', (done) => {
     const defaultArgs = [... process.argv.slice(0)]
-    const scanPath = 'src/test/resources/x/t/z';
+    const scanPath = '../../resources/x/t/z';
     process.argv.push('--the-way.core.scan.path=' + scanPath);
     process.argv.push('--the-way.core.scan.enabled=true')
     import('../../resources/environment/main/not-automatic-main.test').then(

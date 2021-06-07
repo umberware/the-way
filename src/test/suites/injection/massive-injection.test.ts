@@ -8,7 +8,7 @@ beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });
 test('Injection: Massive Injection', done => {
-    const scanPath = 'src/test/resources/injection/massive-injection';
+    const scanPath = '../../resources/injection/massive-injection';
     process.argv.push('--the-way.core.scan.path=' + scanPath);
     process.argv.push('--the-way.core.scan.enabled=true');
     process.argv.push('--the-way.core.language=br');

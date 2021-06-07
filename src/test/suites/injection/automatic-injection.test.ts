@@ -8,7 +8,7 @@ beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });
 test('Injection: Auto Inject', done => {
-    const scanPath = 'src/test/resources/injection/normal-dependency';
+    const scanPath = '../../resources/injection/normal-dependency';
     process.argv.push('--the-way.core.scan.path=' + scanPath);
     process.argv.push('--the-way.core.scan.enabled=true');
     process.argv.push('--the-way.core.language=br');

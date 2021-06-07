@@ -10,7 +10,7 @@ beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });
 test('Destruction: Service & Configuration With Error', done => {
-    const scanPath = 'src/test/resources/destructible/error';
+    const scanPath = '../../resources/destructible/error';
     process.argv.push('--the-way.core.scan.path=' + scanPath);
     process.argv.push('--the-way.core.scan.enabled=true');
 

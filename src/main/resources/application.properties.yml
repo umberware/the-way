@@ -1,7 +1,7 @@
 the-way:
     core:
         scan:
-            path: 'src/main'
+            path: './'
             full: false
             enabled: true
             includes:

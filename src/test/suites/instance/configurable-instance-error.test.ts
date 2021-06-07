@@ -8,7 +8,7 @@ beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });
 test('Instance: Instance not created', done => {
-    const scanPath = 'src/test/resources/instance';
+    const scanPath = '../../resources/instance';
     process.argv.push('--the-way.core.scan.path=' + scanPath);
     process.argv.push('--the-way.core.scan.enabled=true');
     process.argv.push('--the-way.core.language=br');

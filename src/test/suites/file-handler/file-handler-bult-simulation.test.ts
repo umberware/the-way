@@ -1,4 +1,4 @@
-import { ApplicationException, CORE, CoreMessageService } from '../../../main';
+import { CORE } from '../../../main';
 import { EnvironmentTest } from '../../resources/environment/environment.test';
 
 afterAll(done => {
@@ -7,8 +7,8 @@ afterAll(done => {
 beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });
-test('File Handler: Excludes Test', done => {
-    const scanPath = '../../resources/injection/overriding-dependency/same-class';
+test('File Handler: No Files to import', done => {
+    const scanPath = '/';
     process.argv.push('--the-way.core.scan.path=' + scanPath);
     process.argv.push('--the-way.core.scan.excludes=node_modules,dependencies');
     process.argv.push('--the-way.core.scan.enabled=true');
@@ -16,6 +16,7 @@ test('File Handler: Excludes Test', done => {
     import('../../resources/environment/main/main.test').then(() => {
         CORE.whenReady().subscribe(
             () => {
+                expect({}.toString()).toBe(EnvironmentTest.getConstructorsWithoutCore().toString());
                 done();
             }
         );

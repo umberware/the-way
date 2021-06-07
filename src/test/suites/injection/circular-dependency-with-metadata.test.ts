@@ -8,7 +8,7 @@ beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });
 test('Injection: Circular Dependency With Metadata', done => {
-    const scanPath = 'src/test/resources/injection/circular-dependency/metadata';
+    const scanPath = '../../resources/injection/circular-dependency/metadata';
     process.argv.push('--the-way.core.scan.path=' + scanPath);
     process.argv.push('--the-way.core.scan.enabled=true');
     process.argv.push('--the-way.core.language=br');

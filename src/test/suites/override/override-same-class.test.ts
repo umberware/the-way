@@ -8,7 +8,7 @@ beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });
 test('Overridde: Twice Same Class', done => {
-    const scanPath = 'src/test/resources/injection/overriding-dependency/same-class';
+    const scanPath = '../../resources/injection/overriding-dependency/same-class';
     process.argv.push('--the-way.core.scan.path=' + scanPath);
     process.argv.push('--the-way.core.scan.enabled=true');
     process.argv.push('--the-way.core.language=br');

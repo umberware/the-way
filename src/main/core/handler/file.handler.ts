@@ -1,5 +1,7 @@
 import { createReadStream, readdirSync, statSync } from 'fs';
 
+import Module = NodeJS.Module;
+
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
@@ -26,7 +28,7 @@ export class FileHandler {
     ) {}
 
     protected buildPath(): string {
-        let path = process.cwd();
+        let path = this.getMainPath();
         if (this.scanProperties.full) {
             path = this.scanProperties.path as string;
         } else {
@@ -66,6 +68,9 @@ export class FileHandler {
     }
     protected getClassTypes(): Array<string> {
         return [ ClassTypeEnum.SERVICE, ClassTypeEnum.CONFIGURATION, ClassTypeEnum.REST, ClassTypeEnum.COMMON ];
+    }
+    protected getMainPath(): string {
+        return (require.main as Module).path;
     }
     /**
      *   @method initialize

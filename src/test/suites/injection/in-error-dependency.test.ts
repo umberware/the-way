@@ -8,7 +8,7 @@ beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });
 test('Injection: Error In Dependency', done => {
-    const scanPath = 'src/test/resources/injection/in-error-dependency';
+    const scanPath = '../../resources/injection/in-error-dependency';
     process.argv.push('--the-way.core.scan.path=' + scanPath);
     process.argv.push('--the-way.core.scan.enabled=true');
     process.argv.push('--the-way.core.language=br');

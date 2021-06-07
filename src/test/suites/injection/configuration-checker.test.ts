@@ -8,8 +8,8 @@ afterAll(done => {
 beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });
-test('Injection: Configurabe Checker', done => {
-    const scanPath = 'src/test/resources/injection/configurable-checker';
+test('Injection: Configurable Checker', done => {
+    const scanPath = '../../resources/injection/configurable-checker';
     process.argv.push('--the-way.core.scan.path=' + scanPath);
     process.argv.push('--the-way.core.scan.enabled=true');
     process.argv.push('--the-way.core.language=br');

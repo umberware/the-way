@@ -9,7 +9,7 @@ beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });
 test('Injection: Service And Configuration', done => {
-    const scanPath = '/src/test/resources/injection/service-and-configuration';
+    const scanPath = '../../resources/injection/service-and-configuration';
     process.argv.push('--the-way.core.scan.path=' + scanPath);
     process.argv.push('--the-way.core.process-exit=' + true);
     process.argv.push('--the-way.core.scan.enabled=true');

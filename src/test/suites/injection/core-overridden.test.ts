@@ -9,7 +9,7 @@ beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });
 test('Injection: Core Overridden', done => {
-    const scanPath = 'src/test/resources/injection/core-overridden';
+    const scanPath = '../../resources/injection/core-overridden';
     process.argv.push('--the-way.core.scan.path=' + scanPath);
     process.argv.push('--the-way.core.scan.enabled=true');
 
