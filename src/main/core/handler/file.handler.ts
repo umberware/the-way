@@ -34,8 +34,11 @@ export class FileHandler {
         } else {
             let relativePath = this.scanProperties.path as string;
 
-            relativePath = (relativePath.charAt(0) !== '/') ? '/' + relativePath : relativePath;
-            path += relativePath;
+            relativePath = relativePath.replace(/^\.?\//, '').replace(/\/$/, '');
+
+            if (relativePath !== '') {
+                path += '/' + relativePath;
+            }
         }
         return path;
     }
@@ -114,17 +117,17 @@ export class FileHandler {
         try {
             const paths = readdirSync(dirPath);
             for (const path of paths) {
-                const fullpath = dirPath + '/' + path;
-                const stat = statSync(fullpath);
+                const fullPath = dirPath + '/' + path;
+                const stat = statSync(fullPath);
                 const isDirectory = stat.isDirectory();
                 if (!this.checkPath(path, isDirectory)) {
                     continue;
                 }
 
                 if (isDirectory) {
-                    await this.loadApplicationFiles(fullpath);
+                    await this.loadApplicationFiles(fullPath);
                 } else {
-                    await this.importFile(fullpath);
+                    await this.importFile(fullPath);
                 }
             }
         } catch (ex) {

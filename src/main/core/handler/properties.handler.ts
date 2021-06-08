@@ -23,11 +23,9 @@ export class PropertiesHandler {
         this.initialize();
     }
 
-    protected convertValue(value: string): PropertyModel | number | boolean | string {
-        if (value === 'true' || value === 'false') {
-            return (value === 'true') ? true : false;
-        } else if (value.search(/^\d+(\.\d+){0,1}$/) > -1) {
-            return (value.includes('.')) ? parseFloat(value) : parseInt(value);
+    protected convertValue(value: string): PropertyModel | number | boolean | string | Array<number | boolean | string> {
+        if (value.search(/^(\[.*\]|(".*"))|(\d+(\.\d+)?)|(true|false)$/) !== -1) {
+            return JSON.parse(value);
         } else {
             return value;
         }
@@ -43,7 +41,7 @@ export class PropertiesHandler {
      *      const httpsProperties: PropertyModel = propertiesHandler.getProperties('the-way.server.https')
      *   @since 1.0.0
      */
-    public getProperties(propertyName?: string): string | boolean | number | PropertyModel | null {
+    public getProperties(propertyName?: string): string | boolean | number | PropertyModel | Array<number | boolean | string> | null {
         if (!propertyName) {
             return this.properties;
         } else {

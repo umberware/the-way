@@ -6,6 +6,7 @@ You can check the default properties file [here](src/main/resources/application.
 ### Summary
 
  - [Behavior](#behavior)
+ - [Command Line Properties](#command-line-properties)
  - [Custom Properties In Application Properties](#custom-properties-in-application-properties)
  - [Mapped properties and their purposes](#mapped-properties-and-their-purposes)
     - [the-way](#the-way)
@@ -29,7 +30,7 @@ You can check the default properties file [here](src/main/resources/application.
 By default, the CORE application will try to load an application.properties.yml in the root of the project. If hasn't an application file, the core will load the [default properties](src/main/resources/application.properties.yml).
 You can pass an argument in command line to pass a specific application.properties.yml path.
 Also, you can pass properties in command line.
-The application will **sum** the default properties, your application properties and the command line properties, priority:
+The application will **sum** the default properties, your application properties and the command line properties. The priority is:
 
     1. Command Line Properties
     2. The Properties File Passed
@@ -50,6 +51,23 @@ The application will **sum** the default properties, your application properties
     ts-node src/main/main.ts --the-way.server.https.enabled=true
 
     node dist/src/main/main.js src/main/main.ts --mongo.ip=127.0.0.1 --mongo.port=27018
+
+### Command Line Properties
+
+Command line properties are the high priority, so when provided, the value will be the final value of the property.
+
+To pass a command-line property, the property must be prefixed with `--` and the value must be passed after the ` = `
+
+**Example: A Command Line Property**
+
+    node dist/src/main --the-way.core.scan.path=/src/main/
+
+
+Properties that are an array, or a json object must be passed as JSON format.
+
+**Example: An Array Command Line Property**
+
+    node dist/src/main --the-way.core.scan.excludes=["node_modules", "dependencies"]
 
 ### Custom Properties In Application Properties
 By default, all properties the application uses are within the "the-way", and

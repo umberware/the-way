@@ -50,7 +50,6 @@ export class EnvironmentTest {
                 filtered[constructor] = constructors[constructor];
             }
         }
-
         return filtered;
     }
     public static getDependenciesTree(): any {

@@ -7,16 +7,18 @@ afterAll(done => {
 beforeAll(() => {
     EnvironmentTest.spyProcessExit();
 });
-test('File Handler: No Files to import', done => {
-    const scanPath = '/';
+test('File Handler: Local Files and Excludes as Array in Command Line', done => {
+    const scanPath = "\"/\"";
     process.argv.push('--the-way.core.scan.path=' + scanPath);
-    process.argv.push('--the-way.core.scan.excludes=node_modules,dependencies');
+    process.argv.push('--the-way.core.scan.excludes=["node_modules","dependencies"]');
     process.argv.push('--the-way.core.scan.enabled=true');
     process.argv.push('--the-way.core.language=br');
     import('../../resources/environment/main/main.test').then(() => {
         CORE.whenReady().subscribe(
             () => {
-                expect({}.toString()).toBe(EnvironmentTest.getConstructorsWithoutCore().toString());
+                const constructors = {"Inner": { "name": "Inner", "type": "Service" }};
+                const registeredConstructors = EnvironmentTest.getConstructorsWithoutCore();
+                expect(JSON.stringify(constructors)).toBe(JSON.stringify(registeredConstructors));
                 done();
             }
         );
