@@ -19,14 +19,14 @@ test('Overridde: Simple', done => {
         CORE.whenReady().subscribe(
             () => {
                 const instances = EnvironmentTest.getInstancesWithout([ result.Main ]);
-                const overriden = CORE.getOverriden();
+                const overrides = CORE.getOverrides();
                 const tree = EnvironmentTest.getDependenciesTree();
                 const expectedDependencyTree = { DependentAxServiceTest: { DependencyAServiceTest: true, CoreLogger: true}};
-                const expectedOverriden = { DependencyAServiceTest: 'DependencyBServiceTest' };
+                const expectedOverrides = { DependencyAServiceTest: 'DependencyBServiceTest' };
 
-                console.log(expectedOverriden);
+                console.log(expectedOverrides);
                 expect(JSON.stringify(tree)).toBe(JSON.stringify(expectedDependencyTree));
-                expect(JSON.stringify(overriden)).toBe(JSON.stringify(expectedOverriden));
+                expect(JSON.stringify(overrides)).toBe(JSON.stringify(expectedOverrides));
                 expect(instances.length).toBe(2);
                 done();
             });

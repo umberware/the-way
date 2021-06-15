@@ -120,7 +120,7 @@ Relative to the [FileHandler](documentation/the-way/core/handler/file-handler.md
  - includes: The extensions that must be scanned to find components(accepts Javascript Regex)
  - excludes: The directories, files or extensions that must be ignored(accepts Javascript Regex)
 
-**These properties will change when is created the [TheWayCli](https://github.com/umberware/the-way/issues/47)**
+**These properties will be changed when [TheWayCli](https://github.com/umberware/the-way/issues/47) is created**
 
 ### the-way.core.log
 

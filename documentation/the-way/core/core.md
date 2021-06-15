@@ -10,11 +10,27 @@ The core is the heart and brain of this library. It controls all stages of the a
 - [Step: Initialization](#step-initialization)
 - [Step: After Initialization](#step-after-initialization)
 - [Step: Destruction](#step-destruction)
-- [Method: Destroy](#method-static-destroy)
-- [Method: GetInstanceByName](#method-static-getinstancebyname)
-- [Method: GetPropertiesHandler](#method-static-getpropertieshandler)
-- [Method: WatchState](#method-static-watchstate)
-- [Method: WhenDestroyed](#method-static-whendestroyed)
+- [Method: static createCore](#method-static-createcore)
+- [Method: static destroy](#method-static-destroy)
+- [Method: static getConstructors](#method-static-getconstructors)
+- [Method: static getCoreState](#method-static-getcorestate)
+- [Method: static getDependenciesTree](#method-static-getdependenciestree)
+- [Method: static getInstanceByName](#method-static-getinstancebyname)
+- [Method: static getInstances](#method-static-getinstances)
+- [Method: static getOverrides](#method-static-getoverrides)
+- [Method: static getPropertiesHandler](#method-static-getpropertieshandler)
+- [Method: static isDestroyed](#method-static-isdestroyed)
+- [Method: static registerConfiguration](#method-static-registerconfiguration)
+- [Method: static registerCoreComponent](#method-static-registercorecomponent)
+- [Method: static registerInjection](#method-static-registerinjection)
+- [Method: static registerRest](#method-static-registerrest)
+- [Method: static registerRestPath](#method-static-registerrestpath)
+- [Method: static registerService](#method-static-registerservice)
+- [Method: static setError](#method-static-seterror)
+- [Method: static whenBeforeInitializationIsDone](#method-static-whenbeforeinitializationisdone)
+- [Method: static whenDestroyed](#method-static-whendestroyed)
+- [Method: static whenReady](#method-static-whenready)
+- [Method: static watchState](#method-static-watchstate)
 
 ### Decorator @Application and Core
 
@@ -201,7 +217,7 @@ Return:
 
  - An array of the instances
 
-### Method: getInstance
+### Method: static getOverrides
 
 Retrieve all overridden classes
 
@@ -217,9 +233,114 @@ Return:
 
  - The propertiesHandler: [PropertiesHandler](documentation/the-way/core/handler/properties-handler.md)
 
-### Method: static watchState
+### Method: static isDestroyed
+
+Will check if the core is destroyed
+
+Return:
+
+ - A boolean, that will be true when the Core is destroyed
+
+### Method: static registerConfiguration
+
+This method will register a class decorated with [@Configuration](decorator/core-decorators.md#configuration). For Core use only
+
+Params:
+
+ - *configurationConstructor*: The decorated class
+ - *over* The class that must be overridden. It is optional
+
+### Method: static registerCoreComponent
+
+This method will register a core component. For Core use only
+
+Params:
+
+ - *componentConstructor*: The Core Component class
+
+### Method: static registerInjection
+
+This method will register a dependency and map injection point
+
+Params:
+
+ - *dependencyConstructor*: The dependency class
+ - *source*: The dependent class
+ - *propertyKey*: The dependent class injection point
+
+### Method: static registerRest
+
+This is method is used to register a class decorated with [@Rest](decorator/core-decorators.md#rest)
+
+Params:
+
+- *restConstructor*: Is the class decorated with [@Rest](decorator/core-decorators.md#rest)
+- *path*: The father path. All method decorated with [Rest Decorators](decorator/rest-decorators.md) will inherit this path
+- *authenticated*: When true, all inherit paths need a user signed in
+- *allowedProfiles*: Is the allowed profiles that can execute the operations mapped in the methods decorated with some [rest decorator](decorator/rest-decorators.md)
+
+### Method: static registerRestPath
+
+This is method is used to register a REST operation in methods decorated with some [Rest Decorators](decorator/rest-decorators.md)
+
+Params:
+
+ - *httpType*: Is the [HttpTypeEnum](shared/enum/http-type-enum.md) (Get, Post, Delete, ...)
+ - *path*: Is the operation PATH
+ - *target*: Is the method class
+ - *methodName*: Is the method name
+ - *authenticated*: When true, the mapped operation will be executed only if has a user authenticated
+ - *allowedProfiles*: Is the allowed profiles that can execute the operation
+
+### Method: static registerService
+
+This method will register a class decorated with ´[@Service](decorator/core-decorators.md#service). For Core use only
+
+Params:
+
+- *configurationConstructor*: The decorated class
+- *over* The class that must be overridden. It is optional
+
+### Method: static setError
+
+When this method is called, the destruction step will start, and the ERROR will be registered
+
+Param:
+
+ - *error*: Is the error that will be registered in the core
+
+### Method: static whenBeforeInitializationIsDone
+
+This method return an observable that will emit value when the core assumes the state of [BEFORE_INITIALIZATION_DONE](#step-before-initialization)
+
+Return:
+
+ - Observable<CoreStateEnum>
 
 ### Method: static whenDestroyed
+
+This method return an observable that will emit value when the core assumes the state of [DESTRUCTION_DONE](#step-destruction)
+
+Return:
+
+- Observable<CoreStateEnum>
+
+### Method: static whenReady
+
+This method return an observable that will emit value when the core assumes the state of [READY](shared/enum/core-state-enum.md#ready)
+
+Return:
+
+- Observable<CoreStateEnum>
+
+### Method: static watchState
+
+This method will return an observable that will emit every change of the core state
+
+Return:
+
+- Observable<CoreStateEnum>
+
 
 
 

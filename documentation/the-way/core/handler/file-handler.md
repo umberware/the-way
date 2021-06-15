@@ -3,8 +3,8 @@
 FileHandler is responsible to scan and 'import' the files that has [CoreDecorators](documentation/the-way/core/decorator/core-decorators.md)
 and match to the [scan properties](documentation/the-way/core/application-properties.md#the-waycorescan)
 
-**The FileHandler will change when the [TheWayCli](https://github.com/umberware/the-way/issues/47) is created,
-because TheWayCli will be the responsible to generate the final code, and the bundle with the "scanned" components**
+**The FileHandler will change when [TheWayCli](https://github.com/umberware/the-way/issues/47) is created,
+because TheWayCli will be the responsible to generate: the final code, and the bundle with the "scanned" components**
 
 ## Summary
  - [Method: initialize](#method-initialize)

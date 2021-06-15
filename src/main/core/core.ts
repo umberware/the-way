@@ -189,12 +189,12 @@ export class CORE {
         return instance.getInstanceHandler().getInstances();
     }
     /**
-     *   @name getInstances
+     *   @name getOverrides
      *   @description Retrieve all overridden classes
      *   @return The overridden map: OverriddenMapModel
      *   @since 1.0.0
      */
-    public static getOverriden(): OverriddenMapModel {
+    public static getOverrides(): OverriddenMapModel {
         const instance = this.getInstance();
         return instance.getRegisterHandler().getOverridden();
     }
@@ -215,7 +215,7 @@ export class CORE {
     /**
      *   @name isDestroyed
      *   @description Will check if the core is destroyed
-     *   @return The propertiesHandler: PropertiesHandler
+     *   @return a boolean, when true, the application is destroyed
      *   @since 1.0.0
      */
     public static isDestroyed(): boolean {
@@ -228,42 +228,109 @@ export class CORE {
             args
         });
     }
+    /**
+     *   @name registerConfiguration
+     *   @description This method will register a class decorated with @Configuration. For Core use only
+     *   @param configurationConstructor The decorated class
+     *   @param over The class that must be overridden. It is optional
+     *   @since 1.0.0
+     */
     public static registerConfiguration(configurationConstructor: Function, over?: Function): void {
         this.register('registerConfiguration', [configurationConstructor, over]);
     }
-    public static registerCoreComponent(componenteConstructor: Function): void {
-        this.register('registerCoreComponent', [componenteConstructor]);
+    /**
+     *   @name registerCoreComponent
+     *   @description This method will register a core component. For Core use only
+     *   @param componentConstructor The Core Component class
+     *   @since 1.0.0
+     */
+    public static registerCoreComponent(componentConstructor: Function): void {
+        this.register('registerCoreComponent', [componentConstructor]);
     }
-    public static registerInjection(dependencyConstructor: Function, source: object, key: string): void {
-        this.register('registerInjection', [dependencyConstructor, source, key]);
+    /**
+     *   @name registerInjection
+     *   @description This method will register a dependency and map injection point
+     *   @param dependencyConstructor The dependency class
+     *   @param source The dependent class
+     *   @param propertyKey The dependent class injection point
+     *   @since 1.0.0
+     */
+    public static registerInjection(dependencyConstructor: Function, source: object, propertyKey: string): void {
+        this.register('registerInjection', [dependencyConstructor, source, propertyKey]);
     }
+    /**
+     *   @name registerRest
+     *   @description This is method is used to register a class decorated with @Rest
+     *   @param restConstructor Is the class decorated with @Rest
+     *   @param path The father path. All method decorated with RestDecorators will inherit this path
+     *   @param authenticated When true, all inherit paths need a user signed in
+     *   @param allowedProfiles Is the allowed profiles that can
+     *      execute the operations mapped in the methods decorated with some rest decorator
+     *   @since 1.0.0
+     */
     public static registerRest(
-        restConstructor: Function, path?: string, isAthenticated?: boolean,
+        restConstructor: Function, path?: string, authenticated?: boolean,
         allowedProfiles?: Array<any>
     ): void {
-        this.register('registerRest', [restConstructor, path, isAthenticated, allowedProfiles]);
+        this.register('registerRest', [restConstructor, path, authenticated, allowedProfiles]);
     }
+    /**
+     *   @name registerRestPath
+     *   @description This is method is used to register a REST operation in methods decorated with some rest decorator
+     *   @param httpType Is the HttpTypeEnum (Get, Post, Delete, ...)
+     *   @param path Is the operation PATH
+     *   @param target Is the method class
+     *   @param methodName Is the method name
+     *   @param authenticated When true, the mapped operation will be executed only if has a user authenticated
+     *   @param allowedProfiles Is the allowed profiles that can execute the operation
+     *   @since 1.0.0
+     */
     public static registerRestPath(
-        httpType: HttpTypeEnum, path: string, target: any, propertyKey: string,
-        isAuthenticated?: boolean, allowedProfiles?: Array<any>
+        httpType: HttpTypeEnum, path: string, target: any, methodName: string,
+        authenticated?: boolean, allowedProfiles?: Array<any>
     ): void {
-        this.register('registerRestPath',[ httpType, path, target, propertyKey, isAuthenticated, allowedProfiles ]);
+        this.register('registerRestPath',[ httpType, path, target, methodName, authenticated, allowedProfiles ]);
     }
+    /**
+     *   @name registerService
+     *   @description This method will register a class decorated with @Service. For Core use only
+     *   @param configurationConstructor The decorated class
+     *   @param over The class that must be overridden. It is optional
+     *   @since 1.0.0
+     */
     public static registerService(serviceConstructor: Function, over?: Function): void {
         this.register('registerService', [serviceConstructor, over]);
     }
+    /**
+     *   @name setError
+     *   @description When this method is called, the destruction step will start and the ERROR will be registered
+     *   @param error Is the error that will be registered in the core
+     *   @since 1.0.0
+     */
     public static setError(error: Error): void {
         this.ERROR = error;
         if (!this.isDestroyed()) {
             CORE.STATE$.next(CoreStateEnum.DESTRUCTION_STARTED);
         }
     }
+    /**
+     *   @name whenBeforeInitializationIsDone
+     *   @description This method return an observable that will emit value when the core assumes the state of BEFORE_INITIALIZATION_DONE
+     *   @return Observable<CoreStateEnum>
+     *   @since 1.0.0
+     */
     public static whenBeforeInitializationIsDone(): Observable<CoreStateEnum> {
         return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.BEFORE_INITIALIZATION_DONE),
             take(1)
         );
     }
+    /**
+     *   @name whenDestroyed
+     *   @description This method return an observable that will emit value when the core assumes the state of DESTRUCTION_DONE
+     *   @return Observable<CoreStateEnum>
+     *   @since 1.0.0
+     */
     public static whenDestroyed(): Observable<CoreStateEnum> {
         return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.DESTRUCTION_DONE),
@@ -284,12 +351,24 @@ export class CORE {
             take(1)
         );
     }
+    /**
+     *   @name whenReady
+     *   @description This method return an observable that will emit value when the core assumes the state of READY
+     *   @return Observable<CoreStateEnum>
+     *   @since 1.0.0
+     */
     public static whenReady(): Observable<CoreStateEnum> {
         return this.STATE$.pipe(
             filter((state: CoreStateEnum) => state === CoreStateEnum.READY),
             take(1)
         );
     }
+    /**
+     *   @name watchState
+     *   @description This method will return an observable that will emit every change of the core state
+     *   @return Observable<CoreStateEnum>
+     *   @since 1.0.0
+     */
     public static watchState(): Observable<CoreStateEnum> {
         return this.STATE$;
     }
