@@ -2,7 +2,7 @@
 
 /**
  *   @name CORE_MESSAGES
- *   @description This constant is used to make an internationalization.
+ *   @description This configuration is used to make an internationalization.
  *      The keys are the language, and the value of the language key,
  *      is a generic object with a message name as key, and the value as message.
  *      The system language is defined in the property 'the-way.core.language', and

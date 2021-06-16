@@ -1,8 +1,33 @@
 import { CORE_MESSAGES } from '../shared/constant/core-messages.constant';
 
+/**
+ * @class CoreMessageService
+ * @description This service is used to get and prepare messages to be
+ *  logged or retrieved to a final user. The messages that will be used
+ *  are defined in the object CORE_MESSAGES
+ * @since 1.0.0
+ * */
 export class CoreMessageService {
+    /**
+     * @property messages
+     * @description Is a local reference to CORE_MESSAGES
+     * @since 1.0.0
+     * */
     static messages = CORE_MESSAGES;
+    /**
+     * @property language
+     * @description Is the language that will be used to find the message in
+     *  CORE_MESSAGES
+     * @since 1.0.0
+     * */
     static language = 'en'
+    /**
+     * @property setLanguage
+     * @description This method will set the language that will be used to
+     *  find the message in CORE_MESSAGES
+     * @param language is the language
+     * @since 1.0.0
+     * */
     static setLanguage(language: string): void {
         this.language = language;
     }
@@ -14,9 +39,28 @@ export class CoreMessageService {
         }
         return (languageMessages[name]) ? languageMessages[name] : defaultMessages[name];
     }
+    /**
+     * @property getCodeMessage
+     * @description This method can be used to retrieve a message that is a number
+     * @param name The name of the message in CoreMessage
+     * @return The message number
+     * @since 1.0.0
+     * */
     static getCodeMessage(name: string): number {
         return this.get(name) as number;
     }
+    /**
+     * @property getMessage
+     * @description This method retrieves a message. Also, this method replaces
+     *  every $ in the message with a provided value. If the current language
+     *  does not have the message, the method will try to get the message
+     *  using the default language (en)
+     * @param name The name of the message in CoreMessage
+     * @param replacements This array of string will be used to replace every $ in the message with a value in the array.
+     *  The replacements will use the array order
+     * @return The handled message
+     * @since 1.0.0
+     * */
     static getMessage(name: string, replacements?: Array<string>): string {
         let message = this.get(name) as string;
 

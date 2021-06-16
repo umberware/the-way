@@ -13,6 +13,7 @@ You can check all the code present in the guides in [The Way Examples Repository
 
 - [NodeJs With Typescript](guides/node-typescript-guide.md)
 - [TheWay: HeroesRest](guides/the-way-heroes-rest.md)
+- [TheWay: Internationalization](guides/the-way-internationalization.md)
 
 ### Classes and Components Documentation
 
@@ -63,3 +64,5 @@ You can check all the code present in the guides in [The Way Examples Repository
     - [TokenClaimsModel](the-way/core/shared/model/token-claims-model.md)
  - Service
     - [CoreCryptoService](the-way/core/service/core-crypto-service-doc.md)
+    - [CoreLogger](the-way/core/service/core-logger.md)
+    - [CoreMessageService](the-way/core/service/core-message-service.md)

@@ -47,6 +47,8 @@ In this version the library was refactored and this is the new beginning.
     - **Destroyable documentation**: added
     - **Configurable documentation**: added
     - **Core documentation**: added
+    - **CoreLogger documentation**: added
+    - **CoreMessageService documentation**: added
 
 ### Changed
 

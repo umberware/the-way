@@ -17,3 +17,5 @@ The system language is defined in the property ['the-way.core.language'](documen
             'welcome-message': 'Olá usuário'
         }
     }
+
+**You can check the guide [The Way Internationalization](documentation/guides/the-way-internationalization.md) to see how to use the internationalization in TheWay Framework**
