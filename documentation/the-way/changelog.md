@@ -49,6 +49,7 @@ In this version the library was refactored and this is the new beginning.
     - **Core documentation**: added
     - **CoreLogger documentation**: added
     - **CoreMessageService documentation**: added
+    - **CoreRestService documentation**: added
 
 ### Changed
 

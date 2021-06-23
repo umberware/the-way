@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/handler/dependency.handler.ts)
+
 ## DependencyHandler
 
 DependencyHandler is responsible to generate the tree dependencies. This tree will be used in the [InstanceHandler](instance-handler.md)

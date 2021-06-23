@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/exeption/rest.exception.ts)
+
 ## RestException
 
 The 'primitive' rest exception.

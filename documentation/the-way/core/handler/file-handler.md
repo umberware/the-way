@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/handler/file.handler.ts)
+
 ## FileHandler
 
 FileHandler is responsible to scan and 'import' the files that has [CoreDecorators](documentation/the-way/core/decorator/core-decorators.md)

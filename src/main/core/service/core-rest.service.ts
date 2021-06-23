@@ -26,6 +26,17 @@ import { CoreSecurityService } from './core-security.service';
 import { PathMapModel } from '../shared/model/path-map.model';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any */
+/**
+ * @class CoreRestService
+ * @description This class is built to execute the mapped REST Operations,
+ *  providing security (via JWT, can be customized with custom CoreSecurityService),
+ *  error handling and others.
+ *  Also, it's important to know that all mapped REST operation, when executed(called via HTTP), the return of
+ *  the method/function will be the return to the requester, and the return can has the types:
+ *  [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise),
+ *  [RxJs Observable](https://rxjs.dev/api/index/class/Observabl),
+ *  or a not "async" type like a custom JSON, string, integer and others
+ **/
 @System
 @Service()
 export class CoreRestService {
@@ -64,7 +75,7 @@ export class CoreRestService {
     ): void {
         try {
             const token = req.headers.authorization as string;
-            this.verifyToken(fatherPath, token, allowedProfiles, authenticated).pipe(
+            this.verifyAuthentication(fatherPath, token, allowedProfiles, authenticated).pipe(
                 switchMap((tokenClaims: TokenClaims | undefined) => {
                     return this.executeMethod(httpType, target, propertyKey, req, res, tokenClaims);
                 })
@@ -144,11 +155,27 @@ export class CoreRestService {
         }
         this.logService.error(ex);
     }
+    /**
+     * @method registerPath
+     * @description This method is used to register a REST operation, mapping the path
+     *  and the method that will be called when a HTTP request is received under the path.
+     *  When the Core is initialized, for every path registered in the RegisterHandler this method will be called
+     * @param httpType is the HttpTypeEnum(Http method: Post, Get, ...)
+     * @param path is the endpoint that you will serve the operation
+     * @param target is the class decorated with @Rest for this operation
+     * @param methodName is the name of the method in the target class that will be called when a request under the path is received
+     * @param fatherPath when a class decorated with @Rest has a declared path in the decorator
+     * @param authenticated when true, the user must be logged in and pass
+     *  a valid token in the header. See CoreSecurityService
+     * @param allowedProfiles when the path must be authenticated,
+     *  you can pass an array of profiles. The user owner of the token must have one of
+     *  the profiles to be allowed to use.
+     * */
     public registerPath(
-        httpType: HttpTypeEnum, path: string, target: any, propertyKey: string,
+        httpType: HttpTypeEnum, path: string, target: any, methodName: string,
         fatherPath: PathMapModel, authenticated?: boolean, allowedProfiles?: Array<any>
     ): void {
-        const claims: number = Reflect.getOwnMetadata(ClaimsMetaKey, target, propertyKey);
+        const claims: number = Reflect.getOwnMetadata(ClaimsMetaKey, target, methodName);
 
         if (claims !== undefined && !authenticated) {
             throw new ApplicationException(
@@ -157,17 +184,17 @@ export class CoreRestService {
             );
         }
         this.serverConfiguration.registerPath(path, httpType,  (req: Request, res: Response) => {
-            this.execute(httpType, target, propertyKey, req, res, fatherPath, authenticated, allowedProfiles);
+            this.execute(httpType, target, methodName, req, res, fatherPath, authenticated, allowedProfiles);
         });
     }
-    protected verifyToken(
+    protected verifyAuthentication(
         fatherPath: PathMapModel, token?: string,
         profiles?: Array<any>, authenticated?: boolean
     ): Observable<TokenClaims | undefined> {
         if (!authenticated && !fatherPath.isAuthenticated) {
             return of(undefined);
         } else {
-            const verificationResult = this.securityService.verifyToken(
+            const verificationResult = this.securityService.verifyAuthentication(
                 fatherPath, token, profiles
             );
             return this.buildObservableFromResponse(verificationResult);

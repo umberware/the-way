@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/shared/model/dependency-map.model.ts)
+
 ## DependencyMapModel
 
 This interface represents a map of all registered dependencies that must be resolved to run the application

@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/service/core-crypto.service.ts)
+
 ## CoreCryptoService
 
 This component can be used to encrypt/decrypt, generate a hash and generate a random hash.

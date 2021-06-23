@@ -13,14 +13,14 @@ export class CoreMessageService {
      * @description Is a local reference to CORE_MESSAGES
      * @since 1.0.0
      * */
-    static messages = CORE_MESSAGES;
+    public static messages = CORE_MESSAGES;
     /**
      * @property language
      * @description Is the language that will be used to find the message in
      *  CORE_MESSAGES
      * @since 1.0.0
      * */
-    static language = 'en'
+    public static language = 'en'
     /**
      * @property setLanguage
      * @description This method will set the language that will be used to
@@ -28,7 +28,7 @@ export class CoreMessageService {
      * @param language is the language
      * @since 1.0.0
      * */
-    static setLanguage(language: string): void {
+    public static setLanguage(language: string): void {
         this.language = language;
     }
     private static get(name: string): string | number {
@@ -46,7 +46,7 @@ export class CoreMessageService {
      * @return The message number
      * @since 1.0.0
      * */
-    static getCodeMessage(name: string): number {
+    public static getCodeMessage(name: string): number {
         return this.get(name) as number;
     }
     /**
@@ -61,7 +61,7 @@ export class CoreMessageService {
      * @return The handled message
      * @since 1.0.0
      * */
-    static getMessage(name: string, replacements?: Array<string>): string {
+    public static getMessage(name: string, replacements?: Array<string>): string {
         let message = this.get(name) as string;
 
         if (replacements && (typeof message === 'string')) {

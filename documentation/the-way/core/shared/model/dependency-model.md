@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/shared/model/dependency.model.ts)
+
 ## DependencyModel
 
 This interface is used to represent a registered dependency

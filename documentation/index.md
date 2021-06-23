@@ -66,3 +66,4 @@ You can check all the code present in the guides in [The Way Examples Repository
     - [CoreCryptoService](the-way/core/service/core-crypto-service-doc.md)
     - [CoreLogger](the-way/core/service/core-logger.md)
     - [CoreMessageService](the-way/core/service/core-message-service.md)
+    - [CoreRestService](the-way/core/service/core-rest-service.md)

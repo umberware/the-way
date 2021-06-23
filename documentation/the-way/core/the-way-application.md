@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/service/core-rest.service.ts)
+
 ## The Way Application
 
 TheWayApplication class is fundamental to work with TheWay framework.

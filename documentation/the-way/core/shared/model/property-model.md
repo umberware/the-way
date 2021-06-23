@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/shared/model/property.model.ts)
+
 ## PropertyModel
 
 This interface is used to represent the properties. Used in [PropertiesHandler](documentation/the-way/core/handler/properties-handler.md)

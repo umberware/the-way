@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/handler/instance.handler.ts)
+
 ## InstanceHandler
 
 InstanceHandler is responsible to create the instances, resolve the dependencies tree, configure and destroy instances.

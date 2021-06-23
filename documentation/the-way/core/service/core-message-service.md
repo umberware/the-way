@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/service/core-message.service.ts)
+
 ## CoreMessageService
 
 This service is used to get and prepare messages to be logged or retrieved to a final user.

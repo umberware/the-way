@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/core.ts)
+
 ## Core
 
 The core is the heart and brain of this library. It controls all stages of the application in 4 major steps.

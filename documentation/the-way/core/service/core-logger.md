@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/service/core-logger.ts)
+
 ## CoreLogger
 
 This class is used to log information. Some behaviors can be changed with the [the-way.core.log](documentation/the-way/core/application-properties.md#the-waycorelog) properties

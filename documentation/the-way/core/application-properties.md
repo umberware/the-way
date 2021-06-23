@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/resources/application.properties.yml)
+
 ## Application Properties
 
 The Application Core accepts a lot of properties for customization & configuration. In this section we will talk about those properties and what is their purpose.

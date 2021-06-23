@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/handler/register.handler.ts)
+
 ## RegisterHandler
 
 The RegisterHandler will store all "components" that must be handled in the Core.

@@ -22,8 +22,12 @@ export class CoreSecurityService {
     @Inject protected cryptoService: CoreCryptoService;
 
     public generateToken(tokenClaims: TokenClaims | undefined): string {
-        const cryptedClaims: string | undefined = this.generateTokenClaims(tokenClaims);
-        return Jwt.sign({ data: cryptedClaims }, this.getTokenKey(), { expiresIn: this.getTokenExpiration() });
+        const encryptedClaims: string | undefined = this.generateTokenClaims(tokenClaims);
+        return Jwt.sign(
+            { data: encryptedClaims },
+            this.getTokenKey(),
+            { expiresIn: this.getTokenExpiration() }
+        );
     }
     protected generateTokenClaims(tokenClaims: TokenClaims | undefined): string | undefined {
         if (!tokenClaims) {
@@ -89,7 +93,7 @@ export class CoreSecurityService {
             throw new NotAllowedException(CoreMessageService.getMessage('error-rest-cannot-perform-action'));
         }
     }
-    public verifyToken(
+    public verifyAuthentication(
         fatherPath: PathMapModel, token?: string,
         profiles?: Array<any>
     ): TokenClaims | undefined {

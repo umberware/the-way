@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/shared/abstract/configurable.ts)
+
 ## Configurable
 
 This abstract class can be used to autoconfigure an object instance

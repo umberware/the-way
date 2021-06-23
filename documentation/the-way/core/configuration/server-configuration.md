@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/configuration/server.configuration.ts)
+
 ## ServerConfiguration
 
 The ServerConfiguration is responsible to start the http/https server with some features.

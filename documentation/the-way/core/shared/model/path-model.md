@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/shared/model/path.model.ts)
+
 ## PathModel
 
 This interface is used to register a REST path. The registered paths are used in [CoreRestService](documentation/the-way/core/service/core-rest-service.md)

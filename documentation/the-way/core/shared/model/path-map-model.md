@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/shared/model/path-map.model.ts)
+
 ## PathMapModel
 
 This interface is used to register a REST path for classes decorated with [@Rest](documentation/the-way/core/decorator/core-decorators.md#rest).

@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/shared/model/constructor-map.model.ts)
+
 ## ConstructorMapModel
 
 This interface represents a map of all registered class to be instantiated

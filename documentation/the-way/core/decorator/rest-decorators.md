@@ -5,7 +5,8 @@ because the decorators abstracts the register in te server and provide mechanism
 
 **When you decorate a class method with [@Get](#get), [@Delete](#delete), [@Head](#head), [@Patch](#patch),
 [@Post](#post) or [@Put](#put), the method's return will be sent to the requester.
-You can return: [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise), [RxJs Observable](https://rxjs.dev/api/index/class/Observabl) or all not "async" types**
+You can return: [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise), [RxJs Observable](https://rxjs.dev/api/index/class/Observabl)
+or a not "async" type like a custom JSON, string, integer and others**
 
 ### Summary
 

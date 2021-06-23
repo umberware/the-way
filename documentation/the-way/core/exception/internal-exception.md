@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/exeption/internal.exception.ts)
+
 ## InternalException
 
 This exception should be thrown when an unexpected error occurs.

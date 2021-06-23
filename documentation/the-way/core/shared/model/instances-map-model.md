@@ -1,3 +1,5 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](src/main/core/shared/model/instances-map.model.ts)
+
 ## InstancesMapModel
 
 This interface is used to register all instances that have been created
