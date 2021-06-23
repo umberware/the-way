@@ -1,6 +1,6 @@
 {
     "name": "@umberware/the-way",
-    "version": "1.0.0-Beta.2.5",
+    "version": "1.0.0-Beta.2.6",
     "description": "TheWay is a framework to enhance the development with NodeJs and Typescript, promoting agility, simplicity and intelligibility",
     "main": "src/main/index.js",
     "types": "src/main/index.d.ts",
