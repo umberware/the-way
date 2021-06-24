@@ -1,8 +1,25 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](https://github.com/umberware/the-way-examples/tree/master/examples/internationalization/)
+
 ## The Way: Internationalization
+
+To use this guide you must have a project configured to use typescript and the libraries `@umberware/the-way` and `@types/node` installed.
+You can check this [guide](node-typescript-guide.md) to configure.
 
 In this guide we will teach how to add a new language and use this language in your application.
 
-*Main: A Main File (src/main/main.ts)*
+### Summary
+
+ - [Fist Step: A main class](#first-step-a-main-file)
+ - [CustomMessagesConfiguration: Preparing another languages](#custommessagesconfiguration-preparing-another-languages)
+ - [Main: Adjusting to use the new languages](#main-adjusting-to-use-the-new-languages)
+ - [Running](#running)
+ - [Conclusion](#conclusion)
+
+### First Step: A main file
+
+The first step, is to create a main file for the bootstrap of your application
+
+**Main:** *The main class(src/main/main.ts)*
 
     import { Application, TheWayApplication, Inject, CoreLogger, CoreMessageService } from '@umberware/the-way';
 
@@ -15,16 +32,14 @@ In this guide we will teach how to add a new language and use this language in y
         }
     }
 
-*Running*
+With the code above, will be consoled `undefined`  when you [run](#running), because the 'hello-world' is not defined in the language 'en' in the [CORE_MESSAGES](documentation/the-way/core/shared/constant/core-messages-constant.md).
 
-    ts-node src/main/main.ts
+### CustomMessagesConfiguration: Preparing another languages
 
-With the code above, will be consoled `undefined` because the 'hello-world' is not defined in the language 'en' in the [CORE_MESSAGES](documentation/the-way/core/shared/constant/core-messages-constant.md).
+In the above section, we tried to use a message that is not defined. In this section, we create a class that will prepare the [CORE_MESSAGES](documentation/the-way/core/shared/constant/core-messages-constant.md)
+with new languages and new messages.
 
-So, let's create a [configurable](documentation/the-way/core/shared/abstract/configurable.md) class to prepare the [CORE_MESSAGES](documentation/the-way/core/shared/constant/core-messages-constant.md) with
-new messages and languages
-
-*CustomMessagesConfiguration: A Configurable Class(src/main/shared/configuration)*
+**CustomMessagesConfiguration:** *A Configurable Class(src/main/shared/configuration)*
 
     import { Configurable, Configuration, CORE_MESSAGES } from '@umberware/the-way';
 
@@ -43,10 +58,14 @@ new messages and languages
     }
 
 In the code above, we create two languages in the CORE_MESSAGES object and a new "message" for "en" language. Now, we are able to use the new languages and message.
+Also, you can change the code above to pass a JSON object to a language key and with this, you can have a file per-language for example.
 
-**Note:** You can pass a JSON object to a language key to have a file per-language
+### Main: Adjusting to use the new languages
 
-*Main: Adjusting (src/main/main.ts)*
+In this example, we are using the Main class to get the new languages and messages, but you can use the languages in every place after the [Core initialization](documentation/the-way/core/core.md#step-initialization)
+
+
+**Main:** *Adjusted main (src/main/main.ts)*
 
     import { Application, TheWayApplication, Inject, CoreLogger, CoreMessageService } from '@umberware/the-way';
 
@@ -63,17 +82,34 @@ In the code above, we create two languages in the CORE_MESSAGES object and a new
         }
     }
 
-*Running*
-
-    ts-node src/main/main.ts
-
-With the main class adjusted, the new output will log the en, pt and es "hello-world".
+When you [run](#running) the adjusted main class, the output will log the en, pt and es "hello-world".
 
     [INFO] Hello World
     [INFO] Olá mundo
     [INFO] Hola Mundo
 
-**Note:** You can set the language with the [the-way.core.language](documentation/the-way/core/application-properties.md#the-waycorelanguage) property
+### Running
+
+To execute the implemented code, you can build and execute the final source code, or you can use the [ts-node](https://www.npmjs.com/package/ts-node)
+
+**Build and Run**
+
+*Build*
+
+    tsc
+
+*Run*
+
+    node OUTPUT_DIRECTORY/src/main/main.js
+
+**Via ts-node**
+
+    ts-node src/main/main.ts
+
+### Conclusion
+
+With TheWay framework you can easily prepare your project for internationalization.
+You can set the language with the [the-way.core.language](documentation/the-way/core/application-properties.md#the-waycorelanguage) property
 
 You can check the source code of this example [here](https://github.com/umberware/the-way-examples/tree/master/examples/internationalization/).
 

@@ -21,22 +21,22 @@ export class CoreSecurityService {
     @Inject protected propertiesHandler: PropertiesHandler;
     @Inject protected cryptoService: CoreCryptoService;
 
-    public generateToken(tokenClaims: TokenClaims | undefined): string {
-        const encryptedClaims: string | undefined = this.generateTokenClaims(tokenClaims);
+    protected cipherClaims(tokenClaims: TokenClaims | undefined): string | undefined {
+        if (!tokenClaims) {
+            return;
+        }
+
+        return this.cryptoService.cipherIv(JSON.stringify(tokenClaims), 'aes-256-cbc', this.getUserKey());
+    }
+    public generateToken(tokenClaims?: TokenClaims): string {
+        const encryptedClaims: string | undefined = this.cipherClaims(tokenClaims);
         return Jwt.sign(
             { data: encryptedClaims },
             this.getTokenKey(),
             { expiresIn: this.getTokenExpiration() }
         );
     }
-    protected generateTokenClaims(tokenClaims: TokenClaims | undefined): string | undefined {
-        if (!tokenClaims) {
-            return undefined;
-        }
-
-        return this.cryptoService.cipherIv(JSON.stringify(tokenClaims), 'aes-256-cbc', this.getUserKey());
-    }
-    public getTokenClaims(token: string): TokenClaims | undefined {
+    protected getTokenClaims(token: string): TokenClaims | undefined {
         const claims = Jwt.verify(token, this.getTokenKey()) as {data: string};
 
         if (claims.data) {

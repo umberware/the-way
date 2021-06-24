@@ -1,11 +1,26 @@
+[![Source Code](https://img.shields.io/badge/Source%20Code-black?logo=TypeScript&style=for-the-badge)](https://github.com/umberware/the-way-examples/tree/master/examples/heroes-rest/)
+
 ## The Way: HeroesRest
 
-If you configured your node.js project to use typescript and installed the `@umberware/the-way` and `@types/node` you can move to the start right now!
+To use this guide you must have a project configured to use typescript and the libraries `@umberware/the-way` and `@types/node` installed.
+You can check this [guide](node-typescript-guide.md) to configure.
+
 This guide will teach you how to create a REST operation using the TheWay framework. So Autobots, roll out!
 
-Create your main file
+### Summary
 
-*Main: A file in: src/main/main.ts*
+ - [Fist Step: A main class](#first-step-a-main-file)
+ - [HeroModel: A transactional object](#heromodel-a-transactional-object)
+ - [HeroService: The service](#heroservice-the-service)
+ - [HeroRest: The Hero operations](#herorest-the-hero-operations)
+ - [Running](#running)
+ - [Conclusion](#conclusion)
+
+### First Step: A main file
+
+The first step, is to create a main file for the bootstrap of your application
+
+**Main:** *The main class(src/main/main.ts)*
 
     import { Application, TheWayApplication, Inject, CoreLogger } from '@umberware/the-way';
 
@@ -18,9 +33,11 @@ Create your main file
         }
     }
 
-Create a hero model
+### HeroModel: A transactional object
 
-*HeroModel: A file in: src/main/hero/model/hero.model.ts*
+We need to create an interface that map the Hero information to transact this information between the points.
+
+**HeroModel:** *The Hero transactional object(src/main/hero/model/hero.model.ts)*
 
     export interface HeroModel {
         id: number;
@@ -28,9 +45,13 @@ Create a hero model
         power: number;
     }
 
-Create a HeroService with an array of heroes mocked
+### HeroService: The service
 
-*HeroService: A file in: src/main/hero/hero.service.ts*
+One good principle it's use a service to execute a concise objective/feature, so, we create a REST class to abstract the HTTP Request and the Response
+and the service role is to execute the operations for the HERO feature and return the execution result.
+It's important to know that example has a dummy mock implementation to store the heroes
+
+**HeroService:** *The Hero feature executor(src/main/hero/hero.service.ts)*
 
     import { Service, NotFoundException } from '@umberware/the-way';
 
@@ -55,13 +76,11 @@ Create a HeroService with an array of heroes mocked
         }
     }
 
-To create a REST operation with this framework, you need to create a class decorated with [@Rest](documentation/the-way/core/decorator/core-decorators.md#rest)
-and in this decorator, you can pass a path. After this, you can use rest decorators in methods such as [@Get](documentation/the-way/core/decorator/rest-decorators.md#get)
-to map a path and set security for this endpoint. Also, in a method decorated with a rest decorator, it is allowed to use property decorators to bind some REQUEST property, for example: [@PathParam](documentation/the-way/core/decorator/rest-decorators.md#pathparam)
-In the code below, we created a HeroRest class decorated with `@Rest` and mapped a 'father path' as '/hero'. Also, we created a method `getHeroById` decorated with @Get and with the path ':id'.
-With this code, we can bind a variable in the path with `@PathParam` and in the example below, the variable is **id**.
+### HeroRest: The Hero operations
 
-*HeroRest: A file in: src/main/hero/hero.rest.ts*
+Now, we need to create a REST class that will map the operations for the Hero features.
+
+**HeroRest:** *The Hero feature REST operations(src/main/hero/hero.rest.ts)*
 
     import { Get, Inject, PathParam, Rest } from '@umberware/the-way';
 
@@ -72,7 +91,7 @@ With this code, we can bind a variable in the path with `@PathParam` and in the 
 
     @Rest( '/hero')
     export class HeroRest {
-    @Inject heroService: HeroService;
+        @Inject heroService: HeroService;
 
         @Get(':id')
         public getHeroById(@PathParam('id') id: string): Observable<HeroModel> {
@@ -80,12 +99,35 @@ With this code, we can bind a variable in the path with `@PathParam` and in the 
         }
     }
 
+To create a REST operation with this framework, you need to create a class decorated with [@Rest](documentation/the-way/core/decorator/core-decorators.md#rest)
+and in this decorator, you can pass a path. After this, you can use rest decorators in methods such as [@Get](documentation/the-way/core/decorator/rest-decorators.md#get)
+to map a path and set security for this endpoint. Also, in a method decorated with a rest decorator, it is allowed to use property decorators to bind some REQUEST property, for example: [@PathParam](documentation/the-way/core/decorator/rest-decorators.md#pathparam)
+In the code below, we created a HeroRest class decorated with `@Rest` and mapped a 'father path' as '/hero'. Also, we created a method `getHeroById` decorated with @Get and with the path ':id'.
+With this code, we can bind a variable in the path with `@PathParam` and in the example below, the variable is **id**.
 
-**Note:** You don't need to import the HeroRest into the Main class if the [scan is enabled](documentation/the-way/core/application-properties.md#the-waycorescan)
+### Running
 
-*Running*
+To execute the implemented code, you can build and execute the final source code, or you can use the [ts-node](https://www.npmjs.com/package/ts-node)
+
+**Build and Run**
+
+*Build*
+
+    tsc
+
+*Run*
+
+    node OUTPUT_DIRECTORY/src/main/main.js
+
+**Via ts-node**
 
     ts-node src/main/main.ts
+
+### Conclusion
+
+With TheWay framework, you can map a rest operation and define the security very easily like we did above. Also, when the [scan is enabled](documentation/the-way/core/application-properties.md#the-waycorescan) you don't need
+to import your components decorated with some [core decorator](documentation/the-way/core/decorator/core-decorators.md), because it will be automatically registered when you call
+your main class.
 
 You can check the source code of this example [here](https://github.com/umberware/the-way-examples/tree/master/examples/heroes-rest/).
 

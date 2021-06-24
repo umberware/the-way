@@ -46,12 +46,12 @@ export class HeroRest {
 
         return this.heroes[lastId];
     }
-    @Get('hero/:id')
+    @Get('sign/:id')
     public getHero(@PathParam('id') heroId: string): any {
         const hero = this.heroes.find((hero: any) => hero.id == heroId);
 
         if (!hero) {
-            throw new NotFoundException('The hero ' + heroId + ' not found');
+            throw new NotFoundException('The sign ' + heroId + ' not found');
         }
 
         return hero;
@@ -68,7 +68,7 @@ export class HeroRest {
         response.send(heroes);
         return heroes;
     }
-    @Delete('hero/:id')
+    @Delete('sign/:id')
     public deleteHero(@PathParam('id') heroId: string): any {
         let removed;
         for (let i = 0; i < this.heroes.length; i++) {

@@ -12,7 +12,7 @@ Features:
   - Swagger UI
   - Middlewares for [express](https://github.com/expressjs/express) routes, security and others
 
-With [@Configuration](../decorator/core-decorators.md#configuration) you can override this class and provide YOUR ServerConfiguration class.
+With [@Configuration](documentation/the-way/core/decorator/core-decorators.md#configuration) you can override this class and provide YOUR ServerConfiguration class.
 
 ### Summary
 

@@ -13,6 +13,7 @@ You can check all the code present in the guides in [The Way Examples Repository
 
 - [NodeJs With Typescript](guides/node-typescript-guide.md)
 - [TheWay: HeroesRest](guides/the-way-heroes-rest.md)
+- [TheWay: CustomSecurityService](guides/the-way-custom-security-service.md)
 - [TheWay: Internationalization](guides/the-way-internationalization.md)
 
 ### Classes and Components Documentation

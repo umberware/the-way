@@ -123,7 +123,7 @@ automatically this framework will inject the query param in this variable decora
 **Example**
 
     @Get('heroes')
-    public getHeroesByPower(@QueryParam powerFilter: any): Observable<Array<HeroModel>> {
+    public getHeroesByPower(@QueryParam powerFilter: any): Observable<Array<SignModel>> {
        ...
     }
 
@@ -140,7 +140,7 @@ It's important to know that the @PathParam variable must be the same in the mapp
 **Will Work**
 
     @Get('heroes/:id')
-    public getHeroesById(@PathParam('id') id: string): Observable<HeroModel> {
+    public getHeroesById(@PathParam('id') id: string): Observable<SignModel> {
        ...
     }
 
@@ -148,7 +148,7 @@ It's important to know that the @PathParam variable must be the same in the mapp
 **Will NOT Work**
 
     @Get('heroes/:id')
-    public getHeroesById(@PathParam('identifier') id: string): Observable<HeroModel> {
+    public getHeroesById(@PathParam('identifier') id: string): Observable<SignModel> {
        ...
     }
 
@@ -168,7 +168,7 @@ When you pass the @BodyParam as a parameter in a method that is mapped with [@Pu
 **Example:**
 
     @Put('heroes/:id')
-    public replaceHero(@BodyParam hero: HeroModel): Observable<HeroModel> {
+    public replaceHero(@BodyParam hero: SignModel): Observable<SignModel> {
         ...
     }
 
@@ -184,7 +184,7 @@ With this decorator, you can inject JWT claims into an authenticated method.
 **Example:**
 
     @Get('heroes', true)
-    public getHeroes(@Claims claims: TokenClaims): Promise<Array<HeroModel>> {
+    public getHeroes(@Claims claims: TokenClaims): Promise<Array<SignModel>> {
         ...
     }
 
@@ -218,7 +218,7 @@ to create a variable in the method and decorate that variable with this decorato
 **Example:**
 
     @Post('heroes')
-    public createHero(@BodyParam hero: HeroModel, @RequestContext request: any): void {
+    public createHero(@BodyParam hero: SignModel, @RequestContext request: any): void {
         ...
     }
 
@@ -235,7 +235,7 @@ to create a variable in the method and decorate that variable with this decorato
 **Example:**
 
     @Post('heroes')
-    public createHero(@BodyParam hero: HeroModel, @ResponseContext request: any): void {
+    public createHero(@BodyParam hero: SignModel, @ResponseContext request: any): void {
         ...
     }
 
