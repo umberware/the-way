@@ -102,6 +102,7 @@ export class FileHandler {
                 if (data.toString().search(regex) > -1) {
                     this.FOUND_FILES.push(fullPath);
                     this.logger.debug(CoreMessageService.getMessage('register-found-resource', [fullPath]), '[The Way]');
+
                     import(fullPath).then(() => {
                         resolve();
                     }).catch((ex) => reject(ex));

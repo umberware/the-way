@@ -14,8 +14,10 @@ describe('Properties Handler: ', () => {
         process.argv = [...process.argv.slice(0, index), ...process.argv.slice(index + 1)];
         import('../../resources/environment/main/main.test').then(
             () => {
+                console.log('ES')
                 CORE.whenReady().subscribe(
                     () => {
+                        console.log('READY')
                         properties = CORE.getPropertiesHandler().getProperties() as PropertyModel;
                         CORE.destroy();
                         done();

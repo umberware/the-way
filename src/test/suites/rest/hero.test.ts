@@ -13,7 +13,7 @@ beforeEach(() => {
 describe('Rest', () => {
     beforeAll(done => {
         process.argv.push('--the-way.core.scan.enabled=true');
-        process.argv.push('--the-way.core.scan.path=../../resources/rest/sign');
+        process.argv.push('--the-way.core.scan.path=../../resources/rest/hero');
         process.argv.push('--the-way.core.log.level=0');
         process.argv.push('--the-way.server.http.enabled=false');
         process.argv.push('--the-way.server.https.enabled=true');
@@ -31,7 +31,7 @@ describe('Rest', () => {
         );
     });
     test('Heroes: Get Hero', done => {
-        HttpsRequestorEnvironment.Get('/api/heroes/sign/0').subscribe(
+        HttpsRequestorEnvironment.Get('/api/heroes/hero/0').subscribe(
             (hero: any) => {
                 expect(hero.name).toBe('batman');
                 expect(hero.power).toBe(10000);
@@ -40,7 +40,7 @@ describe('Rest', () => {
         );
     });
     test('Heroes: Get A Non Existing Hero', done => {
-        HttpsRequestorEnvironment.Get('/api/heroes/sign/1000').subscribe(
+        HttpsRequestorEnvironment.Get('/api/heroes/hero/1000').subscribe(
             (hero: any) => {
                expect(hero).toBeUndefined();
             }, error => {
@@ -191,7 +191,7 @@ describe('Rest', () => {
             switchMap((heroes: any) => {
                 chosenHero = heroes[1]
                 beforeSize = heroes.length;
-                return HttpsRequestorEnvironment.Delete('/api/heroes/sign/' + chosenHero.id).pipe(
+                return HttpsRequestorEnvironment.Delete('/api/heroes/hero/' + chosenHero.id).pipe(
                     switchMap(() => {
                         return HttpsRequestorEnvironment.Get('/api/heroes');
                     })
