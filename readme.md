@@ -1,9 +1,9 @@
 <p align="center">
     <a href = "http://the-way.umberware.com/" target = "_blank">
-        <img src = "https://github.com/umberware/the-way/blob/master/src/main/resources/the-way-small-full.png" width="320px" alt="The Way Logo"/>
+        <img src = "https://github.com/umberware/the-way/blob/master/src/main/resources/the-way-small-full.png" width="380" alt="The Way Logo"/>
     </a>
 </p>
-<p align="center">A framework to enhance the development with NodeJs and Typescript, promoting agility, simplicity and intelligibility.</p>
+<p align="center">A framework to enhance the development with NodeJs and Typescript, promoting agility, simplicity and intelligibility. With TheWay, the sky is not the limit!</p>
 
 [![Site](https://img.shields.io/badge/Site-blue.svg?style=for-the-badge)](http://the-way.umberware.com/)
 [![Documentation](https://img.shields.io/badge/Documentation-blue.svg?style=for-the-badge)](documentation/index.md)
@@ -16,10 +16,6 @@
 [![Sponsor](https://img.shields.io/badge/Sponsor-black?logo=github-sponsors&style=for-the-badge)](https://opencollective.com/umberware#category-CONTRIBUTE)
 [![Discord](https://img.shields.io/badge/Discord-black?logo=discord&style=for-the-badge)](https://discord.gg/jJTReZwpgU)
 
-Using TheWay, you can easily and simply define REST operations, inject instances of a class, automatically configure and destroy instances, override classes to define a custom behavior, enable/disable features, and much more.
-
-With TheWay, the sky is not the limit!
-
 ## Summary
 
  - [Features](#features)
@@ -30,6 +26,7 @@ With TheWay, the sky is not the limit!
 
 ## Features
 
+Using TheWay, you can easily and simply define REST operations, inject instances of a class, automatically configure and destroy instances, override classes to define a custom behavior, enable/disable features, and much more.
 The proposal of TheWay is to enhance the life cycle of the development in Node.js with a lot of features. The main features are:
 
  - Class Injection & Singleton: When the [@Inject](documentation/the-way/core/decorator/core-decorators.md#inject) decorator is used, a dependency will be registered, and the [Core](documentation/the-way/core/core.md) will instantiate this dependency (as singleton) and inject at the injection point
