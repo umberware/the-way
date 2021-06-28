@@ -1,9 +1,9 @@
 <p align="center">
-    <a href = "http://the-way.umberware.com/" target = "_blank">
-        <img src = "src/main/resources/the-way-2.png" width="120" alt="The Way Logo"/>
+    <a href = "http://the-way.umberware.com/" target = "_blank" style = "float: left">
+        <img src = "https://github.com/umberware/the-way/blob/master/src/main/resources/the-way-small.png" width="120px" alt="The Way Logo"/>
     </a>
+    <span align = "center" style = "float: left">>The Way</span>
 </p>
-<h1 align = "center">The Way</h1>
 <p align="center">A framework to enhance the development with NodeJs and Typescript, promoting agility, simplicity and intelligibility.</p>
 
 [![Site](https://img.shields.io/badge/Site-blue.svg?style=for-the-badge)](http://the-way.umberware.com/)
