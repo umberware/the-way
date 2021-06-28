@@ -1,8 +1,7 @@
 <p align="center">
     <a href = "http://the-way.umberware.com/" target = "_blank" style = "float: left">
-        <img src = "https://github.com/umberware/the-way/blob/master/src/main/resources/the-way-small.png" width="120px" alt="The Way Logo"/>
+        <img src = "https://github.com/umberware/the-way/blob/master/src/main/resources/the-way-small-full.png" width="120px" alt="The Way Logo"/>
     </a>
-    <span align = "center" style = "float: left; vertical-align: center;">The Way</span>
 </p>
 <p align="center">A framework to enhance the development with NodeJs and Typescript, promoting agility, simplicity and intelligibility.</p>
 
