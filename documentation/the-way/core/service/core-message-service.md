@@ -28,7 +28,7 @@ Is the language that will be used to find the message in [CORE_MESSAGES](documen
 This method will set the language that will be used to find the message in [CORE_MESSAGES](documentation/the-way/core/shared/constant/core-messages-constant.md)
 *if the language is not found in the CORE_MESSAGES object, will be used the default language to find the message*
 
-Params:
+#### Params
 
  - *language*: Is the language
 
@@ -36,11 +36,11 @@ Params:
 
 This method can be used to retrieve a message that is a number
 
-Params:
+#### Params
 
  - *name*: The message in the CoreMessage
 
-Return:
+#### Return
 
  - The message number
 
@@ -51,11 +51,11 @@ every $ in the message with a provided value. If the current
 language does not have the message, the method will try to get
 the message using the default language (en)
 
-Params:
+#### Params
 
 - *name*: The message in the CoreMessage
 - *replacements*: This array of string will be used to replace every $ in the message with a value in the array. The replacements will use the array order
 
-Return:
+#### Return
 
 - The handled message

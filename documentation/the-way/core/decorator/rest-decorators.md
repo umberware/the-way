@@ -5,7 +5,7 @@ because the decorators abstracts the register in te server and provide mechanism
 
 **When you decorate a class method with [@Get](#get), [@Delete](#delete), [@Head](#head), [@Patch](#patch),
 [@Post](#post) or [@Put](#put), the method's return will be sent to the requester.
-You can return: [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise), [RxJs Observable](https://rxjs.dev/api/index/class/Observabl)
+You can return a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise), [RxJs Observable](https://rxjs.dev/api/index/class/Observabl)
 or a not "async" type like a custom JSON, string, integer and others**
 
 ### Summary
@@ -29,11 +29,11 @@ or a not "async" type like a custom JSON, string, integer and others**
 The @Get is designed for [HTTP GET](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET).
 You can use [@QueryParam](#queryparam), [@PathParam](#pathparam) and others that is for all operations type.
 
-Where to use it:
+#### Where to use it
 
  - In Http/Https Get operations
 
-Params:
+#### Params
 
  - *path*: is the endpoint that you will serve the operation
  - *authenticated*: when true, the user must be logged in and pass a valid token in the header. See [CoreSecurityService](documentation/the-way/core/service/core-security-service.md)
@@ -44,11 +44,11 @@ Params:
 The @Delete is designed for [HTTP DELETE](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/DELETE).
 You can use [@QueryParam](#queryparam), [@PathParam](#pathparam) and others that is for all operations type.
 
-Where to use it:
+#### Where to use it
 
 - In Http/Https Delete operations
 
-Params:
+#### Params
 
 - *path*: is the endpoint that you will serve the operation
 - *authenticated*: when true, the user must be logged in and pass a valid token in the header. See [CoreSecurityService](documentation/the-way/core/service/core-security-service.md) documentation
@@ -59,11 +59,11 @@ Params:
 The @Head is designed for [HTTP HEAD](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/HEAD).
 You can use [@QueryParam](#queryparam), [@PathParam](#pathparam) and others that is for all operations type.
 
-Where to use it:
+#### Where to use it
 
 - In Http/Https Head operations
 
-Params:
+#### Params
 
 - *path*: is the endpoint that you will serve the operation
 - *authenticated*: when true, the user must be logged in and pass a valid token in the header. See [CoreSecurityService](documentation/the-way/core/service/core-security-service.md) documentation
@@ -74,11 +74,11 @@ Params:
 The @Patch is designed for [HTTP PATCH](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH).
 You can use [@BodyParam](#bodyparam), [@PathParam](#pathparam) and others that is for all operations type.
 
-Where to use it:
+#### Where to use it
 
 - In Http/Https Patch operations
 
-Params:
+#### Params
 
 - *path*: is the endpoint that you will serve the operation
 - *authenticated*: when true, the user must be logged in and pass a valid token in the header. See [CoreSecurityService](documentation/the-way/core/service/core-security-service.md) documentation
@@ -89,11 +89,11 @@ Params:
 The @Post is designed for [HTTP POST](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST).
 You can use [@BodyParam](#bodyparam), [@PathParam](#pathparam) and others that is for all operations type.
 
-Where to use it:
+#### Where to use it
 
 - In Http/Https Post operations
 
-Params:
+#### Params
 
 - *path*: is the endpoint that you will serve the operation
 - *authenticated*: when true, the user must be logged in and pass a valid token in the header. See [CoreSecurityService](documentation/the-way/core/service/core-security-service.md) documentation
@@ -104,11 +104,11 @@ Params:
 The @Put is designed for [HTTP PUT](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PUT).
 You can use [@BodyParam](#bodyparam), [@PathParam](#pathparam) and others that is for all operations type.
 
-Where to use it:
+#### Where to use it
 
 - In Http/Https Put operations
 
-Params:
+#### Params
 
 - *path*: is the endpoint that you will serve the operation
 - *authenticated*: when true, the user must be logged in and pass a valid token in the header. See [CoreSecurityService](documentation/the-way/core/service/core-security-service.md) documentation
@@ -127,7 +127,7 @@ automatically this framework will inject the query param in this variable decora
        ...
     }
 
-Where to use it:
+#### Where to use it
 
 - In a Method decorated with [@Get](#get), [@Delete](#delete) or [@Head](#head)
 
@@ -152,11 +152,11 @@ It's important to know that the @PathParam variable must be the same in the mapp
        ...
     }
 
-Where to use it:
+#### Where to use it
 
  - Any mapped operation [@Get](#get), [@Delete](#delete), [@Head](#head), [@Put](#put), [@Post](#post) or [@Patch](#patch)
 
-Params:
+#### Params
 
  - *name*: Is the mapped path variable without ':'.
 
@@ -172,7 +172,7 @@ When you pass the @BodyParam as a parameter in a method that is mapped with [@Pu
         ...
     }
 
-Where to use it:
+#### Where to use it
 
 - In a Method decorated with [@Put](#put), [@Post](#post) or [@Patch](#patch)
 
@@ -188,7 +188,7 @@ With this decorator, you can inject JWT claims into an authenticated method.
         ...
     }
 
-Where to use it:
+#### Where to use it
 
 - In a Method decorated with [@Put](#put), [@Post](#post), [@Patch](#patch),  [@Get](#get), [@Delete](#delete) or [@Head](#head)
 - In authenticated PATH
@@ -205,7 +205,7 @@ This decorator can be used to inject the *request headers*, and to do it you mus
         ...
     }
 
-Where to use it:
+#### Where to use it
 
 - In a Method decorated with [@Put](#put), [@Post](#post), [@Patch](#patch),  [@Get](#get), [@Delete](#delete) or [@Head](#head)
 
@@ -222,7 +222,7 @@ to create a variable in the method and decorate that variable with this decorato
         ...
     }
 
-Where to use it:
+#### Where to use it
 
 - In a Method decorated with [@Put](#put), [@Post](#post), [@Patch](#patch),  [@Get](#get), [@Delete](#delete) or [@Head](#head)
 
@@ -239,6 +239,6 @@ to create a variable in the method and decorate that variable with this decorato
         ...
     }
 
-Where to use it:
+#### Where to use it
 
 - In a Method decorated with [@Put](#put), [@Post](#post), [@Patch](#patch),  [@Get](#get), [@Delete](#delete) or [@Head](#head)

@@ -33,7 +33,7 @@ This method will register all registered [@Rest](documentation/the-way/core/deco
 
 To get the registered components (Without the CoreComponents)
 
-Return:
+#### Return
 
  - The registered components: [ConstructorMapModel](documentation/the-way/core/shared/model/constructor-map-model.md)
 
@@ -41,7 +41,7 @@ Return:
 
 Returns all registered classes that are [Configurable](documentation/the-way/core/shared/abstract/configurable.md)
 
-Return:
+#### Return
 
  - A Set of [Configurable](documentation/the-way/core/shared/abstract/configurable.md)
 
@@ -50,12 +50,12 @@ Return:
 Will return the registered Constructor of a class.
 If a class is overridden, the return will be the substitute class.
 
-Params:
+#### Params
 
  - *name*: With type string, is the name of the class.
 
 
-Return:
+#### Return
 
  - The registered Constructor: [ConstructorModel](documentation/the-way/core/shared/model/constructor-model.md)
 
@@ -63,7 +63,7 @@ Return:
 
 Will return all registered Core Constructors.
 
-Return:
+#### Return
 
  - The registered CoreComponents: [ConstructorMapModel](documentation/the-way/core/shared/model/constructor-map-model.md)
 
@@ -71,7 +71,7 @@ Return:
 
 To get all registered dependencies
 
-Return:
+#### Return
 
 - The Dependencies: [DependencyMapModel](documentation/the-way/core/shared/model/dependency-map-model.md) structure
 
@@ -84,7 +84,7 @@ Param:
  - *dependent*: The dependent name class
  - *dependency*: The dependency name class
 
-Return:
+#### Return
 
 - The dependency: [DependencyModel](documentation/the-way/core/shared/model/dependency-model.md)
 
@@ -92,7 +92,7 @@ Return:
 
 Get all classes registered to be destroyed (when Core assume [destruction state](documentation/the-way/core/core.md#step-destruction))
 
-Return:
+#### Return
 
  - A Set of [Destroyable](documentation/the-way/core/shared/abstract/destroyable.md)
 
@@ -100,7 +100,7 @@ Return:
 
 Retrieves the registered classes overrides
 
-Return:
+#### Return
 
  - Overrides: [OverriddenMapModel](documentation/the-way/core/shared/model/overridden-map-model.md)
 
@@ -108,11 +108,11 @@ Return:
 
 Will return the registered 'PATHS' for a given class
 
-Params:
+#### Params
 
  - *name*: is the class name
 
-Return:
+#### Return
 
  - The registered [PathMapModel](documentation/the-way/core/shared/model/path-map-model.md) to the class
 
@@ -120,7 +120,7 @@ Return:
 
 This method is used to register a class decorated with [@Configuration](documentation/the-way/core/decorator/core-decorators.md#configuration)
 
-Params:
+#### Params
 
  - *constructor*: Is the class constructor
  - *over*: is the class that will be replaced
@@ -129,7 +129,7 @@ Params:
 
 To Core use only, this method will register a CoreComponent
 
-Params:
+#### Params
 
 - *constructor*: Is the class constructor
 
@@ -137,7 +137,7 @@ Params:
 
 Will register an instance that must be destroyed when Core assume the Destruction step.
 
-Params:
+#### Params
 
  - *instance*: An instance of [Destroyable](documentation/the-way/core/shared/abstract/destroyable.md)
 
@@ -145,7 +145,7 @@ Params:
 
 This method is used to register a class dependency([@Inject](documentation/the-way/core/decorator/core-decorators.md#inject))
 
-Params:
+#### Params
 
  - *dependencyConstructor*: Is the dependency constructor
  - *target*: The dependent class
@@ -155,7 +155,7 @@ Params:
 
 This method is used to register a [@Rest](documentation/the-way/core/decorator/core-decorators.md#rest) class
 
-Params:
+#### Params
 
  - *constructor*: Is the class constructor
  - *path*: Is the 'father' path to be registered
@@ -166,7 +166,7 @@ Params:
 
 This method is used to register a [REST operation](documentation/the-way/core/decorator/rest-decorators.md)
 
-Params:
+#### Params
 
 - *type*: Is the HttpType of the operation
 - *path*: Is the 'father' path to be registered
@@ -179,7 +179,7 @@ Params:
 
 This method is used to register a class decorated with [@Service](documentation/the-way/core/decorator/core-decorators.md#service)
 
-Params:
+#### Params
 
 - *constructor*: Is the class constructor
 - *over*: is the class that will be replaced

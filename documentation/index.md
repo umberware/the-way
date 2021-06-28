@@ -68,3 +68,4 @@ You can check all the code present in the guides in [The Way Examples Repository
     - [CoreLogger](the-way/core/service/core-logger.md)
     - [CoreMessageService](the-way/core/service/core-message-service.md)
     - [CoreRestService](the-way/core/service/core-rest-service.md)
+    - [CoreSecurityService](the-way/core/service/core-security-service.md)

@@ -26,7 +26,7 @@ With [@Configuration](documentation/the-way/core/decorator/core-decorators.md#co
 
 All properties listed in this library can be customized and this section will explain how to enable some server features with these properties, and their purposes
 It's important to know that all the registered REST operations (when the server is enabled) will have the `the-way.server.rest.path` at the beginning.
-You can check the full documentation of the properties [here](../application-properties.md).
+You can check the full documentation of the properties [here](documentation/the-way/core/application-properties.md).
 
 #### Enabling: Http
 
@@ -106,13 +106,14 @@ This method is called when the class is built and will configure and start the s
 
 ### Method: destroy
 
-Will be called when the Core change to [DESTRUCTION_STARTED](../core.md#step-destruction) step and will kill the server.
+Will be called when the Core change to [DESTRUCTION_STARTED](documentation/the-way/core/core.md#step-destruction) step and will kill the server.
 
 ### Method: registerPath
 
 This method will register any REST path in the server and enable.
 
-Params:
+#### Params
+
 - *path*: The path to be registered
 - *httpType*: The operation type for the path
 - *executor*: the "function" that will execute
@@ -121,5 +122,6 @@ Params:
 
 With this method you can enable some middlewares(for express) in the server, like body parser, helmet and others.
 
-Params:
+#### Params
+
 - *middlewareFunction*: The middleware function that will be used in express context

@@ -18,11 +18,11 @@ Will return null if the property is not found. You can pass the full key to get 
 **You can [@Inject](documentation/the-way/core/decorator/core-decorators.md) the PropertiesHandler or get the instance at
 run time with [Core.getInstanceByName](documentation/the-way/core/core.md#method-static-getinstancebyname)**
 
-Params:
+#### Params
 
  - *propertyName*: With type string, can be the full object key
 
-Return:
+#### Return
  - The return can be string, boolean, number, null or PropertyModel
 
 **Example:**

@@ -19,7 +19,7 @@ This method is used to register a REST operation, mapping the path and the metho
 
 When the [Core](documentation/the-way/core/core.md) is initialized, for every path registered in the [RegisterHandler](documentation/the-way/core/handler/register-handler.md#method-registerrestpath) this method will be called
 
-Params:
+#### Params
 
  - *httpType*: is the HttpTypeEnum(Http method: Post, Get, ...)
  - *path*: is the endpoint that you will serve the operation

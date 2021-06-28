@@ -50,6 +50,7 @@ In this version the library was refactored and this is the new beginning.
     - **CoreLogger documentation**: added
     - **CoreMessageService documentation**: added
     - **CoreRestService documentation**: added
+    - **CoreSecurityService documentation**: added
 
 ### Changed
 

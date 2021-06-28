@@ -195,7 +195,7 @@ export class CoreRestService {
             return of(undefined);
         } else {
             const verificationResult = this.securityService.verifyAuthentication(
-                fatherPath, token, profiles
+                token, fatherPath.allowedProfiles, profiles
             );
             return this.buildObservableFromResponse(verificationResult);
         }

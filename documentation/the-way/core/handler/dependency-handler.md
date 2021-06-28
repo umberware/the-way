@@ -20,6 +20,6 @@ the [RegisterHandler](register-handler.md) will be called to register this depen
 
 When a dependencies tree is built, you can get the tree with this method.
 
-Return:
+#### Return
 
 DEPENDENCIES_TREE: [DependencyTree](documentation/the-way/core/shared/model/dependency-tree-model.md)

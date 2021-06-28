@@ -155,7 +155,7 @@ When Finished:
 This method is called in @Application or in TheWayApplication Constructor.
 This method tell to the CORE to initialize the application.
 
-Params:
+#### Params
 
 - *application*: Can be a Class or Instance of a class. This parameter will be used
   to set the application instance. After the initialization,
@@ -166,7 +166,7 @@ Params:
 This method can be called in any stage of the Core. When called, the Core
 will start the process to destroy the instances, configurations and connections.
 
-Return:
+#### Return
 
 - Returns an observable that will emit value when the construction step is done,
   or an error occurs in the destruction step
@@ -175,7 +175,7 @@ Return:
 
 This method will access the [register handler](documentation/the-way/core/handler/register-handler.md) and get all the constructions registered
 
-Return:
+#### Return
 
  - Returns all registered constructors: [ConstructorMapModel](documentation/the-way/core/shared/model/constructor-map-model.md)
 
@@ -183,7 +183,7 @@ Return:
 
 Retrieves the current Core State
 
-Return:
+#### Return
 
  - Actual state: [CoreStateEnum](documentation/the-way/core/shared/enum/core-state-enum.md)
 
@@ -191,7 +191,7 @@ Return:
 
 Retrieves the dependencies tree of the application
 
-Return:
+#### Return
 
  - The built dependencies tree: [DependencyTreeModel](documentation/the-way/core/shared/model/dependency-tree-model.md)
 
@@ -199,7 +199,7 @@ Return:
 
 Retrieve the class singleton by name class
 
-Params:
+#### Params
 
  - *name*: The class name
 
@@ -207,7 +207,7 @@ Throws:
 
  - *ApplicationException*: If the wanted instance is not found
 
-Return:
+#### Return
 
  - The instance of the class: T
 
@@ -215,7 +215,7 @@ Return:
 
 Retrieve all instances
 
-Return:
+#### Return
 
  - An array of the instances
 
@@ -223,7 +223,7 @@ Return:
 
 Retrieve all overridden classes
 
-Return:
+#### Return
 
  - The overridden map: [OverriddenMapModel](documentation/the-way/core/shared/model/overridden-map-model.md)
 
@@ -231,7 +231,7 @@ Return:
 
 Will return the PropertiesHandler of the application
 
-Return:
+#### Return
 
  - The propertiesHandler: [PropertiesHandler](documentation/the-way/core/handler/properties-handler.md)
 
@@ -239,7 +239,7 @@ Return:
 
 Will check if the core is destroyed
 
-Return:
+#### Return
 
  - A boolean, that will be true when the Core is destroyed
 
@@ -247,7 +247,7 @@ Return:
 
 This method will register a class decorated with [@Configuration](decorator/core-decorators.md#configuration). For Core use only
 
-Params:
+#### Params
 
  - *configurationConstructor*: The decorated class
  - *over* The class that must be overridden. It is optional
@@ -256,7 +256,7 @@ Params:
 
 This method will register a core component. For Core use only
 
-Params:
+#### Params
 
  - *componentConstructor*: The Core Component class
 
@@ -264,7 +264,7 @@ Params:
 
 This method will register a dependency and map injection point
 
-Params:
+#### Params
 
  - *dependencyConstructor*: The dependency class
  - *source*: The dependent class
@@ -274,7 +274,7 @@ Params:
 
 This is method is used to register a class decorated with [@Rest](decorator/core-decorators.md#rest)
 
-Params:
+#### Params
 
 - *restConstructor*: Is the class decorated with [@Rest](decorator/core-decorators.md#rest)
 - *path*: The father path. All method decorated with [Rest Decorators](decorator/rest-decorators.md) will inherit this path
@@ -285,7 +285,7 @@ Params:
 
 This is method is used to register a REST operation in methods decorated with some [Rest Decorators](decorator/rest-decorators.md)
 
-Params:
+#### Params
 
  - *httpType*: Is the [HttpTypeEnum](shared/enum/http-type-enum.md) (Get, Post, Delete, ...)
  - *path*: Is the operation PATH
@@ -298,7 +298,7 @@ Params:
 
 This method will register a class decorated with ´[@Service](decorator/core-decorators.md#service). For Core use only
 
-Params:
+#### Params
 
 - *configurationConstructor*: The decorated class
 - *over* The class that must be overridden. It is optional
@@ -315,7 +315,7 @@ Param:
 
 This method return an observable that will emit value when the core assumes the state of [BEFORE_INITIALIZATION_DONE](#step-before-initialization)
 
-Return:
+#### Return
 
  - Observable<CoreStateEnum>
 
@@ -323,7 +323,7 @@ Return:
 
 This method return an observable that will emit value when the core assumes the state of [DESTRUCTION_DONE](#step-destruction)
 
-Return:
+#### Return
 
 - Observable<CoreStateEnum>
 
@@ -331,7 +331,7 @@ Return:
 
 This method return an observable that will emit value when the core assumes the state of [READY](shared/enum/core-state-enum.md#ready)
 
-Return:
+#### Return
 
 - Observable<CoreStateEnum>
 
@@ -339,7 +339,7 @@ Return:
 
 This method will return an observable that will emit every change of the core state
 
-Return:
+#### Return
 
 - Observable<CoreStateEnum>
 

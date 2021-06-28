@@ -11,9 +11,19 @@ import { NotAllowedException } from '../exeption/not-allowed.exception';
 import { CoreMessageService } from './core-message.service';
 import { UnauthorizedException } from '../exeption/unauthorized.exception';
 import { RestException } from '../exeption/rest.exception';
-import { PathMapModel } from '../shared/model/path-map.model';
 
-/*eslint-disable @typescript-eslint/no-explicit-any*/
+/* eslint-disable @typescript-eslint/no-explicit-any, max-len */
+/**
+ * @class CoreSecurityService
+ * @description This class is responsible to verify the user authenticity or generate the user authenticity,
+ *  with an embedded JWT mechanism. All paths marked with "true" in the "authenticated" param, will call this class
+ *  to verify the user authenticity. The generation of the user authenticity(with JWT token), is triggered manually
+ *  and you can check how do to this in the guide
+ *  [The Way: Custom Security Service](https://github.com/umberware/the-way/blob/master/documentation/guides/the-way-custom-security-service.md)
+ *  or in the [source code](https://github.com/umberware/the-way-examples/tree/master/examples/custom-security-rest/).
+ *  It's important to know that these behaviors can be customized/overridden
+ *  with a custom CoreSecurityService, so you can change the default JWT engine to an OAUTH 2.0 for example
+ * */
 @System
 @Service()
 export class CoreSecurityService {
@@ -28,6 +38,16 @@ export class CoreSecurityService {
 
         return this.cryptoService.cipherIv(JSON.stringify(tokenClaims), 'aes-256-cbc', this.getUserKey());
     }
+    /**
+     * @method generateToken
+     * @description This method is used to generate a JWT token to provide the user authenticity.
+     *  The default implementation, uses the `the-way.server.rest.security` properties
+     *  and you must change the keys if you want to use the default implementation. Actually, we use the
+     *  library [JsonWebToken](https://www.npmjs.com/package/jsonwebtoken) to provide and verify the JWT token.
+     * @param tokenClaims Is a JSON object with the information that will be a part of the token.
+     *  TokenClaims is encrypted with aes-256-cbc.
+     * @return The resultant JWT token
+     * */
     public generateToken(tokenClaims?: TokenClaims): string {
         const encryptedClaims: string | undefined = this.cipherClaims(tokenClaims);
         return Jwt.sign(
@@ -93,8 +113,19 @@ export class CoreSecurityService {
             throw new NotAllowedException(CoreMessageService.getMessage('error-rest-cannot-perform-action'));
         }
     }
+    /**
+     * @method verifyAuthentication
+     * @description This method will check if the logged user can access the path, evaluating the token
+     * and the profiles in the token claims
+     * @param token is the logged user token
+     * @param fatherPathProfiles is an array of profiles allowed to use the operations
+     *  inside a father path
+     * @param profiles is an array of profiles allowed to use the current operation(path)
+     * @return The return of the verification is the TokenClaims decrypted from the token
+     * */
     public verifyAuthentication(
-        fatherPath: PathMapModel, token?: string,
+        token?: string,
+        fatherPathProfiles?: Array<any>,
         profiles?: Array<any>
     ): TokenClaims | undefined {
         try {
@@ -106,8 +137,12 @@ export class CoreSecurityService {
 
             const tokenClaims: TokenClaims | undefined = this.getTokenClaims(token.replace('Bearer ', ''));
 
-            if (this.isPathRestrictedToProfiles(profiles, fatherPath.allowedProfiles)) {
-                this.verifyProfile(tokenClaims, profiles as Array<any>, fatherPath.allowedProfiles as Array<any>);
+            if (this.isPathRestrictedToProfiles(profiles, fatherPathProfiles)) {
+                this.verifyProfile(
+                    tokenClaims,
+                    profiles as Array<any>,
+                    fatherPathProfiles as Array<any>
+                );
             }
 
             return tokenClaims;

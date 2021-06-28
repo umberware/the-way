@@ -19,11 +19,11 @@ InstanceHandler is responsible to create the instances, resolve the dependencies
 This method will create an instance of the class decorated with [@Application](documentation/the-way/core/decorator/core-decorators.md).
 To [Core](documentation/the-way/core/core.md) use only.
 
-Params:
+#### Params
 
  - *constructor*: With type *Function*, is the constructor of the main application class.
 
-Return:
+#### Return
  - *instance*: Is the instance created.
 
 ### Method: buildInstance
@@ -33,10 +33,10 @@ If the constructor was override, will be returned the overridden class instance.
 If the class extends the [Destroyable](documentation/the-way/core/shared/abstract/destroyable.md), this instance will be registered to be destroyed when the
 [Core](documentation/the-way/core/core.md#step-destruction) assume the destruction state.
 
-Params:
+#### Params
  - *constructor*:  With type Function, is the constructor of the class
 
-Return:
+#### Return
  - \[instance, boolean\], will return an array with instance in first index, and a boolean flag in the second index.
  The boolean flag will be false when an instance is created and true when has an instance
 
@@ -44,12 +44,12 @@ Return:
 
 This method will resolve the dependencies tree, create all the instances registered and configure the classes that extends the [Configurable](documentation/the-way/core/shared/abstract/configurable.md). [Core](documentation/the-way/core/core.md) only.
 
-Params:
+#### Params
 
  - *mainConstructor*: With type Function, is the constructor of the main class.
  - *dependencyTree*: is the dependency tree created in [DependencyHandler](dependency-handler.md).
 
-Return:
+#### Return
 
  - *Observable<boolean>*: emits true when all instances were created and configured.
 
@@ -57,7 +57,7 @@ Return:
 
 Will destroy all instances that extends [Destroyable](documentation/the-way/core/shared/abstract/destroyable.md)
 
-Return:
+#### Return
 
  - Observable<boolean>: emits true when all instances are destroyed.
 
@@ -65,11 +65,11 @@ Return:
 
 Will return the wanted class instance.
 
-Params:
+#### Params
 
  - *name*: With type string, is the class name of the wanted instance. When not found, an exception will be thrown.
 
-Return:
+#### Return
 
  - The wanted instance.
 
@@ -77,7 +77,7 @@ Return:
 
 This method will return all created instances.
 
-Return:
+#### Return
 
 - All instances
 
@@ -85,6 +85,6 @@ Return:
 
 Will register an instance
 
-Return:
+#### Return
 
 - The class instance
