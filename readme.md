@@ -1,6 +1,6 @@
 <p align="center">
-    <a href = "http://the-way.umberware.com/" target = "_blank" style = "float: left">
-        <img src = "https://github.com/umberware/the-way/blob/master/src/main/resources/the-way-small-full.png" width="120px" alt="The Way Logo"/>
+    <a href = "http://the-way.umberware.com/" target = "_blank">
+        <img src = "https://github.com/umberware/the-way/blob/master/src/main/resources/the-way-small-full.png" width="320px" alt="The Way Logo"/>
     </a>
 </p>
 <p align="center">A framework to enhance the development with NodeJs and Typescript, promoting agility, simplicity and intelligibility.</p>
@@ -15,8 +15,6 @@
 [![Coverage](https://img.shields.io/codecov/c/gh/umberware/the-way/master?token=JDRUQC0T9A&style=for-the-badge)](https://codecov.io/gh/umberware/the-way)
 [![Sponsor](https://img.shields.io/badge/Sponsor-black?logo=github-sponsors&style=for-the-badge)](https://opencollective.com/umberware#category-CONTRIBUTE)
 [![Discord](https://img.shields.io/badge/Discord-black?logo=discord&style=for-the-badge)](https://discord.gg/jJTReZwpgU)
-
-TheWay is a framework to enhance the development with NodeJs and Typescript, promoting agility, simplicity and intelligibility.
 
 Using TheWay, you can easily and simply define REST operations, inject instances of a class, automatically configure and destroy instances, override classes to define a custom behavior, enable/disable features, and much more.
 
