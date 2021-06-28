@@ -3,7 +3,7 @@
         <img src = "https://github.com/umberware/the-way/blob/master/src/main/resources/the-way-small-full.png" width="380" alt="The Way Logo"/>
     </a>
 </p>
-<p align="center">A framework to enhance the development with NodeJs and Typescript, promoting agility, simplicity and intelligibility. With TheWay, the sky is not the limit!</p>
+<p align="center">A framework to enhance the development with <a href="http://nodejs.org" target="_blank">Node.js</a> and <a href = "https://www.typescriptlang.org/" target="_blank">Typescript</a>, promoting agility, simplicity, scalability and intelligibility. With <a href = "http://the-way.umberware.com/" target="_blank">TheWay</a>, the sky is not the limit!</p>
 
 [![Site](https://img.shields.io/badge/Site-blue.svg?style=for-the-badge)](http://the-way.umberware.com/)
 [![Documentation](https://img.shields.io/badge/Documentation-blue.svg?style=for-the-badge)](documentation/index.md)
