@@ -1,5 +1,7 @@
 /* eslint-disable max-len */
 
+import { CoreMessageModel } from '../model/core-message.model';
+
 /**
  *   @name CORE_MESSAGES
  *   @description This configuration is used to make an internationalization.
@@ -20,7 +22,7 @@
  *      }
  *   @since 1.0.0
  */
-export const CORE_MESSAGES: { [key: string]: { [key: string]: string | number; } } = {
+export const CORE_MESSAGES: CoreMessageModel = {
     'en': {
         'building': 'Building: Started',
         'building-core-instances': 'Building: Core instances...',

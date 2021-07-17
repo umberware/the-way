@@ -63,6 +63,7 @@ You can check all the code present in the guides in [The Way Examples Repository
     - [PathMapModel](the-way/core/shared/model/path-map-model.md)
     - [PropertyModel](the-way/core/shared/model/property-model.md)
     - [TokenClaimsModel](the-way/core/shared/model/token-claims-model.md)
+    - [CoreMessageModel](the-way/core/shared/model/core-message-model.md)
  - Service
     - [CoreCryptoService](the-way/core/service/core-crypto-service-doc.md)
     - [CoreLogger](the-way/core/service/core-logger.md)

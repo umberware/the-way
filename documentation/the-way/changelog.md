@@ -51,6 +51,7 @@ In this version the library was refactored and this is the new beginning.
     - **CoreMessageService documentation**: added
     - **CoreRestService documentation**: added
     - **CoreSecurityService documentation**: added
+    - **CoreMessageModel documentation**: added
 
 ### Changed
 
