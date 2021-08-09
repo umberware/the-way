@@ -300,7 +300,7 @@ This method will register a class decorated with ´[@Service](decorator/core-dec
 
 #### Params
 
-- *configurationConstructor*: The decorated class
+- *serviceConstructor*: The decorated class
 - *over* The class that must be overridden. It is optional
 
 ### Method: static setError

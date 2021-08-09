@@ -24,7 +24,7 @@ import { DependencyTreeModel } from './shared/model/dependency-tree.model';
 /*
     eslint-disable @typescript-eslint/ban-types,
     @typescript-eslint/no-explicit-any,
-    @typescript-eslint/explicit-module-boundary-types
+    @typescript-eslint/explicit-module-boundary-types,
 */
 /**
  *   @name CORE
@@ -173,6 +173,11 @@ export class CORE {
      */
     public static getInstanceByName<T>(name: string): T {
         const coreInstance = this.getInstance();
+        if (CORE.getCoreState() !== CoreStateEnum.READY) {
+            coreInstance.logInfo(
+                CoreMessageService.getMessage('warning-getting-instance-in-initialization-state', [name])
+            );
+        }
         return coreInstance.getInstanceHandler().getInstanceByName<T>(name);
     }
     protected static getInstance(): CORE {
@@ -294,7 +299,7 @@ export class CORE {
     /**
      *   @name registerService
      *   @description This method will register a class decorated with @Service. For Core use only
-     *   @param configurationConstructor The decorated class
+     *   @param serviceConstructor The decorated class
      *   @param over The class that must be overridden. It is optional
      *   @since 1.0.0
      */

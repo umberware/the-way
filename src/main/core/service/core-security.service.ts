@@ -130,7 +130,7 @@ export class CoreSecurityService {
     ): TokenClaims | undefined {
         try {
             if (!token) {
-                throw new NotAllowedException(CoreMessageService.getMessage('error-rest-no-token'));
+                throw new UnauthorizedException(CoreMessageService.getMessage('error-rest-no-token'));
             } else if (token.search(/^Bearer /) === -1) {
                 throw new UnauthorizedException(CoreMessageService.getMessage('error-rest-invalid-token'));
             }

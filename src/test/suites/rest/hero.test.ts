@@ -211,8 +211,8 @@ describe('Rest', () => {
             () => {
             }, (error => {
                 expect(error).toBeDefined();
-                expect(error.code).toBe(403);
-                expect(error.description).toBe(CoreMessageService.getMessage('http-not-allowed'));
+                expect(error.code).toBe(401);
+                expect(error.description).toBe(CoreMessageService.getMessage('http-not-authorized'));
                 expect(error.detail).toBe(CoreMessageService.getMessage('error-rest-no-token'));
                 done();
             })

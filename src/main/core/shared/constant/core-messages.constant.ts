@@ -50,7 +50,7 @@ export const CORE_MESSAGES: CoreMessageModel = {
         'error-not-found-instance': 'The $ instance not found',
         'error-properties-not-valid': 'Preparing: The provided application properties is not valid.',
         'error-rest-cannot-perform-action': 'You cannot perform this action.',
-        'error-rest-no-token': 'Token no found',
+        'error-rest-no-token': 'Token not found',
         'error-rest-claims-without-token-verify': 'Trying to inject claims in a not authenticated path',
         'error-rest-invalid-token': 'Invalid Token',
         'error-rest-empty-request': 'Empty body',
@@ -107,6 +107,7 @@ export const CORE_MESSAGES: CoreMessageModel = {
         'TW-015': 'Core Class Injection',
 
         'warning-properties-not-gived': 'Preparing: Not given a file properties. Will be used the default properties.',
+        'warning-getting-instance-in-initialization-state': 'The instance $ may can not found because CORE is not ready',
         'warning-http-file-with-helmet': 'Http enabled but with HELMET parameters. This can cause problems in file server.',
     }
 };
