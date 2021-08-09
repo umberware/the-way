@@ -24,7 +24,7 @@ export class PropertiesHandler {
     }
 
     protected convertValue(value: string): PropertyModel | number | boolean | string | Array<number | boolean | string> {
-        if (value.search(/^(\[.*\]|(".*"))|(\d+(\.\d+)?)|(true|false)$/) !== -1) {
+        if (value.search(/^((\[.*\]|(".*"))|(\d+(\.\d+)?)|(true|false))$/) !== -1) {
             return JSON.parse(value);
         } else {
             return value;
