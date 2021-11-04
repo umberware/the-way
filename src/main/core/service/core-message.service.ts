@@ -20,7 +20,7 @@ export class CoreMessageService {
      *  CORE_MESSAGES
      * @since 1.0.0
      * */
-    public static language = 'en'
+    public static language = 'en';
     /**
      * @property setLanguage
      * @description This method will set the language that will be used to

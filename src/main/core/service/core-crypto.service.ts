@@ -1,6 +1,6 @@
 import * as Crypto from 'crypto';
-import { System } from '../decorator/core/system.decorator';
-import { Service } from '../decorator/core/service.decorator';
+import { System } from '../decorator/component/system.decorator';
+import { Service } from '../decorator/component/service.decorator';
 
 /**
  *   @name CoreCryptoService

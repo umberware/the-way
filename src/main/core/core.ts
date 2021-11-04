@@ -1,7 +1,7 @@
-import { fromPromise } from 'rxjs/internal-compatibility';
 import 'reflect-metadata';
 
 import { BehaviorSubject, Observable, of } from 'rxjs';
+import { fromPromise } from 'rxjs/internal-compatibility';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 
 import { CoreStateEnum } from './shared/enum/core-state.enum';
@@ -416,7 +416,7 @@ export class CORE {
                 }
             );
         } catch (error) {
-            CORE.setError(error);
+            CORE.setError(error as Error);
         }
     }
     protected bindRestPaths(): void {
@@ -455,7 +455,7 @@ export class CORE {
         let code = 0;
         const mustExit = this.coreProperties && this.coreProperties['process-exit'] as boolean;
         if (error) {
-            this.logError(CoreMessageService.getMessage('error'), error as Error);
+            this.logError(CoreMessageService.getMessage('error'), error);
             code = 1;
         }
         this.logInfo(CoreMessageService.getMessage('step-destruction-started'));

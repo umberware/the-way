@@ -132,11 +132,11 @@ export class FileHandler {
                 }
             }
         } catch (ex) {
-            this.logger.error(ex);
+            this.logger.error(ex as Error);
             throw new ApplicationException(
-                CoreMessageService.getMessage('error-cannot-scan', [ex.message]),
+                CoreMessageService.getMessage('error-cannot-scan', [(ex as Error).message]),
                 CoreMessageService.getMessage('TW-003'),
-                ex
+                ex as Error
             );
         }
     }

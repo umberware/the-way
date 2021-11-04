@@ -1,8 +1,8 @@
 import * as Jwt from 'jsonwebtoken';
 
-import { Service } from '../decorator/core/service.decorator';
-import { System } from '../decorator/core/system.decorator';
-import { Inject } from '../decorator/core/inject.decorator';
+import { Service } from '../decorator/component/service.decorator';
+import { System } from '../decorator/component/system.decorator';
+import { Inject } from '../decorator/component/inject.decorator';
 import { PropertiesHandler } from '../handler/properties.handler';
 import { TokenClaims } from '../shared/model/token-claims.model';
 import { CoreCryptoService } from './core-crypto.service';

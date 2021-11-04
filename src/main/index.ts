@@ -45,19 +45,19 @@ export { InternalException } from './core/exeption/internal.exception';
 /* Constants */
 export { CORE_MESSAGES } from './core/shared/constant/core-messages.constant';
 /* Decorators */
-export { Application, ApplicationMetaKey } from './core/decorator/core/application.decorator';
-export { Configuration, ConfigurationMetaKey } from './core/decorator/core/configuration.decorator';
-export { Service, ServiceMetaKey } from './core/decorator/core/service.decorator';
-export { System, SystemMetaKey } from './core/decorator/core/system.decorator';
+export { Application, ApplicationMetaKey } from './core/decorator/component/application.decorator';
+export { Configuration, ConfigurationMetaKey } from './core/decorator/component/configuration.decorator';
+export { Service, ServiceMetaKey } from './core/decorator/component/service.decorator';
+export { System, SystemMetaKey } from './core/decorator/component/system.decorator';
 export { Claims, ClaimsMetaKey } from './core/decorator/rest/param/claims.decorator';
-export { Rest, RestMetakey } from './core/decorator/core/rest.decorator';
+export { Rest, RestMetakey } from './core/decorator/component/rest.decorator';
 export { PathParam, PathParamMetadataKey } from './core/decorator/rest/param/path-param.decorator';
 export { BodyParam, BodyParamMetadataKey } from './core/decorator/rest/param/body-param.decorator';
 export { HeaderContext, HeaderMetadataKey } from './core/decorator/rest/param/header.decorator';
 export { QueryParam, QueryParamMetadataKey } from './core/decorator/rest/param/query-param.decorator';
 export { RequestContext, RequestMetadataKey } from './core/decorator/rest/param/request.decorator';
 export { ResponseContext, ResponseMetadataKey } from './core/decorator/rest/param/response.decorator';
-export { Inject } from './core/decorator/core/inject.decorator';
+export { Inject } from './core/decorator/component/inject.decorator';
 export { Delete } from './core/decorator/rest/delete.decorator';
 export { Get } from './core/decorator/rest/get.decorator';
 export { Head } from './core/decorator/rest/head.decorator';

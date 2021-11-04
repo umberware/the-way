@@ -78,7 +78,7 @@ export class PropertiesHandler {
             throw new ApplicationException(
                 CoreMessageService.getMessage('error-properties-not-valid'),
                 CoreMessageService.getMessage('TW-011'),
-                ex
+                ex as Error
             );
         }
     }

@@ -38,7 +38,7 @@ export class RegisterHandler {
     protected CONFIGURABLE: Set<Function>;
     protected CORE_COMPONENTS: ConstructorMapModel;
     protected DEPENDENCIES: DependencyMapModel;
-    protected DESTROYABLE: Set<Destroyable>
+    protected DESTROYABLE: Set<Destroyable>;
     protected OVERRIDDEN: OverriddenMapModel;
     protected PATHS: {[key: string] : PathMapModel};
 

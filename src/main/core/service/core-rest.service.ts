@@ -2,8 +2,8 @@ import { isObservable, Observable, of } from 'rxjs';
 import { defaultIfEmpty, switchMap } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
 
-import { Inject } from '../decorator/core/inject.decorator';
-import { Service } from '../decorator/core/service.decorator';
+import { Inject } from '../decorator/component/inject.decorator';
+import { Service } from '../decorator/component/service.decorator';
 import { CoreLogger } from './core-logger';
 import { ServerConfiguration } from '../configuration/server.configuration';
 import { HttpTypeEnum } from '../shared/enum/http-type.enum';
@@ -14,7 +14,7 @@ import { RestException } from '../exeption/rest.exception';
 import { ClaimsMetaKey } from '../decorator/rest/param/claims.decorator';
 import { CORE } from '../core';
 import { TokenClaims } from '../shared/model/token-claims.model';
-import { System } from '../decorator/core/system.decorator';
+import { System } from '../decorator/component/system.decorator';
 import { PathParamMetadataKey } from '../decorator/rest/param/path-param.decorator';
 import { QueryParamMetadataKey } from '../decorator/rest/param/query-param.decorator';
 import { ResponseMetadataKey } from '../decorator/rest/param/response.decorator';
@@ -95,7 +95,7 @@ export class CoreRestService {
                 }
             );
         } catch (error) {
-            this.handleError(error, res);
+            this.handleError(error as Error, res);
         }
     }
     protected executeMethod(

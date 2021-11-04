@@ -12,11 +12,11 @@ import helmet = require('helmet');
 import cors = require('cors');
 import bodyParser = require('body-parser');
 
-import { Configuration }  from '../decorator/core/configuration.decorator';
-import { Inject } from '../decorator/core/inject.decorator';
+import { Configuration }  from '../decorator/component/configuration.decorator';
+import { Inject } from '../decorator/component/inject.decorator';
 import { PropertiesHandler } from '../handler/properties.handler';
 import { PropertyModel } from '../shared/model/property.model';
-import { System } from '../decorator/core/system.decorator';
+import { System } from '../decorator/component/system.decorator';
 import { Configurable } from '../shared/abstract/configurable';
 import { CoreLogger } from '../service/core-logger';
 import { CoreMessageService } from '../service/core-message.service';

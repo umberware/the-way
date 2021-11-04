@@ -1,6 +1,6 @@
 /**
  *   @name CoreStateEnum
- *   This enum represents all core states.
+ *   This enum represents all component states.
  *   @since 1.0.0
  */
 export enum CoreStateEnum {
