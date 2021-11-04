@@ -18,6 +18,7 @@ export class BConfigurationTest extends Configurable {
     }
 
     public destroy(): Observable<string> {
+        super.destroy();
         return of('destroyed B').pipe(
             debounceTime(5000),
             map((result: string) => {

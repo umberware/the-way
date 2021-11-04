@@ -1,5 +1,5 @@
-import {EnvironmentTest} from "../../resources/environment/environment.test";
-import {CORE} from "../../../main";
+import { EnvironmentTest } from '../../resources/environment/environment.test';
+import { CORE } from '../../../main';
 
 afterAll(done => {
     EnvironmentTest.clear(done);
