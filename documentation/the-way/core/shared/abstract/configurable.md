@@ -20,3 +20,11 @@ so if you need start a connection, prepare something for your application or con
 #### Return
 
 - The return of this method can be a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise), [RxJs Observable](https://rxjs.dev/api/index/class/Observabl) or all not "async" types
+
+### Method: destroy
+
+This method is designed to be called before destruction, so if you need to save, clean up or disconnect from another service, this method is for it
+
+#### Return
+
+- The return of this method can be a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise), [RxJs Observable](https://rxjs.dev/api/index/class/Observabl) or all not "async" types

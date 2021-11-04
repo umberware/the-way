@@ -48,6 +48,7 @@ export const CORE_MESSAGES: CoreMessageModel = {
         'error-is-not-the-way': 'Preparing: Your application does not extend the class TheWayApplication',
         'error-not-found-dependency-constructor': 'Register: Cannot inject $ in class $. Cannot acquire the metadata from property. Probably a circular dependency',
         'error-not-found-instance': 'The $ instance not found',
+        'error-not-implemented': 'The $.$ is not implemented',
         'error-properties-not-valid': 'Preparing: The provided application properties is not valid.',
         'error-rest-cannot-perform-action': 'You cannot perform this action.',
         'error-rest-no-token': 'Token not found',
