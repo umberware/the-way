@@ -12,7 +12,7 @@ to resolve all the dependencies and injections of the application.
 
 ### Method: buildDependenciesTree
 
-This method is called to build the tree. When a class has a property decorated with [@Inject](documentation/the-way/core/decorator/core-decorators.md),
+This method is called to build the tree. When a class has a property decorated with [@Inject](documentation/the-way/core/decorator/application-components-decorators.md),
 the [RegisterHandler](register-handler.md) will be called to register this dependency and this dependency will be used to in this method to generate the
 [DependencyTree](documentation/the-way/core/shared/model/dependency-tree-model.md)
 

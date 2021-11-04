@@ -10,7 +10,7 @@ export const ConfigurationMetaKey = 'Configuration';
  *      Configurable,
  *      will be called the method **configure** after the instance
  *      creation. Also, the **destroy** method will be called when the
- *      core is in destruction step.
+ *      application is in destruction step.
  *      Furthermore, the @Configuration decorator allow you to override
  *      another configurable class.
  *   @param over You can pass the class that will be replaced.

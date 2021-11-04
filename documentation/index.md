@@ -29,7 +29,7 @@ You can check all the code present in the guides in [The Way Examples Repository
  - Configuration
     - [ServerConfiguration](the-way/core/configuration/server-configuration.md)
  - Decorators
-    - [CoreDecorators](the-way/core/decorator/core-decorators.md)
+    - [ApplicationComponentsDecorators](the-way/core/decorator/application-components-decorators.md)
     - [RestDecorators](the-way/core/decorator/rest-decorators.md)
  - Enum
     - [ClassTypeEnum](the-way/core/shared/enum/class-type-enum.md)

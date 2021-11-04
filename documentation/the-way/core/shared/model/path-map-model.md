@@ -2,7 +2,7 @@
 
 ## PathMapModel
 
-This interface is used to register a REST path for classes decorated with [@Rest](documentation/the-way/core/decorator/core-decorators.md#rest).
+This interface is used to register a REST path for classes decorated with [@Rest](documentation/the-way/core/decorator/application-components-decorators.md#rest).
 Also, will store the nested REST operations inside the class.
 
 Properties:

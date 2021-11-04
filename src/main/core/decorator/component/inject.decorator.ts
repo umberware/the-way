@@ -15,5 +15,7 @@ export const Inject = (
     propertyKey: string
 ): void => {
     const constructor = Reflect.getMetadata('design:type', target, propertyKey);
-    CORE.registerInjection(constructor, target, propertyKey);
+    // import('../application')
+        console.log(CORE)
+        CORE.registerInjection(constructor, target, propertyKey);
 };

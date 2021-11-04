@@ -16,7 +16,7 @@ InstanceHandler is responsible to create the instances, resolve the dependencies
 
 ### Method: buildApplication
 
-This method will create an instance of the class decorated with [@Application](documentation/the-way/core/decorator/core-decorators.md).
+This method will create an instance of the class decorated with [@Application](documentation/the-way/core/decorator/application-components-decorators.md).
 To [Core](documentation/the-way/core/core.md) use only.
 
 #### Params

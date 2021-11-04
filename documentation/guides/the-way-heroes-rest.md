@@ -99,7 +99,7 @@ Now, we need to create a REST class that will map the operations for the Hero fe
         }
     }
 
-To create a REST operation with this framework, you need to create a class decorated with [@Rest](documentation/the-way/core/decorator/core-decorators.md#rest)
+To create a REST operation with this framework, you need to create a class decorated with [@Rest](documentation/the-way/core/decorator/application-components-decorators.md#rest)
 and in this decorator, you can pass a path. After this, you can use rest decorators in methods such as [@Get](documentation/the-way/core/decorator/rest-decorators.md#get)
 to map a path and set security for this endpoint. Also, in a method decorated with a rest decorator, it is allowed to use property decorators to bind some REQUEST property, for example: [@PathParam](documentation/the-way/core/decorator/rest-decorators.md#pathparam)
 In the code below, we created a HeroRest class decorated with `@Rest` and mapped a 'father path' as '/hero'. Also, we created a method `getHeroById` decorated with @Get and with the path ':id'.
@@ -126,7 +126,7 @@ To execute the implemented code, you can build and execute the final source code
 ### Conclusion
 
 With TheWay framework, you can map a rest operation and define the security very easily like we did above. Also, when the [scan is enabled](documentation/the-way/core/application-properties.md#the-waycorescan) you don't need
-to import your components decorated with some [core decorator](documentation/the-way/core/decorator/core-decorators.md), because it will be automatically registered when you call
+to import your components decorated with some [Application Components Decorators](documentation/the-way/core/decorator/application-components-decorators.md), because it will be automatically registered when you call
 your main class.
 
 You can check the source code of this example [here](https://github.com/umberware/the-way-examples/tree/master/examples/heroes-rest/).

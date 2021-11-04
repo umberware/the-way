@@ -27,7 +27,7 @@ All injections, services, configurations, rest, overrides, will be registered to
 
 ### Method: bindPaths
 
-This method will register all registered [@Rest](documentation/the-way/core/decorator/core-decorators.md#rest) classes and ["rest operations"](documentation/the-way/core/decorator/rest-decorators.md) into the [CoreRestService](documentation/the-way/core/service/core-rest-service.md)
+This method will register all registered [@Rest](documentation/the-way/core/decorator/application-components-decorators.md#rest) classes and ["rest operations"](documentation/the-way/core/decorator/rest-decorators.md) into the [CoreRestService](documentation/the-way/core/service/core-rest-service.md)
 
 ### Method: getComponents
 
@@ -118,7 +118,7 @@ Will return the registered 'PATHS' for a given class
 
 ### Method: registerConfiguration
 
-This method is used to register a class decorated with [@Configuration](documentation/the-way/core/decorator/core-decorators.md#configuration)
+This method is used to register a class decorated with [@Configuration](documentation/the-way/core/decorator/application-components-decorators.md#configuration)
 
 #### Params
 
@@ -143,7 +143,7 @@ Will register an instance that must be destroyed when Core assume the Destructio
 
 ### Method: registerInjection
 
-This method is used to register a class dependency([@Inject](documentation/the-way/core/decorator/core-decorators.md#inject))
+This method is used to register a class dependency([@Inject](documentation/the-way/core/decorator/application-components-decorators.md#inject))
 
 #### Params
 
@@ -153,7 +153,7 @@ This method is used to register a class dependency([@Inject](documentation/the-w
 
 ### Method: registerRest
 
-This method is used to register a [@Rest](documentation/the-way/core/decorator/core-decorators.md#rest) class
+This method is used to register a [@Rest](documentation/the-way/core/decorator/application-components-decorators.md#rest) class
 
 #### Params
 
@@ -177,7 +177,7 @@ This method is used to register a [REST operation](documentation/the-way/core/de
 
 ### Method: registerService
 
-This method is used to register a class decorated with [@Service](documentation/the-way/core/decorator/core-decorators.md#service)
+This method is used to register a class decorated with [@Service](documentation/the-way/core/decorator/application-components-decorators.md#service)
 
 #### Params
 

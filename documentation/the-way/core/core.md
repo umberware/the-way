@@ -36,13 +36,13 @@ The core is the heart and brain of this library. It controls all stages of the a
 
 ### Decorator @Application and Core
 
-The [@Application](decorator/core-decorators.md#application) and [TheWayApplication](the-way-application.md) are primordial to use this library.
+The [@Application](documentation/the-way/core/decorator/application-components-decorators.md#application) and [TheWayApplication](the-way-application.md) are primordial to use this library.
 When a CoreInstance is created, the initialization step will initialize. The Core steps will be described in the subsequent sections.
 
 A CoreInstance is created when:
 
-- A class decorated with [@Application](decorator/core-decorators.md#application) with no parameters or with the parameter automatic = true and extends the class [TheWayApplication](the-way-application.md)
-- A class decorated with [@Application](decorator/core-decorators.md#application) with the parameter automatic = false, is extended with [TheWayApplication](the-way-application.md) and the new is called
+- A class decorated with [@Application](documentation/the-way/core/decorator/application-components-decorators.md#application) with no parameters or with the parameter automatic = true and extends the class [TheWayApplication](the-way-application.md)
+- A class decorated with [@Application](documentation/the-way/core/decorator/application-components-decorators.md#application) with the parameter automatic = false, is extended with [TheWayApplication](the-way-application.md) and the new is called
 
 So, it's automatic or manually called.
 
@@ -85,7 +85,7 @@ Is responsible for:
 - Create [RegisterHandler](handler/register-handler.md) and prepare to register paths, classes and others
 - Create [DependencyHandler](handler/dependency-handler.md) to build the dependencies tree
 - Create [InstanceHandler](handler/instance-handler.md) to build the instances
-- Create [FileHandler](handler/file-handler.md) to scan the folders(of your project) and import these classes decorated with [Core Decorators](decorator/core-decorators.md). This FileHandler will be changed in future release to compose the build process(will be handled in "The Way CI") and not the running process with the Core.
+- Create [FileHandler](handler/file-handler.md) to scan the folders(of your project) and import these classes decorated with [Application Components Decorators](documentation/the-way/core/decorator/application-components-decorators.md). This FileHandler will be changed in future release to compose the build process(will be handled in "The Way CI") and not the running process with the Core.
 
 When Started:
 
@@ -94,7 +94,7 @@ When Started:
 When Finished:
 
 - CoreState change: From [BEFORE_INITIALIZATION_STARTED](shared/enum/core-state-enum.md#BEFORE_INITIALIZATION_STARTED) to [BEFORE_INITIALIZATION_DONE](shared/enum/core-state-enum.md#BEFORE_INITIALIZATION_DONE)
-- The [PropertiesHandler](handler/properties-handler.md) can be [injected](decorator/core-decorators.md#inject), retrieved with [getInstanceByName](#method-static-getinstancebyname) or [getPropertiesHandler](#method-static-getpropertieshandler)
+- The [PropertiesHandler](handler/properties-handler.md) can be [injected](documentation/the-way/core/decorator/application-components-decorators.md#inject), retrieved with [getInstanceByName](#method-static-getinstancebyname) or [getPropertiesHandler](#method-static-getpropertieshandler)
 
 
 ### Step: Initialization
@@ -104,8 +104,8 @@ This is the second step and is activated when the current value of the CoreState
 Is responsible for:
 
 - Build the Dependencies Tree
-- All registered classes decorated with [@Configuration](decorator/core-decorators.md#configuration) and extended with [Configurable](shared/abstract/configurable.md) will be Configured
-- All registered classes via [Core Decorators](decorator/core-decorators.md) and [Register Handler](handler/register-handler.md) will be built
+- All registered classes decorated with [@Configuration](documentation/the-way/core/decorator/application-components-decorators.md#configuration) and extended with [Configurable](shared/abstract/configurable.md) will be Configured
+- All registered classes via [Application Components Decorators](documentation/the-way/core/decorator/application-components-decorators.md) and [Register Handler](handler/register-handler.md) will be built
 - When the server is enabled, the [Server Configuration](configuration/server-configuration.md) will be configured and the registered paths with the [Rest Decorators](decorator/rest-decorators.md) will be bind.
 
 When Started:
@@ -115,8 +115,8 @@ When Started:
 When Finished:
 
 - CoreState change: from [INITIALIZATION_STARTED](shared/enum/core-state-enum.md#INITIALIZATION_STARTED) to [INITIALIZATION_DONE](shared/enum/core-state-enum.md#INITIALIZATION_DONE)
-- All classes mapped with the [Core Decorators](decorator/core-decorators.md), can be Injected
-- All classes decorated with [@Configuration](decorator/core-decorators.md#configuration) and is extended with [Configurable](shared/abstract/configurable.md), are configured
+- All classes mapped with the [Application Components Decorators](documentation/the-way/core/decorator/application-components-decorators.md), can be Injected
+- All classes decorated with [@Configuration](documentation/the-way/core/decorator/application-components-decorators.md#configuration) and is extended with [Configurable](shared/abstract/configurable.md), are configured
 - All classes that are extended with [Destroyable](shared/abstract/destroyable.md), will be destroyed when the Core step change to [destruction](#step-destruction)
 - When server is enabled, the Http and/or Https can be accessed, and the rest operations is bind and accessible.
 
@@ -245,7 +245,7 @@ Will check if the core is destroyed
 
 ### Method: static registerConfiguration
 
-This method will register a class decorated with [@Configuration](decorator/core-decorators.md#configuration). For Core use only
+This method will register a class decorated with [@Configuration](documentation/the-way/core/decorator/application-components-decorators.md#configuration). For Core use only
 
 #### Params
 
@@ -272,12 +272,12 @@ This method will register a dependency and map injection point
 
 ### Method: static registerRest
 
-This is method is used to register a class decorated with [@Rest](decorator/core-decorators.md#rest)
+This is method is used to register a class decorated with [@Rest](documentation/the-way/core/decorator/application-components-decorators.md#rest)
 
 #### Params
 
-- *restConstructor*: Is the class decorated with [@Rest](decorator/core-decorators.md#rest)
-- *path*: The father path. All method decorated with [Rest Decorators](decorator/rest-decorators.md) will inherit this path
+- *restConstructor*: Is the class decorated with [@Rest](documentation/the-way/core/decorator/application-components-decorators.md#rest)
+- *path*: The father path. All method decorated with [Rest Decorators](documentation/the-way/core/decorator/rest-decorators.md) will inherit this path
 - *authenticated*: When true, all inherit paths need a user signed in
 - *allowedProfiles*: Is the allowed profiles that can execute the operations mapped in the methods decorated with some [rest decorator](decorator/rest-decorators.md)
 
@@ -296,7 +296,7 @@ This is method is used to register a REST operation in methods decorated with so
 
 ### Method: static registerService
 
-This method will register a class decorated with ´[@Service](decorator/core-decorators.md#service). For Core use only
+This method will register a class decorated with ´[@Service](documentation/the-way/core/decorator/application-components-decorators.md#service). For Core use only
 
 #### Params
 

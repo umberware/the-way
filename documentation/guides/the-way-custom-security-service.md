@@ -146,7 +146,7 @@ Also, only the method [verifyAuthentication](documentation/the-way/core/service/
 You can validate the profiles in a custom implementation, you can change the default JWT for a OAUTH mechanism, you can create your behavior, and you only needs to implement the method described above to use
 a CustomCoreSecurityService. Besides that, the [CoreSecurityService](documentation/the-way/core/service/core-security-service.md) will be used when the mapped REST operations is marked to be executed only when has [logged user](documentation/the-way/core/decorator/rest-decorators.md).
 When the [scan is enabled](documentation/the-way/core/application-properties.md#the-waycorescan) you don't need
-to import your components decorated with some [core decorator](documentation/the-way/core/decorator/core-decorators.md), because it will be automatically registered when you call
+to import your components decorated with some [Application Components Decorators](documentation/the-way/core/decorator/application-components-decorators.md), because it will be automatically registered when you call
 your main class.
 You can check the source code of this example [here](https://github.com/umberware/the-way-examples/tree/master/examples/custom-security-rest/).
 

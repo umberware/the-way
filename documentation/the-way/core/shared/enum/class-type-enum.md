@@ -6,15 +6,15 @@ This enum represents the classes types
 
 ### Service
 
-Will be used when [@Service](../../decorator/core-decorators.md#service) is registered.
+Will be used when [@Service](documentation/the-way/core/decorator/application-components-decorators.md#service) is registered.
 
 ### Configuration
 
-Will be used when [@Configuration](../../decorator/core-decorators.md#configuration) is registered.
+Will be used when [@Configuration](documentation/the-way/core/decorator/application-components-decorators.md#configuration) is registered.
 
 ### Rest
 
-Will be used when [@Rest](../../decorator/core-decorators.md#rest) is registered.
+Will be used when [@Rest](documentation/the-way/core/decorator/application-components-decorators.md#rest) is registered.
 
 ### Common
 

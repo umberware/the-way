@@ -1,4 +1,4 @@
-## Core Decorators
+## Application Components Decorators
 
 In this section we will explain the main decorators of this library and their purposes.
 For rest decorators you can access the [documentation](./rest-decorators.md) specific to this theme.
@@ -64,7 +64,7 @@ Classes with this decorator, will have the REST scope and can be used to registe
 
 ### Inject
 
-The @Inject decorator, allow your application to automatically get an instance of a class. Is not necessary that wanted class is decorated with a Core Decorator.
+The @Inject decorator, allow your application to automatically get an instance of a class. Is not necessary that wanted class is decorated with a Application Components Decorator.
 It's important to know that the injected class will be a singleton (only one instance for all injections).
 
 #### Where to use it

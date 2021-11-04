@@ -118,7 +118,7 @@ Relative to the [FileHandler](documentation/the-way/core/handler/file-handler.md
 
  - path: Represents the path that will be scanned to find the components. When "full" is false, the relative base path is the [require.main.path](https://nodejs.org/api/all.html#modules_require_main) (basically, is the entry file path). *By default ./*
  - full: When true, the path property must be an absolute path to the directory that will be scanned. In other case, will be used the [require.main.path](https://nodejs.org/api/all.html#modules_require_main) as base path. *By default false*
- - enabled: When true, will use the others parameters to scan and find components. If it's false, you need to inject your classes into your main class which extends TheWayApplication and is decorated with [@Application](documentation/the-way/core/decorator/core-decorators.md#application). *By default true*
+ - enabled: When true, will use the others parameters to scan and find components. If it's false, you need to inject your classes into your main class which extends TheWayApplication and is decorated with [@Application](documentation/the-way/core/decorator/application-components-decorators.md#application). *By default true*
  - includes: The extensions that must be scanned to find components(accepts Javascript Regex)
  - excludes: The directories, files or extensions that must be ignored(accepts Javascript Regex)
 

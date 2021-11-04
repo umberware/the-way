@@ -15,7 +15,7 @@ Properties passed in command line is stronger than properties in a file.
 
 This method receives an "propertyName" and return the property when is present.
 Will return null if the property is not found. You can pass the full key to get the property.
-**You can [@Inject](documentation/the-way/core/decorator/core-decorators.md) the PropertiesHandler or get the instance at
+**You can [@Inject](documentation/the-way/core/decorator/application-components-decorators.md) the PropertiesHandler or get the instance at
 run time with [Core.getInstanceByName](documentation/the-way/core/core.md#method-static-getinstancebyname)**
 
 #### Params
