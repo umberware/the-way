@@ -8,6 +8,7 @@ In this version the library was refactored and this is the new beginning.
 
 ### Added
 
+- **portuguese dictionary:** Was been added the portuguesse dictionary for TheWay messages.
 - **changelog.md:** Was been added.
 - **documentation:** Now, all the documentation is present in this repository.
     - **application-properties**: added
