@@ -1,7 +1,6 @@
 import { Observable } from 'rxjs';
 
 import { Destroyable } from './destroyable';
-import { Inject } from '../../decorator/component/inject.decorator';
 import { CoreLogger } from '../../service/core-logger';
 import { CORE } from '../../core';
 import { CoreMessageService } from '../../service/core-message.service';
