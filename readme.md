@@ -11,7 +11,7 @@
 [![Examples](https://img.shields.io/badge/Examples-blue.svg?style=for-the-badge)](https://github.com/umberware/the-way-examples)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://raw.githubusercontent.com/umberware/the-way/master/LICENSE)
 [![EsLint](https://img.shields.io/badge/EsLint-Enabled-blue.svg?style=for-the-badge)](https://raw.githubusercontent.com/umberware/the-way/master/.eslintrc)
-[![Build Status](https://img.shields.io/travis/umberware/the-way/master.svg?label=Build&style=for-the-badge)](https://travis-ci.com/umberware/the-way)
+[![Build Status](https://img.shields.io/travis/umberware/the-way/master.svg?label=Build&style=for-the-badge)](https://app.travis-ci.com/github/umberware/the-way)
 [![Coverage](https://img.shields.io/codecov/c/gh/umberware/the-way/master?token=JDRUQC0T9A&style=for-the-badge)](https://codecov.io/gh/umberware/the-way)
 [![Sponsor](https://img.shields.io/badge/Sponsor-black?logo=github-sponsors&style=for-the-badge)](https://opencollective.com/umberware#category-CONTRIBUTE)
 [![Follow](https://img.shields.io/badge/Follow-black?logo=twitter&style=for-the-badge)](https://twitter.com/umberware)
