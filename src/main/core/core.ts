@@ -164,6 +164,15 @@ export class CORE {
         return instance.getDependencyHandler().getDependenciesTree();
     }
     /**
+    *   @name getError
+    *   @description This method will return the error if an error occurred or was set
+    *   @return The Error
+    *   @since 1.0.0
+    */
+    public static getError(): Error {
+        return this.ERROR;
+    }
+    /**
      *   @name getInstanceByName
      *   @description Retrieve the class singleton by name class
      *   @param name The class name

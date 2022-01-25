@@ -16,6 +16,7 @@ The core is the heart and brain of this library. It controls all stages of the a
  - [Method: static destroy](#method-static-destroy)
  - [Method: static getConstructors](#method-static-getconstructors)
  - [Method: static getCoreState](#method-static-getcorestate)
+ - [Method: static getError](#method-static-geterror)
  - [Method: static getDependenciesTree](#method-static-getdependenciestree)
  - [Method: static getInstanceByName](#method-static-getinstancebyname)
  - [Method: static getInstances](#method-static-getinstances)
@@ -186,6 +187,14 @@ Retrieves the current Core State
 #### Return
 
  - Actual state: [CoreStateEnum](documentation/the-way/core/shared/enum/core-state-enum.md)
+
+### Method: static getError
+
+This method will return the error if an error occurred or was set
+
+#### Return
+
+ - The Error
 
 ### Method: static getDependenciesTree
 

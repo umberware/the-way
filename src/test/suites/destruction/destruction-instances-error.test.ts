@@ -24,6 +24,8 @@ test('Destruction: Service & Configuration With Error', done => {
                 () => expect(true).toBeFalsy(),
                 (error: Error | void) => {
                     expect((error as Error).message).toBe('Destruction: An error occurred in the destruction step. Error Damn!! SMASHER!. -> Error');
+                    expect(CORE.getError()).toBeDefined();
+                    expect(CORE.getError()).toBe(error);
                     done();
                 }
             );
