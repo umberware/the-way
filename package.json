@@ -1,6 +1,6 @@
 {
     "name": "@umberware/the-way",
-    "version": "1.0.0-beta.3.7.2",
+    "version": "1.0.0",
     "description": "TheWay is a framework to enhance the development with NodeJs and Typescript, promoting agility, simplicity and intelligibility",
     "main": "src/main/index.js",
     "types": "src/main/index.d.ts",
@@ -8,14 +8,13 @@
     "homepage": "http://the-way.umberware.com",
     "private": false,
     "scripts": {
-        "build": "tsc && yarn copy-properties-file && yarn copy-package && yarn copy-npm-ignore && yarn copy-readme",
+        "build": "tsc && yarn copy-properties-file && yarn copy-npm-ignore && yarn copy-readme",
         "copy-npm-ignore": "copyfiles .npmignore ./dist",
-        "copy-package": "copyfiles package.json ./dist",
         "copy-readme": "copyfiles readme.md ./dist",
         "copy-properties-file": "copyfiles src/main/resources/application.properties.yml ./dist ",
         "lint": "eslint . --ext .ts",
         "publish-prod": "npm publish dist/ --registry https://registry.npmjs.org/ --access public",
-        "publish-beta": "npm publish dist/ --tag beta --registry https://registry.npmjs.org/ --access public",
+        "publish-beta": "npm publish dist/ --tag alpha --registry https://registry.npmjs.org/ --access public",
         "test": "jest --silent --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
         "test-watch": "jest --silent --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage --watchAll",
         "test-no-silent": "jest --no-cache --properties=src/test/resources/application-test.properties.yml --i --verbose --collectCoverage",
@@ -34,6 +33,7 @@
         "morgan": "^1.10.0",
         "reflect-metadata": "^0.1.13",
         "rxjs": "^6.6.7",
+        "shelljs": "^0.8.5",
         "swagger-ui-express": "^4.1.6",
         "yaml": "^1.10.2"
     },
