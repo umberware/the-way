@@ -1,4 +1,4 @@
-name: CI - Master
+name: CI - Develop
 on:
     push:
         branches: [ develop ]
@@ -24,7 +24,7 @@ jobs:
             - name: Publish package on NPM 📦
               run: yarn build && npm publish dist/ --tag beta
               env:
-                NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}]
+                NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
             - uses: codecov/codecov-action@v3
               with:
                 token: ${{ secrets.CODE_COV_KEY }}
