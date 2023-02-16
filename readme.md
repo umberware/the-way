@@ -17,6 +17,8 @@
 [![Follow](https://img.shields.io/badge/Follow-black?logo=twitter&style=for-the-badge)](https://twitter.com/umberware)
 [![Discord](https://img.shields.io/badge/Discord-black?logo=discord&style=for-the-badge)](https://discord.gg/jJTReZwpgU)
 
+**Note:** The release with 1.0.0 will occur soon!
+
 ## Summary
 
  - [Features](#features)
