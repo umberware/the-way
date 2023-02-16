@@ -22,7 +22,7 @@ jobs:
             - name: Lint and Tests 🔧
               run: yarn lint && yarn test-no-silent
             - name: Publish package on NPM 📦
-              run: yarn build && yarn publish-beta
+              run: yarn build && npm publish dist/ --tag beta
               env:
                 NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}]
             - uses: codecov/codecov-action@v3
