@@ -21,11 +21,15 @@ jobs:
               run: npm install yarn && npm install
             - name: Lint and Tests 🔧
               run: yarn lint && yarn test-no-silent
+            - name: Building...
+              run: yarn build
             - name: Publish package on NPM 📦
-              run: yarn build && node generate-version.js env=develop && yarn publish-beta
+              run: node generate-version.js env=develop && yarn publish-beta
               env:
                 NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+              if: github.event_name != 'pull_request'
             - uses: codecov/codecov-action@v3
               with:
                 token: ${{ secrets.CODE_COV_KEY }}
                 verbose: true
+              if: github.event_name != 'pull_request'
